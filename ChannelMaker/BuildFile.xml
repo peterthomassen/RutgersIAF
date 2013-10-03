@@ -1,0 +1,7 @@
+<use   name="rootrflx"/>
+<use   name="CommonTools/Utils"/>
+<Flags LDFLAGS="-lPhysics -lRIO -lNet -lHist -lTree -lMatrix -lProof -lThread -lCore -lCint -lMathCore"/>
+<export>
+  <lib   name="1"/>
+</export>
+
