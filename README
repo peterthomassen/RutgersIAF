@@ -1,0 +1,4 @@
+To use:
+- Get a GitLab account, and upload your hexcms SSH key
+- Go to a CMSSW/src area
+- git clone git@gitlab.com:Thomassen/rutgersiaf.git RutgersIAF2012
