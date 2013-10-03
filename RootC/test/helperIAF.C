@@ -33,8 +33,8 @@ void setupTriggerCut(SignatureHandler* handler, int mode = 0)
   SignatureCutCombined* muEG_threshold_electron_lead = new SignatureCutCombined(singleElectron_mueg_lead,singleMuon_mueg_nexttolead,true,"mueg_el_mu");
   SignatureCutCombined* muEG_threshold_muon_lead = new SignatureCutCombined(singleMuon_mueg_lead,singleElectron_mueg_nexttolead,true,"mueg_mu_el");
 
-  //SignatureCutCombined* muEG_threshold = new SignatureCutCombined(muEG_threshold_electron_lead,muEG_threshold_muon_lead,false,"mueg_thresh");
-  SignatureCutCombined* muEG_threshold = new SignatureCutCombined(doubleMuonThreshold,doubleElectronThreshold,false,"mueg_thresh");
+  SignatureCutCombined* muEG_threshold = new SignatureCutCombined(muEG_threshold_electron_lead,muEG_threshold_muon_lead,false,"mueg_thresh");
+  //SignatureCutCombined* muEG_threshold = new SignatureCutCombined(doubleMuonThreshold,doubleElectronThreshold,false,"mueg_thresh");
 
   triggerCut->addCut("MuEG",muEG_threshold);
   triggerCut->addCut("DoubleMuon",doubleMuonThreshold);
