@@ -2,6 +2,10 @@
 /////////////////////////////////////////////////////////
 void setupFakeRateSignatures(SignatureHandler* handler)
 {
+	SignatureCutPairMass* dyBelow12 = new SignatureCutPairMass("goodElectrons",0,12,true,0,2,"dybelow12cut");
+	dyBelow12->addProduct("goodMuons");
+	handler->addHandlerCut(new SignatureCutReversed(dyBelow12, "notDYbelow12cut"));
+	
 	// Cuts for fake rate signature definitions
 	SignatureCutN* zeroBjets = new SignatureCutN("bJetsCSVM",0,0);
 	SignatureCutN* geoneBjets = new SignatureCutN("bJetsCSVM",1,-1);
