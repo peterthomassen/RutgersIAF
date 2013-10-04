@@ -1168,7 +1168,7 @@ void SignatureHandler::createProducts()
 	for(int j = 0; j < k && passed == 1; j++){
 	  double dr = i_product[k]->DeltaR(TLorentzVector(*(i_product[j])));
 	  if((pname == "goodIsoTracks" || pname == "goodTracks" || sname == "goodTracks") && ((SignatureObjectRecoTrack*)i_product[k])->getNValidTrackerHits() == ((SignatureObjectRecoTrack*)i_product[j])->getNValidTrackerHits() && ((SignatureObjectRecoTrack*)i_product[k])->getNValidPixelHits() == ((SignatureObjectRecoTrack*)i_product[j])->getNValidPixelHits() && dr < sep)passed = 0;
-	  else if(pname != "goodIsoTracks" && dr < sep)passed = 0;
+	  else if(pname != "goodIsoTracks" && dr < sep && i_product[k]->getCharge() != i_product[j]->getCharge())passed = 0;
 	}
 	if(passed == 1)f_product.push_back(i_product[k]);
       }

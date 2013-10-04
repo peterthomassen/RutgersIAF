@@ -16,9 +16,12 @@ class SignatureObject : public TLorentzVector {
   double getNeutralHadronEffectiveArea();
   double getPhotonEffectiveArea();
   double getPhotonPlusNeutralHadronEffectiveArea();
+  virtual double getCharge(){return m_charge;}
+  virtual void setCharge(double c){m_charge = c;}
 
  protected:
   int m_pdgid;
+  double m_charge;
 
   ClassDef(SignatureObject,1);
 
@@ -26,9 +29,11 @@ class SignatureObject : public TLorentzVector {
 
 inline SignatureObject::SignatureObject(double x,double y, double z, double t):TLorentzVector(x,y,z,t){
   m_pdgid = 0;
+  m_charge = 0;
 }
 inline SignatureObject::SignatureObject(TLorentzVector v):TLorentzVector(v){
   m_pdgid = 0;
+  m_charge = 0;
 }
 inline bool SignatureObject::operator>(SignatureObject &s)
 {
