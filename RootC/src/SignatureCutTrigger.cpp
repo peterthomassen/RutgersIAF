@@ -37,7 +37,7 @@ bool SignatureCutTrigger::passCut(BaseHandler* handler) const
     }
   }
   //DEBUG("almost through trigger cut code");
-  cout << m_accept_int.size() << endl;
+  //cout << m_accept_int.size() << endl;
   if(m_accept_int.size() == 0){
     map<TString,SignatureCut*>::const_iterator cut_iter;
     for(cut_iter = m_map_cuts.begin(); cut_iter != m_map_cuts.end(); cut_iter++){
