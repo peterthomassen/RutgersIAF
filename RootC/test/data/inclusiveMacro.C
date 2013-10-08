@@ -1,5 +1,8 @@
-void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/",const char* ofname="example.root",Int_t mode=0)
-{
+void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/"
+	, const char* ofname="example.root"
+	, Int_t mode=0
+	, const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
+) {
 	gSystem->Load("libRutgersIAF2012RootC.so");
 	gROOT->ProcessLine(".include ../../CMSSW_5_2_2/src");
 	gROOT->ProcessLine(".L ../helperIAF.C");
@@ -15,7 +18,7 @@ void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/",const char
 	
 	setupTriggerCut(handler,mode);
 	
-	handler->readGoodRunLumiFromJSON("/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json");
+	handler->readGoodRunLumiFromJSON(TString(json));
 	
 	//addStandardThresholds(handler);
 	setupProducts2012(handler);
