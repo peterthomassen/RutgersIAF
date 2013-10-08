@@ -165,7 +165,7 @@ void setupInclusiveSignatures(SignatureHandler* handler)
 										dummy->addCut(metCuts[iMET]);
 										dummy->addCut(htCuts[iHT]);
 										// Veto trileptons from asymmetric internal photon conversions
-										if(iLeptons == 3 && iTau == 0 && iMET == 0 && iHT == 0) {
+										if(iLeptons == 3 && iTau == 0 && iMET == 0 && iHT == 0 && iNDY > 0) {
 											dummy->addCut(trileptonMassOffZcut);
 										}
 										handler->addSignature(dummy);
