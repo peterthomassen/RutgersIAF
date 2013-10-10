@@ -2816,20 +2816,20 @@ void setupProducts2012(SignatureHandler* handler){
 
   ObjectCutPt* tauPtCut = new ObjectCutPt(20.0,-1,"tauptcut");
   ObjectCutCombined* tauChargeCut = new ObjectCutCombined(new ObjectCutTauCharge(-1.1,-0.9),new ObjectCutTauCharge(0.9,1.1));
-  ObjectCutCombined* goodTauCut = new ObjectCutCombined(tauChargeCut,tauPtCut,true);
-  goodTauCut->addCut(new ObjectCutEta(2.3));
-  goodTauCut->addCut(new ObjectCutTauDiscriminants(19));//decaymodefinding
-  goodTauCut->addCut(new ObjectCutTauDiscriminants(29));//againstelectronmva
-  goodTauCut->addCut(new ObjectCutTauDiscriminants(24));//againstmuontight
-  //goodTauCut->addCut(new ObjectCutTauDiscriminants(26));//byloosecombinedisodbsumptcorr
+  ObjectCutCombined* basicTauCut = new ObjectCutCombined(tauChargeCut,tauPtCut,true);
+  basicTauCut->addCut(new ObjectCutEta(2.3));
+  basicTauCut->addCut(new ObjectCutTauDiscriminants(19));//decaymodefinding
+  basicTauCut->addCut(new ObjectCutTauDiscriminants(29));//againstelectronmva
+  basicTauCut->addCut(new ObjectCutTauDiscriminants(24));//againstmuontight
+  //basicTauCut->addCut(new ObjectCutTauDiscriminants(26));//byloosecombinedisodbsumptcorr
   ObjectCutAbsRel* sidebandTauIsolationCut = new ObjectCutAbsRel(6,15);
   ObjectCutReversed* otherTauIsolationCut = new ObjectCutReversed(new ObjectCutTauDiscriminants(26));
 
-  handler->addProductCut("goodTaus",goodTauCut);
+  handler->addProductCut("goodTaus",basicTauCut);
   handler->addProductCut("goodTaus",new ObjectCutTauDiscriminants(26));//byloosecombinedisodbsumptcorr
 
   handler->addProduct("basicTaus","allTaus");
-  handler->addProductCut("basicTaus",goodTauCut);
+  handler->addProductCut("basicTaus",basicTauCut);
   handler->setSelfSeparate("basicTaus",0.1);
 
   handler->addProduct("sidebandTaus","basicTaus");

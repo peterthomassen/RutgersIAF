@@ -65,6 +65,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   //Manage Event//
   ////////////////
   void eventLoop();
+  void eventLoop(int runOnly, long int eventOnly);
   int getRun(){ return run;}
   int getLumiBlock(){ return lumiBlock;}
   long int getEvent() {return event;}

@@ -159,13 +159,17 @@ void setupInclusiveSignatures(SignatureHandler* handler)
 										Signature* dummy = new Signature(name.Data(), "");
 										dummy->addCut(nElCuts[iEl]);
 										dummy->addCut(nMuCuts[iMu]);
-										dummy->addCut(nTauCuts[iTau]);
+										if(iLeptons == 3 && iTau == 1) {
+											dummy->addCut(new SignatureCutNTau(1, 1));
+										} else {
+											dummy->addCut(nTauCuts[iTau]);
+										}
 										dummy->addCut(NDYcuts[iLeptons][iNDY][jNDY]);
 										dummy->addCut(nBjetCuts[iBjet]);
 										dummy->addCut(metCuts[iMET]);
 										dummy->addCut(htCuts[iHT]);
 										// Veto trileptons from asymmetric internal photon conversions
-										if(iLeptons == 3 && iTau == 0 && iMET == 0 && iHT == 0) {
+										if(iLeptons == 3 && iTau == 0 && iMET == 0 && iHT == 0 && (iNDY == 1 && (jNDY == 0 || jNDY == 1))) {
 											dummy->addCut(trileptonMassOffZcut);
 										}
 										handler->addSignature(dummy);
