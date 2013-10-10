@@ -159,7 +159,11 @@ void setupInclusiveSignatures(SignatureHandler* handler)
 										Signature* dummy = new Signature(name.Data(), "");
 										dummy->addCut(nElCuts[iEl]);
 										dummy->addCut(nMuCuts[iMu]);
-										dummy->addCut(nTauCuts[iTau]);
+										if(iLeptons == 3 && iTau == 1) {
+											dummy->addCut(new SignatureCutNTau(1, 1));
+										} else {
+											dummy->addCut(nTauCuts[iTau]);
+										}
 										dummy->addCut(NDYcuts[iLeptons][iNDY][jNDY]);
 										dummy->addCut(nBjetCuts[iBjet]);
 										dummy->addCut(metCuts[iMET]);
