@@ -12,12 +12,12 @@ void setupTriggerCut(SignatureHandler* handler, int mode = 0)
   singleElectronThreshold->addThreshold(85.0);
   SignatureCutThresholdElectron* doubleElectronThreshold = new SignatureCutThresholdElectron("doubleElectronThreshold");
   doubleElectronThreshold->addThreshold(20.0);
-  //doubleElectronThreshold->addThreshold(10.0);
+  doubleElectronThreshold->addThreshold(10.0);
   SignatureCutThresholdMuon* singleMuonThreshold = new SignatureCutThresholdMuon("singleMuonThreshold");
   singleMuonThreshold->addThreshold(35.0);
   SignatureCutThresholdMuon* doubleMuonThreshold = new SignatureCutThresholdMuon("doubleMuonThreshold");
   doubleMuonThreshold->addThreshold(20.0);
-  //doubleMuonThreshold->addThreshold(10.0);
+  doubleMuonThreshold->addThreshold(10.0);
 
   //Setup MuEG cuts
   SignatureCutThresholdElectron* singleElectron_mueg_lead = new SignatureCutThresholdElectron("singleElectron_mueg_lead");
