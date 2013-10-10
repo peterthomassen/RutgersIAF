@@ -216,11 +216,17 @@ void SignatureHandler::finishSignatures()
 //-----------------------------------------
 void SignatureHandler::eventLoop()
 {
+	eventLoop(-1, 0);
+}
+
+void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
+{
   int nevents = fChain->GetEntries();
   for(m_currentEntry = 0; m_currentEntry < nevents; m_currentEntry++){
 
     fChain->GetEntry(m_currentEntry);
     if (m_currentEntry % 100000 == 0)cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
+    if(onlyRun >= 0 && (run != onlyRun || event != onlyEvent)) continue;
 
     if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end())SkimTreeBase::dumpEventInfo();
     if(m_doRunLumiCheck || m_doRunLumiCheckFromJSON){
@@ -230,9 +236,9 @@ void SignatureHandler::eventLoop()
         m_checkedLumi = lumiBlock;
         
 		if(!m_isRunLumiGood) {
-			std::cerr << "[PT] Decided against running over run " << run << ", ls " << lumiBlock << std::endl;
+			if(getDebugMode()) std::cout << "JSON: Decided against running over run " << run << ", ls " << lumiBlock << std::endl;
 		} else {
-			std::cerr << "[PT] Will run over run " << run << ", ls " << lumiBlock << std::endl;
+			if(getDebugMode()) std::cout << "JSON: Will run over run " << run << ", ls " << lumiBlock << std::endl;
 		}
       }
       if(!m_isRunLumiGood) {
