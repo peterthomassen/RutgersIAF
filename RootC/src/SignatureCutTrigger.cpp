@@ -20,7 +20,7 @@ bool SignatureCutTrigger::passCut(BaseHandler* handler) const
       SignatureCut* cut = (*(m_map_cuts.find(name))).second;
       if(find(vec.begin(),vec.end(),triggers[i]->getId()) != vec.end() && cut->passCut(handler)) {
 		  if(handler->getDebugMode()) {
-			  cout << "Failed trigger " << triggers[i]->getId() << endl;
+			  cout << "Triggered on veto trigger " << triggers[i]->getId() << endl;
 		  }
 		  return false;
 	  }
