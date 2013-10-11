@@ -178,6 +178,7 @@
 #include "RutgersIAF2012/RootC/interface/DelphesClasses.h"
 #include "RutgersIAF2012/RootC/interface/DelphesHandler.h"
 #include "RutgersIAF2012/RootC/interface/DelphesTreeBase.h"
+#include "RutgersIAF2012/RootC/interface/SignatureTH2F_HTvsWSumPt.h"
 
 
 #ifdef __CINT__
@@ -378,4 +379,5 @@
 #pragma link C++ class Candidate+;
 #pragma link C++ class DelphesTreeBase+;
 #pragma link C++ class DelphesHandler+;
+#pragma link C++ class SignatureTH2F_HTvsWSumPt+;
 #endif
