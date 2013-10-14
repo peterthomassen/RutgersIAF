@@ -13,14 +13,13 @@
 
 #include "RutgersIAF2012/RootC/interface/debug.h"
 
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-void setupInclusiveSignatures(SignatureHandler* handler)
-{
+void setupHandlerCuts(SignatureHandler* handler) {
 	SignatureCutPairMass* dyBelow12 = new SignatureCutPairMass("goodElectrons",0,12,true,0,2,"dybelow12cut");
 	dyBelow12->addProduct("goodMuons");
 	handler->addHandlerCut(new SignatureCutReversed(dyBelow12, "notDYbelow12cut"));
-	
+}
+
+void setupInclusiveSignatures(SignatureHandler* handler) {
 	// Number of leptons / taus / bjets above which to aggregate
 	uint nLeptonMax = 4;
 	uint nTauMax = 1;

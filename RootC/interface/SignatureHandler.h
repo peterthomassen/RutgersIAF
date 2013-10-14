@@ -100,6 +100,9 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   void addHistogram(SignatureTH1F*);
   void addHistogram(SignatureTH2F*);
   void addHistogram(SignatureTH3F*);
+  void addHistogram(SignatureTH1F*, TString signatureRegExp);
+  void addHistogram(SignatureTH2F*, TString signatureRegExp);
+  void addHistogram(SignatureTH3F*, TString signatureRegExp);
   void addBasicHistograms();
   void addChargeSignHistograms();
   void setIsMC(bool c=true){m_isMC = c;}

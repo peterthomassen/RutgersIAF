@@ -10,6 +10,7 @@
 #define SignatureHandler_cxx
 #include "RutgersIAF2012/RootC/interface/SignatureHandler.h"
 #include "RutgersIAF2012/RootC/interface/SignatureWithBjets.h"
+#include "TPRegexp.h"
 #include "TRandom3.h"
 
 #include "RutgersIAF2012/RootC/interface/debug.h"
@@ -366,15 +367,31 @@ void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
 }
 
 //-----------------------------------------
-void SignatureHandler::addHistogram(SignatureTH1F* h)
-{
+void SignatureHandler::addHistogram(SignatureTH1F* h) {
+	addHistogram(h, "");
+}
+//-----------------------------------------
+void SignatureHandler::addHistogram(SignatureTH2F* h) {
+	addHistogram(h, "");
+}
+//-----------------------------------------
+void SignatureHandler::addHistogram(SignatureTH3F* h) {
+	addHistogram(h, "");
+}
+//-----------------------------------------
+void SignatureHandler::addHistogram(SignatureTH1F* h, TString signatureRegExp) {
   TString nname = m_noCutSignature->GetName();
   nname += "_";
   nname += h->GetName();
   SignatureTH1F* nh = (SignatureTH1F*)h->Clone(nname.Data());
   m_noCutSignature->addHistogram(nh);
+  
+  TPMERegexp re(signatureRegExp);
   for(unsigned int s = 0; s < m_Signatures.size(); s++){
     nname = m_Signatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH1F* nh2 = (SignatureTH1F*)h->Clone(nname.Data());
@@ -382,6 +399,9 @@ void SignatureHandler::addHistogram(SignatureTH1F* h)
   }
   for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
     nname = m_preHandlerCutSignatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH1F* nh2 = (SignatureTH1F*)h->Clone(nname.Data());
@@ -389,6 +409,9 @@ void SignatureHandler::addHistogram(SignatureTH1F* h)
   }
   for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
     nname = m_bjetSignatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH1F* nh2 = (SignatureTH1F*)h->Clone(nname.Data());
@@ -396,15 +419,19 @@ void SignatureHandler::addHistogram(SignatureTH1F* h)
   }
 }
 //-----------------------------------------
-void SignatureHandler::addHistogram(SignatureTH2F* h)
-{
+void SignatureHandler::addHistogram(SignatureTH2F* h, TString signatureRegExp) {
   TString nname = m_noCutSignature->GetName();
   nname += "_";
   nname += h->GetName();
   SignatureTH2F* nh = (SignatureTH2F*)h->Clone(nname.Data());
   m_noCutSignature->addHistogram(nh);
+  
+  TPMERegexp re(signatureRegExp);
   for(unsigned int s = 0; s < m_Signatures.size(); s++){
     nname = m_Signatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH2F* nh2 = (SignatureTH2F*)h->Clone(nname.Data());
@@ -412,6 +439,9 @@ void SignatureHandler::addHistogram(SignatureTH2F* h)
   }
   for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
     nname = m_preHandlerCutSignatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH2F* nh2 = (SignatureTH2F*)h->Clone(nname.Data());
@@ -419,23 +449,29 @@ void SignatureHandler::addHistogram(SignatureTH2F* h)
   }
   for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
     nname = m_bjetSignatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH2F* nh2 = (SignatureTH2F*)h->Clone(nname.Data());
     m_bjetSignatures[s]->addHistogram(nh2);
   }
-
 }
 //-----------------------------------------
-void SignatureHandler::addHistogram(SignatureTH3F* h)
-{
+void SignatureHandler::addHistogram(SignatureTH3F* h, TString signatureRegExp) {
   TString nname = m_noCutSignature->GetName();
   nname += "_";
   nname += h->GetName();
   SignatureTH3F* nh = (SignatureTH3F*)h->Clone(nname.Data());
   m_noCutSignature->addHistogram(nh);
+  
+  TPMERegexp re(signatureRegExp);
   for(unsigned int s = 0; s < m_Signatures.size(); s++){
     nname = m_Signatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH3F* nh2 = (SignatureTH3F*)h->Clone(nname.Data());
@@ -443,6 +479,9 @@ void SignatureHandler::addHistogram(SignatureTH3F* h)
   }
   for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
     nname = m_preHandlerCutSignatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH3F* nh2 = (SignatureTH3F*)h->Clone(nname.Data());
@@ -450,12 +489,14 @@ void SignatureHandler::addHistogram(SignatureTH3F* h)
   }
   for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
     nname = m_bjetSignatures[s]->GetName();
+    if(!re.Match(nname)) {
+		continue;
+	}
     nname += "_";
     nname += h->GetName();
     SignatureTH3F* nh2 = (SignatureTH3F*)h->Clone(nname.Data());
     m_bjetSignatures[s]->addHistogram(nh2);
   }
-
 }
 //-----------------------------------------
 void SignatureHandler::addBasicHistograms()

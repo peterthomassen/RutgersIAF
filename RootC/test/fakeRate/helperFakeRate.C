@@ -1,5 +1,3 @@
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
 void setupFakeRateSignatures(SignatureHandler* handler)
 {
 	SignatureCutPairMass* dyBelow12 = new SignatureCutPairMass("goodElectrons",0,12,true,0,2,"dybelow12cut");
@@ -74,7 +72,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SignatureCutN* oneOrMoreSidebandTaus = new SignatureCutN("sidebandTaus",1,-1);
 
 	// Signatures for Rdxy
-	Signature* El2Mu1B0onZMET0to50 = new Signature("El2Mu1B0onZMET0to50","");
+/*	Signature* El2Mu1B0onZMET0to50 = new Signature("El2Mu1B0onZMET0to50","");
 	El2Mu1B0onZMET0to50->addCut(zeroBjets);
 	El2Mu1B0onZMET0to50->addCut(twoElectrons);
 	El2Mu1B0onZMET0to50->addCut(oneBasicMuons);
@@ -121,7 +119,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	Eln1Mup1B1METgt50HTgt200->addCut(metgt50);
 	Eln1Mup1B1METgt50HTgt200->addCut(htgt200);
 	handler->addSignature(Eln1Mup1B1METgt50HTgt200);
-
+*/
 	// Signatures for FtFsb
 	// -- Here, we calculate the FtFsb plot
 	Signature* SeedEl2q0ONZMET0to50 = new Signature("SeedEl2q0ONZMET0to50", "");
@@ -148,6 +146,62 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SeedMu2q0ONZMET50to100->addCut(met50to100);
 	handler->addSignature(SeedMu2q0ONZMET50to100);
 	
+	Signature* SeedEl2q0ONZMET0to50HT0to200 = new Signature("SeedEl2q0ONZMET0to50HT0to200", "");
+	SeedEl2q0ONZMET0to50HT0to200->addCut(twoElectrons);
+	SeedEl2q0ONZMET0to50HT0to200->addCut(dy1onZcut);
+	SeedEl2q0ONZMET0to50HT0to200->addCut(met0to50);
+	SeedEl2q0ONZMET0to50HT0to200->addCut(ht0to200);
+	handler->addSignature(SeedEl2q0ONZMET0to50HT0to200);
+	
+	Signature* SeedMu2q0ONZMET0to50HT0to200 = new Signature("SeedMu2q0ONZMET0to50HT0to200", "");
+	SeedMu2q0ONZMET0to50HT0to200->addCut(twoMuons);
+	SeedMu2q0ONZMET0to50HT0to200->addCut(dy1onZcut);
+	SeedMu2q0ONZMET0to50HT0to200->addCut(met0to50);
+	SeedMu2q0ONZMET0to50HT0to200->addCut(ht0to200);
+	handler->addSignature(SeedMu2q0ONZMET0to50HT0to200);
+	
+	Signature* SeedEl2q0ONZMET50to100HT0to200 = new Signature("SeedEl2q0ONZMET50to100HT0to200", "");
+	SeedEl2q0ONZMET50to100HT0to200->addCut(twoElectrons);
+	SeedEl2q0ONZMET50to100HT0to200->addCut(dy1onZcut);
+	SeedEl2q0ONZMET50to100HT0to200->addCut(met50to100);
+	SeedEl2q0ONZMET50to100HT0to200->addCut(ht0to200);
+	handler->addSignature(SeedEl2q0ONZMET50to100HT0to200);
+	
+	Signature* SeedMu2q0ONZMET50to100HT0to200 = new Signature("SeedMu2q0ONZMET50to100HT0to200", "");
+	SeedMu2q0ONZMET50to100HT0to200->addCut(twoMuons);
+	SeedMu2q0ONZMET50to100HT0to200->addCut(dy1onZcut);
+	SeedMu2q0ONZMET50to100HT0to200->addCut(met50to100);
+	SeedMu2q0ONZMET50to100HT0to200->addCut(ht0to200);
+	handler->addSignature(SeedMu2q0ONZMET50to100HT0to200);
+	
+	Signature* SeedEl2q0ONZMET0to50HTgt200 = new Signature("SeedEl2q0ONZMET0to50HTgt200", "");
+	SeedEl2q0ONZMET0to50HTgt200->addCut(twoElectrons);
+	SeedEl2q0ONZMET0to50HTgt200->addCut(dy1onZcut);
+	SeedEl2q0ONZMET0to50HTgt200->addCut(met0to50);
+	SeedEl2q0ONZMET0to50HTgt200->addCut(htgt200);
+	handler->addSignature(SeedEl2q0ONZMET0to50HTgt200);
+	
+	Signature* SeedMu2q0ONZMET0to50HTgt200 = new Signature("SeedMu2q0ONZMET0to50HTgt200", "");
+	SeedMu2q0ONZMET0to50HTgt200->addCut(twoMuons);
+	SeedMu2q0ONZMET0to50HTgt200->addCut(dy1onZcut);
+	SeedMu2q0ONZMET0to50HTgt200->addCut(met0to50);
+	SeedMu2q0ONZMET0to50HTgt200->addCut(htgt200);
+	handler->addSignature(SeedMu2q0ONZMET0to50HTgt200);
+	
+	Signature* SeedEl2q0ONZMET50to100HTgt200 = new Signature("SeedEl2q0ONZMET50to100HTgt200", "");
+	SeedEl2q0ONZMET50to100HTgt200->addCut(twoElectrons);
+	SeedEl2q0ONZMET50to100HTgt200->addCut(dy1onZcut);
+	SeedEl2q0ONZMET50to100HTgt200->addCut(met50to100);
+	SeedEl2q0ONZMET50to100HTgt200->addCut(htgt200);
+	handler->addSignature(SeedEl2q0ONZMET50to100HTgt200);
+	
+	Signature* SeedMu2q0ONZMET50to100HTgt200 = new Signature("SeedMu2q0ONZMET50to100HTgt200", "");
+	SeedMu2q0ONZMET50to100HTgt200->addCut(twoMuons);
+	SeedMu2q0ONZMET50to100HTgt200->addCut(dy1onZcut);
+	SeedMu2q0ONZMET50to100HTgt200->addCut(met50to100);
+	SeedMu2q0ONZMET50to100HTgt200->addCut(htgt200);
+	handler->addSignature(SeedMu2q0ONZMET50to100HTgt200);
+	
 	// Here, we calculate Fsb, and we look up the corresponding fT from above
 	Signature* SeedEl2q0Tau1ONZMET50to100 = new Signature("SeedEl2q0Tau1ONZMET50to100", "");
 	SeedEl2q0Tau1ONZMET50to100->addCut(twoElectrons);
@@ -162,6 +216,38 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SeedMu2q0Tau1ONZMET50to100->addCut(dy1onZcut);
 	SeedMu2q0Tau1ONZMET50to100->addCut(met50to100);
 	handler->addSignature(SeedMu2q0Tau1ONZMET50to100);
+	
+	Signature* SeedEl2q0Tau1ONZMET50to100HT0to200 = new Signature("SeedEl2q0Tau1ONZMET50to100HT0to200", "");
+	SeedEl2q0Tau1ONZMET50to100HT0to200->addCut(twoElectrons);
+	SeedEl2q0Tau1ONZMET50to100HT0to200->addCut(oneOrMoreTaus); // this requires at least one isolated tau
+	SeedEl2q0Tau1ONZMET50to100HT0to200->addCut(dy1onZcut);
+	SeedEl2q0Tau1ONZMET50to100HT0to200->addCut(met50to100);
+	SeedEl2q0Tau1ONZMET50to100HT0to200->addCut(ht0to200);
+	handler->addSignature(SeedEl2q0Tau1ONZMET50to100HT0to200);
+	
+	Signature* SeedMu2q0Tau1ONZMET50to100HT0to200 = new Signature("SeedMu2q0Tau1ONZMET50to100HT0to200", "");
+	SeedMu2q0Tau1ONZMET50to100HT0to200->addCut(twoMuons);
+	SeedMu2q0Tau1ONZMET50to100HT0to200->addCut(oneOrMoreTaus);
+	SeedMu2q0Tau1ONZMET50to100HT0to200->addCut(dy1onZcut);
+	SeedMu2q0Tau1ONZMET50to100HT0to200->addCut(met50to100);
+	SeedMu2q0Tau1ONZMET50to100HT0to200->addCut(ht0to200);
+	handler->addSignature(SeedMu2q0Tau1ONZMET50to100HT0to200);
+	
+	Signature* SeedEl2q0Tau1ONZMET50to100HTgt200 = new Signature("SeedEl2q0Tau1ONZMET50to100HTgt200", "");
+	SeedEl2q0Tau1ONZMET50to100HTgt200->addCut(twoElectrons);
+	SeedEl2q0Tau1ONZMET50to100HTgt200->addCut(oneOrMoreTaus); // this requires at least one isolated tau
+	SeedEl2q0Tau1ONZMET50to100HTgt200->addCut(dy1onZcut);
+	SeedEl2q0Tau1ONZMET50to100HTgt200->addCut(met50to100);
+	SeedEl2q0Tau1ONZMET50to100HTgt200->addCut(htgt200);
+	handler->addSignature(SeedEl2q0Tau1ONZMET50to100HTgt200);
+	
+	Signature* SeedMu2q0Tau1ONZMET50to100HTgt200 = new Signature("SeedMu2q0Tau1ONZMET50to100HTgt200", "");
+	SeedMu2q0Tau1ONZMET50to100HTgt200->addCut(twoMuons);
+	SeedMu2q0Tau1ONZMET50to100HTgt200->addCut(oneOrMoreTaus);
+	SeedMu2q0Tau1ONZMET50to100HTgt200->addCut(dy1onZcut);
+	SeedMu2q0Tau1ONZMET50to100HTgt200->addCut(met50to100);
+	SeedMu2q0Tau1ONZMET50to100HTgt200->addCut(htgt200);
+	handler->addSignature(SeedMu2q0Tau1ONZMET50to100HTgt200);
 	
 	// Here, we apply fT (in the sideband only)
 	Signature* SeedEl2q0SidebandTau1ONZMET50to100 = new Signature("SeedEl2q0SidebandTau1ONZMET50to100", "");
@@ -179,7 +265,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	handler->addSignature(SeedMu2q0SidebandTau1ONZMET50to100);
 	
 	// Histograms for Rdxy
-	SignatureTH1F_N* n_electronsNINP = new SignatureTH1F_N("n_electronsNINP","electronsNINP");
+/*	SignatureTH1F_N* n_electronsNINP = new SignatureTH1F_N("n_electronsNINP","electronsNINP");
 	SignatureTH1F_N* n_electronsINP = new SignatureTH1F_N("n_electronsINP","electronsINP");
 	SignatureTH1F_N* n_electronsNIP = new SignatureTH1F_N("n_electronsNIP","electronsNIP");
 	SignatureTH2F_RelIsoVsDxy* risovdxy_electrons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_electrons","basicElectrons");
@@ -220,9 +306,10 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	handler->addHistogram(risovdxy_tracks);
 	handler->addHistogram(risovdxy_postracks);
 	handler->addHistogram(risovdxy_negtracks);
-
+*/
 	// Histograms for Ftfsb
 	std::vector<int> sumBins;
+	sumBins.push_back(0);
 	sumBins.push_back(40);
 	sumBins.push_back(60);
 	sumBins.push_back(80);
@@ -240,16 +327,39 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 		
 		name = TString::Format("tauIsoSum%dto%d", edgeLow, edgeHigh);
 		dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", edgeLow, edgeHigh, "SUM");
-		handler->addHistogram(dummy);
+		handler->addHistogram(dummy, "Seed");
 		
-		name = TString::Format("tauIsoLead%dto%d", edgeLow, edgeHigh);
+/*		name = TString::Format("tauIsoLead%dto%d", edgeLow, edgeHigh);
 		dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", edgeLow, edgeHigh, "LEAD");
-		handler->addHistogram(dummy);
+		handler->addHistogram(dummy, "Seed");
+*/		
+		name = TString::Format("tauIsoHT%dto%d", edgeLow, edgeHigh);
+		dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", edgeLow, edgeHigh, "HT");
+		handler->addHistogram(dummy, "Seed");
 	}
+	name = TString::Format("tauIsoHT%dto%d", 180, 200);
+	dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", 180, 200, "HT");
+	handler->addHistogram(dummy, "Seed");
+	name = TString::Format("tauIsoHT%dto%d", 200, 220);
+	dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", 200, 220, "HT");
+	handler->addHistogram(dummy, "Seed");
+
 	name = "tauIso";
 	dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", -1, -1, "SUM");
-	handler->addHistogram(dummy);
+	handler->addHistogram(dummy, "Seed");
 	name = "goodTauIso";
 	dummy = new SignatureTH1F_TauIso(name.Data(), "goodTaus", -1, -1, "SUM");
-	handler->addHistogram(dummy);
+	handler->addHistogram(dummy, "Seed");
+	
+	name = "HTvsWSumPt";
+	SignatureTH2F_HTvsWSumPt* dummy2 = new SignatureTH2F_HTvsWSumPt(name.Data());
+	handler->addHistogram(dummy2, "Seed");
+	
+	name = "TauIsovsHT";
+	SignatureTH2F_TauIsovsHT* dummy3 = new SignatureTH2F_TauIsovsHT(name.Data(), "basicTaus");
+	handler->addHistogram(dummy3, "Seed");
+	
+	name = "TauIsovsWSumPt";
+	SignatureTH2F_TauIsovsWSumPt* dummy4 = new SignatureTH2F_TauIsovsWSumPt(name.Data(), "basicTaus");
+	handler->addHistogram(dummy4, "Seed");
 }

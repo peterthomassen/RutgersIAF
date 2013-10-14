@@ -7,7 +7,7 @@
 
 class SignatureTH2F_HTvsWSumPt : public SignatureTH2F {
  public:
-  SignatureTH2F_HTvsWSumPt(const char* name, const char * productname, const char* title = "HT vs WSumPt Distribution", Int_t nbinsX = 200, Double_t minX = 0, Double_t maxX = 2500, Int_t nbinsY = 200, Double_t minY = 0, Double_t maxY = 2500):SignatureTH2F(name,title,nbinsX,minX,maxX,nbinsY,minY,maxY){ }
+  SignatureTH2F_HTvsWSumPt(const char* name, const char* title = "HT vs WSumPt Distribution", Int_t nbinsX = 200, Double_t minX = 0, Double_t maxX = 2500, Int_t nbinsY = 200, Double_t minY = 0, Double_t maxY = 2500):SignatureTH2F(name,title,nbinsX,minX,maxX,nbinsY,minY,maxY){ }
 
     SignatureTH2F_HTvsWSumPt(TH2F h):SignatureTH2F(h) {}
     SignatureTH2F_HTvsWSumPt():SignatureTH2F() {}
