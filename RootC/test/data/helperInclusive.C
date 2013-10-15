@@ -40,6 +40,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	// Cuts for signal region definitions
 	std::map<int, std::vector< std::vector<SignatureCut*> > > nElCuts;
 	
+	// Electrons
 	std::vector< std::vector<SignatureCut*> > nElCuts3(4);
 	for(uint i = 0; i <= 3; ++i) {
 		int nMin = i;
@@ -60,7 +61,6 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 			SignatureCutQ* cut2 = new SignatureCutQ("goodElectrons", charge - 0.1, charge + 0.1);
 			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
 			nElCuts3[nMin].push_back(cut);
-			std::cout << name.Data() << std::endl;
 		}
 	}
 	nElCuts.insert(std::make_pair(3, nElCuts3));
@@ -75,6 +75,35 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	}
 	nElCuts.insert(std::make_pair(4, nElCuts4));
 	
+	
+	// Electrons for 3L SS
+	std::map<int, std::vector< std::vector<SignatureCut*> > > nElSSCuts;
+	std::vector< std::vector<SignatureCut*> > nElSSCuts3(4);
+	for(uint i = 0; i <= 3; ++i) {
+		int nMin = i;
+		int nMax = (i < nElSSCuts3.size() - 1) ? i : -1;
+		for(int j = 0; j <= nMin; ++j) {
+			int charge = nMin - 2 * j;
+			TString name = TString("");
+			name += nMin;
+			if(charge > 0) {
+				name += "p";
+			} else if(charge < 0) {
+				name += "m";
+			} else {
+				name += "q";
+			}
+			name += abs(charge);
+			SignatureCutN* cut1 = new SignatureCutN("goodSSElectrons", nMin, nMax);
+			SignatureCutQ* cut2 = new SignatureCutQ("goodSSElectrons", charge - 0.1, charge + 0.1);
+			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
+			nElSSCuts3[nMin].push_back(cut);
+		}
+	}
+	nElSSCuts.insert(std::make_pair(3, nElSSCuts3));
+	
+	
+	// Muons
 	std::map<int, std::vector< std::vector<SignatureCut*> > > nMuCuts;
 	
 	std::vector< std::vector<SignatureCut*> > nMuCuts3(4);
@@ -223,7 +252,11 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 												TString name = TString::Format("El%sMu%sTau%dDY%sB%dMET%sHT%s", nameEl.Data(), nameMu.Data(), iTau, nameDY.Data(), iBjet, nameMET.Data(), nameHT.Data());
 												std::cout << i++ << " Setting up signature " << name << std::endl;
 												Signature* dummy = new Signature(name.Data(), "");
-												dummy->addCut(nElCuts[iLeptons][iEl][jEl]);
+												if(iLeptons == 3 && iTau == 1 && (nameEl == "2m2" || nameEl == "2p2" || (nameEl == nameMu && (nameEl == "1m1" || nameEl == "1p1")))) {
+													dummy->addCut(nElSSCuts[iLeptons][iEl][jEl]);
+												} else {
+													dummy->addCut(nElCuts[iLeptons][iEl][jEl]);
+												}
 												dummy->addCut(nMuCuts[iLeptons][iMu][jMu]);
 												if(iLeptons == 3 && iTau == 1) {
 													dummy->addCut(new SignatureCutNTau(1, 1));
