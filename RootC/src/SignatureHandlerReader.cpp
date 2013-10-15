@@ -6,8 +6,9 @@ using namespace std;
 void SignatureHandler::readMuons()
 {
   for(int i = 0; i < pat_muon_n; i++){
-    SignatureObjectMuon* muon = new SignatureObjectMuon(pat_muon_px[i],pat_muon_py[i],pat_muon_pz[i],pat_muon_energy[i]);
     int gtID = pat_muon_globalTrackID[i];
+    if(gtID < 0)continue;
+    SignatureObjectMuon* muon = new SignatureObjectMuon(pat_muon_px[i],pat_muon_py[i],pat_muon_pz[i],pat_muon_energy[i]);
     muon->setRho(pat_rho);
     muon->setChargedHadronIso(pat_muon_PF_chargedHadronIso[i]);
     muon->setNeutralHadronIso(pat_muon_PF_neutralHadronIso[i]);
@@ -147,6 +148,8 @@ void SignatureHandler::readMuons()
 void SignatureHandler::readElectrons()
 {
   for(int i = 0; i < pat_electron_n; i++){
+    int gtID = pat_electron_trackID[i];
+    if(gtID < 0)continue;
     SignatureObjectElectron* electron = new SignatureObjectElectron(pat_electron_px[i],pat_electron_py[i],pat_electron_pz[i],pat_electron_energy[i]);
     electron->setRho(pat_rho);
     electron->setRhoNeutral(pat_rho_neutral);
@@ -155,7 +158,6 @@ void SignatureHandler::readElectrons()
     electron->setPhotonIso(pat_electron_PF_photonIso[i]);
 
 
-    int gtID = pat_electron_trackID[i];
     electron->setDz(reco_track_dz[gtID]);
     electron->setGenParticle_ntID(reco_track_genParticle_ntID[gtID]);
     electron->setCaloIso9(reco_track_caloIso9[gtID]);
