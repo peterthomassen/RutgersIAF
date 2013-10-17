@@ -353,7 +353,7 @@ void setupEWKinoSignatures(SignatureHandler* handler)
   SignatureCutNDYPairs* dy0cut = new SignatureCutNDYPairs(0,0,false);
 
   SignatureCutQ* zeroChargeCut = new SignatureCutQ("goodElectrons",-0.1,0.1);
-  zeroChargeCut->addProductName("goodMuons");
+  zeroChargeCut->addProduct("goodMuons");
   SignatureCutReversed* nonZeroChargeCut = new SignatureCutReversed(zeroChargeCut);
 
   SignatureCut* met_cuts[7] = {metCut0,metCut1,metCut2,metCut3,metCut4,metCut5,metCutFull};

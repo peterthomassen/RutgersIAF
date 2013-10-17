@@ -370,11 +370,11 @@ void addLJJBreakdownSignatures(SignatureHandler* handler)
   SignatureCutN* zeroCSVM = new SignatureCutN("bJetsCSVM",0,0);
 
   SignatureCutQ* zeroLeptonChargeCut = new SignatureCutQ("tightMuons",-0.1,0.1);
-  zeroLeptonChargeCut->addProductName("tightElectrons");
+  zeroLeptonChargeCut->addProduct("tightElectrons");
   SignatureCutQ* negativeLeptonChargeCut = new SignatureCutQ("tightMuons",-99,-0.1);
-  negativeLeptonChargeCut->addProductName("tightElectrons");
+  negativeLeptonChargeCut->addProduct("tightElectrons");
   SignatureCutQ* positiveLeptonChargeCut = new SignatureCutQ("tightMuons",0.1,99);
-  positiveLeptonChargeCut->addProductName("tightElectrons");
+  positiveLeptonChargeCut->addProduct("tightElectrons");
   SignatureCutCombined* sameSignLeptonChargeCut = new SignatureCutCombined(negativeLeptonChargeCut,positiveLeptonChargeCut,false,"same_sign_lep");
   
   //-------------------------------------------

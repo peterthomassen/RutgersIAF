@@ -1567,11 +1567,11 @@ void addRPVSignatures(SignatureHandler* handler)
   SignatureCutNDYPairs* dy0cut = new SignatureCutNDYPairs(0,0,false);
 
   SignatureCutQ* zeroLeptonChargeCut = new SignatureCutQ("goodMuons",-0.1,0.1);
-  zeroLeptonChargeCut->addProductName("goodElectrons");
+  zeroLeptonChargeCut->addProduct("goodElectrons");
   SignatureCutQ* negativeLeptonChargeCut = new SignatureCutQ("goodMuons",-99,-0.1);
-  negativeLeptonChargeCut->addProductName("goodElectrons");
+  negativeLeptonChargeCut->addProduct("goodElectrons");
   SignatureCutQ* positiveLeptonChargeCut = new SignatureCutQ("goodMuons",0.1,99);
-  positiveLeptonChargeCut->addProductName("goodElectrons");
+  positiveLeptonChargeCut->addProduct("goodElectrons");
    
   SignatureCutAllLeptonMass* allLeptonZCut = new SignatureCutAllLeptonMass(75,105);
 
@@ -1919,11 +1919,11 @@ void addTTWSignatures(SignatureHandler* handler)
   SignatureCutNDYPairs* dy0cut = new SignatureCutNDYPairs(0,0,false);
 
   SignatureCutQ* zeroLeptonChargeCut = new SignatureCutQ("goodMuons",-0.1,0.1);
-  zeroLeptonChargeCut->addProductName("goodElectrons");
+  zeroLeptonChargeCut->addProduct("goodElectrons");
   SignatureCutQ* negativeLeptonChargeCut = new SignatureCutQ("goodMuons",-99,-0.1);
-  negativeLeptonChargeCut->addProductName("goodElectrons");
+  negativeLeptonChargeCut->addProduct("goodElectrons");
   SignatureCutQ* positiveLeptonChargeCut = new SignatureCutQ("goodMuons",0.1,99);
-  positiveLeptonChargeCut->addProductName("goodElectrons");
+  positiveLeptonChargeCut->addProduct("goodElectrons");
    
   SignatureCutAllLeptonMass* allLeptonZCut = new SignatureCutAllLeptonMass(75,105);
 
@@ -2289,11 +2289,11 @@ void addTTbarSignatures(SignatureHandler* handler)
   SignatureCutNDYPairs* dy0cut = new SignatureCutNDYPairs(0,0,false);
 
   SignatureCutQ* zeroLeptonChargeCut = new SignatureCutQ("goodMuons",-0.1,0.1);
-  zeroLeptonChargeCut->addProductName("goodElectrons");
+  zeroLeptonChargeCut->addProduct("goodElectrons");
   SignatureCutQ* negativeLeptonChargeCut = new SignatureCutQ("goodMuons",-99,-0.1);
-  negativeLeptonChargeCut->addProductName("goodElectrons");
+  negativeLeptonChargeCut->addProduct("goodElectrons");
   SignatureCutQ* positiveLeptonChargeCut = new SignatureCutQ("goodMuons",0.1,99);
-  positiveLeptonChargeCut->addProductName("goodElectrons");
+  positiveLeptonChargeCut->addProduct("goodElectrons");
    
   SignatureCutAllLeptonMass* allLeptonZCut = new SignatureCutAllLeptonMass(75,105);
 
@@ -2361,13 +2361,13 @@ void addMCsignatures(SignatureHandler* handler)
   SignatureCutN* fourLepMC = new SignatureCutN("leptonsFromW",4,-1);
 
   SignatureCutQ* sameSignNeg = new SignatureCutQ("leptonsFromW",-999,-0.1);
-  //sameSignNeg->addProductName("electronsFromW");
+  //sameSignNeg->addProduct("electronsFromW");
 
   SignatureCutQ* sameSignPos = new SignatureCutQ("leptonsFromW",0.1,999);
-  //sameSignPos->addProductName("electronsFromW");
+  //sameSignPos->addProduct("electronsFromW");
 
   SignatureCutQ* zeroChargeCut = new SignatureCutQ("leptonsFromW",-0.1,0.1);
-  //zeroChargeCut->addProductName("electronsFromW");
+  //zeroChargeCut->addProduct("electronsFromW");
 
   SignatureCutCombined* sameSignCut = new SignatureCutCombined(sameSignPos,sameSignNeg,false);
 
