@@ -141,6 +141,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	}
 	nMuCuts.insert(std::make_pair(4, nMuCuts4));
 	
+	// Taus
 	std::vector<SignatureCutN*> nTauCuts(nTauMax + 1);
 	for(uint i = 0; i < nTauCuts.size(); ++i) {
 		int nMin = i;
@@ -148,6 +149,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 		nTauCuts[i] = new SignatureCutNTau(nMin, nMax);
 	}
 	
+	// B-tags
 	std::vector<SignatureCutN*> nBjetCuts(nBjetMax + 1);
 	for(uint i = 0; i < nBjetCuts.size(); ++i) {
 		int nMin = i;
@@ -155,6 +157,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 		nBjetCuts[i] = new SignatureCutN("bJetsCSVM", nMin, nMax);
 	}
 	
+	// MET
 	std::vector<SignatureCutMET*> metCuts;
 	for(uint i = 0; i < metEdges.size(); ++i) {
 		int edgeLow = metEdges[i];
@@ -165,6 +168,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 		metCuts.push_back(new SignatureCutMET(edgeLow, edgeHigh, name.Data()));
 	}
 	
+	// HT
 	std::vector<SignatureCutHT*> htCuts;
 	for(uint i = 0; i < htEdges.size(); ++i) {
 		int edgeLow = htEdges[i];
@@ -212,6 +216,10 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	SignatureCutMass* trileptonMassOffZcut = new SignatureCutMass("goodElectrons");
 	trileptonMassOffZcut->addProduct("goodMuons");
 	
+	SignatureCutQ* cutQ3L = new SignatureCutQ("goodElectrons", -2 - 0.1, +2 + 0.1);
+	cutQ3L->addProduct("goodMuons");
+	cutQ3L->addProduct("goodTaus");
+	
 	// Signal regions
 	uint i = 1;
 	// Either 3 or 4+ leptons
@@ -252,6 +260,9 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 												TString name = TString::Format("El%sMu%sTau%dDY%sB%dMET%sHT%s", nameEl.Data(), nameMu.Data(), iTau, nameDY.Data(), iBjet, nameMET.Data(), nameHT.Data());
 												std::cout << i++ << " Setting up signature " << name << std::endl;
 												Signature* dummy = new Signature(name.Data(), "");
+												if(iLeptons == 3 && iEl != 3 && iMu != 3) {
+													dummy->addCut(cutQ3L);
+												}
 												if(iLeptons == 3 && iTau == 1 && (nameEl == "2m2" || nameEl == "2p2" || (nameEl == nameMu && (nameEl == "1m1" || nameEl == "1p1")))) {
 													dummy->addCut(nElSSCuts[iLeptons][iEl][jEl]);
 												} else {
