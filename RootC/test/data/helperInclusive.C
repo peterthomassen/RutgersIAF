@@ -150,11 +150,11 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	}
 	
 	// B-tags
-	std::vector<SignatureCutN*> nBjetCuts(nBjetMax + 1);
-	for(uint i = 0; i < nBjetCuts.size(); ++i) {
+	std::vector< std::pair<int, int> > nBtagCutParameters(nBjetMax + 1);
+	for(uint i = 0; i < nBtagCutParameters.size(); ++i) {
 		int nMin = i;
-		int nMax = (i < nBjetCuts.size() - 1) ? i : -1;
-		nBjetCuts[i] = new SignatureCutN("bJetsCSVM", nMin, nMax);
+		int nMax = (i < nBtagCutParameters.size() - 1) ? i : -1;
+		nBtagCutParameters[i] = std::make_pair(nMin, nMax);
 	}
 	
 	// MET
@@ -239,7 +239,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 								// Various variants of the OSSF cuts (Z window)
 								for(uint jNDY = 0; jNDY < NDYcuts[iLeptons][iNDY].size(); ++jNDY) {
 									// Various number of b-tags
-									for(uint iBjet = 0; iBjet < nBjetCuts.size(); ++iBjet) {
+									for(uint iBtag = 0; iBtag < nBtagCutParameters.size(); ++iBtag) {
 										// Various MET bins
 										for(uint iMET = 0; iMET < metCuts.size(); ++iMET) {
 											// Various HT bins
@@ -257,7 +257,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 												TString nameDY = NDYcuts[iLeptons][iNDY][jNDY]->getName();
 												TString nameMET = metCuts[iMET]->getName();
 												TString nameHT = htCuts[iHT]->getName();
-												TString name = TString::Format("El%sMu%sTau%dDY%sB%dMET%sHT%s", nameEl.Data(), nameMu.Data(), iTau, nameDY.Data(), iBjet, nameMET.Data(), nameHT.Data());
+												TString name = TString::Format("El%sMu%sTau%dDY%sB%dMET%sHT%s", nameEl.Data(), nameMu.Data(), iTau, nameDY.Data(), iBtag, nameMET.Data(), nameHT.Data());
 												std::cout << i++ << " Setting up signature " << name << std::endl;
 												Signature* dummy = new Signature(name.Data(), "");
 												if(iLeptons == 3 && iEl != 3 && iMu != 3) {
@@ -275,14 +275,13 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 													dummy->addCut(nTauCuts[iTau]);
 												}
 												dummy->addCut(NDYcuts[iLeptons][iNDY][jNDY]);
-												dummy->addCut(nBjetCuts[iBjet]);
 												dummy->addCut(metCuts[iMET]);
 												dummy->addCut(htCuts[iHT]);
 												// Veto trileptons from asymmetric internal photon conversions
 												if(iLeptons == 3 && iTau == 0 && iMET == 0 && iHT == 0 && (iNDY == 1 && (jNDY == 0 || jNDY == 1))) {
 													dummy->addCut(trileptonMassOffZcut);
 												}
-												handler->addSignature(dummy);
+												handler->addBjetSignature(dummy, nBtagCutParameters[iBtag].first, nBtagCutParameters[iBtag].second);
 											}
 										}
 									}
