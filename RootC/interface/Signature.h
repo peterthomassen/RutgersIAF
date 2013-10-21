@@ -29,7 +29,7 @@ class Signature : public TObject {
  public:
 
   //functions
-  Signature(const char*,const char*); //constructor
+  Signature(const char* name = "sig",const char* options = ""); //constructor
   Signature(const Signature&);//copy constructor
   virtual ~Signature(); //destructor
   TString getName() const {return m_name; }

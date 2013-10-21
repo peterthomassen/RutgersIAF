@@ -13,7 +13,7 @@ using namespace std;
 
 ClassImp(Signature)
 
-Signature::Signature(const char* name="sig",const char* options="")
+Signature::Signature(const char* name,const char* options)
 {
   m_name = name;
   m_options = options;
