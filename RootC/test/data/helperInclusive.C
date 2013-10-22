@@ -21,12 +21,12 @@ void setupHandlerCuts(SignatureHandler* handler) {
 	handler->addHandlerCut(new SignatureCutReversed(dyBelow12, "notDYbelow12cut"));
 }
 
-std::vector< std::map<int, SignatureCut*> > constructLeptonCuts(const char* productName, int nProduct, bool chargeBreakdown) {
+std::vector< std::map<int, SignatureCut*> > constructLeptonCuts(const char* productName, int nProduct, bool chargeBreakdown, bool collectTail = false) {
 	std::vector< std::map<int, SignatureCut*> > nCuts(nProduct + 1);
 	if(chargeBreakdown) {
 		for(uint i = 0; i < nCuts.size(); ++i) {
 			int nMin = i;
-			int nMax = (i < nCuts.size() - 1) ? i : -1;
+			int nMax = (i == nCuts.size() - 1 && collectTail) ? -1 : nMin;
 			for(int charge = nMin; charge >= -nMin; charge -= 2) {
 				TString name = TString("");
 				name += nMin;
@@ -38,12 +38,12 @@ std::vector< std::map<int, SignatureCut*> > constructLeptonCuts(const char* prod
 					name += "q";
 				}
 				name += abs(charge);
-				int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
-				int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
+				int chargeMin = (nMax < 0 && charge == -nMin) ? -1E6 : charge;
+				int chargeMax = (nMax < 0 && charge == +nMin) ? +1E6 : charge;
 				SignatureCutN* cut1 = new SignatureCutN(productName, nMin, nMax);
 				SignatureCutQ* cut2 = new SignatureCutQ(productName, chargeMin - 0.1, chargeMax + 0.1);
 				SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-				nCuts[nMin].insert(make_pair(charge, cut));
+				nCuts[nMin].insert(std::make_pair(charge, cut));
 			}
 		}
 	} else {
@@ -53,7 +53,7 @@ std::vector< std::map<int, SignatureCut*> > constructLeptonCuts(const char* prod
 			TString name = TString("");
 			name += nMin;
 			SignatureCutN* cut = new SignatureCutN(productName, nMin, nMax, name.Data());
-			nCuts[nMin].insert(make_pair(0, cut));
+			nCuts[nMin].insert(std::make_pair(0, cut));
 		}
 	}
 	return nCuts;
@@ -83,7 +83,7 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	// Electrons
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nElCuts;
 	nElCuts.insert(std::make_pair(3, constructLeptonCuts("goodElectrons", 3, true)));
-	nElCuts.insert(std::make_pair(4, constructLeptonCuts("goodElectrons", nLeptonMax, false)));
+	nElCuts.insert(std::make_pair(4, constructLeptonCuts("goodElectrons", nLeptonMax, false, true)));
 	
 	// Electrons for 3L SS (these have the charge consistency cut applied)
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nElSSCuts;
@@ -93,7 +93,7 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	// Muons
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nMuCuts;
 	nMuCuts.insert(std::make_pair(3, constructLeptonCuts("goodMuons", 3, true)));
-	nMuCuts.insert(std::make_pair(4, constructLeptonCuts("goodMuons", nLeptonMax, false)));
+	nMuCuts.insert(std::make_pair(4, constructLeptonCuts("goodMuons", nLeptonMax, false, true)));
 	
 	// Taus
 	std::vector<SignatureCutN*> nTauCuts(nTauMax + 1);
@@ -315,8 +315,8 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 															// Other cuts
 															
 															// Veto trileptons from asymmetric internal photon conversions
-															// TODO Check if we really should require nSidebandTau == 0 && nTrack == 0 or rather include those objects in the cut
-															if(nLeptons == 3 && nTau == 0 && nSidebandTau == 0 && nTrack == 0 && iMET == 0 && iHT == 0 && (nDY == 1 && (iDY == 0 || iDY == 1))) {
+															// TODO Check if we really should require (nSidebandTau + nTrack == 0) or rather include those objects in the cut
+															if(nLeptons == 3 && nTau == 0 && (nSidebandTau + nTrack == 0) && iMET == 0 && iHT == 0 && (nDY == 1 && (iDY == 0 || iDY == 1))) {
 																sig->addCut(trileptonMassOffZcut);
 															}
 															
