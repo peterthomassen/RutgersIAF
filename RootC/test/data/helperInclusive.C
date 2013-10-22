@@ -11,6 +11,7 @@
 #include "RutgersIAF2012/RootC/interface/SignatureCutQ.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutReversed.h"
 #include "RutgersIAF2012/RootC/interface/SignatureHandler.h"
+#include "RutgersIAF2012/RootC/interface/SignatureWithBjets.h"
 
 #include "RutgersIAF2012/RootC/interface/debug.h"
 
@@ -20,11 +21,13 @@ void setupHandlerCuts(SignatureHandler* handler) {
 	handler->addHandlerCut(new SignatureCutReversed(dyBelow12, "notDYbelow12cut"));
 }
 
-void setupInclusiveSignatures(SignatureHandler* handler) {
+void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	// Number of leptons / taus / bjets above which to aggregate
 	uint nLeptonMax = 4;
 	uint nTauMax = 1;
 	uint nBjetMax = 1;
+	uint nSidebandTauMax = doSeeds ? 1 : 0;
+	uint nTrackMax = doSeeds ? 1 : 0;
 	
 	// Define MET and HT bins
 	std::vector<int> metEdges;
@@ -40,13 +43,12 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	// Cuts for signal region definitions
 	
 	// Electrons
-	std::map<int, std::vector< std::vector<SignatureCut*> > > nElCuts;
-	std::vector< std::vector<SignatureCut*> > nElCuts3(4);
-	for(uint i = 0; i <= 3; ++i) {
+	std::map<int, std::vector< std::map<int, SignatureCut*> > > nElCuts;
+	std::vector< std::map<int, SignatureCut*> > nElCuts3(3 + 1);
+	for(uint i = 0; i < nElCuts3.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nElCuts3.size() - 1) ? i : -1;
-		for(int j = 0; j <= nMin; ++j) {
-			int charge = nMin - 2 * j;
+		for(int charge = nMin; charge >= -nMin; charge -= 2) {
 			TString name = TString("");
 			name += nMin;
 			if(charge > 0) {
@@ -57,33 +59,35 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 				name += "q";
 			}
 			name += abs(charge);
+			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
+			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
 			SignatureCutN* cut1 = new SignatureCutN("goodElectrons", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodElectrons", charge - 0.1, charge + 0.1);
+			SignatureCutQ* cut2 = new SignatureCutQ("goodElectrons", chargeMin - 0.1, chargeMax + 0.1);
 			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nElCuts3[nMin].push_back(cut);
+			nElCuts3[nMin].insert(make_pair(charge, cut));
 		}
 	}
 	nElCuts.insert(std::make_pair(3, nElCuts3));
 	
-	std::vector< std::vector<SignatureCut*> > nElCuts4(nLeptonMax + 1);
+	std::vector< std::map<int, SignatureCut*> > nElCuts4(nLeptonMax + 1);
 	for(uint i = 0; i < nElCuts4.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nElCuts4.size() - 1) ? i : -1;
 		TString name = TString("");
 		name += nMin;
-		nElCuts4[nMin].push_back(new SignatureCutN("goodElectrons", nMin, nMax, name.Data()));
+		SignatureCutN* cut = new SignatureCutN("goodElectrons", nMin, nMax, name.Data());
+		nElCuts4[nMin].insert(make_pair(0, cut));
 	}
 	nElCuts.insert(std::make_pair(4, nElCuts4));
 	
 	
 	// Electrons for 3L SS (these have the charge consistency cut applied)
-	std::map<int, std::vector< std::vector<SignatureCut*> > > nElSSCuts;
-	std::vector< std::vector<SignatureCut*> > nElSSCuts3(4);
-	for(uint i = 0; i <= 3; ++i) {
+	std::map<int, std::vector< std::map<int, SignatureCut*> > > nElSSCuts;
+	std::vector< std::map<int, SignatureCut*> > nElSSCuts3(3 + 1);
+	for(uint i = 0; i < nElSSCuts3.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nElSSCuts3.size() - 1) ? i : -1;
-		for(int j = 0; j <= nMin; ++j) {
-			int charge = nMin - 2 * j;
+		for(int charge = nMin; charge >= -nMin; charge -= 2) {
 			TString name = TString("");
 			name += nMin;
 			if(charge > 0) {
@@ -94,23 +98,24 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 				name += "q";
 			}
 			name += abs(charge);
+			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
+			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
 			SignatureCutN* cut1 = new SignatureCutN("goodSSElectrons", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodSSElectrons", charge - 0.1, charge + 0.1);
+			SignatureCutQ* cut2 = new SignatureCutQ("goodSSElectrons", chargeMin - 0.1, chargeMax + 0.1);
 			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nElSSCuts3[nMin].push_back(cut);
+			nElSSCuts3[nMin].insert(make_pair(charge, cut));
 		}
 	}
 	nElSSCuts.insert(std::make_pair(3, nElSSCuts3));
 	
 	
 	// Muons
-	std::map<int, std::vector< std::vector<SignatureCut*> > > nMuCuts;
-	std::vector< std::vector<SignatureCut*> > nMuCuts3(4);
-	for(uint i = 0; i <= 3; ++i) {
+	std::map<int, std::vector< std::map<int, SignatureCut*> > > nMuCuts;
+	std::vector< std::map<int, SignatureCut*> > nMuCuts3(3 + 1);
+	for(uint i = 0; i < nMuCuts3.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nMuCuts3.size() - 1) ? i : -1;
-		for(int j = 0; j <= nMin; ++j) {
-			int charge = nMin - 2 * j;
+		for(int charge = nMin; charge >= -nMin; charge -= 2) {
 			TString name = TString("");
 			name += nMin;
 			if(charge > 0) {
@@ -121,22 +126,25 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 				name += "q";
 			}
 			name += abs(charge);
+			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
+			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
 			SignatureCutN* cut1 = new SignatureCutN("goodMuons", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodMuons", charge - 0.1, charge + 0.1);
+			SignatureCutQ* cut2 = new SignatureCutQ("goodMuons", chargeMin - 0.1, chargeMax + 0.1);
 			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nMuCuts3[nMin].push_back(cut);
+			nMuCuts3[nMin].insert(make_pair(charge, cut));
 			std::cout << name.Data() << std::endl;
 		}
 	}
 	nMuCuts.insert(std::make_pair(3, nMuCuts3));
 	
-	std::vector< std::vector<SignatureCut*> > nMuCuts4(nLeptonMax + 1);
+	std::vector< std::map<int, SignatureCut*> > nMuCuts4(nLeptonMax + 1);
 	for(uint i = 0; i < nMuCuts4.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nMuCuts4.size() - 1) ? i : -1;
 		TString name = TString("");
 		name += nMin;
-		nMuCuts4[nMin].push_back(new SignatureCutN("goodMuons", nMin, nMax, name.Data()));
+		SignatureCutN* cut = new SignatureCutN("goodMuons", nMin, nMax, name.Data());
+		nMuCuts4[nMin].insert(make_pair(0, cut));
 	}
 	nMuCuts.insert(std::make_pair(4, nMuCuts4));
 	
@@ -186,8 +194,6 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	dy1onZcut->setName("z1");
 	SignatureCutNDYPairs* dy1offZcut = new SignatureCutNDYPairs(1,1,false);
 	dy1offZcut->setName("v1");
-	//SignatureCutCombined* dy1belowZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutNDYPairs(1,1,true,0,75), true, "l1");
-	//SignatureCutCombined* dy1aboveZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutNDYPairs(1,1,false,0,105), true, "h1");
 	SignatureCutCombined* dy1belowZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutMll(0,75), true, "l1");
 	SignatureCutCombined* dy1aboveZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutMll(105,-1), true, "h1");
 	SignatureCutNDYPairs* dy2onZcut = new SignatureCutNDYPairs(2,2,true);
@@ -227,7 +233,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	// SEED CUTS
 	
 	// Sideband taus
-	std::vector<SignatureCutN*> nSidebandTauCuts(1 + 1);
+	std::vector<SignatureCutN*> nSidebandTauCuts(nSidebandTauMax + 1);
 	for(uint i = 0; i < nSidebandTauCuts.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nSidebandTauCuts.size() - 1) ? i : -1;
@@ -235,13 +241,12 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 	}
 	
 	// Prompt isolated tracks
-	std::map<int, std::vector< std::vector<SignatureCut*> > > nTrackCuts;
-	std::vector< std::vector<SignatureCut*> > nTrackCuts3(2);
-	for(uint i = 0; i <= 1; ++i) {
+	std::map<int, std::vector< std::map<int, SignatureCut*> > > nTrackCuts;
+	std::vector< std::map<int, SignatureCut*> > nTrackCuts3(nTrackMax + 1);
+	for(uint i = 0; i < nTrackCuts3.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nTrackCuts3.size() - 1) ? i : -1;
-		for(int j = 0; j <= nMin; ++j) {
-			int charge = nMin - 2 * j;
+		for(int charge = nMin; charge >= -nMin; charge -= 2) {
 			TString name = TString("");
 			name += nMin;
 			if(charge > 0) {
@@ -252,21 +257,24 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 				name += "q";
 			}
 			name += abs(charge);
+			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
+			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
 			SignatureCutN* cut1 = new SignatureCutN("goodIsoTracks", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodIsoTracks", charge - 0.1, charge + 0.1);
+			SignatureCutQ* cut2 = new SignatureCutQ("goodIsoTracks", chargeMin - 0.1, chargeMax + 0.1);
 			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nTrackCuts3[nMin].push_back(cut);
+			nTrackCuts3[nMin].insert(make_pair(charge, cut));
 		}
 	}
 	nTrackCuts.insert(std::make_pair(3, nTrackCuts3));
 	
-	std::vector< std::vector<SignatureCut*> > nTrackCuts4(1 + 1);
+	std::vector< std::map<int, SignatureCut*> > nTrackCuts4(nTrackMax + 1);
 	for(uint i = 0; i < nTrackCuts4.size(); ++i) {
 		int nMin = i;
 		int nMax = (i < nTrackCuts4.size() - 1) ? i : -1;
 		TString name = TString("");
 		name += nMin;
-		nTrackCuts4[nMin].push_back(new SignatureCutN("goodIsoTracks", nMin, nMax, name.Data()));
+		SignatureCutN* cut = new SignatureCutN("goodIsoTracks", nMin, nMax, name.Data());
+		nTrackCuts4[nMin].insert(make_pair(0, cut));
 	}
 	nTrackCuts.insert(std::make_pair(4, nTrackCuts4));
 	
@@ -278,11 +286,13 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 		// Various numbers of electrons
 		for(uint nEl = 0; nEl < nElCuts[nLeptons].size(); ++nEl) {
 			// Various electron charge combinations
-			for(uint iEl = 0; iEl < nElCuts[nLeptons][nEl].size(); ++iEl) {
+			//for(uint iEl = 0; iEl < nElCuts[nLeptons][nEl].size(); ++iEl) {
+			for(std::map<int, SignatureCut*>::iterator iterEl = nElCuts[nLeptons][nEl].begin(); iterEl != nElCuts[nLeptons][nEl].end(); ++iterEl) {
 				// Various numbers of muons
 				for(uint nMu = 0; nMu < nMuCuts[nLeptons].size(); ++nMu) {
 					// Various muon charge combinations
-					for(uint iMu = 0; iMu < nMuCuts[nLeptons][nMu].size(); ++iMu) {
+					//for(uint iMu = 0; iMu < nMuCuts[nLeptons][nMu].size(); ++iMu) {
+					for(std::map<int, SignatureCut*>::iterator iterMu = nMuCuts[nLeptons][nMu].begin(); iterMu != nMuCuts[nLeptons][nMu].end(); ++iterMu) {
 						// Various numbers of taus
 						for(uint nTau = 0; nTau < nTauCuts.size(); ++nTau) {
 							// Various cuts on the number OSSF pairs, depending on number of electrons and muons
@@ -300,13 +310,23 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 													// Various numbers of tracks
 													for(uint nTrack = 0; nTrack < nTrackCuts[nLeptons].size(); ++nTrack) {
 														// Various track charge combinations
-														for(uint iTrack = 0; iTrack < nTrackCuts[nLeptons][nTrack].size(); ++iTrack) {
+														//for(uint iTrack = 0; iTrack < nTrackCuts[nLeptons][nTrack].size(); ++iTrack) {
+														for(std::map<int, SignatureCut*>::iterator iterTrack = nTrackCuts[nLeptons][nTrack].begin(); iterTrack != nTrackCuts[nLeptons][nTrack].end(); ++iterTrack) {
+															// ATTENTION:
+															//   * The following variables act as a map index in the first place.
+															//   * Besides, for 3L channels, the variables are the charge sum of electrons/muons/tracks.
+															//   * However, for 4L channels, the charge variables are always zero because we do not bin in charge!
+															int qEl = iterEl->first;
+															int qMu = iterMu->first;
+															int qTrack = iterTrack->first;
+															
 															// Impose lepton cuts such that total lepton number is right
 															if(nEl + nMu + nTau + nSidebandTau + nTrack != nLeptons) {
 																continue;
 															}
 															// Impose sensible OSSF cuts only (don't impose cuts that can't be passed)
-															if(nDY > (nEl/2 + nMu/2)) {
+															// ATTENTION: See note at qEl/qMu declaration. For L4, the charge sum variables are always 0. This doesn't hurt here.
+															if(nDY > ((nEl - abs(qEl))/2 + (nMu - abs(qMu))/2)) {
 																continue;
 															}
 															
@@ -315,12 +335,12 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 																continue;
 															}
 															
-															Signature* sig = new Signature;
+															SignatureWithBjets* sig = new SignatureWithBjets("", "", nBtagCutParameters[nBtag].first, nBtagCutParameters[nBtag].second);
 															
 															TString name = "";
-															TString nameEl = nElCuts[nLeptons][nEl][iEl]->getName();
-															TString nameMu = nMuCuts[nLeptons][nMu][iMu]->getName();
-															TString nameTrack = nTrackCuts[nLeptons][nTrack][iTrack]->getName();
+															TString nameEl = nElCuts[nLeptons][nEl][qEl]->getName();
+															TString nameMu = nMuCuts[nLeptons][nMu][qMu]->getName();
+															TString nameTrack = nTrackCuts[nLeptons][nTrack][qTrack]->getName();
 															TString nameDY = nDYcuts[nLeptons][nDY][iDY]->getName();
 															TString nameMET = metCuts[iMET]->getName();
 															TString nameHT = htCuts[iHT]->getName();
@@ -332,15 +352,15 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 															
 															// Electrons
 															name += TString::Format("El%s", nameEl.Data());
-															if(nLeptons == 3 && nTau == 1 && (nameEl == "2m2" || nameEl == "2p2" || ((nameEl == nameMu || nameEl == nameTrack) && (nameEl == "1m1" || nameEl == "1p1")))) {
-																sig->addCut(nElSSCuts[nLeptons][nEl][iEl]);
+															if(nLeptons == 3 && nTau == 1 && (abs(qEl + qMu) == 2 || abs(qEl + qTrack) == 2)) {
+																sig->addCut(nElSSCuts[nLeptons][nEl][qEl]);
 															} else {
-																sig->addCut(nElCuts[nLeptons][nEl][iEl]);
+																sig->addCut(nElCuts[nLeptons][nEl][qEl]);
 															}
 															
 															// Muons
 															name += TString::Format("Mu%s", nameMu.Data());
-															sig->addCut(nMuCuts[nLeptons][nMu][iMu]);
+															sig->addCut(nMuCuts[nLeptons][nMu][qMu]);
 															
 															// Taus
 															if(nSidebandTau == 0) {
@@ -359,7 +379,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 															// Tracks
 															if(nTrack > 0) {
 																name += TString::Format("T%s", nameTrack.Data());
-																sig->addCut(nTrackCuts[nLeptons][nTrack][iTrack]);
+																sig->addCut(nTrackCuts[nLeptons][nTrack][qTrack]);
 															}
 															
 															// DY
@@ -368,7 +388,7 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 															
 															// B-tag
 															name += TString::Format("B%d", nBtag);
-															// The b-tag cut is added when the signature is added to the handler
+															// The b-tag cut itself has already been taken care of by the signature constructor
 															
 															// MET
 															name += TString::Format("MET%s", nameMET.Data());
@@ -401,9 +421,9 @@ void setupInclusiveSignatures(SignatureHandler* handler) {
 																assert(sigList[iSig]->getName() != name);
 															}
 															
-															// Finish signature definition and take care of the b-tag cut
+															// Finish signature definition
 															sig->setName(name);
-															handler->addBjetSignature(sig, nBtagCutParameters[nBtag].first, nBtagCutParameters[nBtag].second);
+															handler->addBjetSignature(sig);
 															std::cout << i++ << " Done setting up signature " << name << std::endl;
 														}
 													}

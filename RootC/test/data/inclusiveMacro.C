@@ -32,8 +32,12 @@ void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/"
 	//addMCsignatures(handler);
 	
 	setupHandlerCuts(handler);
-	setupInclusiveSignatures(handler);
-	setupFakeRateSignatures(handler);
+	
+	bool fakes = false;
+	setupInclusiveSignatures(handler, fakes);
+	if(fakes) {
+		setupFakeRateSignatures(handler);
+	}
 	
 	handler->addBasicHistograms();
 	
