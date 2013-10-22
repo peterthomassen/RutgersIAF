@@ -21,6 +21,44 @@ void setupHandlerCuts(SignatureHandler* handler) {
 	handler->addHandlerCut(new SignatureCutReversed(dyBelow12, "notDYbelow12cut"));
 }
 
+std::vector< std::map<int, SignatureCut*> > constructLeptonCuts(const char* productName, int nProduct, bool chargeBreakdown) {
+	std::vector< std::map<int, SignatureCut*> > nCuts(nProduct + 1);
+	if(chargeBreakdown) {
+		for(uint i = 0; i < nCuts.size(); ++i) {
+			int nMin = i;
+			int nMax = (i < nCuts.size() - 1) ? i : -1;
+			for(int charge = nMin; charge >= -nMin; charge -= 2) {
+				TString name = TString("");
+				name += nMin;
+				if(charge > 0) {
+					name += "p";
+				} else if(charge < 0) {
+					name += "m";
+				} else {
+					name += "q";
+				}
+				name += abs(charge);
+				int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
+				int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
+				SignatureCutN* cut1 = new SignatureCutN(productName, nMin, nMax);
+				SignatureCutQ* cut2 = new SignatureCutQ(productName, chargeMin - 0.1, chargeMax + 0.1);
+				SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
+				nCuts[nMin].insert(make_pair(charge, cut));
+			}
+		}
+	} else {
+		for(uint i = 0; i < nCuts.size(); ++i) {
+			int nMin = i;
+			int nMax = (i < nCuts.size() - 1) ? i : -1;
+			TString name = TString("");
+			name += nMin;
+			SignatureCutN* cut = new SignatureCutN(productName, nMin, nMax, name.Data());
+			nCuts[nMin].insert(make_pair(0, cut));
+		}
+	}
+	return nCuts;
+}
+
 void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	// Number of leptons / taus / bjets above which to aggregate
 	uint nLeptonMax = 4;
@@ -44,109 +82,18 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	
 	// Electrons
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nElCuts;
-	std::vector< std::map<int, SignatureCut*> > nElCuts3(3 + 1);
-	for(uint i = 0; i < nElCuts3.size(); ++i) {
-		int nMin = i;
-		int nMax = (i < nElCuts3.size() - 1) ? i : -1;
-		for(int charge = nMin; charge >= -nMin; charge -= 2) {
-			TString name = TString("");
-			name += nMin;
-			if(charge > 0) {
-				name += "p";
-			} else if(charge < 0) {
-				name += "m";
-			} else {
-				name += "q";
-			}
-			name += abs(charge);
-			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
-			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
-			SignatureCutN* cut1 = new SignatureCutN("goodElectrons", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodElectrons", chargeMin - 0.1, chargeMax + 0.1);
-			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nElCuts3[nMin].insert(make_pair(charge, cut));
-		}
-	}
-	nElCuts.insert(std::make_pair(3, nElCuts3));
-	
-	std::vector< std::map<int, SignatureCut*> > nElCuts4(nLeptonMax + 1);
-	for(uint i = 0; i < nElCuts4.size(); ++i) {
-		int nMin = i;
-		int nMax = (i < nElCuts4.size() - 1) ? i : -1;
-		TString name = TString("");
-		name += nMin;
-		SignatureCutN* cut = new SignatureCutN("goodElectrons", nMin, nMax, name.Data());
-		nElCuts4[nMin].insert(make_pair(0, cut));
-	}
-	nElCuts.insert(std::make_pair(4, nElCuts4));
-	
+	nElCuts.insert(std::make_pair(3, constructLeptonCuts("goodElectrons", 3, true)));
+	nElCuts.insert(std::make_pair(4, constructLeptonCuts("goodElectrons", nLeptonMax, false)));
 	
 	// Electrons for 3L SS (these have the charge consistency cut applied)
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nElSSCuts;
-	std::vector< std::map<int, SignatureCut*> > nElSSCuts3(3 + 1);
-	for(uint i = 0; i < nElSSCuts3.size(); ++i) {
-		int nMin = i;
-		int nMax = (i < nElSSCuts3.size() - 1) ? i : -1;
-		for(int charge = nMin; charge >= -nMin; charge -= 2) {
-			TString name = TString("");
-			name += nMin;
-			if(charge > 0) {
-				name += "p";
-			} else if(charge < 0) {
-				name += "m";
-			} else {
-				name += "q";
-			}
-			name += abs(charge);
-			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
-			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
-			SignatureCutN* cut1 = new SignatureCutN("goodSSElectrons", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodSSElectrons", chargeMin - 0.1, chargeMax + 0.1);
-			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nElSSCuts3[nMin].insert(make_pair(charge, cut));
-		}
-	}
-	nElSSCuts.insert(std::make_pair(3, nElSSCuts3));
-	
+	nElSSCuts.insert(std::make_pair(3, constructLeptonCuts("goodSSElectrons", 3, true)));
+	// no 4L here
 	
 	// Muons
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nMuCuts;
-	std::vector< std::map<int, SignatureCut*> > nMuCuts3(3 + 1);
-	for(uint i = 0; i < nMuCuts3.size(); ++i) {
-		int nMin = i;
-		int nMax = (i < nMuCuts3.size() - 1) ? i : -1;
-		for(int charge = nMin; charge >= -nMin; charge -= 2) {
-			TString name = TString("");
-			name += nMin;
-			if(charge > 0) {
-				name += "p";
-			} else if(charge < 0) {
-				name += "m";
-			} else {
-				name += "q";
-			}
-			name += abs(charge);
-			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
-			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
-			SignatureCutN* cut1 = new SignatureCutN("goodMuons", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodMuons", chargeMin - 0.1, chargeMax + 0.1);
-			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nMuCuts3[nMin].insert(make_pair(charge, cut));
-			std::cout << name.Data() << std::endl;
-		}
-	}
-	nMuCuts.insert(std::make_pair(3, nMuCuts3));
-	
-	std::vector< std::map<int, SignatureCut*> > nMuCuts4(nLeptonMax + 1);
-	for(uint i = 0; i < nMuCuts4.size(); ++i) {
-		int nMin = i;
-		int nMax = (i < nMuCuts4.size() - 1) ? i : -1;
-		TString name = TString("");
-		name += nMin;
-		SignatureCutN* cut = new SignatureCutN("goodMuons", nMin, nMax, name.Data());
-		nMuCuts4[nMin].insert(make_pair(0, cut));
-	}
-	nMuCuts.insert(std::make_pair(4, nMuCuts4));
+	nMuCuts.insert(std::make_pair(3, constructLeptonCuts("goodMuons", 3, true)));
+	nMuCuts.insert(std::make_pair(4, constructLeptonCuts("goodMuons", nLeptonMax, false)));
 	
 	// Taus
 	std::vector<SignatureCutN*> nTauCuts(nTauMax + 1);
@@ -242,41 +189,8 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	
 	// Prompt isolated tracks
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nTrackCuts;
-	std::vector< std::map<int, SignatureCut*> > nTrackCuts3(nTrackMax + 1);
-	for(uint i = 0; i < nTrackCuts3.size(); ++i) {
-		int nMin = i;
-		int nMax = (i < nTrackCuts3.size() - 1) ? i : -1;
-		for(int charge = nMin; charge >= -nMin; charge -= 2) {
-			TString name = TString("");
-			name += nMin;
-			if(charge > 0) {
-				name += "p";
-			} else if(charge < 0) {
-				name += "m";
-			} else {
-				name += "q";
-			}
-			name += abs(charge);
-			int chargeMin = (nMax < 0) ? ((charge < 0) ? -999 : charge) : charge;
-			int chargeMax = (nMax < 0) ? ((charge > 0) ? +999 : charge) : charge;
-			SignatureCutN* cut1 = new SignatureCutN("goodIsoTracks", nMin, nMax);
-			SignatureCutQ* cut2 = new SignatureCutQ("goodIsoTracks", chargeMin - 0.1, chargeMax + 0.1);
-			SignatureCutCombined* cut = new SignatureCutCombined(cut1, cut2, true, name.Data());
-			nTrackCuts3[nMin].insert(make_pair(charge, cut));
-		}
-	}
-	nTrackCuts.insert(std::make_pair(3, nTrackCuts3));
-	
-	std::vector< std::map<int, SignatureCut*> > nTrackCuts4(nTrackMax + 1);
-	for(uint i = 0; i < nTrackCuts4.size(); ++i) {
-		int nMin = i;
-		int nMax = (i < nTrackCuts4.size() - 1) ? i : -1;
-		TString name = TString("");
-		name += nMin;
-		SignatureCutN* cut = new SignatureCutN("goodIsoTracks", nMin, nMax, name.Data());
-		nTrackCuts4[nMin].insert(make_pair(0, cut));
-	}
-	nTrackCuts.insert(std::make_pair(4, nTrackCuts4));
+	nTrackCuts.insert(std::make_pair(3, constructLeptonCuts("goodIsoTracks", nTrackMax, true)));
+	nTrackCuts.insert(std::make_pair(4, constructLeptonCuts("goodIsoTracks", nTrackMax, false)));
 	
 	
 	// Signal regions
