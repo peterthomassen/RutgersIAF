@@ -107,7 +107,7 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	std::vector< std::pair<int, int> > nBtagCutParameters(nBjetMax + 1);
 	for(uint i = 0; i < nBtagCutParameters.size(); ++i) {
 		int nMin = i;
-		int nMax = (i < nBtagCutParameters.size() - 1) ? i : -1;
+		int nMax = (i < nBtagCutParameters.size() - 1) ? i : 100;
 		nBtagCutParameters[i] = std::make_pair(nMin, nMax);
 	}
 	
