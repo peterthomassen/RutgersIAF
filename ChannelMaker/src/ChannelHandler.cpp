@@ -10,20 +10,6 @@ ChannelHandler::ChannelHandler(TString ofname)
 {
   m_luminosity = 0;
   m_luminosity_error = 0.044;
-  /*
-  m_trackToMuonFakeRate = 0.0;
-  m_trackToElectronFakeRate = 0.0;
-  m_electronChargeFlipRate = 0.0;
-  m_muonChargeFlipRate = 0.0;
-  m_trackToMuonFakeRateError = 0.0;
-  m_trackToElectronFakeRateError = 0.0;
-  m_electronChargeFlipRateError = 0.0;
-  m_muonChargeFlipRateError = 0.0;
-  m_photonToMuonFakeRate = 0.0;
-  m_photonToElectronFakeRate = 0.0;
-  m_photonToMuonFakeRateError = 0.0;
-  m_photonToElectronFakeRateError = 0.0;
-  */
   m_ofname = ofname;
 
 }
@@ -109,22 +95,6 @@ void ChannelHandler::addSumChannel(TString channelName)
 }
 //-------------------
 //-------------------
-/*
-ChannelHandler::addSumChannel(TString channelName, TString addName)
-{
-  addSumChannel(channelName);
-  m_addChannel_map[channelName].push_back(addName);
-}
-*/
-//-------------------
-//-------------------
- /*
-ChannelHandler::addSumChannel(TString channelName, vector<TString> addNames)
-{
-  addSumChannel(channelName);
-  m_addChannel_map[channelName].insert(m_addChannel_map[channelName].end(),addNames.begin(),addNames.end());
-}
- */
 //-------------------
 //-------------------
 //-------------------
@@ -152,7 +122,7 @@ void ChannelHandler::addInputChannel(TString channelName, Channel* channel)
 void ChannelHandler::addSumChannelAttribute(TString channelName, TString attributeName, double value)
 {
   addSumChannel(channelName);
-  if(m_addChannel_attributes_map[channelName].find(attributeName) != m_addChannel_attributes_map[channelName].end())cout<<"WARNING changing "<<attributeName<<" for sum channel: "<<channelName<<endl;
+  if(m_addChannel_attributes_map[channelName].find(attributeName) != m_addChannel_attributes_map[channelName].end() && m_addChannel_attributes_map[channelName][attributeName] != value)cout<<"WARNING changing "<<attributeName<<" for sum channel: "<<channelName<<endl;
   m_addChannel_attributes_map[channelName][attributeName] = value;
 }
 //-------------------
@@ -368,14 +338,17 @@ void ChannelHandler::processChannel(TString c)
       if(!fakeChannel->isBackgroundDone()){
 	cout<<"WARNING unfinished background used: "<<fakeChannel->getName()<<" during "<<channel->getName()<<endl;
       }
-      TH1F* fcHisto = (TH1F*)fakeChannel->getFakeHisto(fakeName)->Clone("fcHisto");
+      TH1F* fcHisto = (TH1F*)fakeChannel->getHistogram1d(fakeName,"Observed")->Clone("fcHisto");
       if(!fcHisto)continue;
       //TH1F* fcbgHisto = (TH1F*)fakeChannel->getFakeBGHisto(fakeName);
       //if(fcbgHisto)fcHisto->Add(fcbgHisto,-1);
-      map<TString,TH1F*> simuHistos = fakeChannel->getSimuFakeHistos(fakeName);
+      map<TString,TH1F*> simuHistos = fakeChannel->getHistograms1d(fakeName);
       map<TString,TH1F*>::const_iterator simHistIter;
       for(simHistIter = simuHistos.begin(); simHistIter != simuHistos.end(); simHistIter++){
-	fcHisto->Add((*simHistIter).second,-m_luminosity);
+	if((*simHistIter).first == "Observed")continue;
+	float aweight = -m_luminosity;
+	if((*simHistIter).first == fakeName)aweight = -1;
+	fcHisto->Add((*simHistIter).second,aweight);
       }
 
       TH1F* ddHisto = (TH1F*)fcHisto->Clone("ddfake");
@@ -397,9 +370,9 @@ void ChannelHandler::processChannel(TString c)
 	ddHisto->SetBinContent(i-1,binweight);
 	ddHisto->SetBinError(i-1,nbinerror);
       }
-      channel->addFakeBGHisto(fakeName,ddHisto);
+      channel->addHistogram(fakeName,fakeName,ddHisto);
     }//fakeChannel
-    TH1F* fakeBgHisto = channel->getFakeBGHisto(fakeName);
+    TH1F* fakeBgHisto = channel->getHistogram1d(fakeName,fakeName);
     if(!fakeBgHisto)continue;
     double bgtot = 0.0,bgerr = 0.0;
     bgtot = fakeBgHisto->IntegralAndError(1,fakeBgHisto->GetNbinsX(),bgerr);
@@ -533,16 +506,6 @@ void ChannelHandler::readSimulation()
       //cout<<channelName<<endl;
       Channel* channel = m_input_channels[channelName];
       TH1F* histo = (TH1F*)f.Get(channelName+"_ST");
-      map<TString,TString> fakeHistos = channel->getFakeObjectNames();
-      for(map<TString,TString>::const_iterator fakeHistoIter = fakeHistos.begin(); fakeHistoIter != fakeHistos.end(); fakeHistoIter++){
-	TString name = (*fakeHistoIter).first;
-	TString hname = channelName + "_" + (*fakeHistoIter).second;
-	TH1F* h_fake = (TH1F*)f.Get(hname);
-	h_fake->SetDirectory(0);
-	h_fake->Sumw2();
-	h_fake->Scale(xsec/totalEvents);
-	channel->addSimuFakeHisto(name,simuName,h_fake);
-      }
       float thisEvents = histo->Integral();
       //cout<<simuName<<" "<<channelName<<" "<<thisEvents<<endl;
       double efficiency = 0;
@@ -560,6 +523,16 @@ void ChannelHandler::readSimulation()
       for(attr_iter = attributes.begin(); attr_iter != attributes.end(); attr_iter++){
 	channel->setSimuAttribute(simuName,(*attr_iter).first,(*attr_iter).second);
       }
+      map<TString,TString>::const_iterator hIter;
+      for(hIter = m_histogram_list.begin(); hIter != m_histogram_list.end(); hIter++){
+	TString type=(*hIter).second;
+	TH1F* h = (TH1F*)f.Get(TString::Format("%s_%s",channelName.Data(),type.Data()));
+	h->SetDirectory(0);
+	h->Sumw2();
+	h->Scale(xsec/totalEvents);
+	channel->addHistogram((*hIter).first,simuName,h);
+      }
+
     }
     f.Close();
   }
@@ -578,13 +551,12 @@ void ChannelHandler::readData()
       int thisEvents = (int)histo->Integral();
       Channel* channel = m_input_channels[channelName];
       channel->addEvents(thisEvents);
-      map<TString,TString> fakeHistos = channel->getFakeObjectNames();
-      for(map<TString,TString>::const_iterator fakeHistoIter = fakeHistos.begin(); fakeHistoIter != fakeHistos.end(); fakeHistoIter++){
-	TString name = (*fakeHistoIter).first;
-	TString hname = channelName + "_" + (*fakeHistoIter).second;
-	TH1F* h_fake = (TH1F*)f.Get(hname);
-	h_fake->SetDirectory(0);
-	channel->addFakeHisto(name,h_fake);	
+      map<TString,TString>::const_iterator hIter;
+      for(hIter = m_histogram_list.begin(); hIter != m_histogram_list.end(); hIter++){
+	TString type=(*hIter).second;
+	TH1F* h = (TH1F*)f.Get(TString::Format("%s_%s",channelName.Data(),type.Data()));
+	h->SetDirectory(0);
+	channel->addHistogram((*hIter).first,"Observed",h);
       }
     }
     f.Close();
@@ -1127,7 +1099,7 @@ void ChannelHandler::setSignalSystematic(TString sigName,TString systType,double
     map<TString,double> nmap;
     m_signal_syst_map[sigName] = nmap;
   }
-  if(m_signal_syst_map[sigName].find(systType) != m_signal_syst_map[sigName].end()){
+  if(m_signal_syst_map[sigName].find(systType) != m_signal_syst_map[sigName].end() && m_signal_syst_map[sigName][systType] != systVal){
     cout<<"WARNING changing signal systematic for "<<sigName<<" "<<systType<<" to "<<systVal<<endl;
   }
   m_signal_syst_map[sigName][systType] = systVal;
@@ -1162,7 +1134,7 @@ double ChannelHandler::quickSingleChannelCls(double observed, double background,
 //-------------------
 void ChannelHandler::setFlatSystematic(TString systname,double syst)
 {
-  if(m_flat_syst_map.find(systname) != m_flat_syst_map.end()){
+  if(m_flat_syst_map.find(systname) != m_flat_syst_map.end() && m_flat_syst_map[systname] != syst){
     cout<<"WARNING: change FLAT systematic "<<systname<<" FROM "<<m_flat_syst_map[systname]<<" TO "<<syst<<endl;
   }
   m_flat_syst_map[systname] = syst;
@@ -1180,6 +1152,12 @@ double ChannelHandler::getFlatSystematic(TString systname)
 //-------------------
 //-------------------
 //-------------------
+void ChannelHandler::addHistogram(TString label, TString name){
+  if(m_histogram_list.find(label) != m_histogram_list.end() && m_histogram_list[label] != name){
+    cerr<<"WARNING changing HISTOGRAM "<<label<<" FROM "<<m_histogram_list[label]<<" TO "<<name<<endl;
+  }
+  m_histogram_list[label] = name;
+}
 //-------------------
 //-------------------
 //-------------------

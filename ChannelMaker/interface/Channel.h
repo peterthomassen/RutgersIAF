@@ -64,16 +64,6 @@ class Channel : public TObject {
   bool isBackgroundDone(){return m_backgroundsDone;}
   void setBackgroundDone(bool c){m_backgroundsDone = c;}
 
-  void setPhotonHisto(TH1F* c){m_nphotons = c;}
-  void setTrackHisto(TH1F* c){m_ntracks = c;}
-  TH1F* getPhotonHisto(){return m_nphotons;}
-  TH1F* getTrackHisto(){return m_ntracks;}
-
-  void setSimuPhotonHisto(TString,TH1F*);
-  void setSimuTrackHisto(TString,TH1F*);
-
-  TH1F* getSimuPhotonHisto(TString);
-  TH1F* getSimuTrackHisto(TString);
 
 
   std::map<TString,double> getFakeChannels(TString);
@@ -104,6 +94,13 @@ class Channel : public TObject {
   std::pair<double,double> getFakeRateAndError(TString);
   std::map<TString, std::pair<double,double> > getFakeRateAndErrors(){return m_fakeRateAndErrors;}
 
+  void addHistogram(TString,TString,TH1F*);
+  void addHistogram(TString,TString,TH2F*);
+  TH1F* getHistogram1d(TString,TString);
+  TH2F* getHistogram2d(TString,TString);
+  std::map<TString,TH1F*> getHistograms1d(TString);
+  std::map<TString,TH2F*> getHistograms2d(TString);
+
   void addFakeHisto(TString,TH1F*);
   TH1F* getFakeHisto(TString);
 
@@ -116,8 +113,9 @@ class Channel : public TObject {
  private:
   std::map<TString,double> m_map_simu_efficiency_xsec;
   std::map<TString,double> m_map_simu_efficiency_xsec_error;
-  std::map<TString,TH1F*> m_simu_nphotons;
-  std::map<TString,TH1F*> m_simu_ntracks;
+
+  std::map<TString,std::map<TString,TH1F*> >m_1d_histograms;
+  std::map<TString,std::map<TString,TH2F*> >m_2d_histograms;
 
   std::map<TString,TString> m_fakeObjectNames;
   std::map<TString,TH1F*> m_fakeObjectHistos;
@@ -131,12 +129,6 @@ class Channel : public TObject {
   std::map<TString,std::vector<TString> > m_CFO_objectNames;
   std::map<TString,std::map<TString,double> > m_CFO_channels;
 
-  TH1F* m_nphotons;
-  TH1F* m_ntracks;
-  TH1F* m_bg_nphotons;
-  TH1F* m_bg_ntracks;
-  TH1F* m_nonisoelectrons;
-  TH1F* m_nonisomuons;
   double m_simu_total;
   double m_simu_total_error;
   double m_datadriven_total;

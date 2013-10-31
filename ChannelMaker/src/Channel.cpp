@@ -16,11 +16,6 @@ Channel::Channel(TString name):m_name(name)
   m_datadriven_total_error = 0.0;
   m_events = 0;
 
-  m_nphotons = 0;
-  m_ntracks = 0;
-  m_bg_nphotons = 0;
-  m_bg_ntracks = 0;
-
 }
 //-------------------
 //-------------------
@@ -117,11 +112,25 @@ Channel& Channel::operator+=(Channel &rhs)
     m_datadriven_background_error[backName] = sqrt(pow(bxsecerr,2)+pow(backErr,2));
   }
 
-  if(m_nphotons && rhs.m_nphotons)m_nphotons->Add(rhs.m_nphotons);
-  if(!m_nphotons && rhs.m_nphotons)m_nphotons = rhs.m_nphotons;
-  if(m_ntracks && rhs.m_ntracks)m_ntracks->Add(rhs.m_ntracks);
-  if(!m_ntracks && rhs.m_ntracks)m_ntracks = rhs.m_ntracks;
+  map<TString,map<TString,TH1F*> >::const_iterator h1Iter;
+  map<TString,TH1F*>::iterator h1Iter2;
+  for(h1Iter = m_1d_histograms.begin(); h1Iter != m_1d_histograms.end(); h1Iter++){
+    map<TString,TH1F*> tmap = (*h1Iter).second;
+    for(h1Iter2 = tmap.begin();h1Iter2 != tmap.end(); h1Iter2++){
+      TH1F* h = rhs.getHistogram1d((*h1Iter).first,(*h1Iter2).first);
+      if(h)((*h1Iter2).second)->Add(h);
+    }
+  }
 
+  map<TString,map<TString,TH2F*> >::const_iterator h2Iter;
+  map<TString,TH2F*>::iterator h2Iter2;
+  for(h2Iter = m_2d_histograms.begin(); h2Iter != m_2d_histograms.end(); h2Iter++){
+    map<TString,TH2F*> tmap = (*h2Iter).second;
+    for(h2Iter2 = tmap.begin();h2Iter2 != tmap.end(); h2Iter2++){
+      TH2F* h = rhs.getHistogram2d((*h2Iter).first,(*h2Iter2).first);
+      if(h)((*h2Iter2).second)->Add(h);
+    }
+  }
 
   map<TString,TH1F*>::const_iterator hIter;
   for(hIter = m_fakeObjectHistos.begin(); hIter != m_fakeObjectHistos.end(); hIter++){
@@ -134,6 +143,7 @@ Channel& Channel::operator+=(Channel &rhs)
     TH1F* rhsHist = rhs.getFakeBGHisto(fName);
     if(rhsHist)addFakeBGHisto(fName,rhsHist);
   }
+
   map<TString,map<TString,TH1F*> >::const_iterator sIter;
   for(sIter = m_simu_fakeObjectHistos.begin(); sIter != m_simu_fakeObjectHistos.end(); sIter++){
     TString fName = (*sIter).first;
@@ -240,40 +250,6 @@ double Channel::getDataDrivenBackgroundError(TString backName)
 }
 //-------------------
 //-------------------
-void Channel::setSimuPhotonHisto(TString simuName, TH1F* h)
-{
-  if(m_simu_nphotons.find(simuName) != m_simu_nphotons.end()){
-    cout<<"WARNING OVERWRITING NPHOTONS for "<<simuName<<" "<<m_name<<endl;
-  }
-  m_simu_nphotons[simuName] = h;
-}
-//-------------------
-//-------------------
-void Channel::setSimuTrackHisto(TString simuName, TH1F* h)
-{
-  if(m_simu_ntracks.find(simuName) != m_simu_ntracks.end()){
-    cout<<"WARNING OVERWRITING NTRACKS for "<<simuName<<" "<<m_name<<endl;
-  }
-  m_simu_ntracks[simuName] = h;
-}
-//-------------------
-//-------------------
-TH1F* Channel::getSimuPhotonHisto(TString simuName)
-{
-  if(m_simu_nphotons.find(simuName) == m_simu_nphotons.end()){
-    return 0;
-  }
-  return m_simu_nphotons[simuName];
-}
-//-------------------
-//-------------------
-TH1F* Channel::getSimuTrackHisto(TString simuName)
-{
-  if(m_simu_ntracks.find(simuName) == m_simu_ntracks.end()){
-    return 0;
-  }
-  return m_simu_ntracks[simuName];
-}
 //-------------------
 //-------------------
 //-------------------
@@ -518,16 +494,71 @@ double Channel::getSimuEfficiencyError(TString type)
 }
 //-------------------
 //-------------------
+void Channel::addHistogram(TString type,TString name, TH1F* h)
+{
+  if(m_1d_histograms.find(type) == m_1d_histograms.end()){
+    map<TString,TH1F*> nmap;
+    TH1F* clone = (TH1F*)h->Clone(TString::Format("%s_%s_%s",getName().Data(),type.Data(),name.Data()));
+    nmap[name] = clone;
+    m_1d_histograms[type] = nmap;
+  }else if(m_1d_histograms[type].find(name) == m_1d_histograms[type].end()){
+    TH1F* clone = (TH1F*)h->Clone(TString::Format("%s_%s_%s",getName().Data(),type.Data(),name.Data()));
+    m_1d_histograms[type][name] = clone;
+  }else{
+    m_1d_histograms[type][name]->Add(h);
+  }
+
+}
 //-------------------
 //-------------------
+void Channel::addHistogram(TString type,TString name, TH2F* h)
+{
+  if(m_2d_histograms.find(type) == m_2d_histograms.end()){
+    map<TString,TH2F*> nmap;
+    TH2F* clone = (TH2F*)h->Clone(TString::Format("%s_%s_%s",getName().Data(),type.Data(),name.Data()));
+    nmap[name] = clone;
+    m_2d_histograms[type] = nmap;
+  }else if(m_2d_histograms[type].find(name) == m_2d_histograms[type].end()){
+    TH2F* clone = (TH2F*)h->Clone(TString::Format("%s_%s_%s",getName().Data(),type.Data(),name.Data()));
+    m_2d_histograms[type][name] = clone;
+  }else{
+    m_2d_histograms[type][name]->Add(h);
+  }
+}
 //-------------------
 //-------------------
+TH1F* Channel::getHistogram1d(TString type,TString name)
+{
+  if(m_1d_histograms.find(type) == m_1d_histograms.end())return 0;
+  if(m_1d_histograms[type].find(name) == m_1d_histograms[type].end())return 0;
+  return m_1d_histograms[type][name];
+}
 //-------------------
 //-------------------
+TH2F* Channel::getHistogram2d(TString type,TString name)
+{
+  if(m_2d_histograms.find(type) == m_2d_histograms.end())return 0;
+  if(m_2d_histograms[type].find(name) == m_2d_histograms[type].end())return 0;
+  return m_2d_histograms[type][name];
+}
 //-------------------
 //-------------------
+map<TString,TH1F*> Channel::getHistograms1d(TString type)
+{
+  if(m_1d_histograms.find(type) != m_1d_histograms.end())return m_1d_histograms[type];
+
+  map<TString,TH1F*> retval;
+  return retval;
+}
 //-------------------
 //-------------------
+map<TString,TH2F*> Channel::getHistograms2d(TString type)
+{
+  if(m_2d_histograms.find(type) != m_2d_histograms.end())return m_2d_histograms[type];
+
+  map<TString,TH2F*> retval;
+  return retval;
+}
 //-------------------
 //-------------------
 //-------------------
