@@ -90,11 +90,8 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   void setDebugMode(bool c=true){m_debugMode = c;}
   bool getDebugMode(){return m_debugMode;}
   void printDebugInfo();
-  void setMode(std::string name, int mode){m_mode[name] = mode;}
+  void setMode(std::string name, int mode = 1){m_mode[name] = mode;}
   int getMode(std::string name);
-  void setJetCorrectionMode(int c){m_jetCorrMode = c;}
-  void setElectronUncertaintyMode(int c){m_electronUncertaintyMode = c;}
-  void setMuonUncertaintyMode(int c){m_muonUncertaintyMode = c;}
 
   void initSignatures();
   void finishSignatures();
@@ -346,10 +343,6 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   */
 
   std::map<std::string, int> m_mode;
-  
-  int m_jetCorrMode;
-  int m_electronUncertaintyMode;
-  int m_muonUncertaintyMode;
   
   ////////////
   //Products//

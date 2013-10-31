@@ -72,11 +72,6 @@ ClassImp(SignatureHandler)
   m_separation_isotrack_electron = 0.1;
   m_separation_photon_jet = 0.3;
 
-
-  m_jetCorrMode = 0;
-  m_electronUncertaintyMode = 0;
-  m_muonUncertaintyMode = 0;
-
   m_isMC = false;
   m_PUweights = 0;
   m_bTagForReweight = "CSVM";
@@ -151,7 +146,7 @@ int SignatureHandler::getMode(std::string name) {
 	std::map<std::string, int>::iterator it = m_mode.find(name);
 	return (it != m_mode.end())
 		? it->second
-		: -1;
+		: 0;
 }
 //----------------------------------------
 void SignatureHandler::printSignature(Signature* sig)

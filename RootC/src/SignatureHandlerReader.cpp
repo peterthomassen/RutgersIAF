@@ -422,9 +422,9 @@ void SignatureHandler::readJets()
   for(int i = 0; i < pat_jet_n; i++){
     double corr = 1.0;
     double unc = pat_jet_uncertainty[i];
-    if(m_jetCorrMode > 0){
+    if(getMode("jetCorrection") > 0){
       corr += unc/pat_jet_pt[i];
-    }else if(m_jetCorrMode < 0){
+    }else if(getMode("jetCorrection") < 0){
       corr -= unc/pat_jet_pt[i];
     }
 
