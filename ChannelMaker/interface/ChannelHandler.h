@@ -48,8 +48,6 @@ class ChannelHandler : public TObject {
   void addInputChannel(TString, Channel*);
   void addSumChannel(TString);
   void addSumChannelAttribute(TString,TString,double);
-  //void addSumChannel(TString,TString);
-  //void addSumChannel(TString,std::vector<TString>);
   void printSumChannels();
 
   void addFakeObjectNames(TString,TString);
@@ -58,25 +56,13 @@ class ChannelHandler : public TObject {
 
   Channel* getInputChannel(TString);
 
+  //add Histograms for processing (must be done before initialize)
+  void addHistogram(TString,TString);
+
   //other stuff
   void makeDatacard(TString,TString,bool expectedOnly = false, double minEff = 0.9, int minChannels = 10,bool addSignal=false);
   double quickSingleChannelCls(double,double,double);
 
-  //managing background parameters
-  /*
-  void setTrackToMuonFakeRate(double c){m_trackToMuonFakeRate = c;}
-  void setTrackToElectronFakeRate(double c){m_trackToElectronFakeRate = c;}
-  void setPhotonToMuonFakeRate(double c){m_photonToMuonFakeRate = c;}
-  void setPhotonToElectronFakeRate(double c){m_photonToElectronFakeRate = c;}
-  void setMuonChargeFlipRate(double c){m_muonChargeFlipRate = c;}
-  void setElectronChargeFlipRate(double c){m_electronChargeFlipRate = c;}
-  void setTrackToMuonFakeRateError(double c){m_trackToMuonFakeRateError = c;}
-  void setTrackToElectronFakeRateError(double c){m_trackToElectronFakeRateError = c;}
-  void setPhotonToMuonFakeRateError(double c){m_photonToMuonFakeRateError = c;}
-  void setPhotonToElectronFakeRateError(double c){m_photonToElectronFakeRateError = c;}
-  void setMuonChargeFlipRateError(double c){m_muonChargeFlipRateError = c;}
-  void setElectronChargeFlipRateError(double c){m_electronChargeFlipRateError = c;}
-  */
   //running handler
   void initialize();//read in files etc
   void processChannels();//do background calculations, etc
@@ -94,6 +80,7 @@ class ChannelHandler : public TObject {
   void writeOutputHistos(Channel*, TFile*);
 
   //members
+  std::map<TString,TString> m_histogram_list;
   std::map<TString, Channel*> m_input_channels;
   std::map<TString, Channel*> m_sum_channels;
   std::vector<TString> m_input_channelNames;
@@ -108,20 +95,6 @@ class ChannelHandler : public TObject {
   std::map<TString,double> m_flat_syst_map;
   double m_luminosity;
   double m_luminosity_error;
-  /*
-  double m_trackToMuonFakeRate;
-  double m_trackToElectronFakeRate;
-  double m_electronChargeFlipRate;
-  double m_photonToElectronFakeRate;
-  double m_photonToMuonFakeRate;
-  double m_photonToElectronFakeRateError;
-  double m_photonToMuonFakeRateError;
-  double m_muonChargeFlipRate;
-  double m_trackToMuonFakeRateError;
-  double m_trackToElectronFakeRateError;
-  double m_electronChargeFlipRateError;
-  double m_muonChargeFlipRateError;
-  */
   TString m_ofname;
 
   ClassDef(ChannelHandler,1);

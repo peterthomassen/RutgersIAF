@@ -25,6 +25,7 @@ class ObjectCutIrel : public ObjectCut {
   virtual bool passCut(SignatureObjectWithIso* sigObj) const
   {
     double irel = calcIrel(sigObj);
+    //std::cout<<irel<<std::endl;
     if(m_irelmin > 0 && irel < m_irelmin) return false;
     if(m_irelmax > 0 && irel > m_irelmax) return false;
     return true;

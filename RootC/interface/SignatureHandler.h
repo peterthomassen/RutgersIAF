@@ -237,7 +237,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
 
   void calcPhysicsWeight();
   void calcPhysicsWeightWithBjets();
-
+  double calcTriggerWeight();
   void smearMET();
 
   /////////////////

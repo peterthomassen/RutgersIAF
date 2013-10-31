@@ -1353,20 +1353,7 @@ void SignatureHandler::calcPhysicsWeight()
   //Trigger SF//
   //////////////
 
-  //Choose a trigger//
-  if(m_good_electrons.size() >= 2){
-    m_physicsWeight *= 0.95;
-  }else if(m_good_muons.size() >= 2){
-    m_physicsWeight *= 0.87;
-  }else if(m_good_electrons.size() >= 1 && m_good_electrons.size() >= 1){
-    m_physicsWeight *= 0.93;
-  }else if(m_good_electrons.size() >= 1){
-    m_physicsWeight *= 1.0;
-  }else if(m_good_muons.size() >= 1){
-    m_physicsWeight *= 1.0;
-  }else{
-    m_physicsWeight *= 1.0;
-  }
+  m_physicsWeight *= calcTriggerWeight();
 
   //////////////////////
   //Isolation reweight//
