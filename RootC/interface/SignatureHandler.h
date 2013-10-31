@@ -105,6 +105,8 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   void addBasicHistograms();
   void addChargeSignHistograms();
   void setIsMC(bool c=true){m_isMC = c;}
+  void setMCtype(TString type);
+  TString getMCtype(){ return m_MCtype; }
   void addPUFile(TString);
   void setBTagForReweight(TString c){m_bTagForReweight = c;}
 
@@ -319,6 +321,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   bool m_doPriorityList;
 
   bool m_isMC;
+  TString m_MCtype;
 
   double m_physicsWeight;
   double m_btagWeights[3];

@@ -73,6 +73,7 @@ ClassImp(SignatureHandler)
   m_separation_photon_jet = 0.3;
 
   m_isMC = false;
+  m_MCtype = "";
   m_PUweights = 0;
   m_bTagForReweight = "CSVM";
   m_physicsWeight = 1.0;
@@ -147,6 +148,24 @@ int SignatureHandler::getMode(std::string name) {
 	return (it != m_mode.end())
 		? it->second
 		: 0;
+}
+//-----------------------------------------
+void SignatureHandler::setMCtype(TString type) {
+	// Make sure that the MCtype hasn't been set to make sure that we don't have any remnant modes from the other MCtype set
+	assert(getMCtype() == "");
+	
+	setIsMC(true);
+	
+	m_MCtype = type;
+	
+	if(type == "WZ") {
+		setMode("WZKinematicWeight");
+		setMode("nJetReweight");
+	}
+	if(type == "ttbar") {
+		setMode("nJetReweight");
+	}
+	
 }
 //----------------------------------------
 void SignatureHandler::printSignature(Signature* sig)
