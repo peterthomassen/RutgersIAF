@@ -146,6 +146,13 @@ SignatureHandler::~SignatureHandler()
   m_outFile->Close();
     
 }
+//-----------------------------------------
+int SignatureHandler::getMode(std::string name) {
+	std::map<std::string, int>::iterator it = m_mode.find(name);
+	return (it != m_mode.end())
+		? it->second
+		: -1;
+}
 //----------------------------------------
 void SignatureHandler::printSignature(Signature* sig)
 {
@@ -1381,6 +1388,11 @@ void SignatureHandler::calcPhysicsWeight()
   }
 
   m_physicsWeight *= leptonCorrections;
+  
+  if(getMode("WZKinematicWeight") > 0) {
+	  std::pair<double,double> WZKinematicWeight = SignatureHandler::getWZKinematicWeight();
+	  m_physicsWeight *= WZKinematicWeight.first;
+  }
 
 }
 //-----------------------------------------
