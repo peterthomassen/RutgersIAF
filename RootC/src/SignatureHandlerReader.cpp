@@ -755,7 +755,7 @@ void SignatureHandler::readMCParticles()
 {
   for(int i = 0; i < mc_part_n; i++){
     SignatureObjectMCPart* mcpart = new SignatureObjectMCPart(mc_part_px[i],mc_part_py[i],mc_part_pz[i],mc_part_energy[i]);
-    mcpart->setPdgID(mc_part_pdgID[i]);
+    mcpart->setPDGid(mc_part_pdgID[i]);
     mcpart->setVx(mc_part_vx[i]);
     mcpart->setVy(mc_part_vy[i]);
     mcpart->setVz(mc_part_vz[i]);

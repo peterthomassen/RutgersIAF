@@ -9,7 +9,6 @@ class SignatureObjectMCPart : public SignatureObject {
   SignatureObjectMCPart(TLorentzVector v);
   virtual ~SignatureObjectMCPart(){/* no-op*/}
 
-  void setPdgID(int c){m_pdgID = c;}
   void setVx(double c){m_vx = c;}
   void setVy(double c){m_vy = c;}
   void setVz(double c){m_vz = c;}
@@ -20,7 +19,6 @@ class SignatureObjectMCPart : public SignatureObject {
   void setMother_ntID(int c){m_mother_ntID = c;}
   void setN_children(int c){m_n_children = c;}
 
-  int getPdgID(){return m_pdgID;}
   double getVx(){return m_vx;}
   double getVy(){return m_vy;}
   double getVz(){return m_vz;}
@@ -33,7 +31,6 @@ class SignatureObjectMCPart : public SignatureObject {
 
 
  private:
-  int m_pdgID;
   double m_vx;
   double m_vy;
   double m_vz;
@@ -51,7 +48,6 @@ class SignatureObjectMCPart : public SignatureObject {
 };
 
 inline SignatureObjectMCPart::SignatureObjectMCPart(double x,double y, double z, double t):SignatureObject(x,y,z,t){
-  m_pdgID = 0;
   m_vx = -10000;
   m_vy = -10000;
   m_vz = -10000;
@@ -64,7 +60,6 @@ inline SignatureObjectMCPart::SignatureObjectMCPart(double x,double y, double z,
 
 }
 inline SignatureObjectMCPart::SignatureObjectMCPart(TLorentzVector v):SignatureObject(v){
-  m_pdgID = 0;
   m_vx = -10000;
   m_vy = -10000;
   m_vz = -10000;

@@ -140,7 +140,7 @@ void DelphesHandler::readMCParticles()
     GenParticle* part = (GenParticle*)mcparticles_->At(i);
     SignatureObjectMCPart* mcpart = new SignatureObjectMCPart(part->Px,part->Py,part->Pz,part->E);
     mcpart->setCharge(part->Charge);
-    mcpart->setPdgID(part->PID);
+    mcpart->setPDGid(part->PID);
     mcpart->setMother_ntID(part->M1);
     //cout<<i<<" "<<part->M1<<endl;
     if(part->M1 >= 0){

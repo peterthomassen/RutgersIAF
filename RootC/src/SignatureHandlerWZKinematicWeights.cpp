@@ -12,7 +12,7 @@ std::pair<double,double> SignatureHandler::getWZKinematicWeight() {
 	bool has_top = false;
 	
 	for(size_t i = 0; i < 12 && i < m_mcparticles.size(); ++i){
-		int pdgid = ((SignatureObjectMCPart*)m_mcparticles[i])->getPdgID();
+		int pdgid = ((SignatureObjectMCPart*)m_mcparticles[i])->getPDGid();
 		int status = ((SignatureObjectMCPart*)m_mcparticles[i])->getStatus();
 		
 		if(status == 3) {

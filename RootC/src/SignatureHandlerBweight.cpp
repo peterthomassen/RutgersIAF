@@ -230,7 +230,7 @@ vector<int> SignatureHandler::associateJetsToPartons()
   for(int i = 0; i < (int)m_mcparticles.size(); ++i){
     //remove "stable" particles
     //if(m_mcparticles[i]->getStatus() != 3) continue;
-    int pdgid = ((SignatureObjectMCPart*)m_mcparticles[i])->getPdgID();
+    int pdgid = ((SignatureObjectMCPart*)m_mcparticles[i])->getPDGid();
     //remove W/Z/H/p etc
     if(abs(pdgid) > 22)continue;
     //remove t

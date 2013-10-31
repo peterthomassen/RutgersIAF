@@ -23,8 +23,8 @@ class ObjectCutMCPdgID : public ObjectCut {
 
   bool passCut(SignatureObjectMCPart* sigObj) const
   {
-    if(!m_keepAntiParticles && sigObj->getPdgID() != m_pdgid) return false;
-    if(fabs(sigObj->getPdgID()) != m_pdgid) return false;
+    if(!m_keepAntiParticles && sigObj->getPDGid() != m_pdgid) return false;
+    if(fabs(sigObj->getPDGid()) != m_pdgid) return false;
     return true;
   }
   bool operator()(SignatureObjectMCPart*) const;
