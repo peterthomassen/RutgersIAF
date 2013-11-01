@@ -162,6 +162,9 @@ void SignatureHandler::setMCtype(TString type) {
 		setMode("WZKinematicWeight");
 		setMode("nJetReweight");
 	}
+	if(type == "ZZ") {
+		setMode("nJetReweight");
+	}
 	if(type == "ttbar") {
 		setMode("nJetReweight");
 	}
@@ -628,11 +631,11 @@ void SignatureHandler::resetObjectLists()
 //-----------------------------------------
 void SignatureHandler::readObjectLists()
 {
-  ////////////////////////////////////////////////
-  //It is CRITICAL to read tracks BEFORE ALL!!!!//
-  //DO NOT CHANGE THE ORDER - MHW/////////////////
-  ////////////////////////////////////////////////
+  // It is CRITICAL to read MC particles first and reco tracks next -- do not change order
+  readMCParticles();
   readRecoTracks();
+  
+  // Now, read everything else
   readRecoVertices();
   readMuons();
   readElectrons();
@@ -640,7 +643,6 @@ void SignatureHandler::readObjectLists()
   readJets();
   readMET();
   readTaus();
-  readMCParticles();
   readTriggers();
   readFilters();
 }
@@ -1391,8 +1393,14 @@ void SignatureHandler::calcPhysicsWeight()
   m_physicsWeight *= leptonCorrections;
   
   if(getMode("WZKinematicWeight") > 0) {
-	  std::pair<double,double> WZKinematicWeight = SignatureHandler::getWZKinematicWeight();
+	  std::pair<double,double> WZKinematicWeight = getWZKinematicWeight();
 	  m_physicsWeight *= WZKinematicWeight.first;
+  }
+  
+  if(getMode("nJetReweight") > 0) {
+	  int njet = (int)(getProduct("goodAndTauFakeJets").size());
+	  std::pair<double,double> nJetReweight = getNJetReweight(njet);
+	  m_physicsWeight *= nJetReweight.first;
   }
 
 }

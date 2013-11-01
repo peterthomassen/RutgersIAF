@@ -252,6 +252,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   /////////////////
   
   std::pair<double,double> getWZKinematicWeight();
+  std::pair<double,double> getNJetReweight(int njets);
 
   //////////////////
 

@@ -122,6 +122,8 @@
 #include "RutgersIAF2012/RootC/interface/ObjectCutMCStatus.h"
 #include "RutgersIAF2012/RootC/interface/ObjectCutMCPdgID.h"
 #include "RutgersIAF2012/RootC/interface/ObjectCutMCMotherPdgID.h"
+#include "RutgersIAF2012/RootC/interface/ObjectCutJetGenParticle.h"
+#include "RutgersIAF2012/RootC/interface/ObjectCutTauGenLepton.h"
 #include "RutgersIAF2012/RootC/interface/ObjectCutElectronExpectedInnerHits.h"
 #include "RutgersIAF2012/RootC/interface/ObjectCutPtTauLeadingTrack.h"
 #include "RutgersIAF2012/RootC/interface/ObjectCutEtaTauLeadingTrack.h"
@@ -293,6 +295,8 @@
 #pragma link C++ class ObjectCutPtTauLeadingTrack+;
 #pragma link C++ class ObjectCutElectronExpectedInnerHits+;
 #pragma link C++ class ObjectCutMCMotherPdgID+;
+#pragma link C++ class ObjectCutJetGenParticle+;
+#pragma link C++ class ObjectCutTauGenLepton+;
 #pragma link C++ class ObjectCutMCPdgID+;
 #pragma link C++ class ObjectCutMCStatus+;
 #pragma link C++ class ObjectCutNdof+;
