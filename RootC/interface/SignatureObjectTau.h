@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include "RutgersIAF2012/RootC/interface/SignatureObjectRecoTrack.h"
+#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectTau : public SignatureObjectRecoTrack {
  public:
@@ -43,6 +44,7 @@ class SignatureObjectTau : public SignatureObjectRecoTrack {
   int getGenLepton_pdgID(){return m_genLepton_pdgID;}
   double getPF_isoChargedPtSum(){return m_PF_isoChargedPtSum;}
   int getGenLepton_ntID(){return m_genLepton_ntID;}
+  SignatureObjectMCPart* getGenLepton(){return m_genLepton;}
   std::vector<double> getPF_Discriminants(){return m_PF_Discriminants;}
   double getPF_DiscriminantsAt(int i){return m_PF_Discriminants[i];}
   double getPF_leadTracksignedSipt(){return m_PF_leadTracksignedSipt;}
@@ -85,6 +87,7 @@ class SignatureObjectTau : public SignatureObjectRecoTrack {
   void setGenLepton_pdgID(int c){m_genLepton_pdgID = c;}
   void setPF_isoChargedPtSum(double c){m_PF_isoChargedPtSum = c;}
   void setGenLepton_ntID(int c){m_genLepton_ntID = c;}
+  void setGenLepton(SignatureObjectMCPart* genLepton){m_genLepton = genLepton;}
   void addPF_Discriminants(double c){m_PF_Discriminants.push_back(c);}
   void setPF_leadTracksignedSipt(double c){m_PF_leadTracksignedSipt = c;}
   void setPF_isoChargedCandMaxPt(double c){m_PF_isoChargedCandMaxPt = c;}
@@ -126,6 +129,7 @@ class SignatureObjectTau : public SignatureObjectRecoTrack {
   int m_genLepton_pdgID;
   double m_PF_isoChargedPtSum;
   int m_genLepton_ntID;
+  SignatureObjectMCPart* m_genLepton;
   std::vector<double> m_PF_Discriminants;
   double m_PF_leadTracksignedSipt;
   double m_PF_isoChargedCandMaxPt;
@@ -172,6 +176,7 @@ inline SignatureObjectTau::SignatureObjectTau(double x,double y, double z, doubl
   m_genLepton_pdgID = -10000;
   m_PF_isoChargedPtSum = -10000;
   m_genLepton_ntID = -10000;
+  m_genLepton = 0;
   m_PF_leadTracksignedSipt = -10000;
   m_PF_isoChargedCandMaxPt = -10000;
   m_PF_isoSumPt = -10000;
@@ -213,6 +218,7 @@ inline SignatureObjectTau::SignatureObjectTau(TLorentzVector v):SignatureObjectR
   m_genLepton_pdgID = -10000;
   m_PF_isoChargedPtSum = -10000;
   m_genLepton_ntID = -10000;
+  m_genLepton = 0;
   m_PF_leadTracksignedSipt = -10000;
   m_PF_isoChargedCandMaxPt = -10000;
   m_PF_isoSumPt = -10000;

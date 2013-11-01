@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "RutgersIAF2012/RootC/interface/SignatureObjectWithIso.h"
+#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectRecoTrack : public SignatureObjectWithIso {
  public:
@@ -12,6 +13,7 @@ class SignatureObjectRecoTrack : public SignatureObjectWithIso {
 
   double getDz(){return m_dz;}
   int getGenParticle_ntID(){return m_genParticle_ntID;}
+  SignatureObjectMCPart* getGenParticle(){return m_genParticle;}
   double getCaloIso9(){return m_caloIso9;}
   double getDxy(){return m_dxy;}
   int getNValidMuonHits(){return m_nValidMuonHits;}
@@ -80,6 +82,7 @@ class SignatureObjectRecoTrack : public SignatureObjectWithIso {
 
   void setDz(double c){m_dz = c;}
   void setGenParticle_ntID(int c){m_genParticle_ntID = c;}
+  void setGenParticle(SignatureObjectMCPart* genParticle){m_genParticle = genParticle;}
   void setCaloIso9(double c){m_caloIso9 = c;}
   void setDxy(double c){m_dxy = c;}
   void setNValidMuonHits(int c){m_nValidMuonHits = c;}
@@ -147,6 +150,7 @@ class SignatureObjectRecoTrack : public SignatureObjectWithIso {
  private:
   double m_dz;
   int m_genParticle_ntID;
+  SignatureObjectMCPart* m_genParticle;
   double m_caloIso9;
   double m_dxy;
   int m_nValidMuonHits;
@@ -219,6 +223,7 @@ class SignatureObjectRecoTrack : public SignatureObjectWithIso {
 inline SignatureObjectRecoTrack::SignatureObjectRecoTrack(double x,double y, double z, double t):SignatureObjectWithIso(x,y,z,t){
   m_dz = -10000;
   m_genParticle_ntID = -10000;
+  m_genParticle = 0;
   m_caloIso9 = -10000;
   m_dxy = -10000;
   m_nValidMuonHits = -10000;
@@ -287,6 +292,7 @@ inline SignatureObjectRecoTrack::SignatureObjectRecoTrack(double x,double y, dou
 inline SignatureObjectRecoTrack::SignatureObjectRecoTrack(TLorentzVector v):SignatureObjectWithIso(v){
   m_dz = -10000;
   m_genParticle_ntID = -10000;
+  m_genParticle = 0;
   m_caloIso9 = -10000;
   m_dxy = -10000;
   m_nValidMuonHits = -10000;

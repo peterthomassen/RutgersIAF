@@ -17,6 +17,7 @@ class SignatureObjectMCPart : public SignatureObject {
   void setBarcode(int c){m_barcode = c;}
   void setMother_pdgID(int c){m_mother_pdgID = c;}
   void setMother_ntID(int c){m_mother_ntID = c;}
+  void setMother(SignatureObjectMCPart* mother){m_mother = mother;}
   void setN_children(int c){m_n_children = c;}
 
   double getVx(){return m_vx;}
@@ -27,6 +28,7 @@ class SignatureObjectMCPart : public SignatureObject {
   int getBarcode(){return m_barcode;}
   int getMother_pdgID(){return m_mother_pdgID;}
   int getMother_ntID(){return m_mother_ntID;}
+  SignatureObjectMCPart* getMother(){return m_mother;}
   int getN_children(){return m_n_children;}
 
 
@@ -39,6 +41,7 @@ class SignatureObjectMCPart : public SignatureObject {
   int m_barcode;
   int m_mother_pdgID;
   int m_mother_ntID;
+  SignatureObjectMCPart* m_mother;
   int m_n_children;
 
 
@@ -56,6 +59,7 @@ inline SignatureObjectMCPart::SignatureObjectMCPart(double x,double y, double z,
   m_barcode = -1;
   m_mother_pdgID = 0;
   m_mother_ntID = -1;
+  m_mother = 0;
   m_n_children = -1;
 
 }
@@ -68,6 +72,7 @@ inline SignatureObjectMCPart::SignatureObjectMCPart(TLorentzVector v):SignatureO
   m_barcode = -1;
   m_mother_pdgID = 0;
   m_mother_ntID = -1;
+  m_mother = 0;
   m_n_children = -1;
 
 }

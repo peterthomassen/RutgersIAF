@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "RutgersIAF2012/RootC/interface/SignatureObjectWithIso.h"
+#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectPhoton : public SignatureObjectWithIso {
  public:
@@ -28,6 +29,7 @@ class SignatureObjectPhoton : public SignatureObjectWithIso {
   double getEcalRecHitEtR03(){return m_ecalRecHitEtR03;}
   int getConversionSafeElectronVeto(){return m_conversionSafeElectronVeto;}
   int getGenPhoton_ntID(){return m_genPhoton_ntID;}
+  SignatureObjectMCPart* getGenPhoton(){return m_genPhoton;}
   double getTrackSumPtSolidR04(){return m_trackSumPtSolidR04;}
   double getHadTowOverEm(){return m_hadTowOverEm;}
   double getSigmaIetaIeta(){return m_sigmaIetaIeta;}
@@ -69,6 +71,7 @@ class SignatureObjectPhoton : public SignatureObjectWithIso {
   void setEcalRecHitEtR03(double c){m_ecalRecHitEtR03 = c;}
   void setConversionSafeElectronVeto(int c){m_conversionSafeElectronVeto = c;}
   void setGenPhoton_ntID(int c){m_genPhoton_ntID = c;}
+  void setGenPhoton(SignatureObjectMCPart* genPhoton){m_genPhoton = genPhoton;}
   void setTrackSumPtSolidR04(double c){m_trackSumPtSolidR04 = c;}
   void setHadTowOverEm(double c){m_hadTowOverEm = c;}
   void setSigmaIetaIeta(double c){m_sigmaIetaIeta = c;}
@@ -110,6 +113,7 @@ class SignatureObjectPhoton : public SignatureObjectWithIso {
   double m_ecalRecHitEtR03;
   int m_conversionSafeElectronVeto;
   int m_genPhoton_ntID;
+  SignatureObjectMCPart* m_genPhoton;
   double m_trackSumPtSolidR04;
   double m_hadTowOverEm;
   double m_sigmaIetaIeta;
@@ -156,6 +160,7 @@ inline SignatureObjectPhoton::SignatureObjectPhoton(double x,double y, double z,
   m_ecalRecHitEtR03 = -10000;
   m_conversionSafeElectronVeto = -10000;
   m_genPhoton_ntID = -10000;
+  m_genPhoton = 0;
   m_trackSumPtSolidR04 = -10000;
   m_hadTowOverEm = -10000;
   m_sigmaIetaIeta = -10000;
@@ -198,6 +203,7 @@ inline SignatureObjectPhoton::SignatureObjectPhoton(TLorentzVector v):SignatureO
   m_ecalRecHitEtR03 = -10000;
   m_conversionSafeElectronVeto = -10000;
   m_genPhoton_ntID = -10000;
+  m_genPhoton = 0;
   m_trackSumPtSolidR04 = -10000;
   m_hadTowOverEm = -10000;
   m_sigmaIetaIeta = -10000;

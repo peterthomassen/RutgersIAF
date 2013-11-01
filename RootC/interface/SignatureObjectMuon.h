@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "RutgersIAF2012/RootC/interface/SignatureObjectRecoTrack.h"
+#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectMuon : public SignatureObjectRecoTrack {
  public:
@@ -58,6 +59,7 @@ class SignatureObjectMuon : public SignatureObjectRecoTrack {
   float getTimeCompatibility(){return m_timeCompatibility;}
   int getGenLepton_mother_pdgID(){return m_genLepton_mother_pdgID;}
   int getGenLepton_ntID(){return m_genLepton_ntID;}
+  SignatureObjectMCPart* getGenLepton(){return m_genLepton;}
   double getBeta(){return m_beta;}
   float getInnerVertDxy(){return m_innerVertDxy;}
   int getInnerNumberOfValidPixelHits(){return m_innerNumberOfValidPixelHits;}
@@ -108,6 +110,7 @@ class SignatureObjectMuon : public SignatureObjectRecoTrack {
   void setTimeCompatibility(float c){m_timeCompatibility = c;}
   void setGenLepton_mother_pdgID(int c){m_genLepton_mother_pdgID = c;}
   void setGenLepton_ntID(int c){m_genLepton_ntID = c;}
+  void setGenLepton(SignatureObjectMCPart* genLepton){m_genLepton = genLepton;}
   void setBeta(double c){m_beta = c;}
   void setInnerVertDxy(float c){m_innerVertDxy = c;}
   void setInnerNumberOfValidPixelHits(int c){m_innerNumberOfValidPixelHits = c;}
@@ -159,6 +162,7 @@ class SignatureObjectMuon : public SignatureObjectRecoTrack {
   float m_timeCompatibility;
   int m_genLepton_mother_pdgID;
   int m_genLepton_ntID;
+  SignatureObjectMCPart* m_genLepton;
   double m_beta;
   float m_innerVertDxy;
   int m_innerNumberOfValidPixelHits;
@@ -215,6 +219,7 @@ inline SignatureObjectMuon::SignatureObjectMuon(double x,double y, double z, dou
   m_timeCompatibility = -10000;
   m_genLepton_mother_pdgID = -10000;
   m_genLepton_ntID = -10000;
+  m_genLepton = 0;
   m_beta = -10000;
   m_innerVertDxy = -10000;
   m_innerNumberOfValidPixelHits = -10000;
@@ -268,6 +273,7 @@ inline SignatureObjectMuon::SignatureObjectMuon(TLorentzVector v):SignatureObjec
   m_timeCompatibility = -10000;
   m_genLepton_mother_pdgID = -10000;
   m_genLepton_ntID = -10000;
+  m_genLepton = 0;
   m_beta = -10000;
   m_innerVertDxy = -10000;
   m_innerNumberOfValidPixelHits = -10000;

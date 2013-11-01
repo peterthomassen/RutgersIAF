@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "RutgersIAF2012/RootC/interface/SignatureObjectRecoTrack.h"
+#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectElectron : public SignatureObjectRecoTrack {
  public:
@@ -26,6 +27,7 @@ class SignatureObjectElectron : public SignatureObjectRecoTrack {
   int getFMVAVar_kfhits(){return m_fMVAVar_kfhits;}
   int getEidTight(){return m_eidTight;}
   int getGenLepton_ntID(){return m_genLepton_ntID;}
+  SignatureObjectMCPart* getGenLepton(){return m_genLepton;}
   double getFMVAVar_kfchi2(){return m_fMVAVar_kfchi2;}
   double getHadOverEm(){return m_hadOverEm;}
   double getFMVAVar_IoEmIoP(){return m_fMVAVar_IoEmIoP;}
@@ -103,6 +105,7 @@ class SignatureObjectElectron : public SignatureObjectRecoTrack {
   void setFMVAVar_kfhits(int c){m_fMVAVar_kfhits = c;}
   void setEidTight(int c){m_eidTight = c;}
   void setGenLepton_ntID(int c){m_genLepton_ntID = c;}
+  void setGenLepton(SignatureObjectMCPart* genLepton){m_genLepton = genLepton;}
   void setFMVAVar_kfchi2(double c){m_fMVAVar_kfchi2 = c;}
   void setHadOverEm(double c){m_hadOverEm = c;}
   void setFMVAVar_IoEmIoP(double c){m_fMVAVar_IoEmIoP = c;}
@@ -180,6 +183,7 @@ class SignatureObjectElectron : public SignatureObjectRecoTrack {
   int m_fMVAVar_kfhits;
   int m_eidTight;
   int m_genLepton_ntID;
+  SignatureObjectMCPart* m_genLepton;
   double m_fMVAVar_kfchi2;
   double m_hadOverEm;
   double m_fMVAVar_IoEmIoP;
@@ -260,6 +264,7 @@ inline SignatureObjectElectron::SignatureObjectElectron(double x,double y, doubl
   m_fMVAVar_kfhits = -10000;
   m_eidTight = -10000;
   m_genLepton_ntID = -10000;
+  m_genLepton = 0;
   m_fMVAVar_kfchi2 = -10000;
   m_hadOverEm = -10000;
   m_fMVAVar_IoEmIoP = -10000;
@@ -334,6 +339,7 @@ inline SignatureObjectElectron::SignatureObjectElectron(TLorentzVector v):Signat
   m_fMVAVar_kfhits = -10000;
   m_eidTight = -10000;
   m_genLepton_ntID = -10000;
+  m_genLepton = 0;
   m_fMVAVar_kfchi2 = -10000;
   m_hadOverEm = -10000;
   m_fMVAVar_IoEmIoP = -10000;

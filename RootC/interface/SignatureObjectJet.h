@@ -2,6 +2,7 @@
 #define SignatureObjectJet_h
 
 #include "RutgersIAF2012/RootC/interface/SignatureObject.h"
+#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectJet : public SignatureObject {
  public:
@@ -13,6 +14,7 @@ class SignatureObjectJet : public SignatureObject {
   double getBDiscriminator_combined(){return m_bDiscriminator_combined;}
   double getChargedHadronFraction(){return m_chargedHadronFraction;}
   int getGenParton_ntID(){return m_genParton_ntID;}
+  SignatureObjectMCPart* getGenParton(){return m_genParton;}
   std::vector<int> getTrigger_objectType(){return m_trigger_objectType;}
   int getTrigger_objectTypeAt(int i){return m_trigger_objectType[i];}
   std::vector<double> getBDiscPositive(){return m_bDiscPositive;}
@@ -66,6 +68,7 @@ class SignatureObjectJet : public SignatureObject {
   void setBDiscriminator_combined(double c){m_bDiscriminator_combined = c;}
   void setChargedHadronFraction(double c){m_chargedHadronFraction = c;}
   void setGenParton_ntID(int c){m_genParton_ntID = c;}
+  void setGenParton(SignatureObjectMCPart* genParton){m_genParton = genParton;}
   void addTrigger_objectType(int c){m_trigger_objectType.push_back(c);}
   void addBDiscPositive(double c){m_bDiscPositive.push_back(c);}
   void setEtaetaMoment(double c){m_etaetaMoment = c;}
@@ -110,6 +113,7 @@ class SignatureObjectJet : public SignatureObject {
   double m_bDiscriminator_combined;
   double m_chargedHadronFraction;
   int m_genParton_ntID;
+  SignatureObjectMCPart* m_genParton;
   std::vector<int> m_trigger_objectType;
   std::vector<double> m_bDiscPositive;
   double m_etaetaMoment;
@@ -158,6 +162,7 @@ inline SignatureObjectJet::SignatureObjectJet(double x,double y, double z, doubl
   m_bDiscriminator_combined = -10000;
   m_chargedHadronFraction = -10000;
   m_genParton_ntID = -10000;
+  m_genParton = 0;
   m_etaetaMoment = -10000;
   m_raw_pt = -10000;
   m_bDiscriminator_trackCount = -10000;
@@ -194,6 +199,7 @@ inline SignatureObjectJet::SignatureObjectJet(TLorentzVector v):SignatureObject(
   m_bDiscriminator_combined = -10000;
   m_chargedHadronFraction = -10000;
   m_genParton_ntID = -10000;
+  m_genParton = 0;
   m_etaetaMoment = -10000;
   m_raw_pt = -10000;
   m_bDiscriminator_trackCount = -10000;

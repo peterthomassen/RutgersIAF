@@ -1,5 +1,7 @@
 #include "RutgersIAF2012/RootC/interface/SignatureHandler.h"
 
+#include "RutgersIAF2012/RootC/interface/debug.h"
+
 using namespace std;
 
 //-----------------------------------------
@@ -130,6 +132,9 @@ void SignatureHandler::readMuons()
     muon->setTimeCompatibility(pat_muon_timeCompatibility[i]);
     muon->setGenLepton_mother_pdgID(pat_muon_genLepton_mother_pdgID[i]);
     muon->setGenLepton_ntID(pat_muon_genLepton_ntID[i]);
+    if(pat_muon_genLepton_ntID[i] >= 0 && pat_muon_genLepton_ntID[i] < (int)m_mcparticles.size()) {
+    	muon->setGenLepton(dynamic_cast<SignatureObjectMCPart*>(m_mcparticles[pat_muon_genLepton_ntID[i]]));
+    }
     muon->setBeta(pat_muon_beta[i]);
     muon->setInnerVertDxy(pat_muon_innerVertDxy[i]);
     muon->setInnerNumberOfValidPixelHits(pat_muon_innerNumberOfValidPixelHits[i]);
@@ -238,6 +243,9 @@ void SignatureHandler::readElectrons()
     electron->setFMVAVar_kfhits(pat_electron_fMVAVar_kfhits[i]);
     electron->setEidTight(pat_electron_eidTight[i]);
     electron->setGenLepton_ntID(pat_electron_genLepton_ntID[i]);
+    if(pat_electron_genLepton_ntID[i] >= 0 && pat_electron_genLepton_ntID[i] < (int)m_mcparticles.size()) {
+    	electron->setGenLepton(dynamic_cast<SignatureObjectMCPart*>(m_mcparticles[pat_electron_genLepton_ntID[i]]));
+    }
     electron->setHcaloIso(pat_electron_hcaloIso[i]);//###
     electron->setFMVAVar_kfchi2(pat_electron_fMVAVar_kfchi2[i]);
     electron->setHadOverEm(pat_electron_hadOverEm[i]);
@@ -384,6 +392,9 @@ void SignatureHandler::readPhotons()
     photon->setEcalRecHitEtR03(pat_photon_ecalRecHitEtR03[i]);
     photon->setConversionSafeElectronVeto(pat_photon_conversionSafeElectronVeto[i]);
     photon->setGenPhoton_ntID(pat_photon_genPhoton_ntID[i]);
+    if(pat_photon_genPhoton_ntID[i] >= 0 && pat_photon_genPhoton_ntID[i] < (int)m_mcparticles.size()) {
+    	photon->setGenPhoton(dynamic_cast<SignatureObjectMCPart*>(m_mcparticles[pat_photon_genPhoton_ntID[i]]));
+    }
     photon->setTrackSumPtSolidR04(pat_photon_trackSumPtSolidR04[i]);
     photon->setHadTowOverEm(pat_photon_hadTowOverEm[i]);
     photon->setSigmaIetaIeta(pat_photon_sigmaIetaIeta[i]);
@@ -433,6 +444,9 @@ void SignatureHandler::readJets()
     jet->setBDiscriminator_combined(pat_jet_bDiscriminator_combined[i]);
     jet->setChargedHadronFraction(pat_jet_chargedHadronFraction[i]);
     jet->setGenParton_ntID(pat_jet_genParton_ntID[i]);
+    if(pat_jet_genParton_ntID[i] >= 0 && pat_jet_genParton_ntID[i] < (int)m_mcparticles.size()) {
+    	jet->setGenParton(dynamic_cast<SignatureObjectMCPart*>(m_mcparticles[pat_jet_genParton_ntID[i]]));
+    }
     jet->setEtaetaMoment(pat_jet_etaetaMoment[i]);
     jet->setRaw_pt(pat_jet_raw_pt[i]);
     //jet->setVy(pat_jet_vy[i]);//###
@@ -533,6 +547,9 @@ void SignatureHandler::readRecoTracks()
     recotrack->setDz(reco_track_dz[i]);//###
     recotrack->setEcaloIso(reco_track_ecaloIso[i]);//###
     recotrack->setGenParticle_ntID(reco_track_genParticle_ntID[i]);//###
+    if(reco_track_genParticle_ntID[i] >= 0 && reco_track_genParticle_ntID[i] < (int)m_mcparticles.size()) {
+    	recotrack->setGenParticle(dynamic_cast<SignatureObjectMCPart*>(m_mcparticles[reco_track_genParticle_ntID[i]]));
+    }
     recotrack->setCaloIso9(reco_track_caloIso9[i]);//###
     recotrack->setDxy(reco_track_dxy[i]);//###
     recotrack->setNValidMuonHits(reco_track_nValidMuonHits[i]);//###
@@ -712,6 +729,9 @@ void SignatureHandler::readTaus()
     tau->setGenLepton_pdgID(pat_tau_genLepton_pdgID[i]);
     tau->setPF_isoChargedPtSum(pat_tau_PF_isoChargedPtSum[i]);
     tau->setGenLepton_ntID(pat_tau_genLepton_ntID[i]);
+    if(pat_tau_genLepton_ntID[i] >= 0 && pat_tau_genLepton_ntID[i] < (int)m_mcparticles.size()) {
+    	tau->setGenLepton(dynamic_cast<SignatureObjectMCPart*>(m_mcparticles[pat_tau_genLepton_ntID[i]]));
+    }
     tau->setPF_leadTracksignedSipt(pat_tau_PF_leadTracksignedSipt[i]);
     tau->setPF_isoChargedCandMaxPt(pat_tau_PF_isoChargedCandMaxPt[i]);
     tau->setCaloIso(pat_tau_caloIso[i]);//###
@@ -764,6 +784,9 @@ void SignatureHandler::readMCParticles()
     mcpart->setBarcode(mc_part_barcode[i]);
     mcpart->setMother_pdgID(mc_part_mother_pdgID[i]);
     mcpart->setMother_ntID(mc_part_mother_ntID[i]);
+    if(mc_part_mother_ntID[i] >= 0 && mc_part_mother_ntID[i] < (int)m_mcparticles.size()) {
+    	mcpart->setMother(dynamic_cast<SignatureObjectMCPart*>(m_mcparticles[mc_part_mother_ntID[i]]));
+    }
     mcpart->setN_children(mc_part_n_children[i]);
     m_mcparticles.push_back(mcpart);
   }
