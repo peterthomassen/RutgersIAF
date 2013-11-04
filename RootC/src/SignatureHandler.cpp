@@ -1398,6 +1398,9 @@ void SignatureHandler::calcPhysicsWeight()
   }
   
   if(getMode("nJetReweight") > 0) {
+	  if(getProduct("goodJetsFromW").size() > 0) {
+		  std::cout << "goodJetsFromW: " << getProduct("goodJetsFromW").size() << ", goodAndTauFakeJets " << getProduct("goodAndTauFakeJets").size() << std::endl;
+	  }
 	  int njet = (int)(getProduct("goodAndTauFakeJets").size());
 	  std::pair<double,double> nJetReweight = getNJetReweight(njet);
 	  m_physicsWeight *= nJetReweight.first;

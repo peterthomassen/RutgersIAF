@@ -2847,15 +2847,15 @@ void setupProducts2012(SignatureHandler* handler){
   handler->addProductCut("basicJets", new ObjectCutJetNeutralHadronFraction);
   handler->addProductCut("basicJets", jetEtaCuts);
 
-  handler->addProduct("goodAndTauFakeJets", "basicJets");
-
   handler->addProduct("bJetsCSVM","goodJets");
   handler->addProductCut("bJetsCSVM",new ObjectCutJetBDiscPositive);
 
-  ObjectCutReversed* notFromWcut = new ObjectCutReversed(new ObjectCutJetGenParticle(24, true));
-  handler->addProduct("goodJetsNotFromW", "goodJets");
-  handler->addProductCut("goodJetsNotFromW", notFromWcut);
+  ObjectCutJetGenParticle* fromWcut = new ObjectCutJetGenParticle(24, true);
+  handler->addProduct("goodJetsFromW", "goodJets");
+  handler->addProductCut("goodJetsFromW", fromWcut);
 
+  handler->addProduct("goodAndTauFakeJets", "basicJets");
+  
   ObjectCutPt* tauPtCut = new ObjectCutPt(20.0,-1,"tauptcut");
   ObjectCutCombined* tauChargeCut = new ObjectCutCombined(new ObjectCutTauCharge(-1.1,-0.9),new ObjectCutTauCharge(0.9,1.1));
   ObjectCutCombined* basicTauCut = new ObjectCutCombined(tauChargeCut,tauPtCut,true);
@@ -2979,7 +2979,7 @@ void setupProducts2012(SignatureHandler* handler){
   handler->addProductSeparation("goodJets","goodTaus",0.4);
   handler->addProductSeparation("goodAndTauFakeJets","goodMuons",0.4);
   handler->addProductSeparation("goodAndTauFakeJets","goodElectrons",0.4);
-  handler->addProductSeparation("goodAndTauFakeJets","goodJetsNotFromW",0.4);
+  handler->addProductSeparation("goodAndTauFakeJets","goodJetsFromW",0.4);
   handler->addProductSeparation("goodAndTauFakeJets","goodTausWithMatchingGenLepton",0.4);
   handler->addProductSeparation("goodPhotons","goodMuons",0.1);
   handler->addProductSeparation("goodPhotons","goodElectrons",0.1);
