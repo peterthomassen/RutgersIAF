@@ -1374,7 +1374,8 @@ void SignatureHandler::calcPhysicsWeight()
   //Trigger SF//
   //////////////
 
-  m_physicsWeight *= calcTriggerWeight();
+  double triggerWeight = calcTriggerWeight();
+  m_physicsWeight *= triggerWeight;
 
   //////////////////////
   //Isolation reweight//
@@ -1405,7 +1406,6 @@ void SignatureHandler::calcPhysicsWeight()
 	  std::pair<double,double> nJetReweight = getNJetReweight(njet);
 	  m_physicsWeight *= nJetReweight.first;
   }
-
 }
 //-----------------------------------------
 void SignatureHandler::prepareEvent()

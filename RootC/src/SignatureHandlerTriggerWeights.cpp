@@ -48,6 +48,9 @@ double SignatureHandler::calcTriggerWeight()
       }
     }
   }
+  if(weights.size() == 0) {
+	  return 1.0;
+  }
   double p = 1.0;
   for(int i = 0; i < (int)weights.size(); i++){
     p *= weights[i];
