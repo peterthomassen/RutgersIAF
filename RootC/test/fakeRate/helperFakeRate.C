@@ -72,7 +72,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SignatureCutN* oneOrMoreSidebandTaus = new SignatureCutN("sidebandTaus",1,-1);
 
 	// Signatures for Rdxy
-/*	Signature* El2Mu1B0onZMET0to50 = new Signature("El2Mu1B0onZMET0to50","");
+	Signature* El2Mu1B0onZMET0to50 = new Signature("El2Mu1B0onZMET0to50","");
 	El2Mu1B0onZMET0to50->addCut(zeroBjets);
 	El2Mu1B0onZMET0to50->addCut(twoElectrons);
 	El2Mu1B0onZMET0to50->addCut(oneBasicMuons);
@@ -87,7 +87,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	El1Mu2B0onZMET0to50->addCut(dy1onZcut);
 	El1Mu2B0onZMET0to50->addCut(met0to50);
 	handler->addSignature(El1Mu2B0onZMET0to50);
-
+/*
 	Signature* Elp1Mun1B0METgt50HTgt200 = new Signature("Elp1Mun1B0METgt50HTgt200","");
 	Elp1Mun1B0METgt50HTgt200->addCut(zeroBjets);
 	Elp1Mun1B0METgt50HTgt200->addCut(onePosElectrons);
@@ -120,6 +120,55 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	Eln1Mup1B1METgt50HTgt200->addCut(htgt200);
 	handler->addSignature(Eln1Mup1B1METgt50HTgt200);
 */
+	// Histograms for Rdxy
+	SignatureTH1F_N* n_electronsNINP = new SignatureTH1F_N("n_electronsNINP","electronsNINP");
+	SignatureTH1F_N* n_electronsINP = new SignatureTH1F_N("n_electronsINP","electronsINP");
+	SignatureTH1F_N* n_electronsNIP = new SignatureTH1F_N("n_electronsNIP","electronsNIP");
+	SignatureTH1F_N* n_electronsIP = new SignatureTH1F_N("n_electronsIP","electronsIP");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_electrons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_electrons","basicElectrons");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_poselectrons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_posElectrons","basicElectronsPos");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_negelectrons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_negElectrons","basicElectronsNeg");
+
+	handler->addHistogram(n_electronsNINP);
+	handler->addHistogram(n_electronsINP);
+	handler->addHistogram(n_electronsNIP);
+	handler->addHistogram(n_electronsIP);
+	handler->addHistogram(risovdxy_electrons);
+	handler->addHistogram(risovdxy_poselectrons);
+	handler->addHistogram(risovdxy_negelectrons);
+
+	SignatureTH1F_N* n_muonsNINP = new SignatureTH1F_N("n_muonsNINP","muonsNINP");
+	SignatureTH1F_N* n_muonsINP = new SignatureTH1F_N("n_muonsINP","muonsINP");
+	SignatureTH1F_N* n_muonsNIP = new SignatureTH1F_N("n_muonsNIP","muonsNIP");
+	SignatureTH1F_N* n_muonsIP = new SignatureTH1F_N("n_muonsIP","muonsIP");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_muons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_muons","basicMuons");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_posmuons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_posMuons","basicMuonsPos");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_negmuons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_negMuons","basicMuonsNeg");
+
+	handler->addHistogram(n_muonsNINP);
+	handler->addHistogram(n_muonsINP);
+	handler->addHistogram(n_muonsNIP);
+	handler->addHistogram(n_muonsIP);
+	handler->addHistogram(risovdxy_muons);
+	handler->addHistogram(risovdxy_posmuons);
+	handler->addHistogram(risovdxy_negmuons);
+
+	SignatureTH1F_N* n_tracksNINP = new SignatureTH1F_N("n_tracksNINP","tracksNINP");
+	SignatureTH1F_N* n_tracksINP = new SignatureTH1F_N("n_tracksINP","tracksINP");
+	SignatureTH1F_N* n_tracksNIP = new SignatureTH1F_N("n_tracksNIP","tracksNIP");
+	SignatureTH1F_N* n_tracksIP = new SignatureTH1F_N("n_tracksIP","tracksIP");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_tracks = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_tracks","basicTracks");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_postracks = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_posTracks","basicTracksPos");
+	SignatureTH2F_RelIsoVsDxy* risovdxy_negtracks = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_negTracks","basicTracksNeg");
+
+	handler->addHistogram(n_tracksNINP);
+	handler->addHistogram(n_tracksINP);
+	handler->addHistogram(n_tracksNIP);
+	handler->addHistogram(n_tracksIP);
+	handler->addHistogram(risovdxy_tracks);
+	handler->addHistogram(risovdxy_postracks);
+	handler->addHistogram(risovdxy_negtracks);
+
 	// Signatures for FtFsb
 	// -- Here, we calculate the FtFsb plot
 	Signature* SeedEl2q0ONZMET0to50 = new Signature("SeedEl2q0ONZMET0to50", "");
@@ -264,49 +313,6 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SeedMu2q0SidebandTau1ONZMET50to100->addCut(met50to100);
 	handler->addSignature(SeedMu2q0SidebandTau1ONZMET50to100);
 	
-	// Histograms for Rdxy
-/*	SignatureTH1F_N* n_electronsNINP = new SignatureTH1F_N("n_electronsNINP","electronsNINP");
-	SignatureTH1F_N* n_electronsINP = new SignatureTH1F_N("n_electronsINP","electronsINP");
-	SignatureTH1F_N* n_electronsNIP = new SignatureTH1F_N("n_electronsNIP","electronsNIP");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_electrons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_electrons","basicElectrons");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_poselectrons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_posElectrons","basicElectronsPos");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_negelectrons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_negElectrons","basicElectronsNeg");
-
-	handler->addHistogram(n_electronsNINP);
-	handler->addHistogram(n_electronsINP);
-	handler->addHistogram(n_electronsNIP);
-	handler->addHistogram(risovdxy_electrons);
-	handler->addHistogram(risovdxy_poselectrons);
-	handler->addHistogram(risovdxy_negelectrons);
-
-	SignatureTH1F_N* n_muonsNINP = new SignatureTH1F_N("n_muonsNINP","muonsNINP");
-	SignatureTH1F_N* n_muonsINP = new SignatureTH1F_N("n_muonsINP","muonsINP");
-	SignatureTH1F_N* n_muonsNIP = new SignatureTH1F_N("n_muonsNIP","muonsNIP");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_muons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_muons","basicMuons");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_posmuons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_posMuons","basicMuonsPos");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_negmuons = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_negMuons","basicMuonsNeg");
-
-	handler->addHistogram(n_muonsNINP);
-	handler->addHistogram(n_muonsINP);
-	handler->addHistogram(n_muonsNIP);
-	handler->addHistogram(risovdxy_muons);
-	handler->addHistogram(risovdxy_posmuons);
-	handler->addHistogram(risovdxy_negmuons);
-
-	SignatureTH1F_N* n_tracksNINP = new SignatureTH1F_N("n_tracksNINP","tracksNINP");
-	SignatureTH1F_N* n_tracksINP = new SignatureTH1F_N("n_tracksINP","tracksINP");
-	SignatureTH1F_N* n_tracksNIP = new SignatureTH1F_N("n_tracksNIP","tracksNIP");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_tracks = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_tracks","basicTracks");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_postracks = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_posTracks","basicTracksPos");
-	SignatureTH2F_RelIsoVsDxy* risovdxy_negtracks = new SignatureTH2F_RelIsoVsDxy("RelIsoVsDxy_negTracks","basicTracksNeg");
-
-	handler->addHistogram(n_tracksNINP);
-	handler->addHistogram(n_tracksINP);
-	handler->addHistogram(n_tracksNIP);
-	handler->addHistogram(risovdxy_tracks);
-	handler->addHistogram(risovdxy_postracks);
-	handler->addHistogram(risovdxy_negtracks);
-*/
 	// Histograms for Ftfsb
 	std::vector<int> sumBins;
 	sumBins.push_back(0);

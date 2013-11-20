@@ -2736,6 +2736,10 @@ void setupProducts2012(SignatureHandler* handler){
   handler->addProductCut("muonsINP",isolatedLeptonCut);
   handler->addProductCut("muonsINP",nonPromptLeptonCut);
 
+  handler->addProduct("muonsIP","basicMuons");
+  handler->addProductCut("muonsIP",isolatedLeptonCut);
+  handler->addProductCut("muonsIP",promptLeptonCut);
+
 
   ObjectCutElectronDeltaEta* electronDeltaEtaCut = new ObjectCutElectronDeltaEta(0.007,0.009);
   ObjectCutElectronDeltaPhi* electronDeltaPhiCut = new ObjectCutElectronDeltaPhi(0.15,0.10);
@@ -2780,6 +2784,7 @@ void setupProducts2012(SignatureHandler* handler){
 
   handler->addProduct("basicElectrons","allElectrons");
   handler->addProductCut("basicElectrons",goodElectronCut);
+  handler->setSelfSeparate("basicElectrons",0.1);
 
   handler->addProduct("basicElectronsPos","basicElectrons");
   handler->addProductCut("basicElectronsPos",posChargeCut);
@@ -2802,6 +2807,10 @@ void setupProducts2012(SignatureHandler* handler){
   handler->addProduct("electronsNIP","basicElectrons");
   handler->addProductCut("electronsNIP",nonIsolatedLeptonCut);
   handler->addProductCut("electronsNIP",promptLeptonCut);
+
+  handler->addProduct("electronsIP","basicElectrons");
+  handler->addProductCut("electronsIP",isolatedLeptonCut);
+  handler->addProductCut("electronsIP",promptLeptonCut);
 
 
   ObjectCutPhotonIsTight* photonTightCut = new ObjectCutPhotonIsTight(true);
@@ -2963,6 +2972,10 @@ void setupProducts2012(SignatureHandler* handler){
   handler->addProduct("tracksNIP","basicTracks");
   handler->addProductCut("tracksNIP",trackNonIsolated);
   handler->addProductCut("tracksNIP",trackPrompt);
+
+  handler->addProduct("tracksIP","basicTracks");
+  handler->addProductCut("tracksIP",trackIsolated);
+  handler->addProductCut("tracksIP",trackPrompt);
 
   handler->addProduct("leadingJet","goodJets");
   handler->setSelfSeparate("leadingJet",10000.0);
