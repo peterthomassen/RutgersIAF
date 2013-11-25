@@ -174,7 +174,7 @@ void SignatureHandler::setMCtype(TString type) {
 void SignatureHandler::printSignature(Signature* sig)
 {
   cout<<sig->getName()<<" "<<run<<" "<<event<<" "<<lumiBlock<<" ST: "<<getST()<<" MET: "<<getPFMET()<<" HT: "<<getHT()<<" LT: "<<getLT()<<" njets: "<<m_good_jets.size()<<endl;
-  cout<<"agrdl "<<sig->getName()<<" "<<run<<" "<<lumiBlock<<" "<<event<<" leptons "<<m_good_electrons.size()+m_good_muons.size()+m_good_taus.size()<<" muons "<<m_good_muons.size()<<" electrons "<<m_good_electrons.size()<<" taus "<<m_good_taus.size()<<endl;
+  cout<<"agrdl "<<sig->getName()<<" "<<run<<" "<<lumiBlock<<" "<<event<<" leptons "<<m_good_electrons.size()+m_good_muons.size()+m_good_taus.size()<<" muons "<<m_good_muons.size()<<" electrons "<<m_good_electrons.size()<<" taus "<<m_good_taus.size()<<" weight "<<m_physicsWeight<<endl;
 }
 //-----------------------------------------
 void SignatureHandler::addSignature(const char* name, const char* option)
@@ -353,9 +353,11 @@ void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
 	if(m_bjetSignatures[s]->isSignature()){
 	  //cout<<m_bjetSignatures[s]->getName()<<" m_bTagged "<<m_bTagged<<" low: "<<m_bjetSignatures[s]->getLow()<<" high: "<<m_bjetSignatures[s]->getHigh()<<endl;
 	  if(m_bTagged >= m_bjetSignatures[s]->getLow() && m_bTagged <= m_bjetSignatures[s]->getHigh()){
-	    printSignature(m_bjetSignatures[s]);
 	    isSigVec[s + nSig] = 1;
-	    if(!m_isMC)m_bjetSignatures[s]->fillHistograms();
+	    if(!m_isMC){
+			printSignature(m_bjetSignatures[s]);
+			m_bjetSignatures[s]->fillHistograms();
+		}
 	  }
 	  if(m_isMC){
 	    double bweight = 0.0;
@@ -364,7 +366,10 @@ void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
 	    }
 	    m_physicsWeight = baseweight * bweight;
 
-	    if(m_physicsWeight != 0.0)m_bjetSignatures[s]->fillHistograms();
+	    if(m_physicsWeight != 0.0){
+			printSignature(m_bjetSignatures[s]);
+			m_bjetSignatures[s]->fillHistograms();
+		}
 	  }
 	}
 
