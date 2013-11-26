@@ -239,8 +239,10 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 																continue;
 															}
 															// Impose sensible OSSF cuts only (don't impose cuts that can't be passed)
-															// ATTENTION: See note at qEl/qMu declaration. For L4, the charge sum variables are always 0. This doesn't hurt here.
-															if(nDY > ((nEl - abs(qEl))/2 + (nMu - abs(qMu))/2)) {
+															if(nLeptons == 3 && nDY != ((nEl - abs(qEl))/2 + (nMu - abs(qMu))/2)) {
+																continue;
+															}
+															if(nLeptons == 4 && nDY > (nEl/2 + nMu/2)) {
 																continue;
 															}
 															
