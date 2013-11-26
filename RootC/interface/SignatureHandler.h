@@ -324,6 +324,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   bool m_isMC;
   TString m_MCtype;
 
+  std::map<TString, double> m_physicsWeights;
   double m_physicsWeight;
   double m_btagWeights[3];
   int m_bTagged;

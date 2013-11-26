@@ -174,7 +174,18 @@ void SignatureHandler::setMCtype(TString type) {
 void SignatureHandler::printSignature(Signature* sig)
 {
   cout<<sig->getName()<<" "<<run<<" "<<event<<" "<<lumiBlock<<" ST: "<<getST()<<" MET: "<<getPFMET()<<" HT: "<<getHT()<<" LT: "<<getLT()<<" njets: "<<m_good_jets.size()<<endl;
-  cout<<"agrdl "<<sig->getName()<<" "<<run<<" "<<lumiBlock<<" "<<event<<" leptons "<<m_good_electrons.size()+m_good_muons.size()+m_good_taus.size()<<" muons "<<m_good_muons.size()<<" electrons "<<m_good_electrons.size()<<" taus "<<m_good_taus.size()<<" weight "<<m_physicsWeight<<endl;
+  cout<<"agrdl "<<sig->getName()<<" "<<run<<" "<<lumiBlock<<" "<<event<<" leptons "<<m_good_electrons.size()+m_good_muons.size()+m_good_taus.size()<<" muons "<<m_good_muons.size()<<" electrons "<<m_good_electrons.size()<<" taus "<<m_good_taus.size()<<" weight "<<m_physicsWeight;
+  if(getMode("debugPhysicsWeights") > 0) {
+	  cout<<"(";
+	  std::map<TString, double>::iterator iter;
+	  double weight = 1.0;
+	  for(iter = m_physicsWeights.begin(); iter != m_physicsWeights.end(); ++iter) {
+		  cout << iter->first << "=" << iter->second << ",";
+		  weight *= iter->second;
+	  }
+	  cout<<"other="<<(m_physicsWeight/weight)<<")";
+  }
+  cout<<endl;
 }
 //-----------------------------------------
 void SignatureHandler::addSignature(const char* name, const char* option)
@@ -1350,7 +1361,8 @@ void SignatureHandler::resetProducts()
 void SignatureHandler::calcPhysicsWeight()
 {
   m_physicsWeight = 1.0;
-
+  m_physicsWeights.clear();
+  
 
   //////////////////////
   /////Btag weights/////
@@ -1374,6 +1386,9 @@ void SignatureHandler::calcPhysicsWeight()
   puweight = m_PUweights->GetBinContent(pubin);
 
   m_physicsWeight *= puweight;
+  if(getMode("debugPhysicsWeights") > 0) {
+	  m_physicsWeights["PU"] = puweight;
+  }
 
   //////////////
   //Trigger SF//
@@ -1381,6 +1396,9 @@ void SignatureHandler::calcPhysicsWeight()
 
   double triggerWeight = calcTriggerWeight();
   m_physicsWeight *= triggerWeight;
+  if(getMode("debugPhysicsWeights") > 0) {
+	  m_physicsWeights["trigger"] = triggerWeight;
+  }
 
   //////////////////////
   //Isolation reweight//
@@ -1397,10 +1415,16 @@ void SignatureHandler::calcPhysicsWeight()
   }
 
   m_physicsWeight *= leptonCorrections;
-  
+  if(getMode("debugPhysicsWeights") > 0) {
+	  m_physicsWeights["leptonCorrections"] = leptonCorrections;
+  }
+
   if(getMode("WZKinematicWeight") > 0) {
 	  std::pair<double,double> WZKinematicWeight = getWZKinematicWeight();
 	  m_physicsWeight *= WZKinematicWeight.first;
+	  if(getMode("debugPhysicsWeights") > 0) {
+		  m_physicsWeights["WZKinematicWeight"] = WZKinematicWeight.first;
+	  }
   }
   
   if(getMode("nJetReweight") > 0) {
@@ -1410,6 +1434,9 @@ void SignatureHandler::calcPhysicsWeight()
 	  int njet = (int)(getProduct("goodAndTauFakeJets").size());
 	  std::pair<double,double> nJetReweight = getNJetReweight(njet);
 	  m_physicsWeight *= nJetReweight.first;
+	  if(getMode("debugPhysicsWeights") > 0) {
+		  m_physicsWeights["nJetReweight"] = nJetReweight.first;
+	  }
   }
 }
 //-----------------------------------------
