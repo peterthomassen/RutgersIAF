@@ -12,6 +12,7 @@
 #include "RutgersIAF2012/RootC/interface/SignatureWithBjets.h"
 #include "TPRegexp.h"
 #include "TRandom3.h"
+#include <assert.h>
 
 #include "RutgersIAF2012/RootC/interface/debug.h"
 
@@ -81,7 +82,8 @@ ClassImp(SignatureHandler)
   m_lastEntryPrepared = -1;
   m_currentEntry = -1;
   m_outFileName = ofname;
-  m_outFile = new TFile(m_outFileName.Data(),"RECREATE");
+  m_outFile = new TFile(m_outFileName.Data(),"CREATE");
+  assert(!(m_outFile->IsZombie()));
   m_noCutSignature = new Signature("noCutSignature","");
 
   m_doPriorityList = false;

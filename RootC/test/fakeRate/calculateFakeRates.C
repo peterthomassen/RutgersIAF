@@ -55,18 +55,15 @@ T inf() {
 
 // CFO method
 double calculateRdxy1D(TString filename) {
-	DEBUG("Maintenance");
-	return -1;
-	
 	TFile* f = new TFile(filename);
-	TH1F* histNINP = (TH1F*)f->Get("Elp1Mun1B0METgt50HTgt200_n_tracksNINP");
-	TH1F* histNIP = (TH1F*)f->Get("Elp1Mun1B0METgt50HTgt200_n_tracksNIP");
+	TH1F* histNINP = (TH1F*)f->Get("El2Mu1B0onZMET0to50_n_tracksNINP");
+	TH1F* histNIP = (TH1F*)f->Get("El2Mu1B0onZMET0to50_n_tracksNIP");
 	
-	// TODO These integrals need to be fixed such that it is Sum_(i=1)^inf i*binContent(i), i.e. multiply by the number of tracks
-	double nNINP = rangeIntegral(histNINP, 1, inf<double>());
-	double nNIP = rangeIntegral(histNIP, 1, inf<double>());
-	
-//	histNINP->Draw();
+	Double_t statsNINP[4], statsNIP[4];
+	histNINP->GetStats(statsNINP);
+	histNIP->GetStats(statsNIP);
+	double nNINP = statsNINP[2];
+	double nNIP = statsNIP[2];
 	
 	double Rdxy = nNINP / nNIP;
 	std::cout << "Rdxy1D = " << nNINP << "/" << nNIP << " = " << Rdxy << std::endl;
@@ -77,7 +74,7 @@ double calculateRdxy1D(TString filename) {
 
 double calculateRdxy2D(TString filename) {
 	TFile* f = new TFile(filename);
-	TH2F* hist = (TH2F*)f->Get("Elp1Mun1B0METgt50HTgt200_RelIsoVsDxy_tracks");
+	TH2F* hist = (TH2F*)f->Get("El2Mu1B0onZMET0to50_RelIsoVsDxy_tracks");
 	
 	double nNINP = rangeIntegral(hist, 0.02, inf<double>(), 0.15, inf<double>());
 	double nNIP = rangeIntegral(hist, 0.00, 0.02, 0.15, inf<double>());
@@ -182,7 +179,6 @@ void plotFsbFt(TString filename) {
 	legend->Draw();
 	
 	// Write out numbers for closure test
-	DEBUG("Write out numbers for closure test");
 	for(uint iFlavor = 0; iFlavor < flavors.size(); ++iFlavor) {
 		histName = TString::Format("Seed%s2q0SidebandTau1ONZMET50to100_tauIso", flavors[iFlavor].Data());
 		tauIsoHist = (TH1F*)f->Get(histName.Data());

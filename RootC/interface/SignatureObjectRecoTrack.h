@@ -364,6 +364,9 @@ inline double SignatureObjectRecoTrack::getRelIso()
 }
 inline double SignatureObjectRecoTrack::getTotalIso()
 {
-  return std::max(getPF_photonIso()+getPF_neutralHadronIso()-getRho() * getPhotonPlusNeutralHadronEffectiveArea(),0.0)+getPF_chargedHadronIso();
+	if(getPF_photonIso() < 0 || getPF_neutralHadronIso() < 0 || getPF_chargedHadronIso() < 0) {
+		return 1e6;
+	}
+	return std::max(getPF_photonIso()+getPF_neutralHadronIso()-getRho() * getPhotonPlusNeutralHadronEffectiveArea(),0.0)+getPF_chargedHadronIso();
 }
 #endif

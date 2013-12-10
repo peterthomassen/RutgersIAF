@@ -2926,10 +2926,10 @@ void setupProducts2012(SignatureHandler* handler){
   ObjectCutCombined* trackGood = new ObjectCutCombined(trackPt,trackEta,true);
 
   ObjectCutVertDxy* trackPrompt = new ObjectCutVertDxy(0.02);
-  ObjectCutReversed* trackNonPrompt = new ObjectCutReversed(trackPrompt);
+  ObjectCutReversed* trackNonPrompt = new ObjectCutReversed(new ObjectCutVertDxy(0.03));
 
   ObjectCutIrel* trackIsolated = new ObjectCutIrel(0,0.15);
-  ObjectCutReversed* trackNonIsolated = new ObjectCutReversed(trackIsolated);
+  ObjectCutIrel* trackNonIsolated = new ObjectCutIrel(0.2,1.0);
 
   handler->addProductCut("goodIsoTracks",trackGood);
   handler->addProductCut("goodIsoTracks",trackGoodNoPtNoEta);
