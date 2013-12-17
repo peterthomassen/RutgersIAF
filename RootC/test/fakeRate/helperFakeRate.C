@@ -8,11 +8,22 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SignatureCutN* zeroBjets = new SignatureCutN("bJetsCSVM",0,0);
 	SignatureCutN* geoneBjets = new SignatureCutN("bJetsCSVM",1,-1);
 	
+	SignatureCutThreshold* geThreeJets40 = new SignatureCutThreshold("goodJets", "threeJetsThreshold40");
+	geThreeJets40->addThreshold(40);
+	geThreeJets40->addThreshold(40);
+	geThreeJets40->addThreshold(40);
+
+	SignatureCutThresholdElectron* thresholdElectron30 = new SignatureCutThresholdElectron();
+	thresholdElectron30->addThreshold(30);
+	SignatureCutThresholdMuon* thresholdMuon30 = new SignatureCutThresholdMuon();
+	thresholdMuon30->addThreshold(30);
+	
 	SignatureCutMET* met0to50 = new SignatureCutMET(0,50,"METCUT0to50");
 	SignatureCutMET* met50to100 = new SignatureCutMET(50,100,"METCUT50to100");
 	SignatureCutMET* metgt50 = new SignatureCutMET(50,-1,"METCUTgt50");
 	SignatureCutHT* ht0to200 = new SignatureCutHT(0,200,"HTCUT0to200");
 	SignatureCutHT* htgt200 = new SignatureCutHT(200,-1,"HTCUTgt200");
+	SignatureCutST* stgt300 = new SignatureCutST(300,-1,"STCUTgt300");
 
 	SignatureCutN* zeroElectrons = new SignatureCutN("goodElectrons",0,0);
 	SignatureCutN* oneElectrons = new SignatureCutN("goodElectrons",1,1);
@@ -72,54 +83,54 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SignatureCutN* oneOrMoreSidebandTaus = new SignatureCutN("sidebandTaus",1,-1);
 
 	// Signatures for Rdxy
-	Signature* El2Mu1B0onZMET0to50 = new Signature("El2Mu1B0onZMET0to50","");
-	El2Mu1B0onZMET0to50->addCut(zeroBjets);
-	El2Mu1B0onZMET0to50->addCut(twoElectrons);
-	El2Mu1B0onZMET0to50->addCut(oneBasicMuons);
-	El2Mu1B0onZMET0to50->addCut(dy1onZcut);
-	El2Mu1B0onZMET0to50->addCut(met0to50);
-	handler->addSignature(El2Mu1B0onZMET0to50);
+	Signature* SeedEl2Mu1B0onZMET0to50 = new Signature("SeedEl2Mu1B0onZMET0to50","");
+	SeedEl2Mu1B0onZMET0to50->addCut(zeroBjets);
+	SeedEl2Mu1B0onZMET0to50->addCut(twoElectrons);
+	SeedEl2Mu1B0onZMET0to50->addCut(oneBasicMuons);
+	SeedEl2Mu1B0onZMET0to50->addCut(dy1onZcut);
+	SeedEl2Mu1B0onZMET0to50->addCut(met0to50);
+	handler->addSignature(SeedEl2Mu1B0onZMET0to50);
 
-	Signature* El1Mu2B0onZMET0to50 = new Signature("El1Mu2B0onZMET0to50","");
-	El1Mu2B0onZMET0to50->addCut(zeroBjets);
-	El1Mu2B0onZMET0to50->addCut(oneBasicElectrons);
-	El1Mu2B0onZMET0to50->addCut(twoMuons);
-	El1Mu2B0onZMET0to50->addCut(dy1onZcut);
-	El1Mu2B0onZMET0to50->addCut(met0to50);
-	handler->addSignature(El1Mu2B0onZMET0to50);
-/*
-	Signature* Elp1Mun1B0METgt50HTgt200 = new Signature("Elp1Mun1B0METgt50HTgt200","");
-	Elp1Mun1B0METgt50HTgt200->addCut(zeroBjets);
-	Elp1Mun1B0METgt50HTgt200->addCut(onePosElectrons);
-	Elp1Mun1B0METgt50HTgt200->addCut(oneNegMuons);
-	Elp1Mun1B0METgt50HTgt200->addCut(metgt50);
-	Elp1Mun1B0METgt50HTgt200->addCut(htgt200);
-	handler->addSignature(Elp1Mun1B0METgt50HTgt200);
+	Signature* SeedEl1Mu2B0onZMET0to50 = new Signature("SeedEl1Mu2B0onZMET0to50","");
+	SeedEl1Mu2B0onZMET0to50->addCut(zeroBjets);
+	SeedEl1Mu2B0onZMET0to50->addCut(oneBasicElectrons);
+	SeedEl1Mu2B0onZMET0to50->addCut(twoMuons);
+	SeedEl1Mu2B0onZMET0to50->addCut(dy1onZcut);
+	SeedEl1Mu2B0onZMET0to50->addCut(met0to50);
+	handler->addSignature(SeedEl1Mu2B0onZMET0to50);
 
-	Signature* Eln1Mup1B0METgt50HTgt200 = new Signature("Eln1Mup1B0METgt50HTgt200","");
-	Eln1Mup1B0METgt50HTgt200->addCut(zeroBjets);
-	Eln1Mup1B0METgt50HTgt200->addCut(oneNegElectrons);
-	Eln1Mup1B0METgt50HTgt200->addCut(onePosMuons);
-	Eln1Mup1B0METgt50HTgt200->addCut(metgt50);
-	Eln1Mup1B0METgt50HTgt200->addCut(htgt200);
-	handler->addSignature(Eln1Mup1B0METgt50HTgt200);
+	Signature* SeedElp1Mun1B0METgt50HTgt200 = new Signature("SeedElp1Mun1B0METgt50HTgt200","");
+	SeedElp1Mun1B0METgt50HTgt200->addCut(zeroBjets);
+	SeedElp1Mun1B0METgt50HTgt200->addCut(onePosElectrons);
+	SeedElp1Mun1B0METgt50HTgt200->addCut(oneNegMuons);
+	SeedElp1Mun1B0METgt50HTgt200->addCut(metgt50);
+	SeedElp1Mun1B0METgt50HTgt200->addCut(htgt200);
+	handler->addSignature(SeedElp1Mun1B0METgt50HTgt200);
 
-	Signature* Elp1Mun1B1METgt50HTgt200 = new Signature("Elp1Mun1B1METgt50HTgt200","");
-	Elp1Mun1B1METgt50HTgt200->addCut(geoneBjets);
-	Elp1Mun1B1METgt50HTgt200->addCut(onePosElectrons);
-	Elp1Mun1B1METgt50HTgt200->addCut(oneNegMuons);
-	Elp1Mun1B1METgt50HTgt200->addCut(metgt50);
-	Elp1Mun1B1METgt50HTgt200->addCut(htgt200);
-	handler->addSignature(Elp1Mun1B1METgt50HTgt200);
+	Signature* SeedEln1Mup1B0METgt50HTgt200 = new Signature("SeedEln1Mup1B0METgt50HTgt200","");
+	SeedEln1Mup1B0METgt50HTgt200->addCut(zeroBjets);
+	SeedEln1Mup1B0METgt50HTgt200->addCut(oneNegElectrons);
+	SeedEln1Mup1B0METgt50HTgt200->addCut(onePosMuons);
+	SeedEln1Mup1B0METgt50HTgt200->addCut(metgt50);
+	SeedEln1Mup1B0METgt50HTgt200->addCut(htgt200);
+	handler->addSignature(SeedEln1Mup1B0METgt50HTgt200);
 
-	Signature* Eln1Mup1B1METgt50HTgt200 = new Signature("Eln1Mup1B1METgt50HTgt200","");
-	Eln1Mup1B1METgt50HTgt200->addCut(geoneBjets);
-	Eln1Mup1B1METgt50HTgt200->addCut(oneNegElectrons);
-	Eln1Mup1B1METgt50HTgt200->addCut(onePosMuons);
-	Eln1Mup1B1METgt50HTgt200->addCut(metgt50);
-	Eln1Mup1B1METgt50HTgt200->addCut(htgt200);
-	handler->addSignature(Eln1Mup1B1METgt50HTgt200);
-*/
+	Signature* SeedElp1Mun1B1METgt50HTgt200 = new Signature("SeedElp1Mun1B1METgt50HTgt200","");
+	SeedElp1Mun1B1METgt50HTgt200->addCut(geoneBjets);
+	SeedElp1Mun1B1METgt50HTgt200->addCut(onePosElectrons);
+	SeedElp1Mun1B1METgt50HTgt200->addCut(oneNegMuons);
+	SeedElp1Mun1B1METgt50HTgt200->addCut(metgt50);
+	SeedElp1Mun1B1METgt50HTgt200->addCut(htgt200);
+	handler->addSignature(SeedElp1Mun1B1METgt50HTgt200);
+
+	Signature* SeedEln1Mup1B1METgt50HTgt200 = new Signature("SeedEln1Mup1B1METgt50HTgt200","");
+	SeedEln1Mup1B1METgt50HTgt200->addCut(geoneBjets);
+	SeedEln1Mup1B1METgt50HTgt200->addCut(oneNegElectrons);
+	SeedEln1Mup1B1METgt50HTgt200->addCut(onePosMuons);
+	SeedEln1Mup1B1METgt50HTgt200->addCut(metgt50);
+	SeedEln1Mup1B1METgt50HTgt200->addCut(htgt200);
+	handler->addSignature(SeedEln1Mup1B1METgt50HTgt200);
+
 	// Histograms for Rdxy
 	SignatureTH1F_N* n_electronsNINP = new SignatureTH1F_N("n_electronsNINP","electronsNINP");
 	SignatureTH1F_N* n_electronsINP = new SignatureTH1F_N("n_electronsINP","electronsINP");
@@ -333,7 +344,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 		
 		name = TString::Format("tauIsoSum%dto%d", edgeLow, edgeHigh);
 		dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", edgeLow, edgeHigh, "SUM");
-		handler->addHistogram(dummy, "Seed");
+		handler->addHistogram(dummy);
 		
 /*		name = TString::Format("tauIsoLead%dto%d", edgeLow, edgeHigh);
 		dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", edgeLow, edgeHigh, "LEAD");
@@ -352,14 +363,14 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 
 	name = "tauIso";
 	dummy = new SignatureTH1F_TauIso(name.Data(), "basicTaus", -1, -1, "SUM");
-	handler->addHistogram(dummy, "Seed");
+	handler->addHistogram(dummy);
 	name = "goodTauIso";
 	dummy = new SignatureTH1F_TauIso(name.Data(), "goodTaus", -1, -1, "SUM");
-	handler->addHistogram(dummy, "Seed");
+	handler->addHistogram(dummy);
 	
 	name = "HTvsWSumPt";
 	SignatureTH2F_HTvsWSumPt* dummy2 = new SignatureTH2F_HTvsWSumPt(name.Data());
-	handler->addHistogram(dummy2, "Seed");
+	handler->addHistogram(dummy2);
 	
 	name = "TauIsovsHT";
 	SignatureTH2F_TauIsovsHT* dummy3 = new SignatureTH2F_TauIsovsHT(name.Data(), "basicTaus");
@@ -367,5 +378,36 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	
 	name = "TauIsovsWSumPt";
 	SignatureTH2F_TauIsovsWSumPt* dummy4 = new SignatureTH2F_TauIsovsWSumPt(name.Data(), "basicTaus");
-	handler->addHistogram(dummy4, "Seed");
+	handler->addHistogram(dummy4);
+	
+	// Signatures for ttbar MC control region
+	Signature* SeedElp1Mun1B1STgt300 = new Signature("SeedElp1Mun1B1STgt300","");
+	SeedElp1Mun1B1STgt300->addCut(geoneBjets);
+	SeedElp1Mun1B1STgt300->addCut(onePosElectrons);
+	SeedElp1Mun1B1STgt300->addCut(oneNegMuons);
+	SeedElp1Mun1B1STgt300->addCut(stgt300);
+	handler->addSignature(SeedElp1Mun1B1STgt300);
+	
+	Signature* SeedEln1Mup1B1STgt300 = new Signature("SeedEln1Mup1B1STgt300","");
+	SeedEln1Mup1B1STgt300->addCut(geoneBjets);
+	SeedEln1Mup1B1STgt300->addCut(onePosElectrons);
+	SeedEln1Mup1B1STgt300->addCut(oneNegMuons);
+	SeedEln1Mup1B1STgt300->addCut(stgt300);
+	handler->addSignature(SeedEln1Mup1B1STgt300);
+	
+	Signature* SeedEl1B1STgt300 = new Signature("SeedEl1B1STgt300","");
+	SeedEl1B1STgt300->addCut(oneElectrons);
+	SeedEl1B1STgt300->addCut(thresholdElectron30);
+	SeedEl1B1STgt300->addCut(geThreeJets40);
+	SeedEl1B1STgt300->addCut(geoneBjets);
+	SeedEl1B1STgt300->addCut(stgt300);
+	handler->addSignature(SeedEl1B1STgt300);
+	
+	Signature* SeedMu1B1STgt300 = new Signature("SeedMu1B1STgt300","");
+	SeedMu1B1STgt300->addCut(oneMuons);
+	SeedMu1B1STgt300->addCut(thresholdMuon30);
+	SeedMu1B1STgt300->addCut(geThreeJets40);
+	SeedMu1B1STgt300->addCut(geoneBjets);
+	SeedMu1B1STgt300->addCut(stgt300);
+	handler->addSignature(SeedMu1B1STgt300);
 }
