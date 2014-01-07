@@ -90,10 +90,11 @@ void DelphesHandler::printSignature(Signature* sig)
   cout<<"agrdl "<<sig->getName()<<" "<<event<<" leptons "<<m_good_electrons.size()+m_good_muons.size()+m_good_taus.size()<<" muons "<<m_good_muons.size()<<" electrons "<<m_good_electrons.size()<<" taus "<<m_good_taus.size()<<endl;
 }
 //-----------------------------------------
-void DelphesHandler::addSignature(const char* name, const char* option)
+Signature* DelphesHandler::addSignature(const char* name, const char* option)
 {
   Signature* sig = new Signature(name,option);
   addSignature(sig);
+  return sig;
 }
 
 //-----------------------------------------

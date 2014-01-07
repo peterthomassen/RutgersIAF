@@ -190,10 +190,11 @@ void SignatureHandler::printSignature(Signature* sig)
   cout<<endl;
 }
 //-----------------------------------------
-void SignatureHandler::addSignature(const char* name, const char* option)
+Signature* SignatureHandler::addSignature(const char* name, const char* option)
 {
   Signature* sig = new Signature(name,option);
   addSignature(sig);
+  return sig;
 }
 
 //-----------------------------------------

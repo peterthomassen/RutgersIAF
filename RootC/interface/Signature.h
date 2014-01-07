@@ -41,7 +41,7 @@ class Signature : public TObject {
   //Manage Definition of Signature//
   //////////////////////////////////
   void parseOptions();
-  void addCut(SignatureCut* cut){m_Cuts.push_back(cut);}
+  Signature* addCut(SignatureCut* cut){m_Cuts.push_back(cut); return this;}
   std::vector<SignatureCut*> getCuts() const{return m_Cuts;}
   
   /////////////////////////////////////

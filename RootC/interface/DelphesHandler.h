@@ -68,7 +68,7 @@ class DelphesHandler: public BaseHandler, public DelphesTreeBase {
   /////////////////////
   //Manage Signatures//
   /////////////////////
-  void addSignature(const char*, const char*);
+  Signature* addSignature(const char*, const char*);
   void addSignature(Signature* sig) {m_Signatures.push_back(sig);}
   void addBjetSignature(SignatureWithBjets* sig){m_bjetSignatures.push_back(sig);}
   void addBjetSignature(Signature* sig, int low, int high);
