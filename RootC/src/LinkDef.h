@@ -76,6 +76,7 @@
 #include "RutgersIAF2012/RootC/interface/SignatureTH2F_NvN.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH2F_METxy.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH2F_METvsMll.h"
+#include "RutgersIAF2012/RootC/interface/SignatureTH2F_METvsMT.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutPairMass.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutMll.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutMT.h"
@@ -345,6 +346,7 @@
 #pragma link C++ class SignatureCutMll+;
 #pragma link C++ class SignatureCutPairMass+;
 #pragma link C++ class SignatureTH2F_METvsMll+;
+#pragma link C++ class SignatureTH2F_METvsMT+;
 #pragma link C++ class SignatureTH2F_METxy+;
 #pragma link C++ class SignatureTH2F_NvN+;
 #pragma link C++ class SignatureCutAllMass+;
