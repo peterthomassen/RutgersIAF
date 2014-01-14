@@ -148,6 +148,7 @@
 #include "RutgersIAF2012/RootC/interface/SignatureTH1F_N.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH1F_LJMET.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH1F_PFMET.h"
+#include "RutgersIAF2012/RootC/interface/SignatureTH1F_MT.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH1F_ST.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH1F.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTrigger.h"
@@ -273,6 +274,7 @@
 #pragma link C++ class SignatureTH1F_ST+;
 #pragma link C++ class SignatureTH1F_N+;
 #pragma link C++ class SignatureTH1F_PFMET+;
+#pragma link C++ class SignatureTH1F_MT+;
 #pragma link C++ class SignatureTH1F_LJMET+;
 #pragma link C++ class SignatureTH1F_LT+;
 #pragma link C++ class SignatureTH1F_TCMET+;
