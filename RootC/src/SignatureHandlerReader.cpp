@@ -22,7 +22,7 @@ void SignatureHandler::readMuons()
     muon->setDxy(reco_track_dxy[gtID]);
     muon->setNValidMuonHits(reco_track_nValidMuonHits[gtID]);
     muon->setCaloIso2(reco_track_caloIso2[gtID]);
-    muon->setVert_dxy(reco_track_vert_dxy[gtID]);
+    muon->setVert_dxy(pat_muon_innerVertDxy[i]);
     muon->setCharge(reco_track_charge[gtID]);
     muon->setCaloIso1(reco_track_caloIso1[gtID]);
     muon->setIsGlobal(reco_track_isGlobal[gtID]);

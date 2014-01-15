@@ -197,11 +197,6 @@ void ChannelHandler::writeOutputHistos(Channel* channel,TFile* ofile)
     TString name = (*bgIter).first;
     double value = (*bgIter).second;
     double error = map_errors[name];
-    //if(channel->getName() == "Mu0El2DY0B1")cout<<name<<" "<<value<<" "<<error<<endl;
-    //if(channel->getName() == "L3DY1offZB1HT")cout<<name<<" "<<value<<" "<<error<<endl;
-    if(channel->getName() == "Mu3El0DY1offZB1HT")cout<<name<<" "<<value<<" "<<error<<endl;
-    if(channel->getName() == "Mu0El3DY1offZB1HT")cout<<name<<" "<<value<<" "<<error<<endl;
-    //if(channel->getName() == "L2SSB0")cout<<name<<" "<<value<<" "<<error<<endl;
     output->SetBinContent(iBin,value);
     output->SetBinError(iBin,error);
     output->GetXaxis()->SetBinLabel(iBin,name);
@@ -312,6 +307,21 @@ void ChannelHandler::processChannel(TString c)
       //cout<<chanName<<" "<<(double)fakeChannel->getEvents()<<" "<<chanTotal<<endl;
       if(chanTotal < 0)chanTotal = 0.0;
       typeTotal += chanTotal * typeFakeRate * weight;
+      map<TString,TString>::const_iterator hIter;
+      for(hIter = m_histogram_list.begin(); hIter != m_histogram_list.end(); hIter++){
+	TString hname = (*hIter).first;
+	TH1F* hnew1d = fakeChannel->getHistogram1d(hname,"Observed");
+	TH2F* hnew2d = fakeChannel->getHistogram2d(hname,"Observed");
+	if(hnew1d){
+	  TH1F* hclone = (TH1F*)hnew1d->Clone("h1temp");
+	  hclone->Scale(chanTotal * typeFakeRate * weight / hclone->Integral());
+	  channel->addHistogram(hname,fakeType,hclone);
+	}else if(hnew2d){
+	  TH2F* hclone = (TH2F*)hnew2d->Clone("h2temp");
+	  hclone->Scale(chanTotal* typeFakeRate * weight / hclone->Integral());
+	  channel->addHistogram(hname,fakeType,hclone);
+	}
+      }
       if(chanTotal == 0)chanTotal = 1.0;
       typeError += pow(weight,2)*(pow(typeFakeError*chanTotal,2) + pow(typeFakeRate,2) * ((double)fakeChannel->m_events + pow(fakeChannel->m_datadriven_total_error,2) + pow(fakeChannel->m_simu_total*m_luminosity_error,2) + pow(fakeChannel->m_simu_total_error*m_luminosity,2)));
     }
@@ -371,6 +381,23 @@ void ChannelHandler::processChannel(TString c)
 	ddHisto->SetBinError(i-1,nbinerror);
       }
       channel->addHistogram(fakeName,fakeName,ddHisto);
+
+      map<TString,TString>::const_iterator hIter;
+      for(hIter = m_histogram_list.begin(); hIter != m_histogram_list.end(); hIter++){
+	TString hname = (*hIter).first;
+	TH1F* hnew1d = fakeChannel->getHistogram1d(hname,"Observed");
+	TH2F* hnew2d = fakeChannel->getHistogram2d(hname,"Observed");
+	if(hnew1d){
+	  TH1F* hclone = (TH1F*)hnew1d->Clone("h1temp");
+	  hclone->Scale(ddHisto->Integral() / hclone->Integral());
+	  channel->addHistogram(hname,fakeName,hclone);
+	}else if(hnew2d){
+	  TH2F* hclone = (TH2F*)hnew2d->Clone("h2temp");
+	  hclone->Scale(ddHisto->Integral() / hclone->Integral());
+	  channel->addHistogram(hname,fakeName,hclone);
+	}
+      }
+
     }//fakeChannel
     TH1F* fakeBgHisto = channel->getHistogram1d(fakeName,fakeName);
     if(!fakeBgHisto)continue;
