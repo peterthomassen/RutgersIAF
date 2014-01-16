@@ -169,7 +169,7 @@ void SignatureHandler::readElectrons()
     electron->setDxy(reco_track_dxy[gtID]);
     electron->setNValidMuonHits(reco_track_nValidMuonHits[gtID]);
     electron->setCaloIso2(reco_track_caloIso2[gtID]);
-    electron->setVert_dxy(reco_track_vert_dxy[gtID]);
+    electron->setVert_dxy(pat_electron_fMVAVar_d0[i]);
     electron->setCharge(reco_track_charge[gtID]);
     electron->setCaloIso1(reco_track_caloIso1[gtID]);
     electron->setIsGlobal(reco_track_isGlobal[gtID]);
