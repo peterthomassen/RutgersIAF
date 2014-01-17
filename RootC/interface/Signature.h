@@ -60,9 +60,9 @@ class Signature : public TObject {
   void addBasicHistograms();
   void addChargeSignHistograms();
   void addFakeStudyHistograms();
-  void addHistogram(SignatureTH1F* c){m_1dhistograms.push_back(c);}
-  void addHistogram(SignatureTH2F* c){m_2dhistograms.push_back(c);}
-  void addHistogram(SignatureTH3F* c){m_3dhistograms.push_back(c);}
+  void addHistogram(SignatureTH1F* c){if(find(m_1dhistograms.begin(),m_1dhistograms.end(),c) == m_1dhistograms.end())m_1dhistograms.push_back(c);}
+  void addHistogram(SignatureTH2F* c){if(find(m_2dhistograms.begin(),m_2dhistograms.end(),c) == m_2dhistograms.end())m_2dhistograms.push_back(c);}
+  void addHistogram(SignatureTH3F* c){if(find(m_3dhistograms.begin(),m_3dhistograms.end(),c) == m_3dhistograms.end())m_3dhistograms.push_back(c);}
   void setDoEventDump(bool c = true){m_doEventDump = c;}
 
  protected:
