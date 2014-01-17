@@ -82,7 +82,7 @@ ClassImp(SignatureHandler)
   m_lastEntryPrepared = -1;
   m_currentEntry = -1;
   m_outFileName = ofname;
-  m_outFile = new TFile(m_outFileName.Data(),"CREATE");
+  m_outFile = new TFile(m_outFileName.Data(),"RECREATE");
   assert(!(m_outFile->IsZombie()));
   m_noCutSignature = new Signature("noCutSignature","");
 
