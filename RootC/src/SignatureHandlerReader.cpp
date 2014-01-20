@@ -147,6 +147,8 @@ void SignatureHandler::readMuons()
     }
     m_muons.push_back(muon);
   }
+  sort(m_muons.begin(),m_muons.end());
+  reverse(m_muons.begin(),m_muons.end());
 }
 
 //-----------------------------------------
@@ -367,6 +369,8 @@ void SignatureHandler::readElectrons()
 
     m_electrons.push_back(electron);
   }
+  sort(m_electrons.begin(),m_electrons.end());
+  reverse(m_electrons.begin(),m_electrons.end());
 
 }
 
