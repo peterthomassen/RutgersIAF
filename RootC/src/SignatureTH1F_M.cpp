@@ -48,11 +48,11 @@ Int_t SignatureTH1F_M::Fill(BaseHandler* handler)
     for(int k = 0; k < (int)product1.size(); k++){
       TLorentzVector v1(*(product1[k]));
       int charge1 = 0;
-      if(m_chargeMode < 2)((SignatureObjectRecoTrack*)product1[k])->getCharge();
+      if(m_chargeMode < 2)charge1 = ((SignatureObjectRecoTrack*)product1[k])->getCharge();
       for(int l = 0; l < (int)product2.size(); l++){
 	if((m_mixMode == 0 || m_mixMode == 2) && l <= k)continue;
 	int charge2 = 0;
-	if(m_chargeMode < 2)((SignatureObjectRecoTrack*)product2[l])->getCharge();
+	if(m_chargeMode < 2)charge2 = ((SignatureObjectRecoTrack*)product2[l])->getCharge();
 	if(m_chargeMode == 0 && fabs(charge1+charge2) > 0.5)continue;
 	if(m_chargeMode == 1 && fabs(charge1+charge2) < 1.5)continue;
 	TLorentzVector v2(*product2[l]);
