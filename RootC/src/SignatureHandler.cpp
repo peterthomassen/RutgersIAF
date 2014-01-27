@@ -20,7 +20,7 @@ using namespace std;
 
 ClassImp(SignatureHandler)
 
-  SignatureHandler::SignatureHandler(TTree *tree, TString ofname): BaseHandler(),SkimTreeBase(tree)
+  SignatureHandler::SignatureHandler(TTree *tree, TString ofname, const char* option): BaseHandler(),SkimTreeBase(tree)
 {
   //add default products
   addProduct("goodMuons","allMuons");
@@ -82,7 +82,7 @@ ClassImp(SignatureHandler)
   m_lastEntryPrepared = -1;
   m_currentEntry = -1;
   m_outFileName = ofname;
-  m_outFile = new TFile(m_outFileName.Data(),"RECREATE");
+  m_outFile = new TFile(m_outFileName.Data(),option);
   assert(!(m_outFile->IsZombie()));
   m_noCutSignature = new Signature("noCutSignature","");
 

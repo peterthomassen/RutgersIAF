@@ -57,7 +57,7 @@ class SignatureWithBjets;
 class SignatureHandler: public BaseHandler, public SkimTreeBase {
  public:
   //default constructor
-  SignatureHandler(TTree *tree=0,TString ofname="SigHanOutput.root");
+  SignatureHandler(TTree *tree=0,TString ofname="SigHanOutput.root", const char* option = "RECREATE");
   //virtual destructor
   virtual ~SignatureHandler();
 
