@@ -87,4 +87,7 @@ inline double SignatureObject::getPhotonPlusNeutralHadronEffectiveArea()
   else if(fabs(Eta()) > 2.3 && fabs(Eta()) < 2.4) return 0.11;
   else return 0.14;
 }
+
+bool SignatureObjectComparison(SignatureObject*,SignatureObject*);
+
 #endif
