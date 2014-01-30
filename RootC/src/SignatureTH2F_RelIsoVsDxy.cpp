@@ -7,6 +7,9 @@ ClassImp(SignatureTH2F_RelIsoVsDxy)
 
 Int_t SignatureTH2F_RelIsoVsDxy::Fill(BaseHandler* handler)
 {
+	TString sigName = TString(this->GetName());
+	bool debug = sigName.Contains("SeedEl2B0onZMET0to50_RelIsoVsDxy_electrons");
+//	if(debug) cout << "[PT] debug!" << endl;
   double jetpt = -1;
   if(m_jetsource == "HT"){
     jetpt = handler->getHT();
@@ -15,7 +18,7 @@ Int_t SignatureTH2F_RelIsoVsDxy::Fill(BaseHandler* handler)
   }else if(m_jetsource == "LEAD" || m_jetsource == "LEADING"){
     vector<SignatureObject*> jetv = handler->getProduct("goodJets");
     if(jetv.size() > 0){
-      sort(jetv.begin(),jetv.end());
+      sort(jetv.begin(),jetv.end(),SignatureObjectComparison);
       reverse(jetv.begin(),jetv.end());
       jetpt = jetv[0]->Pt();
     }
@@ -40,9 +43,23 @@ Int_t SignatureTH2F_RelIsoVsDxy::Fill(BaseHandler* handler)
 
   vector<SignatureObject*> v = handler->getProduct(m_productname);
   
+  unsigned int nIP = 0;
   for(vector<SignatureObject*>::iterator it = v.begin(); it != v.end(); ++it){
     SignatureObjectRecoTrack* owi = (SignatureObjectRecoTrack*)(*it);
     dummy = TH2F::Fill(owi->getVert_dxy(),owi->getRelIso(),handler->getPhysicsWeight());
+    int binX = GetXaxis()->FindFixBin(owi->getVert_dxy());
+    int binY = GetYaxis()->FindFixBin(owi->getRelIso());
+    if(debug && binX >= 37 && binX <= 44 && binY >= 1 && binY <= 3) {
+		nIP++;
+	} else if(debug) {
+		cout << "[PT] " << binX << "," << binY << endl;
+	}
+  }
+  if(debug && nIP < handler->getProduct("goodElectrons").size()) {
+	  cout << "[PT] " << nIP << " < " << handler->getProduct("goodElectrons").size() << endl;
+  }
+  if(debug && nIP < 2) {
+	  cout << "[PT]2 " << nIP << " < 2" << endl;
   }
 
   return dummy;

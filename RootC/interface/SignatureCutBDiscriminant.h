@@ -44,7 +44,7 @@ inline std::vector<double> SignatureCutBDiscriminant::getBDs(BaseHandler* handle
 {
   std::vector<double> retval;
   std::vector<SignatureObject*> product = handler->getProduct(m_productname);
-  sort(product.begin(),product.end());
+  sort(product.begin(),product.end(),SignatureObjectComparison);
   reverse(product.begin(),product.end());
   for(int i = 0; i < (int)product.size(); i++){
     SignatureObjectJet* jet = dynamic_cast<SignatureObjectJet*>(product[i]);

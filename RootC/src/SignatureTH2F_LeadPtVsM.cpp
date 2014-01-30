@@ -13,7 +13,7 @@ Int_t SignatureTH2F_LeadPtVsM::Fill(BaseHandler* handler)
 
   if(v.size() < 2)return dummy;
 
-  sort(v.begin(),v.end());
+  sort(v.begin(),v.end(),SignatureObjectComparison);
   reverse(v.begin(),v.end());
   double leadpt = v[0]->Pt();
 

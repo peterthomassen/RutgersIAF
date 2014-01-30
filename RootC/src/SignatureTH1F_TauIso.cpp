@@ -20,7 +20,7 @@ Int_t SignatureTH1F_TauIso::Fill(BaseHandler* handler)
   }else if(m_jetsource == "LEAD" || m_jetsource == "LEADING"){
     vector<SignatureObject*> jetv = handler->getProduct("goodJets");
     if(jetv.size() > 0){
-      sort(jetv.begin(),jetv.end());
+      sort(jetv.begin(),jetv.end(),SignatureObjectComparison);
       reverse(jetv.begin(),jetv.end());
       jetpt = jetv[0]->Pt();
     }
