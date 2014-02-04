@@ -52,6 +52,7 @@
 #include "RutgersIAF2012/RootC/interface/VertexCutNdof.h"
 #include "RutgersIAF2012/RootC/interface/VertexCutR.h"
 #include "RutgersIAF2012/RootC/interface/VertexCutZ.h"
+#include "RutgersIAFTutorial/CMSSW_5_2_5/src/RutgersIAF2012/RootC/interface/SignatureCutNVertexAllReco.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH2F_LJJMvsPiT.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH2F_LJJMvsEta.h"
 #include "RutgersIAF2012/RootC/interface/SignatureTH3F_LJJDalitz.h"
@@ -394,4 +395,5 @@
 #pragma link C++ class SignatureTH2F_HTvsWSumPt+;
 #pragma link C++ class SignatureTH2F_TauIsovsHT+;
 #pragma link C++ class SignatureTH2F_TauIsovsWSumPt+;
+#pragma link C++ class RutgersIAFTutorial/CMSSW_5_2_5/src/SignatureCutNVertexAllReco+;
 #endif

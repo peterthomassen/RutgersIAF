@@ -163,6 +163,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   std::vector<SignatureObject*> getGoodRecoTracks();
   std::vector<SignatureObject*> getGoodMCParticles();
   std::vector<SignatureRecoVertex*> getGoodRecoVertices();
+  std::vector<SignatureRecoVertex*> getAllRecoVertices(); 
   std::vector<SignatureTrigger*> getTriggers();
   SignatureObjectMET* getMET();
   SignatureBeamSpot* getBeamSpot();

@@ -84,6 +84,7 @@ class BaseHandler : virtual public TObject {
   virtual std::vector<SignatureObject*> getGoodRecoTracks() = 0;
   virtual std::vector<SignatureObject*> getGoodMCParticles() = 0;
   virtual std::vector<SignatureRecoVertex*> getGoodRecoVertices() = 0;
+  virtual std::vector<SignatureRecoVertex*> getAllRecoVertices() = 0;
   virtual std::vector<SignatureTrigger*> getTriggers() = 0;
   virtual SignatureObjectMET* getMET() = 0;
   virtual SignatureBeamSpot* getBeamSpot() = 0;
