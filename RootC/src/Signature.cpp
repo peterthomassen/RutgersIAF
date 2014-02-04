@@ -61,7 +61,7 @@ void Signature::addBasicHistograms()
   addHistogram(new SignatureTH1F_LJMET(TString(m_name+"_LJMET").Data()));
   addHistogram(new SignatureTH1F_N(TString(m_name+"_nmuons").Data(),"goodMuons"));
   addHistogram(new SignatureTH1F_N(TString(m_name+"_nelectrons").Data(),"goodElectrons"));
-  addHistogram(new SignatureTH1F_N(TString(m_name+"_ntaus").Data(),"goodTaus","goodIsoTracks"));
+  addHistogram(new SignatureTH1F_N(TString(m_name+"_ntaus").Data(),"goodTaus"));
   addHistogram(new SignatureTH1F_N(TString(m_name+"_nphotons").Data(),"goodPhotons"));
   addHistogram(new SignatureTH1F_N(TString(m_name+"_ntracks").Data(),"goodIsoTracks"));
   addHistogram(new SignatureTH1F_N(TString(m_name+"_njets").Data(),"goodJets"));
