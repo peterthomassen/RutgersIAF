@@ -5,7 +5,7 @@ srcdir=`echo $basedir | sed 's/interface/src/'`
 CMSDIR=`echo $basedir | awk '{split($1,array,"RutgersIAF"); print array[1]}'`
 echo $basedir $srcdir $CMSDIR
 tmpfile=tmp.tmp
-ls -l $basedir/*.h | awk '{print $9}' > $tmpfile
+ls -l $basedir/*.h | awk '{print $9}' | grep -v SortableObject | grep -v debug | grep -v DelphesClasses > $tmpfile
 lnkdef=$srcdir/LinkDef.h
 
 while read line
