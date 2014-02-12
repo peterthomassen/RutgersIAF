@@ -1121,6 +1121,12 @@ vector<SignatureRecoVertex*> SignatureHandler::getGoodRecoVertices()
   return m_good_recovertices;
 }
 //-----------------------------------------
+vector<SignatureRecoVertex*> SignatureHandler::getAllRecoVertices()
+{
+  if(m_currentEntry != m_lastEntryPrepared)prepareEvent();
+  return m_recovertices;
+}
+//----------------------------------------- 
 SignatureObjectMET* SignatureHandler::getMET()
 {
   //if(m_currentEntry != m_lastEntryPrepared)prepareEvent();
