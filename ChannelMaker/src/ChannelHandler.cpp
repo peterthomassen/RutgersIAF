@@ -206,6 +206,22 @@ void ChannelHandler::writeOutputHistos(Channel* channel,TFile* ofile)
   //ofile->cd();
   output->Write();
 
+  map<TString,TString>::const_iterator hIter;
+
+  for(hIter = m_histogram_list.begin(); hIter != m_histogram_list.end(); hIter++){
+    TString histname = (*hIter).first;
+    map<TString,TH1F*> histos1d = channel->getHistograms1d(histname);
+    map<TString,TH1F*>::iterator iter;
+    for(iter = histos1d.begin(); iter != histos1d.end(); iter++){
+      (*iter).second->Write();
+    }
+    map<TString,TH2F*> histos2d = channel->getHistograms2d(histname);
+    map<TString,TH2F*>::iterator iter2;
+    for(iter2 = histos2d.begin(); iter2 != histos2d.end(); iter2++){
+      (*iter2).second->Write();
+    }
+  }
+
 }
 //-------------------
 //-------------------
@@ -308,6 +324,7 @@ void ChannelHandler::processChannel(TString c)
       if(chanTotal < 0)chanTotal = 0.0;
       typeTotal += chanTotal * typeFakeRate * weight;
       map<TString,TString>::const_iterator hIter;
+
       for(hIter = m_histogram_list.begin(); hIter != m_histogram_list.end(); hIter++){
 	TString hname = (*hIter).first;
 	TH1F* hnew1d = fakeChannel->getHistogram1d(hname,"Observed");
@@ -554,6 +571,7 @@ void ChannelHandler::readSimulation()
       for(hIter = m_histogram_list.begin(); hIter != m_histogram_list.end(); hIter++){
 	TString type=(*hIter).second;
 	TH1F* h = (TH1F*)f.Get(TString::Format("%s_%s",channelName.Data(),type.Data()));
+	//cout<<simuName<<" "<<channelName<<" "<<type.Data()<<" "<<(*hIter).first<<endl;
 	h->SetDirectory(0);
 	h->Sumw2();
 	h->Scale(xsec/totalEvents);

@@ -114,21 +114,19 @@ Channel& Channel::operator+=(Channel &rhs)
 
   map<TString,map<TString,TH1F*> >::const_iterator h1Iter;
   map<TString,TH1F*>::iterator h1Iter2;
-  for(h1Iter = m_1d_histograms.begin(); h1Iter != m_1d_histograms.end(); h1Iter++){
+  for(h1Iter = rhs.m_1d_histograms.begin(); h1Iter != rhs.m_1d_histograms.end(); h1Iter++){
     map<TString,TH1F*> tmap = (*h1Iter).second;
     for(h1Iter2 = tmap.begin();h1Iter2 != tmap.end(); h1Iter2++){
-      TH1F* h = rhs.getHistogram1d((*h1Iter).first,(*h1Iter2).first);
-      if(h)((*h1Iter2).second)->Add(h);
+      addHistogram((*h1Iter).first,(*h1Iter2).first,(*h1Iter2).second);
     }
   }
 
   map<TString,map<TString,TH2F*> >::const_iterator h2Iter;
   map<TString,TH2F*>::iterator h2Iter2;
-  for(h2Iter = m_2d_histograms.begin(); h2Iter != m_2d_histograms.end(); h2Iter++){
+  for(h2Iter = rhs.m_2d_histograms.begin(); h2Iter != rhs.m_2d_histograms.end(); h2Iter++){
     map<TString,TH2F*> tmap = (*h2Iter).second;
     for(h2Iter2 = tmap.begin();h2Iter2 != tmap.end(); h2Iter2++){
-      TH2F* h = rhs.getHistogram2d((*h2Iter).first,(*h2Iter2).first);
-      if(h)((*h2Iter2).second)->Add(h);
+      addHistogram((*h2Iter).first,(*h2Iter2).first,(*h2Iter2).second);
     }
   }
 
@@ -499,10 +497,12 @@ void Channel::addHistogram(TString type,TString name, TH1F* h)
   if(m_1d_histograms.find(type) == m_1d_histograms.end()){
     map<TString,TH1F*> nmap;
     TH1F* clone = (TH1F*)h->Clone(TString::Format("%s_%s_%s",getName().Data(),type.Data(),name.Data()));
+    clone->SetDirectory(0);
     nmap[name] = clone;
     m_1d_histograms[type] = nmap;
   }else if(m_1d_histograms[type].find(name) == m_1d_histograms[type].end()){
     TH1F* clone = (TH1F*)h->Clone(TString::Format("%s_%s_%s",getName().Data(),type.Data(),name.Data()));
+    clone->SetDirectory(0);
     m_1d_histograms[type][name] = clone;
   }else{
     m_1d_histograms[type][name]->Add(h);
