@@ -1,6 +1,9 @@
 #include "RutgersIAF2012/ChannelMaker/interface/ChannelHandler.h"
 #include <fstream>
 #include "Math/DistFunc.h"
+#include <assert.h>
+
+#include "RutgersIAF2012/RootC/interface/debug.h"
 
 using namespace std;
 
@@ -497,11 +500,12 @@ void ChannelHandler::processChannel(TString c)
 }
 //-------------------
 //-------------------
-void ChannelHandler::addChannels()
+int ChannelHandler::addChannels()
 {
   map<TString,map<TString,double> >::const_iterator topIter;
   map<TString,Channel*>::const_iterator inputIter;
   map<TString,double>::const_iterator attrIter;
+  int i = 0;
   for(topIter = m_addChannel_attributes_map.begin(); topIter != m_addChannel_attributes_map.end(); topIter++){
     TString chanName = (*topIter).first;
     cout<<"summing "<<chanName<<endl;
@@ -524,8 +528,9 @@ void ChannelHandler::addChannels()
 	//cout<<"     "<<sumChan->getEvents()<<endl;
       }
     }
+  ++i;
   }
-
+  return i;
 }
 //-------------------
 //-------------------
@@ -593,6 +598,11 @@ void ChannelHandler::readData()
       TString channelName = m_input_channelNames[j];
       //cout<<channelName<<endl;
       TH1F* histo = (TH1F*)f.Get(channelName+"_ST");
+      if(histo == 0) {
+        DEBUG("Trying to get _ST histogram for channel");
+        DEBUG(channelName);
+        assert(histo != 0);
+      }
       int thisEvents = (int)histo->Integral();
       Channel* channel = m_input_channels[channelName];
       channel->addEvents(thisEvents);

@@ -1,3 +1,7 @@
+#include <fstream>
+#include "RutgersIAF2012/ChannelMaker/interface/ChannelHandler.h"
+#include "RutgersIAF2012/ChannelMaker/interface/Channel.h"
+
 void addDataFiles(ChannelHandler* handler,TString filelist, double lum, double lumunc)
 {
   handler->setLuminosity(lum);
@@ -30,7 +34,7 @@ void addSimulations(ChannelHandler* handler, TString filelist)
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
-void setConstants2011(ChannelHandler* handler)
+/*void setConstants2011(ChannelHandler* handler)
 {
 
   handler->setTrackToMuonFakeRate(0.0145);
@@ -48,11 +52,12 @@ void setConstants2011(ChannelHandler* handler)
   handler->setMuonChargeFlipRate(1.72e-5);
   handler->setMuonChargeFlipRateError(1.72e-5);
 
-}
+}*/
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
+/*
 void addChannels2011(ChannelHandler* handler)
 {
 
@@ -118,6 +123,7 @@ void addChannels2011(ChannelHandler* handler)
     }
   }
 }
+*/
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------

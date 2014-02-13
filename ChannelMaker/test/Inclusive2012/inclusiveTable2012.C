@@ -1,19 +1,26 @@
 void inclusiveTable2012()
 {
+  gSystem->Load("libRutgersIAF2012ChannelMaker.so");
   gSystem->Load("libRutgersIAF2012RootC.so");
-  gROOT->ProcessLine(".L helperChannelHandler.C");
-  gROOT->ProcessLine(".L helperTable2012.C");
+  gROOT->ProcessLine(".include ../../CMSSW_5_2_2/src");
+  gROOT->ProcessLine(".L helperChannelHandler.C+");
+  gROOT->ProcessLine(".L helperTable2012.C+");
+
+  const char* ofname="example.root";
 
   ChannelHandler* handler = new ChannelHandler(ofname);
 
   addDataFiles(handler,"datafiles.list",19500.0,0.026);
   addSimulations(handler,"simufiles.list");
 
-  addInclusiveChannels2012(handler);
+  int nMicro = setupInclusiveSignatures(handler);
+  
+  handler->addHistogram("MET", "PFMET");
+  handler->addHistogram("HT", "HT");
 
   handler->initialize();
   handler->processChannels();
-  handler->addChannels();
+  int nMacro = handler->addChannels();
+  cout << "Combined " << nMicro << " channels into " << nMacro << " sum channels" << endl;
   handler->finish();
-
 }

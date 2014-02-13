@@ -48,6 +48,7 @@ class ChannelHandler : public TObject {
   void addInputChannel(TString, Channel*);
   void addSumChannel(TString);
   void addSumChannelAttribute(TString,TString,double);
+  std::map<TString, Channel*> getSumChannels(){return m_sum_channels;}
   void printSumChannels();
 
   void addFakeObjectNames(TString,TString);
@@ -66,7 +67,7 @@ class ChannelHandler : public TObject {
   //running handler
   void initialize();//read in files etc
   void processChannels();//do background calculations, etc
-  void addChannels();//sum various output channels
+  int addChannels();//sum various output channels
   void finish();//create histograms close stuff, etc
 
  private:
