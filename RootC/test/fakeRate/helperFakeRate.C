@@ -6,6 +6,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	
 	// Cuts for fake rate signature definitions
 	SignatureCutN* zeroBjets = new SignatureCutN("bJetsCSVM",0,0);
+	SignatureCutN* oneBjets = new SignatureCutN("bJetsCSVM",1,1);
 	SignatureCutN* geoneBjets = new SignatureCutN("bJetsCSVM",1,-1);
 	
 	SignatureCutThreshold* geThreeJets40 = new SignatureCutThreshold("goodJets", "threeJetsThreshold40");
@@ -93,6 +94,103 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 
 	SignatureCutN* oneOrMoreTaus = new SignatureCutN("goodTaus",1,-1);
 	SignatureCutN* oneOrMoreSidebandTaus = new SignatureCutN("sidebandTaus",1,-1);
+
+	handler->addSignature("SeedEl1p1Mu1p1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosElectrons)
+	  ->addCut(zeroNegElectrons)
+	  ->addCut(oneOrMoreBasicPosMuons)
+	  ;
+
+	handler->addSignature("SeedMu1p1El1p1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosMuons)
+	  ->addCut(zeroNegMuons)
+	  ->addCut(oneOrMoreBasicPosElectrons)
+	  ;
+
+	handler->addSignature("SeedEl1m1Mu1m1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegElectrons)
+	  ->addCut(zeroPosElectrons)
+	  ->addCut(oneOrMoreBasicNegMuons)
+	  ;
+
+	handler->addSignature("SeedMu1m1El1m1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegMuons)
+	  ->addCut(zeroPosMuons)
+	  ->addCut(oneOrMoreBasicNegElectrons)
+	  ;
+
+	handler->addSignature("SeedEl1p1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosElectrons)
+	  ->addCut(zeroNegElectrons)
+	  ;
+
+	handler->addSignature("SeedMu1p1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosMuons)
+	  ->addCut(zeroNegMuons)
+	  ;
+
+	handler->addSignature("SeedEl1m1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegElectrons)
+	  ->addCut(zeroPosElectrons)
+	  ;
+
+	handler->addSignature("SeedMu1m1B1METgt50HTgt200","")
+	  ->addCut(metgt50)
+	  ->addCut(htgt200)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegMuons)
+	  ->addCut(zeroPosMuons)
+	  ;
+
+	handler->addSignature("SeedEl1p1B1METgt50","")
+	  ->addCut(metgt50)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosElectrons)
+	  ->addCut(zeroNegElectrons)
+	  ;
+
+	handler->addSignature("SeedMu1p1B1METgt50","")
+	  ->addCut(metgt50)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosMuons)
+	  ->addCut(zeroNegMuons)
+	  ;
+
+	handler->addSignature("SeedEl1m1B1METgt50","")
+	  ->addCut(metgt50)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegElectrons)
+	  ->addCut(zeroPosElectrons)
+	  ;
+
+	handler->addSignature("SeedMu1m1B1METgt50","")
+	  ->addCut(metgt50)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegMuons)
+	  ->addCut(zeroPosMuons)
+	  ;
+
 
 	// Signatures for Rdxy
 	handler->addSignature("SeedEl2B0onZMET0to50","")
