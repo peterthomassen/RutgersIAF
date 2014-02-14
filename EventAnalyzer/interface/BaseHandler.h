@@ -75,7 +75,7 @@ class BaseHandler : virtual public TObject {
   /////////////////////////////
   virtual bool getDebugMode(){return m_debugMode;}
   virtual void dumpEventInfo();
-  virtual void printDebugInfo() const = 0;
+  virtual void printDebugInfo();
 
   virtual void addEventVariable(TString,EventVariable*);
   EventVariable* getEventVariable(TString);
@@ -97,10 +97,6 @@ class BaseHandler : virtual public TObject {
 
   virtual void addWeightVariable(TString);
 
-  virtual int getRun() = 0;
-  virtual long int getEvent() = 0;
-  virtual int getLumiBlock() = 0;
-
   BaseTreeReader* getReader(){return m_reader;}
   BaseTreeWriter* getWriter(){return m_writer;}
   void setWriter(BaseTreeWriter* c){m_writer = c;}
@@ -121,7 +117,7 @@ class BaseHandler : virtual public TObject {
   void addProductComparison(TString,TString,ObjectComparison*,bool doAnd=true);
   void addProductSelfComparison(TString,ObjectComparison*,bool doAnd=true);
 
- private:
+ protected:
   virtual void createProducts();
   virtual void resetProducts();
   virtual void prepareEvent();
@@ -130,6 +126,7 @@ class BaseHandler : virtual public TObject {
   virtual void calcPhysicsWeight();
   virtual void calculateCuts();
   bool applyHandlerCuts();
+  virtual void analyzeEvent();
 
   virtual void printSignature(Signature*);
 
