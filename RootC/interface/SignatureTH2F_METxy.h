@@ -16,7 +16,8 @@ class SignatureTH2F_METxy : public SignatureTH2F {
   SignatureTH2F_METxy(TH2F h):SignatureTH2F(h) {}
   SignatureTH2F_METxy():SignatureTH2F() {}
 
-  virtual Int_t Fill(SignatureHandler*);
+  virtual Int_t Fill(BaseHandler*);
+  Int_t Fill(SignatureHandler*);
 
   ClassDef(SignatureTH2F_METxy,1);
 
