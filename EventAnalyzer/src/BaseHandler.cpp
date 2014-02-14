@@ -47,7 +47,6 @@ BaseHandler::BaseHandler(TString ofname, BaseTreeReader* reader)
 BaseHandler::~BaseHandler()
 {
   delete m_noCutSignature;
-  m_outFile->Close();
 }
 
 //-----------------------------------------
@@ -121,7 +120,8 @@ void BaseHandler::finishSignatures()
   for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
     m_bjetSignatures[s]->finish();
   }
-  m_writer->finish();
+  if(m_writer)m_writer->finish();
+  m_outFile->Close();
 }
 
 //-----------------------------------------
@@ -166,84 +166,9 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
           }
     }
 
-    ////////////////////////////////////////////////////////////////
-    //Get all Physics objects and calculate all Physics quantities//
-    ////////////////////////////////////////////////////////////////
     prepareEvent();
-    calculateCuts();
+    analyzeEvent();
 
-    m_noCutSignature->fillHistograms();
-
-    if(m_debugMode)printDebugInfo();
-
-    unsigned int nSig = m_Signatures.size();
-    unsigned int nBjetSig = m_bjetSignatures.size();
-    unsigned int nPreSig = m_preHandlerCutSignatures.size();
-    vector<int> isSigVec(nSig + nBjetSig + nPreSig,0);
-    for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
-      if(m_preHandlerCutSignatures[s]->isSignature()){
-        printSignature(m_preHandlerCutSignatures[s]);
-        m_preHandlerCutSignatures[s]->fillHistograms();
-        isSigVec[s+nSig+nBjetSig]=1;
-      }
-    }
-    ////////////////////////////
-    //Check handler level cuts//
-    ////////////////////////////
-    if(applyHandlerCuts()){
-
-
-    ////////////////////////////////////////////////////////////
-    //Check if it is part of the signature and fill histograms//
-    ////////////////////////////////////////////////////////////
-      for(unsigned int s = 0; s < m_Signatures.size(); s++){
-        if(m_Signatures[s]->isSignature()){
-          printSignature(m_Signatures[s]);
-          m_Signatures[s]->fillHistograms();
-          isSigVec[s]=1;
-          if(m_doPriorityList)break;
-        }
-      }
-      double baseweight = m_physicsWeight;
-      for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
-        if(m_bjetSignatures[s]->isSignature()){
-          if(m_bTagged >= m_bjetSignatures[s]->getLow() && m_bTagged <= m_bjetSignatures[s]->getHigh()){
-            printSignature(m_bjetSignatures[s]);
-            isSigVec[s + nSig] = 1;
-            if(!m_isMC)m_bjetSignatures[s]->fillHistograms();
-          }
-          if(m_isMC){
-            double bweight = 0.0;
-            for(int b = m_bjetSignatures[s]->getLow(); b <= m_bjetSignatures[s]->getHigh() && b < 3; b++){
-              bweight += m_btagWeights[b];
-            }
-            m_physicsWeight = baseweight * bweight;
-
-            if(m_physicsWeight != 0.0)m_bjetSignatures[s]->fillHistograms();
-          }
-        }
-
-      }
-      m_physicsWeight = baseweight;
-    }
-    ////////////////////////////////////
-    //Check correlations of signatures//
-    ////////////////////////////////////
-    for(unsigned int s = 0; s < isSigVec.size(); s++){
-      if(isSigVec[s]){
-        m_signatureCorrelationHisto->Fill(s,s);
-      }
-      //dumpEventInfo();
-      for(unsigned int t = s+1; t < isSigVec.size();t++){
-        if(isSigVec[s] && isSigVec[t]){
-          m_signatureCorrelationHisto->Fill(s,t);
-          m_signatureCorrelationHisto->Fill(t,s);
-        }
-      }
-    }
-    bool saveEvent = false;
-    bool isSet = getVariable("WRITEEVENT",saveEvent);
-    if(m_writer && isSet && saveEvent)m_writer->fillTree();
   }//End of event loop
 }
 
@@ -573,8 +498,8 @@ void BaseHandler::calcPhysicsWeight()
 //-----------------------------------------
 void BaseHandler::prepareEvent()
 {
-  if(m_currentEntry == m_lastEntryPrepared)return;
 
+  if(m_currentEntry == m_lastEntryPrepared)return;
 
   resetProducts();
   resetVariables();
@@ -816,7 +741,7 @@ void BaseHandler::addWeightVariable(TString varname)
 {
   vector<TString>::iterator iter = find(m_weight_variables.begin(),m_weight_variables.end(),varname);
   if(iter != m_weight_variables.end()){
-    cerr<<"WARNING: weight varialbe with name: "<<varname<<" is already in list!"<<endl;
+    cerr<<"WARNING: weight variable with name: "<<varname<<" is already in list!"<<endl;
   }
   m_weight_variables.push_back(varname);
 }
@@ -960,8 +885,94 @@ ObjectVariable* BaseHandler::getObjectVariable(TString varname)
 }
 //-----------------------------------------
 //-----------------------------------------
+void BaseHandler::analyzeEvent()
+{
+
+    ////////////////////////////////////////////////////////////////
+    //Get all Physics objects and calculate all Physics quantities//
+    ////////////////////////////////////////////////////////////////
+    calculateCuts();
+
+    m_noCutSignature->fillHistograms();
+
+    if(m_debugMode)printDebugInfo();
+
+    unsigned int nSig = m_Signatures.size();
+    unsigned int nBjetSig = m_bjetSignatures.size();
+    unsigned int nPreSig = m_preHandlerCutSignatures.size();
+    vector<int> isSigVec(nSig + nBjetSig + nPreSig,0);
+    for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
+      if(m_preHandlerCutSignatures[s]->isSignature()){
+        printSignature(m_preHandlerCutSignatures[s]);
+        m_preHandlerCutSignatures[s]->fillHistograms();
+        isSigVec[s+nSig+nBjetSig]=1;
+      }
+    }
+    ////////////////////////////
+    //Check handler level cuts//
+    ////////////////////////////
+    if(applyHandlerCuts()){
+
+
+    ////////////////////////////////////////////////////////////
+    //Check if it is part of the signature and fill histograms//
+    ////////////////////////////////////////////////////////////
+      for(unsigned int s = 0; s < m_Signatures.size(); s++){
+        if(m_Signatures[s]->isSignature()){
+          printSignature(m_Signatures[s]);
+          m_Signatures[s]->fillHistograms();
+          isSigVec[s]=1;
+          if(m_doPriorityList)break;
+        }
+      }
+      double baseweight = m_physicsWeight;
+      for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
+        if(m_bjetSignatures[s]->isSignature()){
+          if(m_bTagged >= m_bjetSignatures[s]->getLow() && m_bTagged <= m_bjetSignatures[s]->getHigh()){
+            printSignature(m_bjetSignatures[s]);
+            isSigVec[s + nSig] = 1;
+            if(!m_isMC)m_bjetSignatures[s]->fillHistograms();
+          }
+          if(m_isMC){
+            double bweight = 0.0;
+            for(int b = m_bjetSignatures[s]->getLow(); b <= m_bjetSignatures[s]->getHigh() && b < 3; b++){
+              bweight += m_btagWeights[b];
+            }
+            m_physicsWeight = baseweight * bweight;
+
+            if(m_physicsWeight != 0.0)m_bjetSignatures[s]->fillHistograms();
+          }
+        }
+
+      }
+      m_physicsWeight = baseweight;
+    }
+    ////////////////////////////////////
+    //Check correlations of signatures//
+    ////////////////////////////////////
+    for(unsigned int s = 0; s < isSigVec.size(); s++){
+      if(isSigVec[s]){
+        m_signatureCorrelationHisto->Fill(s,s);
+      }
+      //dumpEventInfo();
+      for(unsigned int t = s+1; t < isSigVec.size();t++){
+        if(isSigVec[s] && isSigVec[t]){
+          m_signatureCorrelationHisto->Fill(s,t);
+          m_signatureCorrelationHisto->Fill(t,s);
+        }
+      }
+    }
+    bool saveEvent = false;
+    bool isSet = getVariable("WRITEEVENT",saveEvent);
+    if(m_writer && isSet && saveEvent)m_writer->fillTree();
+
+}
 //-----------------------------------------
 //-----------------------------------------
+void BaseHandler::printDebugInfo()
+{
+
+}
 //-----------------------------------------
 //-----------------------------------------
 //-----------------------------------------
