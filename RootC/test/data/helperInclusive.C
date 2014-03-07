@@ -3,7 +3,6 @@
 #include "RutgersIAF2012/RootC/interface/SignatureCutHT.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutMass.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutMET.h"
-#include "RutgersIAF2012/RootC/interface/SignatureCutMll.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutN.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNDYPairs.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNTau.h"
@@ -135,14 +134,20 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	
 	// Prepare DY cuts
 	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcuts;
+	
+	SignatureCutPairMass* aboveZ = new SignatureCutPairMass("goodElectrons",105,10000,true,0,0);
+	aboveZ->addProduct("goodMuons");
+	SignatureCutPairMass* belowZ = new SignatureCutPairMass("goodElectrons",75,10000,false,0,0);
+	belowZ->addProduct("goodMuons");
+	
 	SignatureCutNDYPairs* dy0cut = new SignatureCutNDYPairs(0,0);
 	dy0cut->setName("0");
 	SignatureCutNDYPairs* dy1onZcut = new SignatureCutNDYPairs(1,1,true);
 	dy1onZcut->setName("z1");
 	SignatureCutNDYPairs* dy1offZcut = new SignatureCutNDYPairs(1,1,false);
 	dy1offZcut->setName("v1");
-	SignatureCutCombined* dy1belowZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutMll(0,75), true, "l1");
-	SignatureCutCombined* dy1aboveZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutMll(105,-1), true, "h1");
+	SignatureCutCombined* dy1belowZcut = new SignatureCutCombined(dy1offZcut, belowZ, true, "l1");
+	SignatureCutCombined* dy1aboveZcut = new SignatureCutCombined(dy1offZcut, aboveZ, true, "h1"); 
 	SignatureCutNDYPairs* dy2onZcut = new SignatureCutNDYPairs(2,2,true);
 	dy2onZcut->setName("z2");
 	SignatureCutNDYPairs* dy2offZcut = new SignatureCutNDYPairs(2,2,false);
@@ -279,15 +284,16 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 															sig->addCut(nMuCuts[nLeptons][nMu][qMu]);
 															
 															// Taus
-															if(nSidebandTau == 0) {
-																name += TString::Format("Tau%d", nTau);
-																// For 3LTau1, require exactly 1 Tau; else allow one or more
-																if(nLeptons == 3 && nTau == 1) {
-																	sig->addCut(new SignatureCutNTau(1, 1));
-																} else {
-																	sig->addCut(nTauCuts[nTau]);
-																}
+															name += TString::Format("Tau%d", nTau);
+															// For 3LTau1, require exactly 1 Tau; else allow one or more
+															if(nLeptons == 3 && nTau == 1) {
+																sig->addCut(new SignatureCutNTau(1, 1));
 															} else {
+																sig->addCut(nTauCuts[nTau]);
+															}
+															
+															// Sideband taus
+															if(nSidebandTau > 0) {
 																name += TString::Format("SidebandTau%d", nSidebandTau);
 																sig->addCut(nSidebandTauCuts[nSidebandTau]);
 															}
