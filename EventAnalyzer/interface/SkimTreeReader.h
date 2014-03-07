@@ -600,7 +600,7 @@ simpleSecondaryVertexNegativeHighPurBJetTags 3
    virtual void     Init(TTree *tree);
 
  protected:
-   void createProducts();
+   void makeProducts();
 
    void createMuons();
    void createElectrons();

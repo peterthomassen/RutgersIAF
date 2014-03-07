@@ -3005,6 +3005,10 @@ void setupProducts2012(SignatureHandler* handler){
   handler->addProductSeparation("basicTracks","goodMuons",0.1);
   handler->addProductSeparation("basicTracks","goodElectrons",0.1);
   handler->addProductSeparation("basicTracks","goodTaus",0.3);
+
+  handler->addProductSeparation("goodIsoTracks","goodMuons",0.1);
+  handler->addProductSeparation("goodIsoTracks","goodElectrons",0.1);
+  handler->addProductSeparation("goodIsoTracks","goodTaus",0.3);
   handler->setSelfSeparate("basicTracks",0.005);
   handler->setSelfSeparate("nonPromptIsoTracks",0.005);
   //handler->addProductSeparation("nonPromptIsoTracks","goodMuons",0.1);

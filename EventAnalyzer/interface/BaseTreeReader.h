@@ -34,16 +34,16 @@ class BaseTreeReader : public TObject{
   virtual void setVariable(TString,bool);
 
  protected:
-  TTree* m_tree;
-  std::map<TString,std::vector<SignatureObject*> > m_products;
+  TTree* m_inTree;
+  std::map<TString,std::vector<SignatureObject*> > m_productmap;
   void clearProducts();
-  virtual void createProducts() = 0;
+  virtual void makeProducts() = 0;
 
-  std::map<TString,int> m_variable_map_int;
-  std::map<TString,long> m_variable_map_long;
-  std::map<TString,double> m_variable_map_double;
-  std::map<TString,TString> m_variable_map_TString;
-  std::map<TString,bool> m_variable_map_bool;
+  std::map<TString,int> m_variable_mapint;
+  std::map<TString,long> m_variable_maplong;
+  std::map<TString,double> m_variable_mapdouble;
+  std::map<TString,TString> m_variable_mapTString;
+  std::map<TString,bool> m_variable_mapbool;
 
   ClassDef(BaseTreeReader,1);
 
