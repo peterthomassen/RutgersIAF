@@ -91,7 +91,9 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SignatureCutNDYPairs* dy1onZcut = new SignatureCutNDYPairs(1,1,true);
 	SignatureCutNDYPairs* dy1offZcut = new SignatureCutNDYPairs(1,1,false);
 	SignatureCutNDYPairs* dy2onZcut = new SignatureCutNDYPairs(2,2,true);
-
+	
+	SignatureCutNTau* zeroTaus = new SignatureCutNTau(0, 0);
+	
 	SignatureCutN* oneOrMoreTaus = new SignatureCutN("goodTaus",1,-1);
 	SignatureCutN* oneOrMoreSidebandTaus = new SignatureCutN("sidebandTaus",1,-1);
 
@@ -193,6 +195,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 
 
 	// Signatures for Rdxy
+	// TODO veto taus?
 	handler->addSignature("SeedEl2B0onZMET0to50","")
 		->addCut(zeroBjets)
 		->addCut(twoElectrons)
@@ -532,25 +535,31 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SignatureCutN* threeLeptons = new SignatureCutN("goodElectrons", 3, 3);
 	threeLeptons->addProduct("goodMuons");
 	
-	SignatureCutN* fourLeptons = new SignatureCutN("goodElectrons", 4, 4);
-	fourLeptons->addProduct("goodMuons");
-	
 	SignatureCutMT* mt50to100 = new SignatureCutMT(50,100,"MTCUT50to100");
 	SignatureCutMT* mt50to120 = new SignatureCutMT(50,120,"MTCUT50to120");
-	SignatureTH1F_MT* histMT = new SignatureTH1F_MT("MT");
 	SignatureTH2F_METvsMT* histMETvsMT = new SignatureTH2F_METvsMT("METvsMT");
 	
-	handler->addSignature("SeedL3DYz1B0MET100to150HT0to200", "")
+	handler->addSignature("SeedL3DYz1B0MET0to50HT0to200", "")
 		->addCut(threeLeptons)
+		->addCut(zeroTaus)
 		->addCut(dy1onZcut)
-		->addCut(met100to150)
+		->addCut(met0to50)
 		->addCut(ht0to200)
 		->addCut(zeroBjets)
 	;
-	handler->addHistogram(histMT, "SeedL3DYz1B0MET100to150HT0to200");
+	
+	handler->addSignature("SeedL3DYz1B0MET50to100HT0to200", "")
+		->addCut(threeLeptons)
+		->addCut(zeroTaus)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+		->addCut(ht0to200)
+		->addCut(zeroBjets)
+	;
 	
 	handler->addSignature("SeedL3DYz1B0MT50to100HT0to200", "")
 		->addCut(threeLeptons)
+		->addCut(zeroTaus)
 		->addCut(dy1onZcut)
 		->addCut(mt50to100)
 		->addCut(ht0to200)
@@ -559,6 +568,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	
 	handler->addSignature("SeedL3DYz1B0MT50to120HT0to200", "")
 		->addCut(threeLeptons)
+		->addCut(zeroTaus)
 		->addCut(dy1onZcut)
 		->addCut(mt50to120)
 		->addCut(ht0to200)
@@ -567,6 +577,7 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	
 	handler->addSignature("SeedL3DYz1B0HT0to200", "")
 		->addCut(threeLeptons)
+		->addCut(zeroTaus)
 		->addCut(dy1onZcut)
 		->addCut(ht0to200)
 		->addCut(zeroBjets)
@@ -574,12 +585,16 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	handler->addHistogram(histMETvsMT, "SeedL3DYz1B0HT0to200");
 	
 	// Signatures for the ZZ MC control region
+	SignatureCutN* fourLeptons = new SignatureCutN("goodElectrons", 4, 4);
+	fourLeptons->addProduct("goodMuons");
+	
 	SignatureTH2F_METvsAllMass* histMETvsAllMassLepton = new SignatureTH2F_METvsAllMass("METvsAllMassLepton");
 	histMETvsAllMassLepton->addProduct("goodElectrons");
 	histMETvsAllMassLepton->addProduct("goodMuons");
 	
 	handler->addSignature("SeedL4DYz1B0MET0to50HT0to200", "")
 		->addCut(fourLeptons)
+		->addCut(zeroTaus)
 		->addCut(dy1onZcut)
 		->addCut(met0to50)
 		->addCut(ht0to200)
@@ -589,12 +604,18 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	
 	handler->addSignature("SeedL4DYz2B0MET0to50HT0to200", "")
 		->addCut(fourLeptons)
+		->addCut(zeroTaus)
 		->addCut(dy2onZcut)
 		->addCut(met0to50)
 		->addCut(ht0to200)
 		->addCut(zeroBjets)
 	;
 	handler->addHistogram(histMETvsAllMassLepton, "SeedL4DYz2B0MET0to50HT0to200");
+}
+
+void setupFakeRateHistograms(SignatureHandler* handler) {
+	SignatureTH1F_MT* histMT = new SignatureTH1F_MT("MT");
+	handler->addHistogram(histMT);
 
 	// Histograms for Rdxy
 	SignatureTH1F_N* n_electronsNINP = new SignatureTH1F_N("n_electronsNINP","electronsNINP");
