@@ -253,6 +253,26 @@ void SignatureHandler::finishSignatures()
 }
 
 //-----------------------------------------
+int SignatureHandler::setBranchList(std::vector<TString> branchList) {
+	if(branchList.size() == 0) {
+		UInt_t found = 0;
+		fChain->SetBranchStatus("*", 1, &found);
+		return found;
+	}
+	
+	fChain->SetBranchStatus("*", 0);
+	
+	int n = 0;
+	for(unsigned int i = 0; i < branchList.size(); ++i) {
+		UInt_t found = 0;
+		fChain->SetBranchStatus(branchList[i].Data(), 1, &found);
+		n += found;
+	}
+	
+	return n;
+}
+
+//-----------------------------------------
 void SignatureHandler::eventLoop()
 {
 	eventLoop(-1, 0);
@@ -261,8 +281,79 @@ void SignatureHandler::eventLoop()
 void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
 {
   int nevents = fChain->GetEntries();
-  for(m_currentEntry = 0; m_currentEntry < nevents; m_currentEntry++){
+  int nEntryLow = getMode("nEntryLow");
+  int nEntryHigh = getMode("nEntryHigh");
+  if(nEntryHigh == 0) nEntryHigh = nevents;
 
+bool flatNtuple = false;
+
+Double_t weight = 0;
+TString* sigName = 0;
+TString* flavor1 = 0;
+TString* flavor2 = 0;
+TString* flavor3 = 0;
+Float_t charge1 = 0;
+Float_t charge2 = 0;
+Float_t charge3 = 0;
+Double_t pt1 = 0;
+Double_t pt2 = 0;
+Double_t pt3 = 0;
+Double_t met = 0;
+Double_t ht = 0;
+Double_t st = 0;
+Int_t n_b = 0;
+Int_t n_electronsIP = -1;
+Int_t n_electronsNIP = -1;
+Int_t n_electronsINP = -1;
+Int_t n_electronsNINP = -1;
+Int_t n_muonsIP = -1;
+Int_t n_muonsNIP = -1;
+Int_t n_muonsINP = -1;
+Int_t n_muonsNINP = -1;
+Int_t n_tausIP = -1;
+Int_t n_tracksIP = -1;
+Int_t n_tracksINP = -1;
+Int_t n_tracksNIP = -1;
+Int_t n_tracksNINP = -1;
+
+TFile* f1 = 0;
+TTree* tree = 0;
+
+if(flatNtuple) {
+f1 = new TFile(m_outFileName + TString(".simpleTree.root"), "RECREATE");
+tree = new TTree("tree", "a simple tree");
+
+tree->Branch("weight", &weight, "weight/D");
+tree->Branch("signature", &sigName);
+tree->Branch("flavor1", &flavor1);
+tree->Branch("flavor2", &flavor2);
+tree->Branch("flavor3", &flavor3);
+tree->Branch("charge1", &charge1, "charge1/F");
+tree->Branch("charge2", &charge2, "charge2/F");
+tree->Branch("charge3", &charge3, "charge3/F");
+tree->Branch("pt1", &pt1, "pt1/D");
+tree->Branch("pt2", &pt2, "pt2/D");
+tree->Branch("pt3", &pt3, "pt3/D");
+tree->Branch("met", &met, "met/D");
+tree->Branch("ht", &ht, "ht/D");
+tree->Branch("st", &st, "st/D");
+tree->Branch("n_b", &n_b, "n_b/I");
+tree->Branch("n_electronsIP", &n_electronsIP, "n_electronsIP/I");
+tree->Branch("n_electronsNIP", &n_electronsNIP, "n_electronsNIP/I");
+tree->Branch("n_electronsINP", &n_electronsINP, "n_electronsINP/I");
+tree->Branch("n_electronsNINP", &n_electronsNINP, "n_electronsNINP/I");
+tree->Branch("n_muonsIP", &n_muonsIP, "n_muonsIP/I");
+tree->Branch("n_muonsNIP", &n_muonsNIP, "n_muonsNIP/I");
+tree->Branch("n_muonsINP", &n_muonsINP, "n_muonsINP/I");
+tree->Branch("n_muonsNINP", &n_muonsNINP, "n_muonsNINP/I");
+tree->Branch("n_tausIP", &n_tausIP, "n_tausIP/I");
+tree->Branch("n_tracksIP", &n_tracksIP, "n_tracksIP/I");
+tree->Branch("n_tracksINP", &n_tracksINP, "n_tracksINP/I");
+tree->Branch("n_tracksNIP", &n_tracksNIP, "n_tracksNIP/I");
+tree->Branch("n_tracksNINP", &n_tracksNINP, "n_tracksNINP/I");
+}
+
+ for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
     fChain->GetEntry(m_currentEntry);
     if (m_currentEntry % 100000 == 0)cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
     if(onlyRun >= 0 && (run != onlyRun || event != onlyEvent)) continue;
@@ -389,6 +480,129 @@ void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
 
       }
       m_physicsWeight = baseweight;
+
+if(flatNtuple) {
+weight = m_physicsWeight;
+sigName = new TString("Seed");
+for(unsigned int s = 0; s < m_Signatures.size(); s++){
+  m_Signatures[s]->setHandler(this);
+  if(m_Signatures[s]->getName() != TString("Seed") && m_Signatures[s]->isSignature()) {
+	  assert(*sigName == TString("Seed"));
+	  sigName = new TString((m_Signatures[s]->getName()).Data());
+  }
+}
+flavor1 = flavor2 = flavor3 = 0;
+charge1 = charge2 = charge3 = 0;
+pt1 = pt2 = pt3 = 0;
+
+std::map<double, TString> leptonFlavors;
+leptonFlavors.insert(make_pair(0, "electron"));
+leptonFlavors.insert(make_pair(1, "muon"));
+leptonFlavors.insert(make_pair(2, "tau"));
+std::vector< std::vector<Double_t> > leptons;
+std::vector<SignatureObject*> pr = getProduct("goodElectrons");
+for(unsigned int q = 0; q < pr.size(); ++q) {
+	std::vector<Double_t> leptonInfo;
+	leptonInfo.push_back(0);
+	leptonInfo.push_back(pr[q]->Pt());
+	leptonInfo.push_back(pr[q]->getCharge());
+	leptons.push_back(leptonInfo);
+}
+pr = getProduct("goodMuons");
+for(unsigned int q = 0; q < pr.size(); ++q) {
+	std::vector<Double_t> leptonInfo;
+	leptonInfo.push_back(1);
+	leptonInfo.push_back(pr[q]->Pt());
+	leptonInfo.push_back(pr[q]->getCharge());
+	leptons.push_back(leptonInfo);
+}
+pr = getProduct("goodTaus");
+for(unsigned int q = 0; q < pr.size(); ++q) {
+	std::vector<Double_t> leptonInfo;
+	leptonInfo.push_back(2);
+	leptonInfo.push_back(pr[q]->Pt());
+	leptonInfo.push_back(pr[q]->getCharge());
+	leptons.push_back(leptonInfo);
+}
+for(unsigned int q = 0; q < leptons.size(); ++q) {
+	std::cout << *sigName << " lepton: " << leptons[q][0] << " " << leptons[q][1] << " " << leptons[q][2] << " " << std::endl;
+}
+std::vector< std::vector<Double_t> > leptons2;
+if(leptons.size() == 2) {
+	if(leptons[0][1] > leptons[1][1]) {
+		leptons2.push_back(leptons[0]);
+		leptons2.push_back(leptons[1]);
+	} else {
+		leptons2.push_back(leptons[1]);
+		leptons2.push_back(leptons[0]);
+	}
+}
+if(leptons.size() > 2) {
+	if(leptons[0][1] > leptons[1][1] && leptons[0][1] > leptons[2][1]) {
+		leptons2.push_back(leptons[0]);
+		if(leptons[1][1] > leptons[2][1]) {
+			leptons2.push_back(leptons[1]);
+			leptons2.push_back(leptons[2]);
+		} else {
+			leptons2.push_back(leptons[2]);
+			leptons2.push_back(leptons[1]);
+		}
+	}
+	if(leptons[1][1] > leptons[0][1] && leptons[1][1] > leptons[2][1]) {
+		leptons2.push_back(leptons[1]);
+		if(leptons[0][1] > leptons[2][1]) {
+			leptons2.push_back(leptons[0]);
+			leptons2.push_back(leptons[2]);
+		} else {
+			leptons2.push_back(leptons[2]);
+			leptons2.push_back(leptons[0]);
+		}
+	}
+	if(leptons[2][1] > leptons[0][1] && leptons[2][1] > leptons[1][1]) {
+		leptons2.push_back(leptons[2]);
+		if(leptons[0][1] > leptons[1][1]) {
+			leptons2.push_back(leptons[0]);
+			leptons2.push_back(leptons[1]);
+		} else {
+			leptons2.push_back(leptons[1]);
+			leptons2.push_back(leptons[0]);
+		}
+	}
+}
+
+flavor1 = new TString(leptonFlavors[leptons2[0][0]].Data());
+flavor2 = new TString(leptonFlavors[leptons2[1][0]].Data());
+if(leptons2.size() > 2) flavor3 = new TString(leptonFlavors[leptons2[2][0]].Data());
+
+pt1 = leptons2[0][1];
+pt2 = leptons2[1][1];
+if(leptons2.size() > 2) pt3 = leptons2[2][1];
+
+charge1 = leptons2[0][2];
+charge2 = leptons2[1][2];
+if(leptons2.size() > 2) charge3 = leptons2[2][2];
+
+met = getPFMET();
+ht = getHT();
+st = getST();
+n_b = getProduct("bJetsCSVM").size();
+
+n_electronsIP = getProduct("electronsIP").size();
+n_electronsNIP = getProduct("electronsNIP").size();
+n_electronsINP = getProduct("electronsINP").size();
+n_electronsNINP = getProduct("electronsNINP").size();
+n_muonsIP = getProduct("muonsIP").size();
+n_muonsNIP = getProduct("muonsNIP").size();
+n_muonsINP = getProduct("muonsINP").size();
+n_muonsNINP = getProduct("muonsNINP").size();
+n_tausIP = getProduct("goodTaus").size();
+n_tracksIP = getProduct("tracksIP").size();
+n_tracksINP = getProduct("tracksINP").size();
+n_tracksNIP = getProduct("tracksNIP").size();
+n_tracksNINP = getProduct("tracksNINP").size();
+f1->cd();
+tree->Fill();
+}
     }
     ////////////////////////////////////
     //Check correlations of signatures//
@@ -406,7 +620,18 @@ void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
       }
     }
 
+
   }//End of event loop
+
+if(flatNtuple) {
+f1->cd();
+tree->Write();
+f1->Close();
+
+delete tree;
+delete f1;
+}
+
 }
 
 //-----------------------------------------

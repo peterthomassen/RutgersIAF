@@ -64,6 +64,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   ////////////////    
   //Manage Event//
   ////////////////
+  int setBranchList(std::vector<TString> branchList);
   void eventLoop();
   void eventLoop(int runOnly, long int eventOnly);
   int getRun(){ return run;}
