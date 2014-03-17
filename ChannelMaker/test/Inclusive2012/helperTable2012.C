@@ -277,19 +277,24 @@ int setupInclusiveSignatures(ChannelHandler* handler, bool doSeeds = false) {
 															name += TString::Format("Mu%s", nameMu.Data());
 															sig->addCut(nMuCuts[nLeptons][nMu][qMu]);
 															
-															sumName += TString::Format("L%d", nEl + nMu + nTau);
+															if(nSidebandTau + nTrack == 0) {
+																sumName += TString::Format("L%d", nEl + nMu + nTau);
+															} else {
+																sumName += TString::Format("El%dMu%d", nEl, nMu);
+															}
 															
 															// Taus
-															if(nSidebandTau == 0) {
-																name += TString::Format("Tau%d", nTau);
-																sumName += TString::Format("Tau%d", nTau);
-																// For 3LTau1, require exactly 1 Tau; else allow one or more
-																if(nLeptons == 3 && nTau == 1) {
-																	sig->addCut(new SignatureCutNTau(1, 1));
-																} else {
-																	sig->addCut(nTauCuts[nTau]);
-																}
+															name += TString::Format("Tau%d", nTau);
+															sumName += TString::Format("Tau%d", nTau);
+															// For 3LTau1, require exactly 1 Tau; else allow one or more
+															if(nLeptons == 3 && nTau == 1) {
+																sig->addCut(new SignatureCutNTau(1, 1));
 															} else {
+																sig->addCut(nTauCuts[nTau]);
+															}
+															
+															// Sideband taus
+															if(nSidebandTau != 0) {
 																name += TString::Format("SidebandTau%d", nSidebandTau);
 																sumName += TString::Format("SidebandTau%d", nSidebandTau);
 																sig->addCut(nSidebandTauCuts[nSidebandTau]);
@@ -298,7 +303,7 @@ int setupInclusiveSignatures(ChannelHandler* handler, bool doSeeds = false) {
 															// Tracks
 															if(nTrack > 0) {
 																name += TString::Format("T%s", nameTrack.Data());
-																sumName += TString::Format("T%s", nameTrack.Data());
+																sumName += TString::Format("T%d", nTrack);
 																sig->addCut(nTrackCuts[nLeptons][nTrack][qTrack]);
 															}
 															
@@ -350,16 +355,22 @@ int setupInclusiveSignatures(ChannelHandler* handler, bool doSeeds = false) {
 															sig->setName(name);
 															//handler->addBjetSignature(sig);
 															
-															handler->addSumChannelAttribute(sumName, sumName, 1.0);
-															handler->addSumChannelAttribute(sumNameMET, sumNameMET, 1.0);
-															handler->addSumChannelAttribute(sumNameHT, sumNameHT, 1.0);
-															handler->addSumChannelAttribute(sumNameMETHT, sumNameMETHT, 1.0);
-															
 															Channel* ch = new Channel((sig->getName()).Data());
+															
+															handler->addSumChannelAttribute(sumName, sumName, 1.0);
 															ch->setAttribute(sumName, 1);
+															
+															handler->addSumChannelAttribute(sumNameMET, sumNameMET, 1.0);
 															ch->setAttribute(sumNameMET, 1);
+															
+															handler->addSumChannelAttribute(sumNameHT, sumNameHT, 1.0);
 															ch->setAttribute(sumNameHT, 1);
-															ch->setAttribute(sumNameMETHT, 1);
+															
+															if(nSidebandTau + nTrack == 0 || nLeptons < 4) {
+																handler->addSumChannelAttribute(sumNameMETHT, sumNameMETHT, 1.0);
+																ch->setAttribute(sumNameMETHT, 1);
+															}
+															
 															handler->addInputChannel(ch->getName(), ch);
 															std::cout << ++i << " Done setting up signature " << name << std::endl;
 														}
