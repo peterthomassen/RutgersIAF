@@ -10,6 +10,8 @@ class SignatureObjectMuon : public SignatureObjectRecoTrack {
   SignatureObjectMuon(double x=0,double y=0, double z=0, double t=0);
   SignatureObjectMuon(TLorentzVector v);
   virtual ~SignatureObjectMuon() {/* no-op */}
+  
+  bool isMuon() { return true; }
   double getRelIso();
   double getTotalIso();
 

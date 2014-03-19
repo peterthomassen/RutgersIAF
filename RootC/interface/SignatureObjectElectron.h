@@ -10,6 +10,8 @@ class SignatureObjectElectron : public SignatureObjectRecoTrack {
   SignatureObjectElectron(double x=0,double y=0, double z=0, double t=0);
   SignatureObjectElectron(TLorentzVector v);
   virtual ~SignatureObjectElectron() {/* no-op */}
+  
+  bool isElectron() { return true; }
   double getRelIso();
   double getTotalIso();
 
