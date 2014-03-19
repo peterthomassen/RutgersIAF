@@ -11,6 +11,8 @@ class SignatureObjectTau : public SignatureObjectRecoTrack {
   SignatureObjectTau(double x=0,double y=0, double z=0, double t=0);
   SignatureObjectTau(TLorentzVector v);
   virtual ~SignatureObjectTau() {/* no-op */}
+  
+  bool isTau() { return true; }
   double getRelIso();
   double getTotalIso();
   void setLeadingTrack(SignatureObjectRecoTrack* c){m_leadingTrack = c;}

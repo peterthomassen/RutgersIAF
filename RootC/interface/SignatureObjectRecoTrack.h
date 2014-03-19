@@ -10,7 +10,12 @@ class SignatureObjectRecoTrack : public SignatureObjectWithIso {
   SignatureObjectRecoTrack(double x=0,double y=0, double z=0, double t=0);
   SignatureObjectRecoTrack(TLorentzVector v);
   virtual ~SignatureObjectRecoTrack() {/* no-op */}
-
+  
+  virtual bool isElectron() { return false; }
+  virtual bool isMuon() { return false; }
+  virtual bool isTau() { return false; }
+  bool isTrack() { return !(isElectron() || isMuon() || isTau()); }
+  
   double getDz(){return m_dz;}
   int getGenParticle_ntID(){return m_genParticle_ntID;}
   SignatureObjectMCPart* getGenParticle(){return m_genParticle;}
