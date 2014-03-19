@@ -9,9 +9,7 @@ ClassImp(SignatureCutNDYPairsT)
 int SignatureCutNDYPairsT::getCandidates(BaseHandler* handler) const
 {
   m_dyCandidates.clear();
-  /////////////////////////////////
-  //only count electons and muons//
-  /////////////////////////////////
+
   vector<SignatureObject*> objects = handler->getProduct(m_productname);
   vector<SignatureObject*> tracks = handler->getGoodRecoTracks();
 
