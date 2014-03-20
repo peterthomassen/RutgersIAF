@@ -36,12 +36,12 @@ void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/"
 	setupHandlerCuts(handler);
 	
 	bool doInclusiveSignatures = true;
-	bool fakeStudy = true;
-	bool fakeSeedsForEachChannel = true;
+	bool doSeeds = true;
+	bool fakeStudy = false;
 	if(doInclusiveSignatures) {
-		setupInclusiveSignatures(handler, fakeSeedsForEachChannel);
+		setupInclusiveSignatures(handler, doSeeds);
 	}
-	if(fakeStudy || fakeSeedsForEachChannel) {
+	if(fakeStudy) {
 		setupFakeRateSignatures(handler);
 		setupFakeRateHistograms(handler);
 	}
