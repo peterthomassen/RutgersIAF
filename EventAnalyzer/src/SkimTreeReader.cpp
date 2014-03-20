@@ -961,6 +961,37 @@ void SkimTreeReader::createJets()
     jet->setVariable("MEDIUM_PFJETID",pat_jet_medium_PFjetID[i]);
     jet->setVariable("NUMBERCONSTITUENTS",pat_jet_numberConstituents[i]);
     jet->setVariable("BDISCRIMINATOR_SSVERTEX",pat_jet_bDiscriminator_ssVertex[i]);
+    jet->setVariable("BDISCPOS_TRACKCOUNTINGHIGHEFFBJETTAGS",pat_jet_bDiscPositive[i][0]);
+    jet->setVariable("BDISCPOS_TRACKCOUNTINGHIGHPURBJETTAGS",pat_jet_bDiscPositive[i][1]);
+    jet->setVariable("BDISCPOS_SIMPLESECONDARYVERTEXHIGHEFFBJETTAGS",pat_jet_bDiscPositive[i][2]);
+    jet->setVariable("BDISCPOS_SIMPLESECONDARYVERTEXHIGHPURBJETTAGS",pat_jet_bDiscPositive[i][3]);
+    jet->setVariable("BDISCPOS_IMPACTPARAMETERTAGINFOS",pat_jet_bDiscPositive[i][4]);
+    jet->setVariable("BDISCPOS_JETPROBABILITYBJETTAGS",pat_jet_bDiscPositive[i][5]);
+    jet->setVariable("BDISCPOS_JETBPROBABILITYBJETTAGS",pat_jet_bDiscPositive[i][6]);
+    jet->setVariable("BDISCPOS_SECONDARYVERTEXTAGINFOS",pat_jet_bDiscPositive[i][7]);
+    jet->setVariable("BDISCPOS_GHOSTTRACKVERTEXTAGINFOS",pat_jet_bDiscPositive[i][8]);
+    jet->setVariable("BDISCPOS_SIMPLESECONDARYVERTEXBJETTAGS",pat_jet_bDiscPositive[i][9]);
+    jet->setVariable("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",pat_jet_bDiscPositive[i][10]);
+    jet->setVariable("BDISCPOS_COMBINEDSECONDARYVERTEXMVABJETTAGS",pat_jet_bDiscPositive[i][11]);
+    jet->setVariable("BDISCPOS_GHOSTTRACKBJETTAGS",pat_jet_bDiscPositive[i][12]);
+    jet->setVariable("BDISCPOS_BTAGSOFTELECTRONS",pat_jet_bDiscPositive[i][13]);
+    jet->setVariable("BDISCPOS_SOFTELECTRONCANDS",pat_jet_bDiscPositive[i][14]);
+    jet->setVariable("BDISCPOS_SOFTPFELECTRONS",pat_jet_bDiscPositive[i][15]);
+    jet->setVariable("BDISCPOS_SOFTELECTRONTAGINFOS",pat_jet_bDiscPositive[i][16]);
+    jet->setVariable("BDISCPOS_SOFTELECTRONBJETTAGS",pat_jet_bDiscPositive[i][17]);
+    jet->setVariable("BDISCPOS_SOFTELECTRONBYIP3DBJETTAGS",pat_jet_bDiscPositive[i][18]);
+    jet->setVariable("BDISCPOS_SOFTELECTRONBYPTBJETTAGS",pat_jet_bDiscPositive[i][19]);
+    jet->setVariable("BDISCPOS_SOFTMUONTAGINFOS",pat_jet_bDiscPositive[i][20]);
+    jet->setVariable("BDISCPOS_SOFTMUONBJETTAGS",pat_jet_bDiscPositive[i][21]);
+    jet->setVariable("BDISCPOS_SOFTMUONBYIP3DBJETTAGS",pat_jet_bDiscPositive[i][22]);
+    jet->setVariable("BDISCPOS_SOFTMUONBYPTBJETTAGS",pat_jet_bDiscPositive[i][23]);
+    jet->setVariable("BDISCPOS_COMBINEDMVABJETTAGS",pat_jet_bDiscPositive[i][24]);
+    jet->setVariable("BDISCNEG_NEGATIVETRACKCOUNTINGHIGHEFFJETTAGS",pat_jet_bDiscNegative[i][0]);
+    jet->setVariable("BDISCNEG_NEGATIVETRACKCOUNTINGHIGHPURJETTAGS",pat_jet_bDiscNegative[i][1]);
+    jet->setVariable("BDISCNEG_SIMPLESECONDARYVERTEXNEGATIVEHIGHEFFBJETTAGS",pat_jet_bDiscNegative[i][2]);
+    jet->setVariable("BDISCNEG_SIMPLESECONDARYVERTEXNEGATIVEHIGHPURBJETTAGS",pat_jet_bDiscNegative[i][3]);
+
+    
 
     jet->setVariable("BETA",calculateJetBeta(i,0));
     
@@ -1043,6 +1074,38 @@ void SkimTreeReader::createTaus()
     tau->setVariable("PF_CHARGEDHADRONISO05",pat_tau_PF_chargedHadronIso05[i]);
     tau->setVariable("PF_CHARGEDHADRONISO03",pat_tau_PF_chargedHadronIso03[i]);
     tau->setVariable("PDGID",-15*pat_tau_PF_signalCharge[i]);
+
+    tau->setVariable("DISC_LEADINGTRACKFINDING",pat_tau_PF_Discriminants[i][0]);
+    tau->setVariable("DISC_LEADINGTRACKPTCUT",pat_tau_PF_Discriminants[i][1]);
+    tau->setVariable("DISC_LEADINGPIONPTCUT",pat_tau_PF_Discriminants[i][2]);
+    tau->setVariable("DISC_TRACKISOLATION",pat_tau_PF_Discriminants[i][3]);
+    tau->setVariable("DISC_TRACKISOLATIONUSINGLEADINGPION",pat_tau_PF_Discriminants[i][4]);
+    tau->setVariable("DISC_ECALISOLATION",pat_tau_PF_Discriminants[i][5]);
+    tau->setVariable("DISC_ECALISOLATIONUSINGLEADINGPION",pat_tau_PF_Discriminants[i][6]);
+    tau->setVariable("DISC_BYISOLATION",pat_tau_PF_Discriminants[i][7]);
+    tau->setVariable("DISC_BYISOLATIONUSINGLEADINGPION",pat_tau_PF_Discriminants[i][8]);
+    tau->setVariable("DISC_AGAINSTELECTRON",pat_tau_PF_Discriminants[i][9]);
+    tau->setVariable("DISC_AGAINSTMUON",pat_tau_PF_Discriminants[i][10]);
+    tau->setVariable("DISC_BYTANC",pat_tau_PF_Discriminants[i][11]);
+    tau->setVariable("DISC_BYTANCFRONEPERCENT",pat_tau_PF_Discriminants[i][12]);
+    tau->setVariable("DISC_BYTANCFRHALFPERCENT",pat_tau_PF_Discriminants[i][13]);
+    tau->setVariable("DISC_BYTANCFRQUARTERPERCENT",pat_tau_PF_Discriminants[i][14]);
+    tau->setVariable("DISC_BYTANCFRTENTHPERCENT",pat_tau_PF_Discriminants[i][15]);
+    tau->setVariable("DISC_BYLOOSEISOLATION",pat_tau_PF_Discriminants[i][16]);
+    tau->setVariable("DISC_BYMEDIUMISOLATION",pat_tau_PF_Discriminants[i][17]);
+    tau->setVariable("DISC_BYTIGHTISOLATION",pat_tau_PF_Discriminants[i][18]);
+    tau->setVariable("DISC_DECAYMODEFINDING",pat_tau_PF_Discriminants[i][19]);
+    tau->setVariable("DISC_AGAINSTELECTRONLOOSE",pat_tau_PF_Discriminants[i][20]);
+    tau->setVariable("DISC_AGAINSTELECTRONMEDIUM",pat_tau_PF_Discriminants[i][21]);
+    tau->setVariable("DISC_AGAINSTELECTRONTIGHT",pat_tau_PF_Discriminants[i][22]);
+    tau->setVariable("DISC_AGAINSTMUONLOOSE",pat_tau_PF_Discriminants[i][23]);
+    tau->setVariable("DISC_AGAINSTMUONTIGHT",pat_tau_PF_Discriminants[i][24]);
+    tau->setVariable("DISC_BYVLOOSECOMBINEDISOLATIONDELTABETACORR",pat_tau_PF_Discriminants[i][25]);
+    tau->setVariable("DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR",pat_tau_PF_Discriminants[i][26]);
+    tau->setVariable("DISC_BYMEDIUMCOMBINEDISOLATIONDELTABETACORR",pat_tau_PF_Discriminants[i][27]);
+    tau->setVariable("DISC_BYTIGHTCOMBINEDISOLATIONDELTABETACORR",pat_tau_PF_Discriminants[i][28]);
+    tau->setVariable("DISC_AGAINSTELECTRONMVA",pat_tau_PF_Discriminants[i][29]);
+
 
     taus.push_back(tau);
   }

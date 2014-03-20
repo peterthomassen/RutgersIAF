@@ -1,5 +1,8 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTF1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SkimTreeReader.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTreeWriter.h"
@@ -78,4 +81,11 @@
 #pragma link C++ class SignatureTreeWriter+;
 #pragma link C++ class SkimTreeReader+;
 #pragma link C++ class ObjectComparisonDeltaR+;
+#pragma link C++ class EventVariableTF1<int>+;
+#pragma link C++ class EventVariableTF1<long>+;
+#pragma link C++ class EventVariableTF1<double>+;
+#pragma link C++ class EventVariableTH1<int>+;
+#pragma link C++ class EventVariableTH1<long>+;
+#pragma link C++ class EventVariableTH1<double>+;
+#pragma link C++ class EventVariableObjectWeightPtTF1+;
 #endif
