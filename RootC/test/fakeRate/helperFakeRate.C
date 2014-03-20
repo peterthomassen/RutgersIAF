@@ -8,6 +8,8 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	SignatureCutN* zeroBjets = new SignatureCutN("bJetsCSVM",0,0);
 	SignatureCutN* oneBjets = new SignatureCutN("bJetsCSVM",1,1);
 	SignatureCutN* geoneBjets = new SignatureCutN("bJetsCSVM",1,-1);
+
+	SignatureCutN* gethreeJets = new SignatureCutN("goodJets",3,-1);
 	
 	SignatureCutThreshold* geThreeJets40 = new SignatureCutThreshold("goodJets", "threeJetsThreshold40");
 	geThreeJets40->addThreshold(40);
@@ -191,6 +193,70 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 	  ->addCut(zeroPosMuons)
 	  ;
 
+	handler->addSignature("SeedEl1p1B1MET0to50","")
+	  ->addCut(met0to50)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosElectrons)
+	  ->addCut(zeroNegElectrons)
+	  ;
+
+	handler->addSignature("SeedMu1p1B1MET0to50","")
+	  ->addCut(met0to50)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosMuons)
+	  ->addCut(zeroNegMuons)
+	  ;
+
+	handler->addSignature("SeedEl1m1B1MET0to50","")
+	  ->addCut(met0to50)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegElectrons)
+	  ->addCut(zeroPosElectrons)
+	  ;
+
+	handler->addSignature("SeedMu1m1B1MET0to50","")
+	  ->addCut(met0to50)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegMuons)
+	  ->addCut(zeroPosMuons)
+	  ;
+
+	handler->addSignature("SeedEl1p1B1STgt300","")
+	  ->addCut(stgt300)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosElectrons)
+	  ->addCut(zeroNegElectrons)
+	  ->addCut(thresholdElectron30)
+	  ->addCut(gethreeJets)
+	  ;
+
+	handler->addSignature("SeedEl1m1B1STgt300","")
+	  ->addCut(stgt300)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegElectrons)
+	  ->addCut(zeroPosElectrons)
+	  ->addCut(thresholdElectron30)
+	  ->addCut(gethreeJets)
+	  ;
+
+	handler->addSignature("SeedMu1p1B1STgt300","")
+	  ->addCut(stgt300)
+	  ->addCut(oneBjets)
+	  ->addCut(onePosMuons)
+	  ->addCut(zeroNegMuons)
+	  ->addCut(thresholdMuon30)
+	  ->addCut(gethreeJets)
+	  ;
+
+	handler->addSignature("SeedMu1m1B1STgt300","")
+	  ->addCut(stgt300)
+	  ->addCut(oneBjets)
+	  ->addCut(oneNegMuons)
+	  ->addCut(zeroPosMuons)
+	  ->addCut(thresholdMuon30)
+	  ->addCut(gethreeJets)
+	  ;
+
 
 	// Signatures for Rdxy
 	handler->addSignature("SeedEl2B0onZMET0to50","")
@@ -242,11 +308,329 @@ void setupFakeRateSignatures(SignatureHandler* handler)
 		->addCut(met50to100)
 	;
 
+
 	handler->addSignature("SeedMu3B0onZMET50to10","")
 		->addCut(zeroBjets)
 		->addCut(threeMuons)
 		->addCut(dy1onZcut)
 		->addCut(met50to100)
+	;
+
+	handler->addSignature("SeedEl2B1onZMET0to50","")
+		->addCut(oneBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	;
+	
+	handler->addSignature("SeedMu2B1onZMET0to50","")
+		->addCut(oneBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	;
+
+	handler->addSignature("SeedEl2B1onZMET50to100","")
+		->addCut(oneBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	;
+
+	handler->addSignature("SeedMu2B1onZMET50to100","")
+		->addCut(oneBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	;
+
+	handler->addSignature("SeedEl3B1onZMET0to50","")
+		->addCut(oneBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	;
+	
+	handler->addSignature("SeedMu3B1onZMET0to50","")
+		->addCut(oneBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	;
+
+	handler->addSignature("SeedEl3B1onZMET50to10","")
+		->addCut(oneBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	;
+
+
+	handler->addSignature("SeedMu3B1onZMET50to10","")
+		->addCut(oneBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	;
+
+	handler->addSignature("SeedEl2B0onZMET0to50HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+	
+	handler->addSignature("SeedMu2B0onZMET0to50HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl2B0onZMET50to100HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedMu2B0onZMET50to100HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl3B0onZMET0to50HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+	
+	handler->addSignature("SeedMu3B0onZMET0to50HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl3B0onZMET50to10HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+
+	handler->addSignature("SeedMu3B0onZMET50to10HT0to200","")
+		->addCut(zeroBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl2B1onZMET0to50HT0to200","")
+		->addCut(oneBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+	
+	handler->addSignature("SeedMu2B1onZMET0to50HT0to200","")
+		->addCut(oneBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl2B1onZMET50to100HT0to200","")
+		->addCut(oneBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedMu2B1onZMET50to100HT0to200","")
+		->addCut(oneBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl3B1onZMET0to50HT0to200","")
+		->addCut(oneBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+	
+	handler->addSignature("SeedMu3B1onZMET0to50HT0to200","")
+		->addCut(oneBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl3B1onZMET50to10HT0to200","")
+		->addCut(oneBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+
+	handler->addSignature("SeedMu3B1onZMET50to10HT0to200","")
+		->addCut(oneBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(ht0to200)
+	;
+
+	handler->addSignature("SeedEl2B0onZMET0to50HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+	
+	handler->addSignature("SeedMu2B0onZMET0to50HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedEl2B0onZMET50to100HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedMu2B0onZMET50to100HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedEl3B0onZMET0to50HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+	
+	handler->addSignature("SeedMu3B0onZMET0to50HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedEl3B0onZMET50to10HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
+	;
+
+
+	handler->addSignature("SeedMu3B0onZMET50to10HTgt200","")
+		->addCut(zeroBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedEl2B1onZMET0to50HTgt200","")
+		->addCut(oneBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+	
+	handler->addSignature("SeedMu2B1onZMET0to50HTgt200","")
+		->addCut(oneBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedEl2B1onZMET50to100HTgt200","")
+		->addCut(oneBjets)
+		->addCut(twoElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedMu2B1onZMET50to100HTgt200","")
+		->addCut(oneBjets)
+		->addCut(twoMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedEl3B1onZMET0to50HTgt200","")
+		->addCut(oneBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+	
+	handler->addSignature("SeedMu3B1onZMET0to50HTgt200","")
+		->addCut(oneBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met0to50)
+	  ->addCut(htgt200)
+	;
+
+	handler->addSignature("SeedEl3B1onZMET50to10HTgt200","")
+		->addCut(oneBjets)
+		->addCut(threeElectrons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
+	;
+
+
+	handler->addSignature("SeedMu3B1onZMET50to10HTgt200","")
+		->addCut(oneBjets)
+		->addCut(threeMuons)
+		->addCut(dy1onZcut)
+		->addCut(met50to100)
+	  ->addCut(htgt200)
 	;
 
 	Signature* SeedEl2Mu1B0onZMET0to50 = new Signature("SeedEl2Mu1B0onZMET0to50","");
