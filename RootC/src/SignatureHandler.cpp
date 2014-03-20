@@ -22,6 +22,9 @@ ClassImp(SignatureHandler)
 
   SignatureHandler::SignatureHandler(TTree *tree, TString ofname, const char* option): BaseHandler(),SkimTreeBase(tree)
 {
+  // Don't add histograms to the directory (bookkeeping is a big performance hit with many histograms)
+  TH1::AddDirectory(kFALSE);
+
   //add default products
   addProduct("goodMuons","allMuons");
   addProduct("goodElectrons","allElectrons");
