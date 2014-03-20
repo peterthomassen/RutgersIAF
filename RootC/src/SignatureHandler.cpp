@@ -623,6 +623,7 @@ tree->Fill();
       }
     }
 
+if(onlyRun >= 0 && (run == onlyRun && event == onlyEvent)) break;
 
   }//End of event loop
 
