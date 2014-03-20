@@ -23,42 +23,7 @@ class SignatureCutNDYPairsT : public SignatureCut {
 	virtual ~SignatureCutNDYPairsT(){ /* no-op */ }
 
 	int getCandidates(BaseHandler*) const;
-	virtual bool passCut(BaseHandler* handler) const
-	{
-		// Make sure the number of DY pairs is within the desired range
-		int nDY = getCandidates(handler);
-		if(m_ndypairlow >= 0 && (double)nDY < m_ndypairlow) {
-			return false;
-		}
-		if(m_ndypairhigh >= 0 && (double)nDY > m_ndypairhigh) {
-			return false;
-		}
-		
-		// Ok, it is. If 0 is included in the desired range, we don't have to look at on/off Z, so just return true
-		if(nDY == 0) {
-			return true;
-		}
-		
-		// Otherwise, look at on/off Z properties
-		int nZ = 0;
-		for(int i = 0; i < (int)m_dyCandidates.size(); i++) {
-			TLorentzVector v1(*((m_dyCandidates[i]).first));
-			TLorentzVector v2(*((m_dyCandidates[i]).second));
-			if((v1+v2).M() < m_lowMassCutOff) {
-				return false;
-			}
-			if((v1+v2).M() > m_ZMassCutOffLow && (v1+v2).M() < m_ZMassCutOffHigh) {
-				nZ++;
-			}
-		}
-		if(m_onZ && !nZ) {
-			return false;
-		}
-		if(!m_onZ && nZ) {
-			return false;
-		}
-		return true;
-	}
+	virtual bool passCut(BaseHandler*) const;
 	virtual bool operator()(BaseHandler*) const;
 
  private:

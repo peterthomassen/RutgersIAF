@@ -172,8 +172,8 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	nDYcuts[0].insert(std::make_pair(4, nDYcuts4));
 	
 	// Prepare DY cuts (for seed channels)
-	SignatureCutNDYPairsT* dy0cutElT = new SignatureCutNDYPairsT("goodElectrons", 0, 0);
-	SignatureCutNDYPairsT* dy0cutMuT = new SignatureCutNDYPairsT("goodMuons", 0, 0);
+	SignatureCutNDYPairsT* dy0cutElT = new SignatureCutNDYPairsT("goodElectrons", 0, 0, true, 0, 1E6);
+	SignatureCutNDYPairsT* dy0cutMuT = new SignatureCutNDYPairsT("goodMuons", 0, 0, true, 0, 1E6);
 	SignatureCutCombined* dy0cutSeedEl = new SignatureCutCombined(dy0cut, dy0cutElT, true);
 	SignatureCutCombined* dy0cutSeedMu = new SignatureCutCombined(dy0cut, dy0cutMuT, true);
 	dy0cutSeedEl->setName("0e");
