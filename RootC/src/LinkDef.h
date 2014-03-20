@@ -29,6 +29,7 @@
 #include "RutgersIAF2012/RootC/interface/SignatureCutMET.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNBjetTrack.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNDYPairs.h"
+#include "RutgersIAF2012/RootC/interface/SignatureCutNDYPairsT.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNElectron.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNJet.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNMuon.h"
@@ -225,6 +226,7 @@
 #pragma link C++ class SignatureCutMET+;
 #pragma link C++ class SignatureCutNBjetTrack+;
 #pragma link C++ class SignatureCutNDYPairs+;
+#pragma link C++ class SignatureCutNDYPairsT+;
 #pragma link C++ class SignatureCutNElectron+;
 #pragma link C++ class SignatureCutNJet+;
 #pragma link C++ class SignatureCutNMuon+;

@@ -13,10 +13,15 @@ void inclusiveTable2012()
   addDataFiles(handler,"datafiles.list",19500.0,0.026);
   addSimulations(handler,"simufiles.list");
 
-  int nMicro = setupInclusiveSignatures(handler);
+  int nMicro = setupInclusiveSignatures(handler, true);
   
   handler->addHistogram("MET", "PFMET");
   handler->addHistogram("HT", "HT");
+
+  handler->addHistogram("RelIsoVsDxy_electrons", "RelIsoVsDxy_electrons");
+  handler->addHistogram("RelIsoVsDxy_muons", "RelIsoVsDxy_muons");
+  handler->addHistogram("RelIsoVsDxy_tracks", "RelIsoVsDxy_tracks");
+
 
   handler->initialize();
   handler->processChannels();

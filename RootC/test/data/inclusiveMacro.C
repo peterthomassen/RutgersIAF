@@ -12,10 +12,12 @@ void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/"
 	//TTree* tree = (TTree*)infile.Get("SkimTree");
 	TChain* tree = new TChain("SkimTree");
 	TString input = ifname;
-	input += "/*.root";
+	if(!input.Contains(".root")) {
+		input += "/*.root";
+	}
 	tree->Add(input);
 	
-	SignatureHandler* handler = new SignatureHandler(tree,ofname);
+	SignatureHandler* handler = new SignatureHandler(tree,ofname,"CREATE");
 //	handler->setDebugMode();
 	
 	setupTriggerCut(handler,mode);
@@ -33,11 +35,15 @@ void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/"
 	
 	setupHandlerCuts(handler);
 	
+	bool doInclusiveSignatures = true;
 	bool fakeStudy = true;
-	bool fakeSeedsForEachChannel = false;
-	setupInclusiveSignatures(handler, fakeSeedsForEachChannel);
+	bool fakeSeedsForEachChannel = true;
+	if(doInclusiveSignatures) {
+		setupInclusiveSignatures(handler, fakeSeedsForEachChannel);
+	}
 	if(fakeStudy || fakeSeedsForEachChannel) {
 		setupFakeRateSignatures(handler);
+		setupFakeRateHistograms(handler);
 	}
 	
 	handler->addBasicHistograms();
@@ -45,8 +51,6 @@ void inclusiveMacro(const char* ifname="/cms/data26/srarora/Cluster/"
 	handler->initSignatures();
 
 	handler->eventLoop();
-//	handler->eventLoop(206512, 1193402082); // passes mode 1 (MuEG); /cms/rcg/rcgray/2012/DataLinks2012/DoubleMu_DiLepSkim_18700ipb_Nov30/p17
-//	handler->eventLoop(191226, 635207914); // should be mode 3 (DoubleEl); /cms/rcg/rcgray/2012/DataLinks2012/DoubleElectron_DiLepSkim_18700ipb_Nov30/p01
 	
 	handler->finishSignatures();
 	
