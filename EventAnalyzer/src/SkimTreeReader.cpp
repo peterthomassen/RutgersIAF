@@ -741,6 +741,7 @@ void SkimTreeReader::createMuons()
     muon->setVariable("INNERNUMBEROFVALIDPIXELHITS",pat_muon_innerNumberOfValidPixelHits[i]);
     muon->setVariable("INNERVERTDZ",pat_muon_innerVertDz[i]);
     muon->setVariable("NORMALIZEDCHI2",pat_muon_normalizedChi2[i]);
+    muon->setVariable("NTRACKERLAYERSWM",reco_track_ntrackerLayersWM[gtID]);
     muon->setVariable("PDGID",13*-1*pat_muon_charge[i]);
 
     muons.push_back(muon);

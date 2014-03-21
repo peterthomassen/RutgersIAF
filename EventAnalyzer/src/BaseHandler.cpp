@@ -379,7 +379,8 @@ void BaseHandler::createProducts()
       }
       for(int k = 0; k < (int)m_object_cut_list.size();k++){
 	TString cutname = m_object_cut_list[k];
-	object->setVariable(cutname,m_object_cuts[cutname]->passCut(object));
+	m_object_cuts[cutname]->passCut(object);
+	//object->setVariable(cutname,m_object_cuts[cutname]->passCut(object));
       }
     }
   }
@@ -733,6 +734,7 @@ void BaseHandler::addObjectCut(TString cutname, ObjectCut* cut)
   }else{
     m_object_cut_list.push_back(cutname);
   }
+  cut->setName(cutname);
   m_object_cuts[cutname] = cut;
 }
 //-----------------------------------------

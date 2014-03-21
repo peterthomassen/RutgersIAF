@@ -1,5 +1,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutEta.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutPt.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTF1.h"
@@ -88,4 +90,6 @@
 #pragma link C++ class EventVariableTH1<long>+;
 #pragma link C++ class EventVariableTH1<double>+;
 #pragma link C++ class EventVariableObjectWeightPtTF1+;
+#pragma link C++ class ObjectCutPt+;
+#pragma link C++ class ObjectCutEta+;
 #endif
