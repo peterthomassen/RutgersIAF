@@ -81,6 +81,7 @@ class SignatureHandler: public BaseHandler, public SkimTreeBase {
   void addBjetSignature(const char*, const char*,int,int);
   Signature* getSignature(int i) {return m_Signatures[i];}
   std::vector<Signature*> getSignatures() {return m_Signatures;}
+  std::vector<SignatureWithBjets*> getBjetSignatures() {return m_bjetSignatures;}
 
   void addPreCutSignature(const char*, const char*);
   void addPreCutSignature(Signature* sig){m_preHandlerCutSignatures.push_back(sig);}
