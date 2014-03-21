@@ -33,7 +33,7 @@ std::vector< std::map<int, SignatureCut*> > constructLeptonCuts(const char* prod
 				if(charge > 0) {
 					name += "p";
 				} else if(charge < 0) {
-					name += "m";
+					name += "n";
 				} else {
 					name += "q";
 				}
@@ -134,7 +134,7 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	}
 	
 	// Prepare DY cuts (not for seed channels)
-	std::vector< std::map<int, std::vector< std::vector<SignatureCut*> > > > nDYcuts(2);
+	std::vector< std::map< TString, std::map<int, std::vector< std::vector<SignatureCut*> > > > > nDYcuts(2);
 	
 	SignatureCutPairMass* aboveZ = new SignatureCutPairMass("goodElectrons",105,10000,true,0,0);
 	aboveZ->addProduct("goodMuons");
@@ -155,12 +155,13 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	dy2offZcut->setName("v2");
 	
 	// Setup DY cuts for 3L (not for seed channels)
+	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcutsT0;
 	std::vector< std::vector<SignatureCut*> > nDYcuts3(2);
 	nDYcuts3[0].push_back(dy0cut);
 	nDYcuts3[1].push_back(dy1belowZcut);
 	nDYcuts3[1].push_back(dy1aboveZcut);
 	nDYcuts3[1].push_back(dy1onZcut);
-	nDYcuts[0].insert(std::make_pair(3, nDYcuts3));
+	nDYcutsT0.insert(std::make_pair(3, nDYcuts3));
 	
 	// Setup DY cuts for 4L (not for seed channels)
 	std::vector< std::vector<SignatureCut*> > nDYcuts4(3);
@@ -169,53 +170,67 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	nDYcuts4[1].push_back(dy1offZcut);
 	nDYcuts4[2].push_back(dy2onZcut);
 	nDYcuts4[2].push_back(dy2offZcut);
-	nDYcuts[0].insert(std::make_pair(4, nDYcuts4));
+	nDYcutsT0.insert(std::make_pair(4, nDYcuts4));
+	
+	nDYcuts[0].insert(std::make_pair(TString(""), nDYcutsT0));
 	
 	// Prepare DY cuts (for seed channels)
 	SignatureCutNDYPairsT* dy0cutElT = new SignatureCutNDYPairsT("goodElectrons", 0, 0, true, 0, 1E6);
 	SignatureCutNDYPairsT* dy0cutMuT = new SignatureCutNDYPairsT("goodMuons", 0, 0, true, 0, 1E6);
 	SignatureCutCombined* dy0cutSeedEl = new SignatureCutCombined(dy0cut, dy0cutElT, true);
 	SignatureCutCombined* dy0cutSeedMu = new SignatureCutCombined(dy0cut, dy0cutMuT, true);
-	dy0cutSeedEl->setName("0e");
-	dy0cutSeedMu->setName("0m");
+	dy0cutSeedEl->setName("0");
+	dy0cutSeedMu->setName("0");
 	
 	SignatureCutNDYPairsT* dy1onZcutElT = new SignatureCutNDYPairsT("goodElectrons", 1, 1, true);
 	SignatureCutNDYPairsT* dy1onZcutMuT = new SignatureCutNDYPairsT("goodMuons", 1, 1, true);
 	SignatureCutCombined* dy1onZcutSeedEl = new SignatureCutCombined(dy1onZcut, dy1onZcutElT);
 	SignatureCutCombined* dy1onZcutSeedMu = new SignatureCutCombined(dy1onZcut, dy1onZcutMuT);
-	dy1onZcutSeedEl->setName("z1e");
-	dy1onZcutSeedMu->setName("z1m");
+	dy1onZcutSeedEl->setName("z1");
+	dy1onZcutSeedMu->setName("z1");
 	
 	SignatureCutReversed* dy1offZcutSeedEl = new SignatureCutReversed(dy1onZcutSeedEl);
 	SignatureCutReversed* dy1offZcutSeedMu = new SignatureCutReversed(dy1onZcutSeedMu);
 	
 	SignatureCutNDYPairsT* dy1aboveZcutElT = new SignatureCutNDYPairsT("goodElectrons", 1, 1, true, 105, 1E6);
 	SignatureCutNDYPairsT* dy1aboveZcutMuT = new SignatureCutNDYPairsT("goodMuons", 1, 1, true, 105, 1E6);
-	SignatureCutCombined* dy1aboveZcutSeedEl = new SignatureCutCombined(dy1offZcutSeedEl, new SignatureCutCombined(dy1aboveZcut, dy1aboveZcutElT), true, "h1e");
-	SignatureCutCombined* dy1aboveZcutSeedMu = new SignatureCutCombined(dy1offZcutSeedMu, new SignatureCutCombined(dy1aboveZcut, dy1aboveZcutMuT), true, "h1m");
+	SignatureCutCombined* dy1aboveZcutSeedEl = new SignatureCutCombined(dy1offZcutSeedEl, new SignatureCutCombined(dy1aboveZcut, dy1aboveZcutElT), true, "h1");
+	SignatureCutCombined* dy1aboveZcutSeedMu = new SignatureCutCombined(dy1offZcutSeedMu, new SignatureCutCombined(dy1aboveZcut, dy1aboveZcutMuT), true, "h1");
 	
 	SignatureCutNDYPairsT* dy1belowZcutElT = new SignatureCutNDYPairsT("goodElectrons", 1, 1, true, 0, 75);
 	SignatureCutNDYPairsT* dy1belowZcutMuT = new SignatureCutNDYPairsT("goodMuons", 1, 1, true, 0, 75);
 	SignatureCutCombined* dy1belowZcutSeedEl_ = new SignatureCutCombined(dy1offZcutSeedEl, new SignatureCutReversed(dy1aboveZcutSeedEl), true);
-	SignatureCutCombined* dy1belowZcutSeedEl = new SignatureCutCombined(dy1belowZcutSeedEl_, new SignatureCutCombined(dy1belowZcut, dy1belowZcutElT), true, "l1e");
+	SignatureCutCombined* dy1belowZcutSeedEl = new SignatureCutCombined(dy1belowZcutSeedEl_, new SignatureCutCombined(dy1belowZcut, dy1belowZcutElT), true, "l1");
 	SignatureCutCombined* dy1belowZcutSeedMu_ = new SignatureCutCombined(dy1offZcutSeedMu, new SignatureCutReversed(dy1aboveZcutSeedMu), true);
-	SignatureCutCombined* dy1belowZcutSeedMu = new SignatureCutCombined(dy1belowZcutSeedMu_, new SignatureCutCombined(dy1belowZcut, dy1belowZcutMuT), true, "l1m");
+	SignatureCutCombined* dy1belowZcutSeedMu = new SignatureCutCombined(dy1belowZcutSeedMu_, new SignatureCutCombined(dy1belowZcut, dy1belowZcutMuT), true, "l1");
 	
-	// Setup DY cuts for 3L (for seed channels)
-	std::vector< std::vector<SignatureCut*> > nDYcuts3seed(2);
-	nDYcuts3seed[0].push_back(dy0cutSeedEl);
-	nDYcuts3seed[1].push_back(dy1onZcutSeedEl);
-	nDYcuts3seed[1].push_back(dy1aboveZcutSeedEl);
-	nDYcuts3seed[1].push_back(dy1belowZcutSeedEl);
-	nDYcuts3seed[0].push_back(dy0cutSeedMu);
-	nDYcuts3seed[1].push_back(dy1onZcutSeedMu);
-	nDYcuts3seed[1].push_back(dy1aboveZcutSeedMu);
-	nDYcuts3seed[1].push_back(dy1belowZcutSeedMu);
-	nDYcuts[1].insert(std::make_pair(3, nDYcuts3seed));
+	// Setup DY cuts for 3L (where track fakes electron)
+	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcutsT1e;
+	std::vector< std::vector<SignatureCut*> > nDYcuts3seedEl(2);
+	nDYcuts3seedEl[0].push_back(dy0cutSeedEl);
+	nDYcuts3seedEl[1].push_back(dy1onZcutSeedEl);
+	nDYcuts3seedEl[1].push_back(dy1aboveZcutSeedEl);
+	nDYcuts3seedEl[1].push_back(dy1belowZcutSeedEl);
+	nDYcutsT1e.insert(std::make_pair(3, nDYcuts3seedEl));
 	
-	// Setup DY cuts for 4L (for seed channels)
-	std::vector< std::vector<SignatureCut*> > nDYcuts4seed(3);
-	nDYcuts[1].insert(std::make_pair(4, nDYcuts4seed));
+	std::vector< std::vector<SignatureCut*> > nDYcuts4seedEl(3);
+	nDYcutsT1e.insert(std::make_pair(4, nDYcuts4seedEl));
+	
+	nDYcuts[1].insert(std::make_pair(TString("e"), nDYcutsT1e));
+	
+	// Setup DY cuts for 3L (where track fakes muon)
+	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcutsT1m;
+	std::vector< std::vector<SignatureCut*> > nDYcuts3seedMu(2);
+	nDYcuts3seedMu[0].push_back(dy0cutSeedMu);
+	nDYcuts3seedMu[1].push_back(dy1onZcutSeedMu);
+	nDYcuts3seedMu[1].push_back(dy1aboveZcutSeedMu);
+	nDYcuts3seedMu[1].push_back(dy1belowZcutSeedMu);
+	nDYcutsT1m.insert(std::make_pair(3, nDYcuts3seedMu));
+	
+	std::vector< std::vector<SignatureCut*> > nDYcuts4seedMu(3);
+	nDYcutsT1m.insert(std::make_pair(4, nDYcuts4seedMu));
+	
+	nDYcuts[1].insert(std::make_pair(TString("m"), nDYcutsT1m));
 	
 	// Other cuts
 	SignatureCutMass* trileptonMassOffZcut = new SignatureCutMass("goodElectrons");
@@ -245,20 +260,29 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 	nTrackCuts.insert(std::make_pair(3, constructLeptonCuts("goodIsoTracks", nTrackMax, true)));
 	nTrackCuts.insert(std::make_pair(4, constructLeptonCuts("goodIsoTracks", nTrackMax, false)));
 	
+	// Track flavor
+	std::vector< std::vector<TString> > fTrackCuts;
+	
+	std::vector<TString> fTrackCuts0;
+	fTrackCuts0.push_back(TString(""));
+	fTrackCuts.push_back(fTrackCuts0);
+	
+	std::vector<TString> fTrackCuts1;
+	fTrackCuts1.push_back(TString("e"));
+	fTrackCuts1.push_back(TString("m"));
+	fTrackCuts.push_back(fTrackCuts1);
 	
 	// Signal regions
-	uint i = 1;
+	uint i = 0;
 	// Either 3 or 4+ leptons
 	for(uint nLeptons = 3; nLeptons <= 4; ++nLeptons) {
 		// Various numbers of electrons
 		for(uint nEl = 0; nEl < nElCuts[nLeptons].size(); ++nEl) {
 			// Various electron charge combinations
-			//for(uint iEl = 0; iEl < nElCuts[nLeptons][nEl].size(); ++iEl) {
 			for(std::map<int, SignatureCut*>::iterator iterEl = nElCuts[nLeptons][nEl].begin(); iterEl != nElCuts[nLeptons][nEl].end(); ++iterEl) {
 				// Various numbers of muons
 				for(uint nMu = 0; nMu < nMuCuts[nLeptons].size(); ++nMu) {
 					// Various muon charge combinations
-					//for(uint iMu = 0; iMu < nMuCuts[nLeptons][nMu].size(); ++iMu) {
 					for(std::map<int, SignatureCut*>::iterator iterMu = nMuCuts[nLeptons][nMu].begin(); iterMu != nMuCuts[nLeptons][nMu].end(); ++iterMu) {
 						// Various numbers of taus
 						for(uint nTau = 0; nTau < nTauCuts.size(); ++nTau) {
@@ -267,166 +291,156 @@ void setupInclusiveSignatures(SignatureHandler* handler, bool doSeeds = false) {
 								// Various numbers of tracks
 								for(uint nTrack = 0; nTrack < nTrackCuts[nLeptons].size(); ++nTrack) {
 									// Various track charge combinations
-									//for(uint iTrack = 0; iTrack < nTrackCuts[nLeptons][nTrack].size(); ++iTrack) {
 									for(std::map<int, SignatureCut*>::iterator iterTrack = nTrackCuts[nLeptons][nTrack].begin(); iterTrack != nTrackCuts[nLeptons][nTrack].end(); ++iterTrack) {
-										// Various cuts on the number OSSF pairs, depending on number of electrons and muons
-										for(uint nDY = 0; nDY < nDYcuts[nTrack][nLeptons].size(); ++nDY) {
-											// Various variants of the OSSF cuts (Z window)
-											for(uint iDY = 0; iDY < nDYcuts[nTrack][nLeptons][nDY].size(); ++iDY) {
-												// Various number of b-tags
-												for(uint nBtag = 0; nBtag < nBtagCutParameters.size(); ++nBtag) {
-													// Various MET bins
-													for(uint iMET = 0; iMET < metCuts.size(); ++iMET) {
-														// Various HT bins
-														for(uint iHT = 0; iHT < htCuts.size(); ++iHT) {
-															// ATTENTION:
-															//   * The following variables act as a map index in the first place.
-															//   * Besides, for 3L channels, the variables are the charge sum of electrons/muons/tracks.
-															//   * However, for 4L channels, the charge variables are always zero because we do not bin in charge!
-															int qEl = iterEl->first;
-															int qMu = iterMu->first;
-															int qTrack = iterTrack->first;
-															
-															// Impose lepton cuts such that total lepton number is right
-															if(nEl + nMu + nTau + nSidebandTau + nTrack != nLeptons) {
-																continue;
-															}
-															// Impose sensible OSSF cuts only (don't impose cuts that can't be passed)
-															if(nLeptons == 3 && nTrack == 0 && nDY != ((nEl - abs(qEl))/2 + (nMu - abs(qMu))/2)) {
-																continue;
-															}
-															if(nLeptons == 4 && nDY > (nEl/2 + nMu/2)) {
-																continue;
-															}
-															
-															// Currently, we add sideband tau signatures to complement the tau signatures (i.e. not both cuts at the same time)
-															if(nSidebandTau > 0 && nTau > 0) {
-																continue;
-															}
-															
-															TString name = "";
-															TString nameEl = nElCuts[nLeptons][nEl][qEl]->getName();
-															TString nameMu = nMuCuts[nLeptons][nMu][qMu]->getName();
-															TString nameTrack = nTrackCuts[nLeptons][nTrack][qTrack]->getName();
-															TString nameDY = nDYcuts[nTrack][nLeptons][nDY][iDY]->getName();
-															TString nameMET = metCuts[iMET]->getName();
-															TString nameHT = htCuts[iHT]->getName();
-															
-															if(nTrack > 0 && nLeptons == 3) {
-																int idxEl = nameDY.Index("e");
-																int idxMu = nameDY.Index("m");
-																assert(idxEl > 0 || idxMu > 0);
-																// Skip channels where the fake pair involves a lepton flavor that is not present, 
-																// or where the lepton and track are same-sign.
-																// The charge product being 0 includes the case where the pair is from real leptons, 
-																// so it should be accepted for nDY1 == 1.
-																if(idxEl > 0) {
-																	if(nEl == 0
-																		|| (nDY == 1 && qEl * qTrack > 0)
-																		|| (nDY == 0 && qEl * qTrack <= 0)
-																	) {
+										// Various track fake flavor combinations
+										for(std::vector<TString>::iterator iterFTrack = fTrackCuts[nTrack].begin(); iterFTrack != fTrackCuts[nTrack].end(); ++iterFTrack) {
+											// Various cuts on the number OSSF pairs, depending on number of electrons and muons
+											for(uint nDY = 0; nDY < nDYcuts[nTrack][*iterFTrack][nLeptons].size(); ++nDY) {
+												// Various variants of the OSSF cuts (Z window)
+												for(uint iDY = 0; iDY < nDYcuts[nTrack][*iterFTrack][nLeptons][nDY].size(); ++iDY) {
+													// Various number of b-tags
+													for(uint nBtag = 0; nBtag < nBtagCutParameters.size(); ++nBtag) {
+														// Various MET bins
+														for(uint iMET = 0; iMET < metCuts.size(); ++iMET) {
+															// Various HT bins
+															for(uint iHT = 0; iHT < htCuts.size(); ++iHT) {
+																// ATTENTION:
+																//   * The following variables act as a map index in the first place.
+																//   * Besides, for 3L channels, the variables are the charge sum of electrons/muons/tracks.
+																//   * However, for 4L channels, the charge variables are always zero because we do not bin in charge!
+																int qEl = iterEl->first;
+																int qMu = iterMu->first;
+																int qTrack = iterTrack->first;
+																
+																unsigned int nDY_ll = (nEl - abs(qEl))/2 + (nMu - abs(qMu))/2;
+																
+																// Impose lepton cuts such that total lepton number is right
+																if(nEl + nMu + nTau + nSidebandTau + nTrack != nLeptons) {
+																	continue;
+																}
+																// Impose sensible OSSF cuts only (don't impose cuts that can't be passed)
+																if(nLeptons == 3 && nTrack == 0 && nDY != nDY_ll) {
+																	continue;
+																}
+																if(nLeptons == 4 && nDY > (nEl/2 + nMu/2)) {
+																	continue;
+																}
+																
+																// Currently, we add sideband tau signatures to complement the tau signatures (i.e. not both cuts at the same time)
+																if(nSidebandTau > 0 && nTau > 0) {
+																	continue;
+																}
+																
+																// Skip channels where the requested number of DY pairs cannot be constructed, 
+																// neither from leptons nor from lepton+track
+																// Outer if-clause checks wether nDY can be accomodated by leptons only; 
+																// inner if-clause checks wether we can make fake pairs
+																if(nTrack > 0 && nLeptons == 3 && nDY != nDY_ll) {
+																	assert((*iterFTrack).Length());
+																	if(*iterFTrack == "e" && nDY != ((nEl + nTrack) - abs(qEl + qTrack))/2) {
+																		continue;
+																	}
+																	if(*iterFTrack == "m" && nDY != ((nMu + nTrack) - abs(qMu + qTrack))/2) {
 																		continue;
 																	}
 																}
-																if(idxMu > 0) {
-																	if(nMu == 0
-																		|| (nDY == 1 && qMu * qTrack > 0)
-																		|| (nDY == 0 && qMu * qTrack <= 0)
-																	) {
-																		continue;
-																	}
+																
+																SignatureWithBjets* sig = new SignatureWithBjets("", "", nBtagCutParameters[nBtag].first, nBtagCutParameters[nBtag].second);
+																
+																TString name = "";
+																TString nameEl = nElCuts[nLeptons][nEl][qEl]->getName();
+																TString nameMu = nMuCuts[nLeptons][nMu][qMu]->getName();
+																TString nameTrack = *iterFTrack + nTrackCuts[nLeptons][nTrack][qTrack]->getName();
+																TString nameDY = nDYcuts[nTrack][*iterFTrack][nLeptons][nDY][iDY]->getName();
+																TString nameMET = metCuts[iMET]->getName();
+																TString nameHT = htCuts[iHT]->getName();
+																
+																// Channel for DD background estimation?
+																if(nSidebandTau + nTrack > 0) {
+																	name += "Seed";
 																}
-																// If there is no ambiguity, remove the flavor from nameDY
-																if(nEl == 0 || nMu == 0) {
-																	// The index of the absent flavor is negative, so 
-																	// max(idxEl, idxMu) is the index of the present flavor
-																	nameDY = nameDY(0, max(idxEl, idxMu));
-																}
-															}
-															
-															SignatureWithBjets* sig = new SignatureWithBjets("", "", nBtagCutParameters[nBtag].first, nBtagCutParameters[nBtag].second);
-															
-															// Channel for DD background estimation?
-															if(nSidebandTau + nTrack > 0) {
-																name += "Seed";
-															}
-															
-															// Electrons
-															name += TString::Format("El%s", nameEl.Data());
-															if(nLeptons == 3 && nTau == 1 && (abs(qEl + qMu) == 2 || abs(qEl + qTrack) == 2)) {
-																sig->addCut(nElSSCuts[nLeptons][nEl][qEl]);
-															} else {
-																sig->addCut(nElCuts[nLeptons][nEl][qEl]);
-															}
-															
-															// Muons
-															name += TString::Format("Mu%s", nameMu.Data());
-															sig->addCut(nMuCuts[nLeptons][nMu][qMu]);
-															
-															// Taus
-															name += TString::Format("Tau%d", nTau);
-															// For 3LTau1, require exactly 1 Tau; else allow one or more
-															if(nLeptons == 3 && nTau == 1) {
-																sig->addCut(new SignatureCutNTau(1, 1));
-															} else {
-																sig->addCut(nTauCuts[nTau]);
-															}
-															
-															// Sideband taus
-															if(nSidebandTau > 0) {
-																name += TString::Format("SidebandTau%d", nSidebandTau);
-																sig->addCut(nSidebandTauCuts[nSidebandTau]);
-															}
-															
-															// Tracks
-															if(nTrack > 0) {
-																name += TString::Format("T%s", nameTrack.Data());
-																sig->addCut(nTrackCuts[nLeptons][nTrack][qTrack]);
-															}
-															
-															// DY
-															name += TString::Format("DY%s", nameDY.Data());
-															sig->addCut(nDYcuts[nTrack][nLeptons][nDY][iDY]);
-															
-															// B-tag
-															name += TString::Format("B%d", nBtag);
-															// The b-tag cut itself has already been taken care of by the signature constructor
-															
-															// MET
-															name += TString::Format("MET%s", nameMET.Data());
-															sig->addCut(metCuts[iMET]);
-															
-															// HT
-															name += TString::Format("HT%s", nameHT.Data());
-															sig->addCut(htCuts[iHT]);
-															
-															// Other cuts
-															
-															// Veto trileptons from asymmetric internal photon conversions
-															// TODO Check if we really should require (nSidebandTau + nTrack == 0) or rather include those objects in the cut
-															if(nLeptons == 3 && nTau == 0 && (nSidebandTau + nTrack == 0) && iMET == 0 && iHT == 0 && (nDY == 1 && (iDY == 0 || iDY == 1))) {
-																sig->addCut(trileptonMassOffZcut);
-															}
-															
-															// Veto charge sum = 3 for 3L where not all leptons are the same flavor
-															if(nLeptons == 3 && nEl != 3 && nMu != 3) {
-																if(nTrack > 0) {
-																	sig->addCut(cutQ2L1T);
+																
+																// Electrons
+																name += TString::Format("El%s", nameEl.Data());
+																if(nLeptons == 3 && nTau == 1 && (abs(qEl + qMu) == 2 || abs(qEl + qTrack) == 2)) {
+																	sig->addCut(nElSSCuts[nLeptons][nEl][qEl]);
 																} else {
-																	sig->addCut(cutQ3L);
+																	sig->addCut(nElCuts[nLeptons][nEl][qEl]);
 																}
+																
+																// Muons
+																name += TString::Format("Mu%s", nameMu.Data());
+																sig->addCut(nMuCuts[nLeptons][nMu][qMu]);
+																
+																// Taus
+																name += TString::Format("Tau%d", nTau);
+																// For 3LTau1, require exactly 1 Tau; else allow one or more
+																if(nLeptons == 3 && nTau == 1) {
+																	sig->addCut(new SignatureCutNTau(1, 1));
+																} else {
+																	sig->addCut(nTauCuts[nTau]);
+																}
+																
+																// Sideband taus
+																if(nSidebandTau > 0) {
+																	name += TString::Format("SidebandTau%d", nSidebandTau);
+																	sig->addCut(nSidebandTauCuts[nSidebandTau]);
+																}
+																
+																// Tracks
+																if(nTrack > 0) {
+																	name += TString::Format("T%s", nameTrack.Data());
+																	sig->addCut(nTrackCuts[nLeptons][nTrack][qTrack]);
+																}
+																
+																// DY
+																name += TString::Format("DY%s", nameDY.Data());
+																sig->addCut(nDYcuts[nTrack][*iterFTrack][nLeptons][nDY][iDY]);
+																
+																// B-tag
+																name += TString::Format("B%d", nBtag);
+																// The b-tag cut itself has already been taken care of by the signature constructor
+																
+																// MET
+																name += TString::Format("MET%s", nameMET.Data());
+																sig->addCut(metCuts[iMET]);
+																
+																// HT
+																name += TString::Format("HT%s", nameHT.Data());
+																sig->addCut(htCuts[iHT]);
+																
+																// Other cuts
+																
+																// Veto trileptons from asymmetric internal photon conversions
+																// TODO Check if we really should require (nSidebandTau + nTrack == 0) or rather include those objects in the cut
+																if(nLeptons == 3 && nTau == 0 && (nSidebandTau + nTrack == 0) && iMET == 0 && iHT == 0 && (nDY == 1 && (iDY == 0 || iDY == 1))) {
+																	sig->addCut(trileptonMassOffZcut);
+																}
+																
+																// Veto charge sum = 3 for 3L where not all leptons are the same flavor
+																if(nLeptons == 3 && nEl != 3 && nMu != 3) {
+																	if(nTrack > 0) {
+																		sig->addCut(cutQ2L1T);
+																	} else {
+																		sig->addCut(cutQ3L);
+																	}
+																}
+																
+																// Check if a signature with the same name exists already and scream if so
+																std::vector<SignatureWithBjets*> sigList = handler->getBjetSignatures();
+																for(uint iSig = 0; iSig < sigList.size(); ++iSig) {
+																	if(sigList[iSig]->getName() == name) {
+																		cout << name << endl;
+																		assert(false);
+																	}
+																}
+																
+																// Finish signature definition
+																sig->setName(name);
+																handler->addBjetSignature(sig);
+																++i;
+																std::cout << i << " Done setting up signature " << name << std::endl;
 															}
-															
-															// Check if a signature with the same name exists already and scream if so
-															std::vector<Signature*> sigList = handler->getSignatures();
-															for(uint iSig = 0; i < sigList.size(); ++iSig) {
-																assert(sigList[iSig]->getName() != name);
-															}
-															
-															// Finish signature definition
-															sig->setName(name);
-															handler->addBjetSignature(sig);
-															std::cout << i++ << " Done setting up signature " << name << std::endl;
 														}
 													}
 												}

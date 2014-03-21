@@ -8,6 +8,7 @@
 #include "RutgersIAF2012/RootC/interface/SignatureCutMll.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutN.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNDYPairs.h"
+#include "RutgersIAF2012/RootC/interface/SignatureCutNDYPairsT.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutNTau.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutPairMass.h"
 #include "RutgersIAF2012/RootC/interface/SignatureCutQ.h"
@@ -40,7 +41,7 @@ std::vector< std::map<int, SignatureCut*> > constructLeptonCuts(const char* prod
 				if(charge > 0) {
 					name += "p";
 				} else if(charge < 0) {
-					name += "m";
+					name += "n";
 				} else {
 					name += "q";
 				}
@@ -140,38 +141,106 @@ int setupInclusiveSignatures(ChannelHandler* handler, bool doSeeds = false) {
 		htCuts.push_back(new SignatureCutHT(edgeLow, edgeHigh, name.Data()));
 	}
 	
-	// Prepare DY cuts
-	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcuts;
+	// Prepare DY cuts (not for seed channels)
+	std::vector< std::map< TString, std::map<int, std::vector< std::vector<SignatureCut*> > > > > nDYcuts(2);
+	
+	SignatureCutPairMass* aboveZ = new SignatureCutPairMass("goodElectrons",105,10000,true,0,0);
+	aboveZ->addProduct("goodMuons");
+	SignatureCutPairMass* belowZ = new SignatureCutPairMass("goodElectrons",75,10000,false,0,0);
+	belowZ->addProduct("goodMuons");
+	
 	SignatureCutNDYPairs* dy0cut = new SignatureCutNDYPairs(0,0);
 	dy0cut->setName("0");
 	SignatureCutNDYPairs* dy1onZcut = new SignatureCutNDYPairs(1,1,true);
 	dy1onZcut->setName("z1");
 	SignatureCutNDYPairs* dy1offZcut = new SignatureCutNDYPairs(1,1,false);
 	dy1offZcut->setName("v1");
-	SignatureCutCombined* dy1belowZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutMll(0,75), true, "l1");
-	SignatureCutCombined* dy1aboveZcut = new SignatureCutCombined(dy1offZcut, new SignatureCutMll(105,-1), true, "h1");
+	SignatureCutCombined* dy1belowZcut = new SignatureCutCombined(dy1offZcut, belowZ, true, "l1");
+	SignatureCutCombined* dy1aboveZcut = new SignatureCutCombined(dy1offZcut, aboveZ, true, "h1"); 
 	SignatureCutNDYPairs* dy2onZcut = new SignatureCutNDYPairs(2,2,true);
 	dy2onZcut->setName("z2");
 	SignatureCutNDYPairs* dy2offZcut = new SignatureCutNDYPairs(2,2,false);
 	dy2offZcut->setName("v2");
 	
-	// Setup DY cuts for 3L
+	// Setup DY cuts for 3L (not for seed channels)
+	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcutsT0;
 	std::vector< std::vector<SignatureCut*> > nDYcuts3(2);
 	nDYcuts3[0].push_back(dy0cut);
 	nDYcuts3[1].push_back(dy1belowZcut);
 	nDYcuts3[1].push_back(dy1aboveZcut);
 	nDYcuts3[1].push_back(dy1onZcut);
-	nDYcuts.insert(std::make_pair(3, nDYcuts3));
+	nDYcutsT0.insert(std::make_pair(3, nDYcuts3));
 	
-	// Setup DY cuts for 4L
+	// Setup DY cuts for 4L (not for seed channels)
 	std::vector< std::vector<SignatureCut*> > nDYcuts4(3);
 	nDYcuts4[0].push_back(dy0cut);
 	nDYcuts4[1].push_back(dy1onZcut);
 	nDYcuts4[1].push_back(dy1offZcut);
 	nDYcuts4[2].push_back(dy2onZcut);
 	nDYcuts4[2].push_back(dy2offZcut);
-	nDYcuts.insert(std::make_pair(4, nDYcuts4));
+	nDYcutsT0.insert(std::make_pair(4, nDYcuts4));
 	
+	nDYcuts[0].insert(std::make_pair(TString(""), nDYcutsT0));
+	
+	// Prepare DY cuts (for seed channels)
+	SignatureCutNDYPairsT* dy0cutElT = new SignatureCutNDYPairsT("goodElectrons", 0, 0, true, 0, 1E6);
+	SignatureCutNDYPairsT* dy0cutMuT = new SignatureCutNDYPairsT("goodMuons", 0, 0, true, 0, 1E6);
+	SignatureCutCombined* dy0cutSeedEl = new SignatureCutCombined(dy0cut, dy0cutElT, true);
+	SignatureCutCombined* dy0cutSeedMu = new SignatureCutCombined(dy0cut, dy0cutMuT, true);
+	dy0cutSeedEl->setName("0");
+	dy0cutSeedMu->setName("0");
+	
+	SignatureCutNDYPairsT* dy1onZcutElT = new SignatureCutNDYPairsT("goodElectrons", 1, 1, true);
+	SignatureCutNDYPairsT* dy1onZcutMuT = new SignatureCutNDYPairsT("goodMuons", 1, 1, true);
+	SignatureCutCombined* dy1onZcutSeedEl = new SignatureCutCombined(dy1onZcut, dy1onZcutElT);
+	SignatureCutCombined* dy1onZcutSeedMu = new SignatureCutCombined(dy1onZcut, dy1onZcutMuT);
+	dy1onZcutSeedEl->setName("z1");
+	dy1onZcutSeedMu->setName("z1");
+	
+	SignatureCutReversed* dy1offZcutSeedEl = new SignatureCutReversed(dy1onZcutSeedEl);
+	SignatureCutReversed* dy1offZcutSeedMu = new SignatureCutReversed(dy1onZcutSeedMu);
+	
+	SignatureCutNDYPairsT* dy1aboveZcutElT = new SignatureCutNDYPairsT("goodElectrons", 1, 1, true, 105, 1E6);
+	SignatureCutNDYPairsT* dy1aboveZcutMuT = new SignatureCutNDYPairsT("goodMuons", 1, 1, true, 105, 1E6);
+	SignatureCutCombined* dy1aboveZcutSeedEl = new SignatureCutCombined(dy1offZcutSeedEl, new SignatureCutCombined(dy1aboveZcut, dy1aboveZcutElT), true, "h1");
+	SignatureCutCombined* dy1aboveZcutSeedMu = new SignatureCutCombined(dy1offZcutSeedMu, new SignatureCutCombined(dy1aboveZcut, dy1aboveZcutMuT), true, "h1");
+	
+	SignatureCutNDYPairsT* dy1belowZcutElT = new SignatureCutNDYPairsT("goodElectrons", 1, 1, true, 0, 75);
+	SignatureCutNDYPairsT* dy1belowZcutMuT = new SignatureCutNDYPairsT("goodMuons", 1, 1, true, 0, 75);
+	SignatureCutCombined* dy1belowZcutSeedEl_ = new SignatureCutCombined(dy1offZcutSeedEl, new SignatureCutReversed(dy1aboveZcutSeedEl), true);
+	SignatureCutCombined* dy1belowZcutSeedEl = new SignatureCutCombined(dy1belowZcutSeedEl_, new SignatureCutCombined(dy1belowZcut, dy1belowZcutElT), true, "l1");
+	SignatureCutCombined* dy1belowZcutSeedMu_ = new SignatureCutCombined(dy1offZcutSeedMu, new SignatureCutReversed(dy1aboveZcutSeedMu), true);
+	SignatureCutCombined* dy1belowZcutSeedMu = new SignatureCutCombined(dy1belowZcutSeedMu_, new SignatureCutCombined(dy1belowZcut, dy1belowZcutMuT), true, "l1");
+	
+	// Setup DY cuts for 3L (where track fakes electron)
+	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcutsT1e;
+	std::vector< std::vector<SignatureCut*> > nDYcuts3seedEl(2);
+	nDYcuts3seedEl[0].push_back(dy0cutSeedEl);
+	nDYcuts3seedEl[1].push_back(dy1onZcutSeedEl);
+	nDYcuts3seedEl[1].push_back(dy1aboveZcutSeedEl);
+	nDYcuts3seedEl[1].push_back(dy1belowZcutSeedEl);
+	nDYcutsT1e.insert(std::make_pair(3, nDYcuts3seedEl));
+	
+	std::vector< std::vector<SignatureCut*> > nDYcuts4seedEl(3);
+	nDYcutsT1e.insert(std::make_pair(4, nDYcuts4seedEl));
+	
+	nDYcuts[1].insert(std::make_pair(TString("e"), nDYcutsT1e));
+	
+	// Setup DY cuts for 3L (where track fakes muon)
+	std::map<int, std::vector< std::vector<SignatureCut*> > > nDYcutsT1m;
+	std::vector< std::vector<SignatureCut*> > nDYcuts3seedMu(2);
+	nDYcuts3seedMu[0].push_back(dy0cutSeedMu);
+	nDYcuts3seedMu[1].push_back(dy1onZcutSeedMu);
+	nDYcuts3seedMu[1].push_back(dy1aboveZcutSeedMu);
+	nDYcuts3seedMu[1].push_back(dy1belowZcutSeedMu);
+	nDYcutsT1m.insert(std::make_pair(3, nDYcuts3seedMu));
+	
+	std::vector< std::vector<SignatureCut*> > nDYcuts4seedMu(3);
+	nDYcutsT1m.insert(std::make_pair(4, nDYcuts4seedMu));
+	
+	nDYcuts[1].insert(std::make_pair(TString("m"), nDYcutsT1m));
+	
+	// Other cuts
 	SignatureCutMass* trileptonMassOffZcut = new SignatureCutMass("goodElectrons");
 	trileptonMassOffZcut->addProduct("goodMuons");
 	
@@ -198,7 +267,19 @@ int setupInclusiveSignatures(ChannelHandler* handler, bool doSeeds = false) {
 	std::map<int, std::vector< std::map<int, SignatureCut*> > > nTrackCuts;
 	nTrackCuts.insert(std::make_pair(3, constructLeptonCuts("goodIsoTracks", nTrackMax, true)));
 	nTrackCuts.insert(std::make_pair(4, constructLeptonCuts("goodIsoTracks", nTrackMax, false)));
-		
+	
+	// Track flavor
+	std::vector< std::vector<TString> > fTrackCuts;
+	
+	std::vector<TString> fTrackCuts0;
+	fTrackCuts0.push_back(TString(""));
+	fTrackCuts.push_back(fTrackCuts0);
+	
+	std::vector<TString> fTrackCuts1;
+	fTrackCuts1.push_back(TString("e"));
+	fTrackCuts1.push_back(TString("m"));
+	fTrackCuts.push_back(fTrackCuts1);
+	
 	// Signal regions
 	uint i = 0;
 	// Either 3 or 4+ leptons
@@ -206,636 +287,717 @@ int setupInclusiveSignatures(ChannelHandler* handler, bool doSeeds = false) {
 		// Various numbers of electrons
 		for(uint nEl = 0; nEl < nElCuts[nLeptons].size(); ++nEl) {
 			// Various electron charge combinations
-			//for(uint iEl = 0; iEl < nElCuts[nLeptons][nEl].size(); ++iEl) {
 			for(std::map<int, SignatureCut*>::iterator iterEl = nElCuts[nLeptons][nEl].begin(); iterEl != nElCuts[nLeptons][nEl].end(); ++iterEl) {
 				// Various numbers of muons
 				for(uint nMu = 0; nMu < nMuCuts[nLeptons].size(); ++nMu) {
 					// Various muon charge combinations
-					//for(uint iMu = 0; iMu < nMuCuts[nLeptons][nMu].size(); ++iMu) {
 					for(std::map<int, SignatureCut*>::iterator iterMu = nMuCuts[nLeptons][nMu].begin(); iterMu != nMuCuts[nLeptons][nMu].end(); ++iterMu) {
 						// Various numbers of taus
 						for(uint nTau = 0; nTau < nTauCuts.size(); ++nTau) {
-							// Various cuts on the number OSSF pairs, depending on number of electrons and muons
-							for(uint nDY = 0; nDY < nDYcuts[nLeptons].size(); ++nDY) {
-								// Various variants of the OSSF cuts (Z window)
-								for(uint iDY = 0; iDY < nDYcuts[nLeptons][nDY].size(); ++iDY) {
-									// Various number of b-tags
-									for(uint nBtag = 0; nBtag < nBtagCutParameters.size(); ++nBtag) {
-										// Various MET bins
-										for(uint iMET = 0; iMET < metCuts.size(); ++iMET) {
-											// Various HT bins
-											for(uint iHT = 0; iHT < htCuts.size(); ++iHT) {
-												// Various numbers of sidebands taus
-												for(uint nSidebandTau = 0; nSidebandTau < nSidebandTauCuts.size(); ++nSidebandTau) {
-													// Various numbers of tracks
-													for(uint nTrack = 0; nTrack < nTrackCuts[nLeptons].size(); ++nTrack) {
-														// Various track charge combinations
-														//for(uint iTrack = 0; iTrack < nTrackCuts[nLeptons][nTrack].size(); ++iTrack) {
-														for(std::map<int, SignatureCut*>::iterator iterTrack = nTrackCuts[nLeptons][nTrack].begin(); iterTrack != nTrackCuts[nLeptons][nTrack].end(); ++iterTrack) {
-															// ATTENTION:
-															//   * The following variables act as a map index in the first place.
-															//   * Besides, for 3L channels, the variables are the charge sum of electrons/muons/tracks.
-															//   * However, for 4L channels, the charge variables are always zero because we do not bin in charge!
-															int qEl = iterEl->first;
-															int qMu = iterMu->first;
-															int qTrack = iterTrack->first;
-															
-															// Impose lepton cuts such that total lepton number is right
-															if(nEl + nMu + nTau + nSidebandTau + nTrack != nLeptons) {
-																continue;
-															}
-															// Impose sensible OSSF cuts only (don't impose cuts that can't be passed)
-															if(nLeptons == 3 && nDY != ((nEl - abs(qEl))/2 + (nMu - abs(qMu))/2)) {
-																continue;
-															}
-															if(nLeptons == 4 && nDY > (nEl/2 + nMu/2)) {
-																continue;
-															}
-															
-															// Currently, we add sideband tau signatures to complement the tau signatures (i.e. not both cuts at the same time)
-															if(nSidebandTau > 0 && nTau > 0) {
-															  continue;
-															}
-															
-															SignatureWithBjets* sig = new SignatureWithBjets("", "", nBtagCutParameters[nBtag].first, nBtagCutParameters[nBtag].second);
-															
-															TString name = "";
-															TString nameEl = nElCuts[nLeptons][nEl][qEl]->getName();
-															TString nameMu = nMuCuts[nLeptons][nMu][qMu]->getName();
-															TString nameTrack = nTrackCuts[nLeptons][nTrack][qTrack]->getName();
-															TString nameDY = nDYcuts[nLeptons][nDY][iDY]->getName();
-															TString nameMET = metCuts[iMET]->getName();
-															TString nameHT = htCuts[iHT]->getName();
-															
-															TString sumName = "";
-															
-															// Channel for DD background estimation?
-															if(nSidebandTau + nTrack > 0) {
-																name += "Seed";
-																sumName += "Seed";
-															}
-															
-															// Electrons
-															name += TString::Format("El%s", nameEl.Data());
-															if(nLeptons == 3 && nTau == 1 && (abs(qEl + qMu) == 2 || abs(qEl + qTrack) == 2)) {
-																sig->addCut(nElSSCuts[nLeptons][nEl][qEl]);
-															} else {
-																sig->addCut(nElCuts[nLeptons][nEl][qEl]);
-															}
-															
-															// Muons
-															name += TString::Format("Mu%s", nameMu.Data());
-															sig->addCut(nMuCuts[nLeptons][nMu][qMu]);
-															
-															if(nSidebandTau + nTrack == 0) {
-																sumName += TString::Format("L%d", nEl + nMu + nTau);
-															} else {
-																sumName += TString::Format("El%dMu%d", nEl, nMu);
-															}
-															
-															// Taus
-															name += TString::Format("Tau%d", nTau);
-															sumName += TString::Format("Tau%d", nTau);
-															// For 3LTau1, require exactly 1 Tau; else allow one or more
-															if(nLeptons == 3 && nTau == 1) {
-																sig->addCut(new SignatureCutNTau(1, 1));
-															} else {
-																sig->addCut(nTauCuts[nTau]);
-															}
-															
-															// Sideband taus
-															if(nSidebandTau != 0) {
-																name += TString::Format("Tau0SidebandTau%d", nSidebandTau);
-																sumName += TString::Format("Tau0SidebandTau%d", nSidebandTau);
-																sig->addCut(nSidebandTauCuts[nSidebandTau]);
-															}
-															
-															// Tracks
-															if(nTrack > 0) {
-																name += TString::Format("T%s", nameTrack.Data());
-																sumName += TString::Format("T%d", nTrack);
-																sig->addCut(nTrackCuts[nLeptons][nTrack][qTrack]);
-															}
-															
-															// DY
-															name += TString::Format("DY%s", nameDY.Data());
-															sumName += TString::Format("DY%s", nameDY.Data());
-															sig->addCut(nDYcuts[nLeptons][nDY][iDY]);
-															
-															TString baseName = name;
-
-															// B-tag
-															name += TString::Format("B%d", nBtag);
-															sumName += TString::Format("B%d", nBtag);
-															// The b-tag cut itself has already been taken care of by the signature constructor
-															
-															// MET
-															name += TString::Format("MET%s", nameMET.Data());
-															TString sumNameMET = sumName + TString::Format("MET%s", nameMET.Data());
-															sig->addCut(metCuts[iMET]);
-															
-															// HT
-															name += TString::Format("HT%s", nameHT.Data());
-															TString sumNameMETHT = sumNameMET + TString::Format("HT%s", nameHT.Data());
-															TString sumNameHT = sumName + TString::Format("HT%s", nameHT.Data());
-															sig->addCut(htCuts[iHT]);
-															
-															// Other cuts
-															
-															// Veto trileptons from asymmetric internal photon conversions
-															// TODO Check if we really should require (nSidebandTau + nTrack == 0) or rather include those objects in the cut
-															if(nLeptons == 3 && nTau == 0 && (nSidebandTau + nTrack == 0) && iMET == 0 && iHT == 0 && (nDY == 1 && (iDY == 0 || iDY == 1))) {
-																sig->addCut(trileptonMassOffZcut);
-															}
-															
-															// Veto charge sum = 3 for 3L where not all leptons are the same flavor
-															if(nLeptons == 3 && nEl != 3 && nMu != 3) {
-																if(nTrack > 0) {
-																	sig->addCut(cutQ2L1T);
-																} else {
-																	sig->addCut(cutQ3L);
+							// Various numbers of sidebands taus
+							for(uint nSidebandTau = 0; nSidebandTau < nSidebandTauCuts.size(); ++nSidebandTau) {
+								// Various numbers of tracks
+								for(uint nTrack = 0; nTrack < nTrackCuts[nLeptons].size(); ++nTrack) {
+									// Various track charge combinations
+									for(std::map<int, SignatureCut*>::iterator iterTrack = nTrackCuts[nLeptons][nTrack].begin(); iterTrack != nTrackCuts[nLeptons][nTrack].end(); ++iterTrack) {
+										// Various track fake flavor combinations
+										for(std::vector<TString>::iterator iterFTrack = fTrackCuts[nTrack].begin(); iterFTrack != fTrackCuts[nTrack].end(); ++iterFTrack) {
+											// Various cuts on the number OSSF pairs, depending on number of electrons and muons
+											for(uint nDY = 0; nDY < nDYcuts[nTrack][*iterFTrack][nLeptons].size(); ++nDY) {
+												// Various variants of the OSSF cuts (Z window)
+												for(uint iDY = 0; iDY < nDYcuts[nTrack][*iterFTrack][nLeptons][nDY].size(); ++iDY) {
+													// Various number of b-tags
+													for(uint nBtag = 0; nBtag < nBtagCutParameters.size(); ++nBtag) {
+														// Various MET bins
+														for(uint iMET = 0; iMET < metCuts.size(); ++iMET) {
+															// Various HT bins
+															for(uint iHT = 0; iHT < htCuts.size(); ++iHT) {
+																// ATTENTION:
+																//   * The following variables act as a map index in the first place.
+																//   * Besides, for 3L channels, the variables are the charge sum of electrons/muons/tracks.
+																//   * However, for 4L channels, the charge variables are always zero because we do not bin in charge!
+																int qEl = iterEl->first;
+																int qMu = iterMu->first;
+																int qTrack = iterTrack->first;
+																
+																unsigned int nDY_ll = (nEl - abs(qEl))/2 + (nMu - abs(qMu))/2;
+																
+																// Impose lepton cuts such that total lepton number is right
+																if(nEl + nMu + nTau + nSidebandTau + nTrack != nLeptons) {
+																	continue;
 																}
-															}
-															
-															// Check if a signature with the same name exists already and scream if so
-/*															std::vector<Signature*> sigList = handler->getSignatures();
-															for(uint iSig = 0; i < sigList.size(); ++iSig) {
-																assert(sigList[iSig]->getName() != name);
-															}
-*/															
-															// Finish signature definition
-															sig->setName(name);
-															//handler->addBjetSignature(sig);
-															
-															Channel* ch = new Channel((sig->getName()).Data());
-															
-															handler->addSumChannelAttribute(sumName, sumName, 1.0);
-															ch->setAttribute(sumName, 1);
-															
-															handler->addSumChannelAttribute(sumNameMET, sumNameMET, 1.0);
-															ch->setAttribute(sumNameMET, 1);
-															
-															handler->addSumChannelAttribute(sumNameHT, sumNameHT, 1.0);
-															ch->setAttribute(sumNameHT, 1);
-															
-															if(nSidebandTau + nTrack == 0 || nLeptons < 4) {
-																handler->addSumChannelAttribute(sumNameMETHT, sumNameMETHT, 1.0);
-																ch->setAttribute(sumNameMETHT, 1);
-															}
-															
-															handler->addInputChannel(ch->getName(), ch);
-															++i;
-															std::cout << i << " Done setting up signature " << name << std::endl;
-															
-															if(nSidebandTau + nTrack > 0)continue;
-															//if(nBtag == 0 && iHT == 0 && iMET == 0){
-															//  std::cout<<"}else if(baseName == \""<<baseName<<"\"){"<<std::endl;
-															//}
+																// Impose sensible OSSF cuts only (don't impose cuts that can't be passed)
+																if(nLeptons == 3 && nTrack == 0 && nDY != nDY_ll) {
+																	continue;
+																}
+																if(nLeptons == 4 && nDY > (nEl/2 + nMu/2)) {
+																	continue;
+																}
+																
+																// Currently, we add sideband tau signatures to complement the tau signatures (i.e. not both cuts at the same time)
+																if(nSidebandTau > 0 && nTau > 0) {
+																	continue;
+																}
+																
+																// Skip channels where the requested number of DY pairs cannot be constructed, 
+																// neither from leptons nor from lepton+track
+																// Outer if-clause checks wether nDY can be accomodated by leptons only; 
+																// inner if-clause checks wether we can make fake pairs
+																if(nTrack > 0 && nLeptons == 3 && nDY != nDY_ll) {
+																	assert((*iterFTrack).Length());
+																	if(*iterFTrack == "e" && nDY != ((nEl + nTrack) - abs(qEl + qTrack))/2) {
+																		continue;
+																	}
+																	if(*iterFTrack == "m" && nDY != ((nMu + nTrack) - abs(qMu + qTrack))/2) {
+																		continue;
+																	}
+																}
+																
+																SignatureWithBjets* sig = new SignatureWithBjets("", "", nBtagCutParameters[nBtag].first, nBtagCutParameters[nBtag].second);
+																
+																TString name = "";
+																TString nameEl = nElCuts[nLeptons][nEl][qEl]->getName();
+																TString nameMu = nMuCuts[nLeptons][nMu][qMu]->getName();
+																TString nameTrack = *iterFTrack + nTrackCuts[nLeptons][nTrack][qTrack]->getName();
+																TString nameDY = nDYcuts[nTrack][*iterFTrack][nLeptons][nDY][iDY]->getName();
+																TString nameMET = metCuts[iMET]->getName();
+																TString nameHT = htCuts[iHT]->getName();
+																
+																TString sumName = "";
+																
+																// Channel for DD background estimation?
+																if(nSidebandTau + nTrack > 0) {
+																	name += "Seed";
+																	sumName += "Seed";
+																}
+																
+																// Electrons
+																name += TString::Format("El%s", nameEl.Data());
+																if(nLeptons == 3 && nTau == 1 && (abs(qEl + qMu) == 2 || abs(qEl + qTrack) == 2)) {
+																	sig->addCut(nElSSCuts[nLeptons][nEl][qEl]);
+																} else {
+																	sig->addCut(nElCuts[nLeptons][nEl][qEl]);
+																}
+																
+																// Muons
+																name += TString::Format("Mu%s", nameMu.Data());
+																sig->addCut(nMuCuts[nLeptons][nMu][qMu]);
+																
+																if(nSidebandTau + nTrack == 0) {
+																	sumName += TString::Format("L%d", nEl + nMu + nTau);
+																} else {
+																	sumName += TString::Format("El%dMu%d", nEl, nMu);
+																}
+																
+																// Taus
+																name += TString::Format("Tau%d", nTau);
+																sumName += TString::Format("Tau%d", nTau);
+																// For 3LTau1, require exactly 1 Tau; else allow one or more
+																if(nLeptons == 3 && nTau == 1) {
+																	sig->addCut(new SignatureCutNTau(1, 1));
+																} else {
+																	sig->addCut(nTauCuts[nTau]);
+																}
+																
+																// Sideband taus
+																if(nSidebandTau > 0) {
+																	name += TString::Format("SidebandTau%d", nSidebandTau);
+																	sumName += TString::Format("SidebandTau%d", nSidebandTau);
+																	sig->addCut(nSidebandTauCuts[nSidebandTau]);
+																}
+																
+																// Tracks
+																if(nTrack > 0) {
+																	name += TString::Format("T%s", nameTrack.Data());
+																	sumName += TString::Format("T%d", nTrack);
+																	sig->addCut(nTrackCuts[nLeptons][nTrack][qTrack]);
+																}
+																
+																// DY
+																name += TString::Format("DY%s", nameDY.Data());
+																sumName += TString::Format("DY%s", nameDY.Data());
+																sig->addCut(nDYcuts[nTrack][*iterFTrack][nLeptons][nDY][iDY]);
+																
+																TString baseName = name;
 
-															///////////////////////////
-															//Setup sideband channels//
-															///////////////////////////
+																// B-tag
+																name += TString::Format("B%d", nBtag);
+																sumName += TString::Format("B%d", nBtag);
+																// The b-tag cut itself has already been taken care of by the signature constructor
+																
+																// MET
+																name += TString::Format("MET%s", nameMET.Data());
+																TString sumNameMET = sumName + TString::Format("MET%s", nameMET.Data());
+																sig->addCut(metCuts[iMET]);
+																
+																// HT
+																name += TString::Format("HT%s", nameHT.Data());
+																TString sumNameMETHT = sumNameMET + TString::Format("HT%s", nameHT.Data());
+																TString sumNameHT = sumName + TString::Format("HT%s", nameHT.Data());
+																sig->addCut(htCuts[iHT]);
+																
+																// Other cuts
+																
+																// Veto trileptons from asymmetric internal photon conversions
+																// TODO Check if we really should require (nSidebandTau + nTrack == 0) or rather include those objects in the cut
+																if(nLeptons == 3 && nTau == 0 && (nSidebandTau + nTrack == 0) && iMET == 0 && iHT == 0 && (nDY == 1 && (iDY == 0 || iDY == 1))) {
+																	sig->addCut(trileptonMassOffZcut);
+																}
+																
+																// Veto charge sum = 3 for 3L where not all leptons are the same flavor
+																if(nLeptons == 3 && nEl != 3 && nMu != 3) {
+																	if(nTrack > 0) {
+																		sig->addCut(cutQ2L1T);
+																	} else {
+																		sig->addCut(cutQ3L);
+																	}
+																}
+																
+																// Check if a signature with the same name exists already and scream if so
+/*																std::vector<SignatureWithBjets*> sigList = handler->getBjetSignatures();
+																for(uint iSig = 0; iSig < sigList.size(); ++iSig) {
+																	assert(sigList[iSig]->getName() != name);
+																}
+*/																
+																// Finish signature definition
+																sig->setName(name);
+																//handler->addBjetSignature(sig);
+																
+																Channel* ch = new Channel((sig->getName()).Data());
+																
+																handler->addSumChannelAttribute(sumName, sumName, 1.0);
+																ch->setAttribute(sumName, 1);
+																
+																handler->addSumChannelAttribute(sumNameMET, sumNameMET, 1.0);
+																ch->setAttribute(sumNameMET, 1);
+																
+																handler->addSumChannelAttribute(sumNameHT, sumNameHT, 1.0);
+																ch->setAttribute(sumNameHT, 1);
+																
+																if(nSidebandTau + nTrack == 0 || nLeptons < 4) {
+																	handler->addSumChannelAttribute(sumNameMETHT, sumNameMETHT, 1.0);
+																	ch->setAttribute(sumNameMETHT, 1);
+																}
+																
+																handler->addInputChannel(ch->getName(), ch);
+																++i;
+																std::cout << i << " Done setting up signature " << name << std::endl;
+																
+																if(nSidebandTau + nTrack > 0)continue;
 
-															/*
-															double elFR = 0.0068;
-															double scaleA = 1.0;
-															double scaleB = 1.0;
-															if(nBtag > 0){
-															  scaleA = 1.862;
-															  scaleB = 1.533;
-															}else if(iHT > 0){
-															  scaleA = 1.11;
+																////////////////////
+																//Setup fake rates//
+																////////////////////
+
+																/*
+																double elFR = 0.0068;
+																double scaleA = 1.0;
+																double scaleB = 1.0;
+																if(nBtag > 0){
+																  scaleA = 1.862;
+																  scaleB = 1.533;
+																}else if(iHT > 0){
+																  scaleA = 1.11;
+																}
+																elFR *= scaleA*scaleB;
+
+																double muFR = 0.0064;
+																double scaleC = 1.0;
+																double scaleD = 1.0;
+																if(nBtag > 0){
+																  scaleC = 3.01;
+																  scaleD = 1.905;
+																}else if(iHT > 0){
+																  scaleC = 1.30;
+																}
+																muFR *= scaleC*scaleD;
+
+																double tauFR = 0;
+																if(iHT == 0){
+																  tauFR = 0.20 * 1.0768;
+																}else{
+																  tauFR = 0.05*0.96;
+																}
+																*/
+
+																double elFR = 0.035;
+																double muFR = 0.02;
+																double tauFR = 0.23;
+
+																if(iHT > 0){
+																  tauFR = 0.06;
+																  elFR = 0.051;
+																  muFR = 0.05;
+																}
+																if(nBtag > 0){
+																  elFR = 0.1;
+																  muFR = 0.1;
+																}
+
+																ch->setFakeRateAndError("fakeElectron",elFR,0.30*elFR);
+																ch->setFakeRateAndError("fakeMuon",muFR,0.30*muFR);
+																ch->setFakeRateAndError("fakeTau",tauFR,0.30*tauFR);
+																
+																// 3 lepton seeds
+																if(baseName == "El0q0Mu2n2Tau1DY0"){
+																  TString bg1 = makeName("SeedEl0q0Mu2n2Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu1n1Tau1Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu2q0Tau1DYl1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0SidebandTau1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu1p1Tau1Tm1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu1n1Tau1Tm1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,1.0);
+																}else if(baseName == "El0q0Mu2q0Tau1DYh1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0SidebandTau1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu1p1Tau1Tm1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu1n1Tau1Tm1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,1.0);
+																}else if(baseName == "El0q0Mu2q0Tau1DYz1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu1p1Tau1Tm1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu1n1Tau1Tm1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,1.0);
+																}else if(baseName == "El0q0Mu2p2Tau1DY0"){
+																  TString bg1 = makeName("SeedEl0q0Mu2p2Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu1p1Tau1Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu3n3Tau0DY0"){
+																  TString bg1 = makeName("SeedEl0q0Mu2n2Tau0Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																}else if(baseName == "El0q0Mu3n1Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Tm1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2n2Tau0Tm1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu3n1Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Tm1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2n2Tau0Tm1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu3n1Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Tm1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2n2Tau0Tm1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu3p1Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Tm1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0Tm1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu3p1Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Tm1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0Tm1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu3p1Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Tm1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0Tm1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0q0Mu3p3Tau0DY0"){
+																  TString bg1 = makeName("SeedEl0q0Mu2p2Tau0Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																}else if(baseName == "El1n1Mu1n1Tau1DY0"){
+																  TString bg1 = makeName("SeedEl1n1Mu1n1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu0q0Tau1Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu1n1Tau1Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1n1Mu1p1Tau1DY0"){
+																  TString bg1 = makeName("SeedEl1n1Mu1p1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu0q0Tau1Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu1p1Tau1Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1n1Mu2n2Tau0DY0"){
+																  TString bg1 = makeName("SeedEl1n1Mu1n1Tau0Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2n2Tau0Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El1n1Mu2q0Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl1n1Mu1p1Tau0Tm1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu1n1Tau0Tm1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu2q0Tau0Te1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1n1Mu2q0Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Te1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu1p1Tau0Tm1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1n1Tau0Tm1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,1.0);
+																}else if(baseName == "El1n1Mu2q0Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0Te1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu1p1Tau0Tm1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1n1Tau0Tm1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,1.0);
+																}else if(baseName == "El1n1Mu2p2Tau0DY0"){
+																  TString bg1 = makeName("SeedEl1n1Mu1p1Tau0Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El1p1Mu1n1Tau1DY0"){
+																  TString bg1 = makeName("SeedEl1p1Mu1n1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu1n1Tau1Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1p1Mu1p1Tau1DY0"){
+																  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu1p1Tau1Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1p1Mu2n2Tau0DY0"){
+																  TString bg1 = makeName("SeedEl1p1Mu1n1Tau0Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2n2Tau0Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El1p1Mu2q0Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0Tm1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1n1Tau0Tm1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu2q0Tau0Te1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1p1Mu2q0Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0Tm1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1n1Tau0Tm1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu2q0Tau0Te1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1p1Mu2q0Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0Tm1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1n1Tau0Tm1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0q0Mu2q0Tau0Te1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El1p1Mu2p2Tau0DY0"){
+																  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2n2Mu0q0Tau1DY0"){
+																  TString bg1 = makeName("SeedEl2n2Mu0q0Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu0q0Tau1Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2n2Mu1n1Tau0DY0"){
+																  TString bg1 = makeName("SeedEl2n2Mu0q0Tau0Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu1n1Tau0Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2n2Mu1p1Tau0DY0"){
+																  TString bg1 = makeName("SeedEl2n2Mu0q0Tau0Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu1p1Tau0Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2q0Mu0q0Tau1DYl1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0SidebandTau1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu0q0Tau1Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El2q0Mu0q0Tau1DYh1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0SidebandTau1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu0q0Tau1Te1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1p1Mu0q0Tau1Te1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2q0Mu0q0Tau1DYz1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1n1Mu0q0Tau1Te1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1p1Mu0q0Tau1Te1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2q0Mu1n1Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Tm1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1n1Tau0Te1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1n1Tau0Te1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El2q0Mu1n1Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Tm1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1n1Tau0Te1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1n1Tau0Te1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El2q0Mu1n1Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Tm1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1n1Tau0Te1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1n1Tau0Te1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El2q0Mu1p1Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Tm1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1p1Tau0Te1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1p1Tau0Te1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El2q0Mu1p1Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Tm1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1p1Tau0Te1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1p1Tau0Te1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El2q0Mu1p1Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Tm1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1p1Tau0Te1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1n1Mu1p1Tau0Te1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,1.0);
+																}else if(baseName == "El2p2Mu0q0Tau1DY0"){
+																  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2p2Mu1n1Tau0DY0"){
+																  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0Tm1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1n1Tau0Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El2p2Mu1p1Tau0DY0"){
+																  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0Tm1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1p1Mu1p1Tau0Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3n3Mu0q0Tau0DY0"){
+																  TString bg1 = makeName("SeedEl2n2Mu0q0Tau0Te1n1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																}else if(baseName == "El3n1Mu0q0Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl2n2Mu0q0Tau0Te1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0Te1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3n1Mu0q0Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Te1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0Te1n1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3n1Mu0q0Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Te1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0Te1n1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3p1Mu0q0Tau0DYl1"){
+																  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0Te1n1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0Te1p1DYl1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3p1Mu0q0Tau0DYh1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Te1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0Te1p1DYh1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3p1Mu0q0Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0Te1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0Te1p1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3p3Mu0q0Tau0DY0"){
+																  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0Te1p1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																}
+																
+																// 4 lepton seeds
+/*																if(baseName == "El0Mu3Tau1DY0"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0Mu2Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0Mu3Tau1DYz1"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El0Mu3Tau1DYv1"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl0Mu2Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,0.5);
+																}else if(baseName == "El0Mu4Tau0DY0"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																}else if(baseName == "El0Mu4Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																}else if(baseName == "El0Mu4Tau0DYv1"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																}else if(baseName == "El0Mu4Tau0DYz2"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																}else if(baseName == "El0Mu4Tau0DYv2"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																}else if(baseName == "El1Mu2Tau1DY0"){
+																  TString bg1 = makeName("SeedEl1Mu2Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0Mu2Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,0.5);
+																}else if(baseName == "El1Mu2Tau1DYz1"){
+																  TString bg1 = makeName("SeedEl1Mu2Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El1Mu2Tau1DYv1"){
+																  TString bg1 = makeName("SeedEl1Mu2Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,0.5);
+																}else if(baseName == "El1Mu3Tau0DY0"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1Mu2Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,0.5);
+																}else if(baseName == "El1Mu3Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El1Mu3Tau0DYv1"){
+																  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,1.0);
+																  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1Mu2Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg3,0.5);
+																}else if(baseName == "El2Mu1Tau1DY0"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu0Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("faleElectron",bg3,0.5);
+																}else if(baseName == "El2Mu1Tau1DYz1"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																}else if(baseName == "El2Mu1Tau1DYv1"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,1.0);
+																  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,0.5);
+																}else if(baseName == "El2Mu2Tau0DY0"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																  TString bg2 = makeName("SeedEl1Mu2Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,0.5);
+																}else if(baseName == "El2Mu2Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,0.5);
+																}else if(baseName == "El2Mu2Tau0DYv1"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																  TString bg2 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg2,0.5);
+																  TString bg3 = makeName("SeedEl1Mu2Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,0.5);
+																  TString bg4 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg4,0.5);
+																}else if(baseName == "El2Mu2Tau0DYz2"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,0.5);
+																}else if(baseName == "El2Mu2Tau0DYv2"){
+																  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,0.5);
+																  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,0.5);
+																}else if(baseName == "El3Mu0Tau1DY0"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu0Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,0.5);
+																}else if(baseName == "El3Mu0Tau1DYz1"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3Mu0Tau1DYv1"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeTau",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl2Mu0Tau1T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,0.5);
+																}else if(baseName == "El3Mu1Tau0DY0"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,0.5);
+																}else if(baseName == "El3Mu1Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu1Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																}else if(baseName == "El3Mu1Tau0DYv1"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeMuon",bg1,1.0);
+																  TString bg2 = makeName("SeedEl2Mu1Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,1.0);
+																  TString bg3 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg3,0.5);
+																}else if(baseName == "El4Mu0Tau0DY0"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,0.5);
+																}else if(baseName == "El4Mu0Tau0DYz1"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,0.5);
+																}else if(baseName == "El4Mu0Tau0DYv1"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,0.5);
+																  TString bg2 = makeName("SeedEl3Mu0Tau0T1DY0",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg2,0.5);
+																}else if(baseName == "El4Mu0Tau0DYz2"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYz1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeELectron",bg1,0.5);
+																}else if(baseName == "El4Mu0Tau0DYv2"){
+																  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYv1",nBtag,nameMET,nameHT);
+																  ch->addFakeChannel("fakeElectron",bg1,0.5);
+																}
+*/
 															}
-															elFR *= scaleA*scaleB;
-
-															double muFR = 0.0064;
-															double scaleC = 1.0;
-															double scaleD = 1.0;
-															if(nBtag > 0){
-															  scaleC = 3.01;
-															  scaleD = 1.905;
-															}else if(iHT > 0){
-															  scaleC = 1.30;
-															}
-															muFR *= scaleC*scaleD;
-
-															double tauFR = 0;
-															if(iHT == 0){
-															  tauFR = 0.20 * 1.0768;
-															}else{
-															  tauFR = 0.05*0.96;
-															}
-															*/
-
-															double elFR = 0.035;
-															double muFR = 0.02;
-															double tauFR = 0.23;
-
-															if(iHT > 0){
-															  tauFR = 0.06;
-															  elFR = 0.051;
-															  muFR = 0.05;
-															}
-															if(nBtag > 0){
-															  elFR = 0.1;
-															  muFR = 0.1;
-															}
-
-															ch->setFakeRateAndError("fakeElectron",elFR,0.30*elFR);
-															ch->setFakeRateAndError("fakeMuon",muFR,0.30*muFR);
-															ch->setFakeRateAndError("fakeTau",tauFR,0.30*tauFR);
-
-															if(baseName == "El0q0Mu2m2Tau1DY0"){
-															  TString bg1 = makeName("SeedEl0q0Mu2m2Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu1m1Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El0q0Mu2q0Tau1DYl1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0SidebandTau1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu1p1Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0q0Mu1m1Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg3,1.0);
-															}else if(baseName == "El0q0Mu2q0Tau1DYh1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0SidebandTau1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															}else if(baseName == "El0q0Mu2q0Tau1DYz1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															}else if(baseName == "El0q0Mu2p2Tau1DY0"){
-															  TString bg1 = makeName("SeedEl0q0Mu2p2Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu1p1Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El0q0Mu3m3Tau0DY0"){
-															  TString bg1 = makeName("SeedEl0q0Mu2m2Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El0q0Mu3m1Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1m1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu2m2Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El0q0Mu3m1Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1m1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El0q0Mu3m1Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1m1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El0q0Mu3p1Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1p1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El0q0Mu3p1Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1p1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El0q0Mu3p1Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1p1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El0q0Mu3p3Tau0DY0"){
-															  TString bg1 = makeName("SeedEl0q0Mu2p2Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El1m1Mu1m1Tau1DY0"){
-															  TString bg1 = makeName("SeedEl1m1Mu1m1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1m1Mu0q0Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0q0Mu1m1Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El1m1Mu1p1Tau1DY0"){
-															  TString bg1 = makeName("SeedEl1m1Mu1p1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1m1Mu0q0Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0q0Mu1p1Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El1m1Mu2m2Tau0DY0"){
-															  TString bg1 = makeName("SeedEl1m1Mu1m1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu2m2Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El1m1Mu2q0Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl1m1Mu1p1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1m1Mu1m1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0q0Mu2q0Tau0T1m1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El1m1Mu2q0Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1m1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El1m1Mu2q0Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1m1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El1m1Mu2p2Tau0DY0"){
-															  TString bg1 = makeName("SeedEl1m1Mu1p1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El1p1Mu1m1Tau1DY0"){
-															  TString bg1 = makeName("SeedEl1p1Mu1m1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0q0Mu1m1Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El1p1Mu1p1Tau1DY0"){
-															  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0q0Mu1p1Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El1p1Mu2m2Tau0DY0"){
-															  TString bg1 = makeName("SeedEl1p1Mu1m1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu2m2Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El1p1Mu2q0Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu1m1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0q0Mu2q0Tau0T1p1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El1p1Mu2q0Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1p1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El1p1Mu2q0Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl0q0Mu2q0Tau0T1p1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El1p1Mu2p2Tau0DY0"){
-															  TString bg1 = makeName("SeedEl1p1Mu1p1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0q0Mu2p2Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El2m2Mu0q0Tau1DY0"){
-															  TString bg1 = makeName("SeedEl2m2Mu0q0Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1m1Mu0q0Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El2m2Mu1m1Tau0DY0"){
-															  TString bg1 = makeName("SeedEl2m2Mu0q0Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1m1Mu1m1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El2m2Mu1p1Tau0DY0"){
-															  TString bg1 = makeName("SeedEl2m2Mu0q0Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1m1Mu1p1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El2q0Mu0q0Tau1DYl1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0SidebandTau1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1m1Mu0q0Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El2q0Mu0q0Tau1DYh1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0SidebandTau1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															}else if(baseName == "El2q0Mu0q0Tau1DYz1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															}else if(baseName == "El2q0Mu1m1Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1m1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu1m1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1m1Mu1m1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El2q0Mu1m1Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1m1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El2q0Mu1m1Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1m1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El2q0Mu1p1Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1p1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu1p1Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1m1Mu1p1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,1.0);
-															}else if(baseName == "El2q0Mu1p1Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1p1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El2q0Mu1p1Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1p1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															}else if(baseName == "El2p2Mu0q0Tau1DY0"){
-															  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu0q0Tau1T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El2p2Mu1m1Tau0DY0"){
-															  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu1m1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El2p2Mu1p1Tau0DY0"){
-															  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1p1Mu1p1Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El3m3Mu0q0Tau0DY0"){
-															  TString bg1 = makeName("SeedEl2m2Mu0q0Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El3m1Mu0q0Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl2m2Mu0q0Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0T1m1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El3m1Mu0q0Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1m1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El3m1Mu0q0Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1m1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El3p1Mu0q0Tau0DYl1"){
-															  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0T1m1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2q0Mu0q0Tau0T1p1DYl1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El3p1Mu0q0Tau0DYh1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1p1DYh1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El3p1Mu0q0Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl2q0Mu0q0Tau0T1p1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El3p3Mu0q0Tau0DY0"){
-															  TString bg1 = makeName("SeedEl2p2Mu0q0Tau0T1p1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															}else if(baseName == "El0Mu3Tau1DY0"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0Mu2Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El0Mu3Tau1DYz1"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El0Mu3Tau1DYv1"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl0Mu2Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg3,0.5);
-															}else if(baseName == "El0Mu4Tau0DY0"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															}else if(baseName == "El0Mu4Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															}else if(baseName == "El0Mu4Tau0DYv1"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															}else if(baseName == "El0Mu4Tau0DYz2"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															}else if(baseName == "El0Mu4Tau0DYv2"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															}else if(baseName == "El1Mu2Tau1DY0"){
-															  TString bg1 = makeName("SeedEl1Mu2Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0Mu2Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg3,0.5);
-															}else if(baseName == "El1Mu2Tau1DYz1"){
-															  TString bg1 = makeName("SeedEl1Mu2Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El1Mu2Tau1DYv1"){
-															  TString bg1 = makeName("SeedEl1Mu2Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl0Mu2Tau1T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg3,0.5);
-															}else if(baseName == "El1Mu3Tau0DY0"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1Mu2Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,0.5);
-															}else if(baseName == "El1Mu3Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El1Mu3Tau0DYv1"){
-															  TString bg1 = makeName("SeedEl0Mu3Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,1.0);
-															  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1Mu2Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg3,0.5);
-															}else if(baseName == "El2Mu1Tau1DY0"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu0Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("faleElectron",bg3,0.5);
-															}else if(baseName == "El2Mu1Tau1DYz1"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															}else if(baseName == "El2Mu1Tau1DYv1"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,1.0);
-															  TString bg3 = makeName("SeedEl1Mu1Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,0.5);
-															}else if(baseName == "El2Mu2Tau0DY0"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															  TString bg2 = makeName("SeedEl1Mu2Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,0.5);
-															}else if(baseName == "El2Mu2Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,0.5);
-															}else if(baseName == "El2Mu2Tau0DYv1"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															  TString bg2 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg2,0.5);
-															  TString bg3 = makeName("SeedEl1Mu2Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,0.5);
-															  TString bg4 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg4,0.5);
-															}else if(baseName == "El2Mu2Tau0DYz2"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,0.5);
-															}else if(baseName == "El2Mu2Tau0DYv2"){
-															  TString bg1 = makeName("SeedEl2Mu1Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,0.5);
-															  TString bg2 = makeName("SeedEl1Mu2Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,0.5);
-															}else if(baseName == "El3Mu0Tau1DY0"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0SidebandTau1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu0Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,0.5);
-															}else if(baseName == "El3Mu0Tau1DYz1"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0SidebandTau1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El3Mu0Tau1DYv1"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0SidebandTau1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeTau",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu0Tau1T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															  TString bg3 = makeName("SeedEl2Mu0Tau1T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,0.5);
-															}else if(baseName == "El3Mu1Tau0DY0"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,0.5);
-															}else if(baseName == "El3Mu1Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu1Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															}else if(baseName == "El3Mu1Tau0DYv1"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeMuon",bg1,1.0);
-															  TString bg2 = makeName("SeedEl2Mu1Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,1.0);
-															  TString bg3 = makeName("SeedEl2Mu1Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg3,0.5);
-															}else if(baseName == "El4Mu0Tau0DY0"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,0.5);
-															}else if(baseName == "El4Mu0Tau0DYz1"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,0.5);
-															}else if(baseName == "El4Mu0Tau0DYv1"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,0.5);
-															  TString bg2 = makeName("SeedEl3Mu0Tau0T1DY0",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg2,0.5);
-															}else if(baseName == "El4Mu0Tau0DYz2"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYz1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeELectron",bg1,0.5);
-															}else if(baseName == "El4Mu0Tau0DYv2"){
-															  TString bg1 = makeName("SeedEl3Mu0Tau0T1DYv1",nBtag,nameMET,nameHT);
-															  ch->addFakeChannel("fakeElectron",bg1,0.5);
-															}
-
 														}
 													}
 												}
