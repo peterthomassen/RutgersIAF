@@ -290,6 +290,9 @@ void SignatureHandler::eventLoop(int onlyRun, long int onlyEvent)
 
 bool flatNtuple = false;
 
+Int_t runVar = 0;
+Int_t lumiVar = 0;
+Int_t eventVar = 0;
 Double_t weight = 0;
 TString* sigName = 0;
 TString* flavor1 = 0;
@@ -326,6 +329,9 @@ if(flatNtuple) {
 f1 = new TFile(m_outFileName + TString(".simpleTree.root"), "RECREATE");
 tree = new TTree("tree", "a simple tree");
 
+tree->Branch("run", &runVar, "run/I");
+tree->Branch("lumi", &lumiVar, "lumi/I");
+tree->Branch("event", &eventVar, "event/I");
 tree->Branch("weight", &weight, "weight/D");
 tree->Branch("signature", &sigName);
 tree->Branch("flavor1", &flavor1);
@@ -527,9 +533,6 @@ for(unsigned int q = 0; q < pr.size(); ++q) {
 	leptonInfo.push_back(pr[q]->getCharge());
 	leptons.push_back(leptonInfo);
 }
-for(unsigned int q = 0; q < leptons.size(); ++q) {
-	std::cout << *sigName << " lepton: " << leptons[q][0] << " " << leptons[q][1] << " " << leptons[q][2] << " " << std::endl;
-}
 std::vector< std::vector<Double_t> > leptons2;
 if(leptons.size() == 2) {
 	if(leptons[0][1] > leptons[1][1]) {
@@ -575,7 +578,7 @@ if(leptons.size() > 2) {
 
 flavor1 = new TString(leptonFlavors[leptons2[0][0]].Data());
 flavor2 = new TString(leptonFlavors[leptons2[1][0]].Data());
-if(leptons2.size() > 2) flavor3 = new TString(leptonFlavors[leptons2[2][0]].Data());
+flavor3 = new TString((leptons2.size() > 2) ? leptonFlavors[leptons2[2][0]].Data() : "");
 
 pt1 = leptons2[0][1];
 pt2 = leptons2[1][1];
@@ -590,6 +593,9 @@ ht = getHT();
 st = getST();
 n_b = getProduct("bJetsCSVM").size();
 
+runVar = run;
+lumiVar = lumiBlock;
+eventVar = event;
 n_electronsIP = getProduct("electronsIP").size();
 n_electronsNIP = getProduct("electronsNIP").size();
 n_electronsINP = getProduct("electronsINP").size();
@@ -623,6 +629,7 @@ tree->Fill();
       }
     }
 
+if(onlyRun >= 0 && (run == onlyRun && event == onlyEvent)) break;
 
   }//End of event loop
 

@@ -33,8 +33,49 @@ int SignatureCutNDYPairsT::getCandidates(BaseHandler* handler) const
     }
   }
   
-  int nPairs = nOp * nTm + nOm * nTp;
-  cout << "number of pairs of a track and an object of the given product: " << nPairs << endl;
-  
+  int nPairs = min(nOp,nTm) + min(nOm,nTp);
+/*  cout << "number of pairs of a track and an object of product " << m_productname << ": " << nPairs << " (nOp=" << nOp << ",nOm=" << nOm << ",nTp=" << nTp << ",nTm=" << nTm << ")" << endl;
+  for(int i = 0; i < (int)m_dyCandidates.size(); ++i) {
+    cout << "mass: " << (*(m_dyCandidates[i].first) + *(m_dyCandidates[i].second)).M() << endl;
+  }
+*/  
   return nPairs;
+}
+
+bool SignatureCutNDYPairsT::passCut(BaseHandler* handler) const
+{
+	// Make sure the number of DY pairs is within the desired range
+	int nDY = getCandidates(handler);
+//std::cout << m_productname << ":" << nDY << " m_ndypairlow=" << m_ndypairlow << ", m_ndypairhigh=" << m_ndypairhigh << ", m_onZ=" << m_onZ << ", m_ZmassCutOffLow=" << m_ZMassCutOffLow << ", m_ZmassCutOffHigh=" << m_ZMassCutOffHigh << ", m_lowMassCutOff=" << m_lowMassCutOff << std::endl;
+	if(m_ndypairlow >= 0 && (double)nDY < m_ndypairlow) {
+		return false;
+	}
+	if(m_ndypairhigh >= 0 && (double)nDY > m_ndypairhigh) {
+		return false;
+	}
+	
+	// Ok, it is. If 0 is included in the desired range, we don't have to look at on/off Z, so just return true
+	if(nDY == 0) {
+		return true;
+	}
+	
+	// Otherwise, look at on/off Z properties
+	int nZ = 0;
+	for(int i = 0; i < (int)m_dyCandidates.size(); i++) {
+		TLorentzVector v1(*((m_dyCandidates[i]).first));
+		TLorentzVector v2(*((m_dyCandidates[i]).second));
+		if((v1+v2).M() < m_lowMassCutOff) {
+			return false;
+		}
+		if((v1+v2).M() > m_ZMassCutOffLow && (v1+v2).M() < m_ZMassCutOffHigh) {
+			nZ++;
+		}
+	}
+	if(m_onZ && !nZ) {
+		return false;
+	}
+	if(!m_onZ && nZ) {
+		return false;
+	}
+	return true;
 }
