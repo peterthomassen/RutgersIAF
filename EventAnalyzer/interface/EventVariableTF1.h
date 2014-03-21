@@ -8,7 +8,7 @@
 
 template <typename T>
 class EventVariableTF1 : public EventVariable{
-
+ public:
   EventVariableTF1(TString name, TString varname, TF1* f) : EventVariable(name), m_varname(varname) { m_function = f;}
 
 

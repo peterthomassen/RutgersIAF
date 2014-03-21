@@ -30,12 +30,14 @@ Search for "Rutgers" to find changes.
 
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
 
-
+class BaseHandler;
 // Header file for the classes stored in the TTree if any.
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
 class SkimTreeReader : public BaseTreeReader {
+
+  friend class BaseHandler;
 public :
    Int_t           fCurrent; //!current Tree number in a TChain
 

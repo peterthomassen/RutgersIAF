@@ -18,7 +18,7 @@ class ObjectVariable : public TObject {
   ObjectVariable(TString name):m_name(name){}
   virtual ~ObjectVariable() {}
 
-  virtual bool calculate(SignatureObject*) const = 0;
+  virtual bool calculate(SignatureObject*) = 0;
   TString getName(){return m_name;}
   void setName(TString name){m_name = name;}
 

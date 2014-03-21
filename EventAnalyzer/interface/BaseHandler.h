@@ -24,7 +24,6 @@ class BaseTreeWriter;
 class SignatureTreeWriter;
 class ObjectCut;
 class ObjectComparison;
-class SignatureCut;
 class EventVariable;
 class TH2F;
 class ObjectVariable;
@@ -59,7 +58,7 @@ class BaseHandler : virtual public TObject {
   void addHistogram(SignatureTH3F*, TString signatureRegExp);
 
   virtual double getPhysicsWeight(){return m_physicsWeight;}
-  virtual void addSignature(const char*, const char*);
+  virtual Signature* addSignature(const char* name, const char* option="");
   void addSignature(Signature* sig) {m_Signatures.push_back(sig);}
   void addPreCutSignature(const char*, const char*);
   void addPreCutSignature(Signature* sig){m_preHandlerCutSignatures.push_back(sig);}
@@ -67,8 +66,6 @@ class BaseHandler : virtual public TObject {
   virtual bool passCut(TString);
 
   void addHandlerCut(TString);
-  void addHandlerCut(TString,SignatureCut*);
-  void addSignatureCut(TString,SignatureCut*);
 
   /////////////////////////////
   //Access physics quantities//
@@ -124,7 +121,6 @@ class BaseHandler : virtual public TObject {
   virtual void calculateVariables();
   virtual void resetVariables();
   virtual void calcPhysicsWeight();
-  virtual void calculateCuts();
   bool applyHandlerCuts();
   virtual void analyzeEvent();
 
@@ -167,7 +163,6 @@ class BaseHandler : virtual public TObject {
   std::vector<TString> m_object_cut_list;
   std::map<TString,ObjectCut*> m_object_cuts;
   std::vector<TString> m_signature_cut_list;
-  std::map<TString,SignatureCut*> m_signature_cuts;
   std::vector<TString> m_handlerCuts;
 
   std::vector<TString> m_object_variable_list;

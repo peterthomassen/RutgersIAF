@@ -9,8 +9,11 @@
 class TTree;
 class TString;
 class SignatureObject;
+class BaseHandler;
 
 class BaseTreeReader : public TObject{
+  friend class BaseHandler;
+
  public:
   BaseTreeReader(TTree*);
   virtual ~BaseTreeReader();

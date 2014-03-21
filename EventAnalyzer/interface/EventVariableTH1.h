@@ -8,7 +8,7 @@
 
 template <typename T>
 class EventVariableTH1 : public EventVariable{
-
+ public:
   EventVariableTH1(TString name, TString varname, TH1* f) : EventVariable(name), m_varname(varname) { m_histo = f;}
 
 

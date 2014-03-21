@@ -7,7 +7,7 @@
 #include <TF1.h>
 
 class EventVariableObjectWeightPtTF1 : public EventVariable{
-
+ public:
   EventVariableObjectWeightPtTF1(TString name, TString productname, TF1* f) : EventVariable(name) { m_productnames.push_back(productname);m_function = f;}
 
   void addProduct(TString);

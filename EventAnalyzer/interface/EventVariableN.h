@@ -5,7 +5,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 
 class EventVariableN : public EventVariable{
-
+ public:
   EventVariableN(TString name, TString productname) : EventVariable(name) {m_productnames.push_back(productname);}
 
   void addProduct(TString);

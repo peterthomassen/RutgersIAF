@@ -11,11 +11,11 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH3F.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeWriter.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureCut.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectCut.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparison.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_CountWeight.h"
 
 using namespace std;
 
@@ -62,11 +62,12 @@ void BaseHandler::printSignature(Signature* sig)
 
 }
 //-----------------------------------------
-void BaseHandler::addSignature(const char* name, const char* option)
+Signature* BaseHandler::addSignature(const char* name, const char* option)
 {
   Signature* sig = new Signature(name,option);
   sig->setHandler(this);
   addSignature(sig);
+  return sig;
 }
 
 //-----------------------------------------
@@ -80,6 +81,9 @@ void BaseHandler::initSignatures()
 {
   int nSig = (int)m_Signatures.size()+(int)m_preHandlerCutSignatures.size()+(int)m_bjetSignatures.size();
   m_signatureCorrelationHisto = new TH2F("signatureCorrelationHisto","",nSig,-0.5,(float)nSig-0.5,nSig,-0.5,(float)nSig-0.5);
+
+  addHistogram(new SignatureTH1F_CountWeight("COUNT"));
+
   m_noCutSignature->init();
   unsigned int s = 0,u=0;
   for(s = 0; s < m_Signatures.size(); s++){
@@ -506,6 +510,13 @@ void BaseHandler::prepareEvent()
   resetVariables();
 
   m_products = m_reader->getProducts();
+
+  m_variable_map_double = m_reader->m_variable_mapdouble;
+  m_variable_map_int = m_reader->m_variable_mapint;
+  m_variable_map_long = m_reader->m_variable_maplong;
+  m_variable_map_TString = m_reader->m_variable_mapTString;
+  m_variable_map_bool = m_reader->m_variable_mapbool;
+
   createProducts();
 
   calculateVariables();
@@ -541,14 +552,6 @@ bool BaseHandler::passCut(TString cutName)
   bool isset = getVariable(cutName,check);
   if(!isset)return false;
   return check;
-}
-//-----------------------------------------
-//-----------------------------------------
-void BaseHandler::calculateCuts()
-{
-  for(int i = 0; i < (int)m_signature_cut_list.size(); i++){
-    setVariable(m_signature_cut_list[i],m_signature_cuts[m_signature_cut_list[i]]->passCut(this));
-  }
 }
 //-----------------------------------------
 //-----------------------------------------
@@ -677,31 +680,8 @@ void BaseHandler::addProductSelfComparison(TString pname, ObjectComparison* comp
 }
 //-----------------------------------------
 //-----------------------------------------
-void BaseHandler::addSignatureCut(TString cutname, SignatureCut* cut)
-{
-  map<TString,SignatureCut*>::iterator iter = m_signature_cuts.find(cutname);
-  if(iter != m_signature_cuts.end()){
-    cerr << "WARNING: Overwriting Signature Cut with name "<<cutname<<endl;
-  }else{
-    m_signature_cut_list.push_back(cutname);
-  }
-  m_signature_cuts[cutname] = cut;
-}
-//-----------------------------------------
-//-----------------------------------------
 void BaseHandler::addHandlerCut(TString cutname)
 {
-  map<TString,SignatureCut*>::iterator iter = m_signature_cuts.find(cutname);
-  if(iter == m_signature_cuts.end()){
-    cerr << "WARNING: Signature Cut with name "<<cutname<<" does not exist"<<endl;
-  }
-  m_handlerCuts.push_back(cutname);
-}
-//-----------------------------------------
-//-----------------------------------------
-void BaseHandler::addHandlerCut(TString cutname, SignatureCut* cut)
-{
-  addSignatureCut(cutname,cut);
   m_handlerCuts.push_back(cutname);
 }
 //-----------------------------------------
@@ -893,7 +873,6 @@ void BaseHandler::analyzeEvent()
     ////////////////////////////////////////////////////////////////
     //Get all Physics objects and calculate all Physics quantities//
     ////////////////////////////////////////////////////////////////
-    calculateCuts();
 
     m_noCutSignature->fillHistograms();
 
