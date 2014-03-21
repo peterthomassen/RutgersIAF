@@ -1,5 +1,10 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_CountNoWeight.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_CountWeight.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRelIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutEta.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutPt.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
@@ -11,10 +16,10 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeWriter.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_EventVariable.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureCutVariableValue.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureCutVariableInRange.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureCutReversed.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureCutCombined.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValue.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableReversed.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableCombined.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
@@ -26,7 +31,6 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureCut.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/Signature.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutReversed.h"
@@ -53,7 +57,6 @@
 #pragma link C++ class ObjectCutReversed+;
 #pragma link C++ class Signature+;
 #pragma link C++ class BaseHandler+;
-#pragma link C++ class SignatureCut+;
 #pragma link C++ class BaseTreeReader+;
 #pragma link C++ class SignatureTH1F+;
 #pragma link C++ class SignatureTH2F+;
@@ -65,16 +68,16 @@
 #pragma link C++ class EventVariableSumPT+;
 #pragma link C++ class EventVariableN+;
 #pragma link C++ class EventVariableOSSF+;
-#pragma link C++ class SignatureCutCombined+;
-#pragma link C++ class SignatureCutReversed+;
-#pragma link C++ class SignatureCutVariableInRange<int>+;
-#pragma link C++ class SignatureCutVariableInRange<long>+;
-#pragma link C++ class SignatureCutVariableInRange<double>+;
-#pragma link C++ class SignatureCutVariableValue<int>+;
-#pragma link C++ class SignatureCutVariableValue<long>+;
-#pragma link C++ class SignatureCutVariableValue<double>+;
-#pragma link C++ class SignatureCutVariableValue<TString>+;
-#pragma link C++ class SignatureCutVariableValue<bool>+;
+#pragma link C++ class EventVariableCombined+;
+#pragma link C++ class EventVariableReversed+;
+#pragma link C++ class EventVariableInRange<int>+;
+#pragma link C++ class EventVariableInRange<long>+;
+#pragma link C++ class EventVariableInRange<double>+;
+#pragma link C++ class EventVariableValue<int>+;
+#pragma link C++ class EventVariableValue<long>+;
+#pragma link C++ class EventVariableValue<double>+;
+#pragma link C++ class EventVariableValue<TString>+;
+#pragma link C++ class EventVariableValue<bool>+;
 #pragma link C++ class SignatureTH1F_EventVariable<int>+;
 #pragma link C++ class SignatureTH1F_EventVariable<double>+;
 #pragma link C++ class SignatureTH1F_ObjectVariable<int>+;
@@ -92,4 +95,9 @@
 #pragma link C++ class EventVariableObjectWeightPtTF1+;
 #pragma link C++ class ObjectCutPt+;
 #pragma link C++ class ObjectCutEta+;
+#pragma link C++ class ObjectVariableMuonTotalIso+;
+#pragma link C++ class ObjectVariableElectronTotalIso+;
+#pragma link C++ class ObjectVariableRelIso+;
+#pragma link C++ class SignatureTH1F_CountWeight+;
+#pragma link C++ class SignatureTH1F_CountNoWeight+;
 #endif
