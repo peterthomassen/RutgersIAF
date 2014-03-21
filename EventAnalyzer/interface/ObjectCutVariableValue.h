@@ -19,14 +19,18 @@ class ObjectCutVariableValue : public ObjectCut {
     
   virtual ~ObjectCutVariableValue(){}
 
-  bool passCut(SignatureObject* sigObj) const
+  bool passCut(SignatureObject* sigObj)
   {
     T value;
     if(!sigObj->getVariable(m_variable,value))return false;
-    if(value != m_value) return false;
+    if(value != m_value){
+      sigObj->setVariable(getName(),false);
+      return false;
+    }
+    sigObj->setVariable(getName(),true);
     return true;
   }
-  bool operator()(SignatureObject* sigobj) const
+  bool operator()(SignatureObject* sigobj)
   {
     return passCut(sigobj);
   }

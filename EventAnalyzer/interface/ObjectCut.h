@@ -18,8 +18,8 @@ class ObjectCut : public TObject {
   ObjectCut(TString name):m_name(name){}
   virtual ~ObjectCut() {}
 
-  virtual bool passCut(SignatureObject*) const = 0;
-  virtual bool operator()(SignatureObject*) const = 0;
+  virtual bool passCut(SignatureObject*) = 0;
+  virtual bool operator()(SignatureObject*) = 0;
   TString getName(){return m_name;}
   void setName(TString name){m_name = name;}
 

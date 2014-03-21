@@ -18,14 +18,18 @@ class ObjectCutReversed : public ObjectCut {
     
   virtual ~ObjectCutReversed(){}
 
-  bool passCut(SignatureObject* sigObj) const
+  bool passCut(SignatureObject* sigObj)
   {
     bool retval;
     bool isSet = sigObj->getVariable(m_cut1,retval);
-    if(isSet)return !retval;
-    else return false;
+    if(isSet){
+      sigObj->setVariable(getName(),!retval);
+      return !retval;
+    }else{
+      return false;
+    }
   }
-  bool operator()(SignatureObject*) const;
+  bool operator()(SignatureObject*);
 
  private:
   TString m_cut1;
@@ -34,7 +38,7 @@ class ObjectCutReversed : public ObjectCut {
 
 };
 
-inline bool ObjectCutReversed::operator()(SignatureObject* sigobj) const
+inline bool ObjectCutReversed::operator()(SignatureObject* sigobj)
 {
   return passCut(sigobj);
 }

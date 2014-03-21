@@ -19,15 +19,22 @@ class ObjectCutVariableInRange : public ObjectCut {
     
   virtual ~ObjectCutVariableInRange(){}
 
-  bool passCut(SignatureObject* sigObj) const
+  bool passCut(SignatureObject* sigObj)
   {
     T value;
     if(!sigObj->getVariable(m_variable,value))return false;
-    if(value < m_low) return false;
-    if(value > m_high) return false;
+    if(value < m_low){
+      sigObj->setVariable(getName(),false);
+      return false;
+    }
+    if(value > m_high){
+      sigObj->setVariable(getName(),false);
+      return false;
+    }
+    sigObj->setVariable(getName(),true);
     return true;
   }
-  bool operator()(SignatureObject* sigObj) const
+  bool operator()(SignatureObject* sigObj)
   {
     return passCut(sigObj);
   }

@@ -26,7 +26,7 @@ class ObjectCutCombined : public ObjectCut {
 
   void addCut(TString cut){m_cuts.push_back(cut);}
 
-  bool passCut(SignatureObject* sigObj) const
+  bool passCut(SignatureObject* sigObj)
   {
     bool retval = m_and;
     for(int i = 0; i < (int)m_cuts.size(); i++){
@@ -36,9 +36,10 @@ class ObjectCutCombined : public ObjectCut {
       else retval = retval || (passVal && isSet);
       //cout<<"    "<<m_cuts[i]->getName()<<" "<<(int)passVal<<endl;
     }
+    sigObj->setVariable(getName(),retval);
     return retval;
   }
-  bool operator()(SignatureObject*) const;
+  bool operator()(SignatureObject*);
 
  private:
   std::vector<TString> m_cuts;
@@ -48,7 +49,7 @@ class ObjectCutCombined : public ObjectCut {
 
 };
 
-inline bool ObjectCutCombined::operator()(SignatureObject* sigobj) const
+inline bool ObjectCutCombined::operator()(SignatureObject* sigobj)
 {
   return passCut(sigobj);
 }
