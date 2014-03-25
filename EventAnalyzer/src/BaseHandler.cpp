@@ -79,6 +79,8 @@ void BaseHandler::addPreCutSignature(const char* name, const char* option)
 //-----------------------------------------
 void BaseHandler::initSignatures()
 {
+
+  gDirectory->pwd();
   int nSig = (int)m_Signatures.size()+(int)m_preHandlerCutSignatures.size()+(int)m_bjetSignatures.size();
   m_signatureCorrelationHisto = new TH2F("signatureCorrelationHisto","",nSig,-0.5,(float)nSig-0.5,nSig,-0.5,(float)nSig-0.5);
 
@@ -112,6 +114,7 @@ void BaseHandler::initSignatures()
 //-----------------------------------------
 void BaseHandler::finishSignatures()
 {
+
   m_outFile->cd();
   m_signatureCorrelationHisto->Write();
   m_noCutSignature->finish();
@@ -348,7 +351,7 @@ void BaseHandler::addProductCut(TString productName, TString cut)
 //-----------------------------------------
 vector<SignatureObject*> BaseHandler::getProduct(TString productName)
 {
-  if(m_currentEntry != m_lastEntryPrepared)prepareEvent();
+  //if(m_currentEntry != m_lastEntryPrepared)prepareEvent();
   vector<SignatureObject*> retvec;
   map<TString,vector<SignatureObject*> >::const_iterator pIter = m_products.find(productName);
   if(pIter == m_products.end()){
@@ -505,7 +508,6 @@ void BaseHandler::prepareEvent()
 {
 
   if(m_currentEntry == m_lastEntryPrepared)return;
-
   resetProducts();
   resetVariables();
 
