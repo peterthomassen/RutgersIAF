@@ -1,5 +1,5 @@
-#ifndef ObjectCutVariableInRange_h
-#define ObjectCutVariableInRange_h
+#ifndef ObjectVariableInRange_h
+#define ObjectVariableInRange_h
 
 #include <string>
 #include <iostream>
@@ -9,17 +9,17 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCut.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
 
 template <typename T> 
-class ObjectCutVariableInRange : public ObjectCut {
+class ObjectVariableInRange : public ObjectVariable {
  public:
-  ObjectCutVariableInRange(TString variable,T low=0, T high=100000,TString name="variableinrangecut") : ObjectCut(name),m_variable(variable),m_low(low),m_high(high){ /*no-op*/}
+  ObjectVariableInRange(TString variable,T low=0, T high=100000,TString name="variableinrangecut") : ObjectVariable(name),m_variable(variable),m_low(low),m_high(high){ /*no-op*/}
     
-  virtual ~ObjectCutVariableInRange(){}
+  virtual ~ObjectVariableInRange(){}
 
-  bool passCut(SignatureObject* sigObj)
+  bool calculate(SignatureObject* sigObj)
   {
     T value;
     if(!sigObj->getVariable(m_variable,value))return false;
@@ -34,17 +34,13 @@ class ObjectCutVariableInRange : public ObjectCut {
     sigObj->setVariable(getName(),true);
     return true;
   }
-  bool operator()(SignatureObject* sigObj)
-  {
-    return passCut(sigObj);
-  }
 
  private:
   TString m_variable;
   T m_low;
   T m_high;
 
-  ClassDef(ObjectCutVariableInRange,1);
+  ClassDef(ObjectVariableInRange,1);
 
 };
 

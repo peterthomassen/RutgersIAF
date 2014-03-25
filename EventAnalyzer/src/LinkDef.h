@@ -1,12 +1,14 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableLorentzVectorInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValueInList.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_CountNoWeight.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_CountWeight.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRelIso.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutEta.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutPt.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTF1.h"
@@ -33,11 +35,10 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/Signature.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutReversed.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutCombined.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutVariableValue.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCutVariableInRange.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCut.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableReversed.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableCombined.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableInRange.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -46,15 +47,14 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ class EventVariable+;
 #pragma link C++ class SignatureObject+;
-#pragma link C++ class ObjectCut+;
-#pragma link C++ class ObjectCutVariableInRange<int>+;
-#pragma link C++ class ObjectCutVariableInRange<double>+;
-#pragma link C++ class ObjectCutVariableValue<int>+;
-#pragma link C++ class ObjectCutVariableValue<bool>+;
-#pragma link C++ class ObjectCutVariableValue<TString>+;
-#pragma link C++ class ObjectCutVariableValue<double>+;
-#pragma link C++ class ObjectCutCombined+;
-#pragma link C++ class ObjectCutReversed+;
+#pragma link C++ class ObjectVariableInRange<int>+;
+#pragma link C++ class ObjectVariableInRange<double>+;
+#pragma link C++ class ObjectVariableValue<int>+;
+#pragma link C++ class ObjectVariableValue<bool>+;
+#pragma link C++ class ObjectVariableValue<TString>+;
+#pragma link C++ class ObjectVariableValue<double>+;
+#pragma link C++ class ObjectVariableCombined+;
+#pragma link C++ class ObjectVariableReversed+;
 #pragma link C++ class Signature+;
 #pragma link C++ class BaseHandler+;
 #pragma link C++ class BaseTreeReader+;
@@ -93,11 +93,20 @@
 #pragma link C++ class EventVariableTH1<long>+;
 #pragma link C++ class EventVariableTH1<double>+;
 #pragma link C++ class EventVariableObjectWeightPtTF1+;
-#pragma link C++ class ObjectCutPt+;
-#pragma link C++ class ObjectCutEta+;
 #pragma link C++ class ObjectVariableMuonTotalIso+;
 #pragma link C++ class ObjectVariableElectronTotalIso+;
 #pragma link C++ class ObjectVariableRelIso+;
 #pragma link C++ class SignatureTH1F_CountWeight+;
 #pragma link C++ class SignatureTH1F_CountNoWeight+;
+#pragma link C++ class EventVariableThreshold+;
+#pragma link C++ class EventVariableValueInList<int>+;
+#pragma link C++ class EventVariableValueInList<long>+;
+#pragma link C++ class EventVariableValueInList<double>+;
+#pragma link C++ class EventVariableValueInList<TString>+;
+#pragma link C++ class EventVariableValueInList<bool>+;
+#pragma link C++ class ObjectVariableValueInList<int>+;
+#pragma link C++ class ObjectVariableValueInList<double>+;
+#pragma link C++ class ObjectVariableValueInList<TString>+;
+#pragma link C++ class ObjectVariableValueInList<bool>+;
+#pragma link C++ class ObjectVariableLorentzVectorInRange+;
 #endif

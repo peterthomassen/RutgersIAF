@@ -3,6 +3,7 @@
 #include <TFile.h>
 #include "TPRegexp.h"
 #include <string>
+#include <fstream>
 #include "RutgersIAF2012/EventAnalyzer/interface/Signature.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureWithBjets.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
@@ -11,7 +12,6 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH3F.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeWriter.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectCut.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparison.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariable.h"
@@ -384,11 +384,6 @@ void BaseHandler::createProducts()
 	TString varname = m_object_variable_list[k];
 	m_object_variables[varname]->calculate(object);
       }
-      for(int k = 0; k < (int)m_object_cut_list.size();k++){
-	TString cutname = m_object_cut_list[k];
-	m_object_cuts[cutname]->passCut(object);
-	//object->setVariable(cutname,m_object_cuts[cutname]->passCut(object));
-      }
     }
   }
 
@@ -583,6 +578,31 @@ void BaseHandler::resetVariables()
 }
 //-----------------------------------------
 //-----------------------------------------
+//---------------------------------------
+
+void BaseHandler::readGoodRunLumi(TString c)
+{
+  
+  ifstream infile(c.Data());
+  
+  int rrr,lll;
+  
+  while(1){
+    infile >> rrr >> lll;
+    if(!infile.good())break;
+    if(m_goodRunLumi.find(rrr) == m_goodRunLumi.end()){
+      vector<int> lvec;
+      m_goodRunLumi[rrr] = lvec;
+    }
+    
+    if(find(m_goodRunLumi[rrr].begin(),m_goodRunLumi[rrr].end(),lll) == m_goodRunLumi[rrr].end())m_goodRunLumi[rrr].push_back(lll);
+  }
+  
+  if(m_goodRunLumi.size() > 0)m_doRunLumiCheck = true;
+  
+}
+
+//-------------------------------------
 bool BaseHandler::checkRunLumi(int r, int l)
 {
   if(m_goodRunLumi.find(r) == m_goodRunLumi.end())return false;
@@ -592,6 +612,250 @@ bool BaseHandler::checkRunLumi(int r, int l)
 }
 //-----------------------------------------
 //-----------------------------------------
+//--------------------------------------
+
+void BaseHandler::readGoodRunLumiFromJSON(TString JSONFile, bool debug)
+{
+  ifstream inputfile;
+  inputfile.open(JSONFile);
+
+  bool beginJson = false;
+  bool beginRun = false;
+  bool beginLumiSet = false;
+  bool beginLumiRange = false;
+  
+  bool firstLumiNumberEnd = false;
+  bool secondLumiNumberEnd = false;
+  
+  Int_t Run = -999;
+
+  std::pair<Int_t, Int_t> LumiRange;
+  LumiRange.first = -999;
+  LumiRange.second = -999;
+  std::vector<std::pair<Int_t, Int_t> > Lumis;
+
+  if (!inputfile.is_open()) {
+    std::cout << "The JSON file you are using does not exist!!!" << std::endl;
+    std::cout << "JSON File: " << JSONFile << std::endl;
+  }else {
+    std::cout << "The JSON file you are using is: " << JSONFile << std::endl;
+
+    while (!inputfile.eof()) {
+      char c = inputfile.get();
+      char p = inputfile.peek();
+
+      // Find beginning of JSON file
+      if (c == '{' && beginJson == false && beginRun == false && beginLumiSet ==false && beginLumiRange == false) {
+	beginJson = true;
+	if (debug == true) {
+	  std::cout << "Found beginning of JSON file: " << c << std::endl;
+	}
+      }
+
+      // Find beginning of Run and fill it
+      if (c == '"' && beginJson == true && beginRun == false && beginLumiSet == false && beginLumiRange == false) {
+	beginRun = true;
+
+	inputfile >> Run;
+	if (debug == true) {
+	  std::cout << "Found beginning of Run: " << c << Run << std::endl;
+	}
+      }
+
+      // Find ending of Run
+      if (c == ':' && beginJson == true && beginRun == true && beginLumiSet == false && beginLumiRange == false) {
+	beginRun = false;
+	if (debug == true) {
+	  std::cout << "Found ending of Run: " << c << std::endl;
+	}
+      }
+
+      // Find beginning of Lumi Set
+      if (c == '[' && beginJson == true && beginRun == false && beginLumiSet == false && beginLumiRange == false) {
+	beginLumiSet = true;
+	if (debug == true) {
+	  std::cout << "Found beginning of LumiSet: " << c << std::endl;
+	}
+      }
+
+      // Find begining of Lumi Range and fill it
+      if (p == '[' && beginJson == true && beginRun == false && beginLumiSet == true && beginLumiRange == false) {
+	beginLumiRange = true;
+	c = inputfile.get();
+	inputfile >> LumiRange.first;
+	LumiRange.second = -999; // Set to -999 in the case that a second value does not exist for the pair
+	if (debug == true) {
+	  std::cout << "Found beginning of LumiRange: " << c << LumiRange.first << std::endl;
+	}
+      }
+
+      // Find middle of Lumi Range and fill it
+      if (c == ',' && beginJson == true && beginRun == false && beginLumiSet == true && beginLumiRange == true && firstLumiNumberEnd == false && secondLumiNumberEnd == false) {
+	firstLumiNumberEnd = true;
+
+	inputfile >> LumiRange.second;
+
+	secondLumiNumberEnd = true;
+      }
+
+      // Find ending of Lumi Range
+      if (c == ']' && beginJson == true && beginRun == false && beginLumiSet == true && beginLumiRange == true) {
+	beginLumiRange = false;
+	if (debug == true) {
+	  std::cout << "Found ending of LumiRange: " << c << std::endl;
+	}
+
+	firstLumiNumberEnd = false;
+	secondLumiNumberEnd = false;
+	Lumis.push_back(LumiRange);
+      }
+
+      // Find ending of Lumi Set
+      if (p == ']' && beginJson == true && beginRun == false && beginLumiSet == true && beginLumiRange == false) {
+	beginLumiSet = false;
+	if (debug == true) {
+	  std::cout << "Found ending of LumiSet: " << c << std::endl;
+	}
+      }
+
+      // Initialize json multimap
+      if (p == ']' && beginJson == true && beginRun == false && beginLumiSet == false && beginLumiRange == false) {
+	m_json.insert(std::pair<Int_t, std::vector<std::pair<Int_t, Int_t> > >(Run, Lumis));
+	Run = -999;
+	LumiRange.first = -999;
+	LumiRange.second = -999;
+	Lumis.clear();
+      }
+
+      // Find ending of JSON file
+      if (c == '}' && beginJson == true && beginRun == false && beginLumiSet == false && beginLumiRange == false) {
+	beginJson = false;
+	if (debug == true) {
+	  std::cout << "Found ending of JSON file: " << c << std::endl;
+	}
+      }
+    }
+  }
+
+  inputfile.close();
+
+  if (m_json.size() > 0) {
+    m_doRunLumiCheckFromJSON = true;
+  }
+}
+//--------------------------------------
+void BaseHandler::printRunLumiJSON()
+{
+  std::multimap<Int_t, std::vector<std::pair<Int_t, Int_t> > >::iterator store_iter;
+
+  std::cout << "The Run and Lumi numbers stored in memory were: " << std::endl;
+
+  std::cout << "{";
+
+  for (std::multimap<Int_t, std::vector<std::pair<Int_t, Int_t> > >::iterator json_iter = m_json.begin(); json_iter != m_json.end(); json_iter++) {
+    store_iter = json_iter;
+    std::cout << "\"" << json_iter->first << "\": [";
+    for (std::vector<std::pair<Int_t, Int_t> >::const_iterator lumi_iter = (json_iter->second).begin(); lumi_iter != (json_iter->second).end(); lumi_iter++) {
+
+      // First Run of Json file and Run has only one Lumi Range
+      if (json_iter == m_json.begin() && std::distance((json_iter->second).begin(),(json_iter->second).end()) == 1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "]], ";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "]], ";
+	}
+      }
+
+      // First Run of Json file and all Lumi Ranges, except last one, of Run and Run has more than one Lumi Range
+      if (json_iter == m_json.begin() && std::distance((json_iter->second).begin(),(json_iter->second).end()) > 1 && lumi_iter != (json_iter->second).end()-1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "], ";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "], ";
+	}
+      }
+
+      // First Run of Json file and last Lumi Range of Run and Run has more than one Lumi Range
+      if (json_iter == m_json.begin() && std::distance((json_iter->second).begin(),(json_iter->second).end()) > 1 && lumi_iter == (json_iter->second).end()-1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "]], ";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "]]";
+	}
+      }
+
+      // Middle Runs of Json file and if Run has only one Lumi Range
+      if (json_iter != m_json.begin() && ++store_iter != m_json.end() && std::distance((json_iter->second).begin(),(json_iter->second).end()) == 1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "]], ";
+	  store_iter = json_iter;
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "]], ";
+	  store_iter = json_iter;
+	}
+      }else {
+	store_iter = json_iter;
+      }
+      // Middle Runs of Json file and all Lumi Ranges, except last one, of Runs and if Runs have more than one Lumi Range
+      if (json_iter != m_json.begin() && ++store_iter != m_json.end() && std::distance((json_iter->second).begin(),(json_iter->second).end()) > 1 && lumi_iter != (json_iter->second).end()-1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "], ";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "], ";
+	}
+      }else {
+	store_iter = json_iter;
+      }
+
+      // Middle Runs of Json file and last Lumi Range of Runs and Runs have more than one Lumi Range
+      if (json_iter != m_json.begin() && ++store_iter != m_json.end() && std::distance((json_iter->second).begin(),(json_iter->second).end()) > 1 && lumi_iter == (json_iter->second).end()-1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "]], ";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "], ";
+	}
+      }else {
+	store_iter = json_iter;
+      }
+
+      // Last Run of Json file and Run has only one Lumi Range
+      if (json_iter != m_json.begin() && ++store_iter == m_json.end() && std::distance((json_iter->second).begin(),(json_iter->second).end()) == 1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "]]";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "]]";
+	}
+      }else {
+	store_iter = json_iter;
+      }
+
+      // Last Run of Json file and all Lumi Ranges, except last one, of Run and Run has more than one Lumi Range
+      if (json_iter != m_json.begin() && ++store_iter == m_json.end() && std::distance((json_iter->second).begin(),(json_iter->second).end()) > 1 && lumi_iter != (json_iter->second).end()-1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "], ";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "]], ";
+	}
+      }else {
+	store_iter = json_iter;
+      }
+
+      // Last Run of Json file and last Lumi Range of Run and Run has more than one Lumi Range
+      if (json_iter != m_json.begin() && ++store_iter == m_json.end() && std::distance((json_iter->second).begin(),(json_iter->second).end()) > 1 && lumi_iter == (json_iter->second).end()-1) {
+	if (lumi_iter->second != -999) {
+	  std::cout << "[" << lumi_iter->first << ", " << lumi_iter->second << "]]";
+	}else if (lumi_iter->second == -999) {
+	  std::cout << "[" << lumi_iter->first << "]], ";
+	}
+      }else {
+	store_iter = json_iter;
+      }
+    }
+  }
+  std::cout << "}" << std::endl;
+}
+
+//--------------------------------------
 bool BaseHandler::checkRunLumiFromJSON(int RunNumber, int LumiNumber, bool debug)
 {
   bool foundRun = false;
@@ -694,6 +958,7 @@ void BaseHandler::addEventVariable(TString varname, EventVariable* var)
   if(iter != m_variable_map.end()){
     cerr << "WARNING: Replacing variable with name "<<varname<<endl;
   }
+  var->setName(varname);
   m_variable_map[varname] = var;
 }
 //-----------------------------------------
@@ -705,19 +970,6 @@ EventVariable* BaseHandler::getEventVariable(TString varname)
     return (*iter).second;
   }
   return 0;
-}
-//-----------------------------------------
-//-----------------------------------------
-void BaseHandler::addObjectCut(TString cutname, ObjectCut* cut)
-{
-  map<TString,ObjectCut*>::iterator iter = m_object_cuts.find(cutname);
-  if(iter != m_object_cuts.end()){
-    cerr<<"WARNING: overwriting Object Cut with name: "<<cutname<<endl;
-  }else{
-    m_object_cut_list.push_back(cutname);
-  }
-  cut->setName(cutname);
-  m_object_cuts[cutname] = cut;
 }
 //-----------------------------------------
 //-----------------------------------------
@@ -854,6 +1106,7 @@ void BaseHandler::addObjectVariable(TString varname, ObjectVariable* objvar)
   }else{
     cerr<<"WARNING: setting ObjectVariable with name "<<varname<<" to new value"<<endl;
   }
+  objvar->setName(varname);
   m_object_variables[varname] = objvar;
 }
 //-----------------------------------------

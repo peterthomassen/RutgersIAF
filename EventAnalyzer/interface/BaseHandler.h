@@ -22,7 +22,6 @@ class TFile;
 class BaseTreeReader;
 class BaseTreeWriter;
 class SignatureTreeWriter;
-class ObjectCut;
 class ObjectComparison;
 class EventVariable;
 class TH2F;
@@ -71,6 +70,7 @@ class BaseHandler : virtual public TObject {
   //Access physics quantities//
   /////////////////////////////
   virtual bool getDebugMode(){return m_debugMode;}
+  virtual void setDebugMode(bool c=true){m_debugMode = c;}
   virtual void dumpEventInfo();
   virtual void printDebugInfo();
 
@@ -102,6 +102,10 @@ class BaseHandler : virtual public TObject {
   void addDumpEvent(int,int,long);
 
   int getMode(std::string name);
+
+  void readGoodRunLumi(TString c);
+  void readGoodRunLumiFromJSON(TString JSONFile, bool debug = false);
+  void printRunLumiJSON();
   //////////////////////
   //Product Management//
   //////////////////////
@@ -109,7 +113,6 @@ class BaseHandler : virtual public TObject {
   virtual bool isProductPresent(TString);
   void addProduct(TString,TString);
   void addProductCut(TString,TString);
-  void addObjectCut(TString,ObjectCut*);
 
   void addProductComparison(TString,TString,ObjectComparison*,bool doAnd=true);
   void addProductSelfComparison(TString,ObjectComparison*,bool doAnd=true);
@@ -161,7 +164,6 @@ class BaseHandler : virtual public TObject {
   std::map<TString,TString> m_product_sources;
   std::map<TString,std::vector<SignatureObject*> > m_products;
   std::vector<TString> m_object_cut_list;
-  std::map<TString,ObjectCut*> m_object_cuts;
   std::vector<TString> m_signature_cut_list;
   std::vector<TString> m_handlerCuts;
 
