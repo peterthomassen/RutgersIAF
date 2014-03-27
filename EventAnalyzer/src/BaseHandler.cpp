@@ -59,7 +59,12 @@ int BaseHandler::getMode(std::string name) {
 //----------------------------------------
 void BaseHandler::printSignature(Signature* sig)
 {
-
+  int run = 0, lumiBlock = 0;
+  long event = 0;
+  bool hasRun = m_reader->getVariable("RUN",run);
+  bool hasLumi = m_reader->getVariable("LUMI",lumiBlock);
+  bool hasEvent = m_reader->getVariable("EVENT",event);
+  cout<<sig->getName()<<" "<<run<<" "<<lumiBlock<<" "<<event<<endl;
 }
 //-----------------------------------------
 Signature* BaseHandler::addSignature(const char* name, const char* option)
@@ -373,11 +378,11 @@ bool BaseHandler::isProductPresent(TString prodName)
 void BaseHandler::createProducts()
 {
 
-
   //calculate all of the variables and cuts
-  for(int i = 0; i < (int)m_input_product_names.size(); i++){
-    TString sname = m_input_product_names[i];
-    vector<SignatureObject*> product = getProduct(sname);
+  map<TString,vector<SignatureObject*> >::iterator iIter;
+  for(iIter = m_products.begin(); iIter != m_products.end(); iIter++){
+    TString sname = (*iIter).first;
+    vector<SignatureObject*> product = (*iIter).second;
     for(int j = 0; j < (int)product.size(); j++){
       SignatureObject* object = product[j];
       for(int k = 0; k < (int)m_object_variable_list.size(); k++){
@@ -560,8 +565,11 @@ void BaseHandler::dumpEventInfo()
 //-----------------------------------------
 void BaseHandler::calculateVariables()
 {
+
   map<TString,EventVariable*>::iterator iter;
-  for(iter = m_variable_map.begin(); iter != m_variable_map.end(); iter++){
+  for(int i = 0; i < (int)m_event_variable_list.size(); i++){
+    iter = m_variable_map.find(m_event_variable_list[i]);
+    if(iter == m_variable_map.end())continue;
     EventVariable* variable = (*iter).second;
     variable->calculate(this);
   }
@@ -952,13 +960,15 @@ void BaseHandler::addHandlerCut(TString cutname)
 }
 //-----------------------------------------
 //-----------------------------------------
-void BaseHandler::addEventVariable(TString varname, EventVariable* var)
+void BaseHandler::addEventVariable(TString varname, EventVariable* var, bool rename)
 {
   map<TString,EventVariable*>::iterator iter = m_variable_map.find(varname);
-  if(iter != m_variable_map.end()){
+  if(iter == m_variable_map.end()){
+    m_event_variable_list.push_back(varname);
+  }else{
     cerr << "WARNING: Replacing variable with name "<<varname<<endl;
   }
-  var->setName(varname);
+  if(rename)var->setName(varname);
   m_variable_map[varname] = var;
 }
 //-----------------------------------------
@@ -1098,7 +1108,7 @@ bool BaseHandler::getVariable(TString varname, bool& c)
 }
 //-----------------------------------------
 //-----------------------------------------
-void BaseHandler::addObjectVariable(TString varname, ObjectVariable* objvar)
+void BaseHandler::addObjectVariable(TString varname, ObjectVariable* objvar,bool rename)
 {
   map<TString,ObjectVariable*>::iterator iter = m_object_variables.find(varname);
   if(iter == m_object_variables.end()){
@@ -1106,7 +1116,7 @@ void BaseHandler::addObjectVariable(TString varname, ObjectVariable* objvar)
   }else{
     cerr<<"WARNING: setting ObjectVariable with name "<<varname<<" to new value"<<endl;
   }
-  objvar->setName(varname);
+  if(rename)objvar->setName(varname);
   m_object_variables[varname] = objvar;
 }
 //-----------------------------------------
@@ -1207,7 +1217,31 @@ void BaseHandler::analyzeEvent()
 //-----------------------------------------
 void BaseHandler::printDebugInfo()
 {
-
+  for(map<TString,double>::iterator iter = m_variable_map_double.begin(); iter != m_variable_map_double.end();iter++){
+    cout<<(*iter).first<<" "<<(*iter).second<<endl;
+  }
+  for(map<TString,int>::iterator iter = m_variable_map_int.begin(); iter != m_variable_map_int.end();iter++){
+    cout<<(*iter).first<<" "<<(*iter).second<<endl;
+  }
+  for(map<TString,long>::iterator iter = m_variable_map_long.begin(); iter != m_variable_map_long.end();iter++){
+    cout<<(*iter).first<<" "<<(*iter).second<<endl;
+  }
+  for(map<TString,TString>::iterator iter = m_variable_map_TString.begin(); iter != m_variable_map_TString.end();iter++){
+    cout<<(*iter).first<<" "<<(*iter).second<<endl;
+  }
+  for(map<TString,bool>::iterator iter = m_variable_map_bool.begin(); iter != m_variable_map_bool.end();iter++){
+    cout<<(*iter).first<<" "<<(*iter).second<<endl;
+  }
+  std::map<TString,std::vector<SignatureObject*> >::iterator pIter;
+  for(pIter = m_products.begin(); pIter != m_products.end(); pIter++){
+    cout<<"product "<<(*pIter).first<<" "<<(*pIter).second.size()<<endl;
+    vector<SignatureObject*> v = (*pIter).second;
+    /*
+    for(int i = 0; i < (int)v.size(); i++){
+      cout<<"  "<<*v[i]<<endl;
+    }
+    */
+  }
 }
 //-----------------------------------------
 //-----------------------------------------

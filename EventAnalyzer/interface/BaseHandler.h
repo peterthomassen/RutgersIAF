@@ -74,10 +74,10 @@ class BaseHandler : virtual public TObject {
   virtual void dumpEventInfo();
   virtual void printDebugInfo();
 
-  virtual void addEventVariable(TString,EventVariable*);
+  virtual void addEventVariable(TString,EventVariable*,bool rename=true);
   EventVariable* getEventVariable(TString);
 
-  virtual void addObjectVariable(TString,ObjectVariable*);
+  virtual void addObjectVariable(TString,ObjectVariable*,bool rename=true);
   ObjectVariable* getObjectVariable(TString);
 
   virtual void setVariable(TString,double);
@@ -160,7 +160,6 @@ class BaseHandler : virtual public TObject {
   //Products//
   ////////////
   std::vector<TString> m_product_names;
-  std::vector<TString> m_input_product_names;
   std::map<TString,TString> m_product_sources;
   std::map<TString,std::vector<SignatureObject*> > m_products;
   std::vector<TString> m_object_cut_list;
@@ -177,6 +176,7 @@ class BaseHandler : virtual public TObject {
 
   TH2F* m_signatureCorrelationHisto;
 
+  std::vector<TString> m_event_variable_list;
   std::map<TString,EventVariable*> m_variable_map;
   std::vector<TString> m_weight_variables;
 

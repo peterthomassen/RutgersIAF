@@ -45,46 +45,41 @@ void setupProducts(BaseHandler* handler)
   //////////////////
   ///General Cuts///
   //////////////////
-
-
-  SOfunction TLVPT = &TLorentzVector::Pt;
-  SOfunction TLVETA = &TLorentzVector::Eta;
-
-  ObjectVariableLorentzVectorInRange* leptonPtCut = new ObjectVariableLorentzVectorInRange(TLVPT,10.0,10000.0,"leptonPtCut");
-  ObjectVariableLorentzVectorInRange* leptonEtaCut = new ObjectVariableLorentzVectorInRange(TLVETA,-2.4,2.4,"leptonEtaCut");
-  ObjectVariableLorentzVectorInRange* PT40 = new ObjectVariableLorentzVectorInRange(TLVPT,40.0,10000.0,"PT40");
+  ObjectVariablePtInRange* leptonPtCut = new ObjectVariablePtInRange(10.0,10000.0,"leptonPtCut");
+  ObjectVariableEtaInRange* leptonEtaCut = new ObjectVariableEtaInRange(-2.4,2.4,"leptonEtaCut");
+  ObjectVariablePtInRange* PT40 = new ObjectVariablePtInRange(40.0,10000.0,"PT40");
+  handler->addObjectVariable("MUONTOTALISO",new ObjectVariableMuonTotalIso("TOTALISO"),false);
+  handler->addObjectVariable("ELECTRONTOTALISO",new ObjectVariableElectronTotalIso("TOTALISO"),false);
+  handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
 
   handler->addObjectVariable("PT10",leptonPtCut);
-  handler->addObjectVariable("PT20",new ObjectVariableLorentzVectorInRange(TLVPT,20.0,10000.0,"PT20"));
-  handler->addObjectVariable("PT30",new ObjectVariableLorentzVectorInRange(TLVPT,30.0,10000.0,"PT30"));
+  handler->addObjectVariable("PT20",new ObjectVariablePtInRange(20.0,10000.0,"PT20"));
+  handler->addObjectVariable("PT30",new ObjectVariablePtInRange(30.0,10000.0,"PT30"));
   handler->addObjectVariable("PT40",PT40);
-  handler->addObjectVariable("ETA2p3",new ObjectVariableLorentzVectorInRange(TLVETA,-2.3,2.3,"ETA2p3"));
+  handler->addObjectVariable("ETA2p3",new ObjectVariableEtaInRange(-2.3,2.3,"ETA2p3"));
   handler->addObjectVariable("ETA2p4",leptonEtaCut);
-  handler->addObjectVariable("ETA2p5",new ObjectVariableLorentzVectorInRange(TLVETA,-2.5,2.5,"ETA2p3"));
-  handler->addObjectVariable("IREL0p15",new ObjectVariableInRange<double>("RELISO",0,0.15));
-  handler->addObjectVariable("BARREL",new ObjectVariableLorentzVectorInRange(TLVETA,-1.5,1.5,"barrelEta"));
-  handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL"));
-  handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<double>("CHARGE",0,10));
-  handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<double>("CHARGE",-10,0));
+  handler->addObjectVariable("ETA2p5",new ObjectVariableEtaInRange(-2.5,2.5,"ETA2p5"));
+  handler->addObjectVariable("IREL0p15",new ObjectVariableInRange<double>("RELISO",0,0.15,"IREL0p15"));
+  handler->addObjectVariable("BARREL",new ObjectVariableEtaInRange(-1.5,1.5,"barrelEta"));
+  handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL","endcapEta"));
+  handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<double>("CHARGE",0,10,"CHARGEPOS"));
+  handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<double>("CHARGE",-10,0,"CHARGENEG"));
 
-  handler->addObjectVariable("MUONTOTALISO",new ObjectVariableMuonTotalIso("TOTALISO"));
-  handler->addObjectVariable("ELECTRONTOTALISO",new ObjectVariableElectronTotalIso("TOTALISO"));
-  handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
 
   /////////////////
   ///Muon Cuts ///
   ////////////////
 
-  handler->addObjectVariable("MUON_VALID_INNER_PIXEL_HITS",new ObjectVariableInRange<int>("INNERNUMBEROFVALIDPIXELHITS",1,10000));
-  handler->addObjectVariable("MUON_TRACK_LAYERS_WM", new ObjectVariableInRange<int>("NTRACKERLAYERSWM",6,10000));
-  handler->addObjectVariable("MUON_MATCHES",new ObjectVariableInRange<int>("NUMBEROFMATCHES",2,100000));
-  handler->addObjectVariable("ISPF",new ObjectVariableValue<int>("ISPF",1));
-  handler->addObjectVariable("MUON_ISGLOBAL",new ObjectVariableValue<int>("ISGLOBALMUON",1));
-  handler->addObjectVariable("MUON_VALID_MUON_HITS",new ObjectVariableInRange<int>("NVALIDMUONHITS",1,10000));
-  handler->addObjectVariable("MUON_NORMALIZED_CHI2",new ObjectVariableInRange<double>("NORMALIZEDCHI2",0,10));
-  handler->addObjectVariable("MUON_INNER_VERT_DZ",new ObjectVariableInRange<double>("INNERVERTDZ",-0.5,0.5));
-  handler->addObjectVariable("MUON_PROMPT",new ObjectVariableInRange<double>("INNERVERTDXY",0,0.02));
-  handler->addObjectVariable("MUON_NONPROMPT",new ObjectVariableInRange<double>("INNERVERTDXY",0.03,1000));
+  handler->addObjectVariable("MUON_VALID_INNER_PIXEL_HITS",new ObjectVariableInRange<int>("INNERNUMBEROFVALIDPIXELHITS",1,10000,"MUON_VALID_INNER_PIXEL_HITS"));
+  handler->addObjectVariable("MUON_TRACK_LAYERS_WM", new ObjectVariableInRange<int>("NTRACKERLAYERSWM",6,10000,"MUON_TRACK_LAYERS_WM"));
+  handler->addObjectVariable("MUON_MATCHES",new ObjectVariableInRange<int>("NUMBEROFMATCHES",2,100000,"MUON_MATCHES"));
+  handler->addObjectVariable("ISPF",new ObjectVariableValue<int>("ISPF",1,"ISPF"));
+  handler->addObjectVariable("MUON_ISGLOBAL",new ObjectVariableValue<int>("ISGLOBALMUON",1,"MUON_ISGLOBAL"));
+  handler->addObjectVariable("MUON_VALID_MUON_HITS",new ObjectVariableInRange<int>("NVALIDMUONHITS",1,10000,"MUON_VALID_MUON_HITS"));
+  handler->addObjectVariable("MUON_NORMALIZED_CHI2",new ObjectVariableInRange<double>("NORMALIZEDCHI2",0,10,"MUON_NORMALIZED_CHI2"));
+  handler->addObjectVariable("MUON_INNER_VERT_DZ",new ObjectVariableInRange<double>("INNERVERTDZ",-0.5,0.5,"MUON_INNER_VERT_DZ"));
+  handler->addObjectVariable("MUON_PROMPT",new ObjectVariableInRange<double>("INNERVERTDXY",0,0.02,"MUON_PROMPT"));
+  handler->addObjectVariable("MUON_NONPROMPT",new ObjectVariableInRange<double>("INNERVERTDXY",0.03,1000,"MUON_NONPROMPT"));
 
   handler->addProduct("goodMuons","ALLMUONS");
   handler->addProductCut("goodMuons","PT10");
@@ -109,12 +104,15 @@ void setupProducts(BaseHandler* handler)
   ///Electron Cuts///
   //////////////////
 
-  handler->addObjectVariable("ELECTRON_INGAP",new ObjectVariableInRange<double>("FMVAVAR_ETA",1.4442,1.566));
-  handler->addObjectVariable("ELECTRON_NOTGAP",new ObjectVariableReversed("ELECTRON_INGAP"));
-  handler->addObjectVariable("ELECTRON_BARREL_DETA",new ObjectVariableInRange<double>("DELTAETA",-0.007,0.007));
-  handler->addObjectVariable("ELECTRON_ENDCAP_DETA",new ObjectVariableInRange<double>("DELTAETA",-0.009,0.009));
-  handler->addObjectVariable("ELECTRON_BARREL_DPHI",new ObjectVariableInRange<double>("DELTAPHI",-0.15,0.15));
-  handler->addObjectVariable("ELECTRON_ENDCAP_DPHI",new ObjectVariableInRange<double>("DELTAPHI",-0.10,0.10));
+  handler->addObjectVariable("ELECTRON_INGAPPOS",new ObjectVariableInRange<double>("FMVAVAR_ETA",1.4442,1.566,"ELECTRON_INGAPPOS"));
+  handler->addObjectVariable("ELECTRON_INGAPNEG",new ObjectVariableInRange<double>("FMVAVAR_ETA",-1.566,-1.4442,"ELECTRON_INGAPNEG"));
+  ObjectVariableCombined* electron_ingap = new ObjectVariableCombined("ELECTRON_INGAPPOS","ELECTRONINGAPNEG",false,"ELECTORN_INGAP");
+  handler->addObjectVariable("ELECTRON_INGAP",electron_ingap);
+  handler->addObjectVariable("ELECTRON_NOTGAP",new ObjectVariableReversed("ELECTRON_INGAP","ELECTRON_NOTGAP"));
+  handler->addObjectVariable("ELECTRON_BARREL_DETA",new ObjectVariableInRange<double>("DELTAETA",-0.007,0.007,"ELECTRON_BARREL_DETA"));
+  handler->addObjectVariable("ELECTRON_ENDCAP_DETA",new ObjectVariableInRange<double>("DELTAETA",-0.009,0.009,"ELECTRON_ENDCAP_DETA"));
+  handler->addObjectVariable("ELECTRON_BARREL_DPHI",new ObjectVariableInRange<double>("DELTAPHI",-0.15,0.15,"ELECTRON_BARREL_DPHI"));
+  handler->addObjectVariable("ELECTRON_ENDCAP_DPHI",new ObjectVariableInRange<double>("DELTAPHI",-0.10,0.10,"ELECTRON_ENDCAP_DPHI"));
   handler->addObjectVariable("ELECTRON_BARREL_HADOVEREM",new ObjectVariableInRange<double>("HADOVEREM",0.0,0.12));
   handler->addObjectVariable("ELECTRON_ENDCAP_HADOVEREM",new ObjectVariableInRange<double>("HADOVEREM",0.0,0.10));
   handler->addObjectVariable("ELECTRON_BARREL_SIGMAIETAIETA",new ObjectVariableInRange<double>("SIGMAIETAIETA",-0.01,0.01));
@@ -304,6 +302,30 @@ void setupFilterCuts(BaseHandler* handler)
 
 }
 
+void setupMC(BaseHandler* handler, TString pufile)
+{
+
+
+}
+
+void setupOnZSignatures(BaseHandler* handler)
+{
+  handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
+  handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
+  handler->addEventVariable("getwoGoodMuons", new EventVariableInRange<int>("NGOODMUONS",2,100000));
+  handler->addEventVariable("getwoGoodElectrons",new EventVariableInRange<int>("NGOODELECTRONS",2,100000));
+
+  handler->addSignature("Mu2OnZ")
+    ->addCut("getwoGoodMuons")
+    ->addCut("ONZ")
+    ;
+  handler->addSignature("El2OnZ")
+    ->addCut("getwoGoodElectrons")
+    ->addCut("ONZ")
+    ;
+
+}
+
 void setupSignatures(BaseHandler* handler)
 {
   TString products[6] = {"posGoodMuons","negGoodMuons","posGoodElectrons","negGoodElectrons","posGoodTracks","negGoodTracks"};
@@ -314,6 +336,7 @@ void setupSignatures(BaseHandler* handler)
     handler->addEventVariable(varname,new EventVariableN(varname,products[i]));
     for(int j = 0; j < 4; j++){
       TString varname1 = TString::Format("N%sEQ%i",products[i].Data(),j);
+      varname1.ToUpper();
       handler->addEventVariable(varname1,new EventVariableInRange<int>(varname,j,j,varname1));
     }
   }

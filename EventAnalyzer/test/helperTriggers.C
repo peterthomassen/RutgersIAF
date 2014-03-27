@@ -6,6 +6,8 @@ void setupTriggers(BaseHandler* handler,int mode)
   doubleLeptonThreshold->addThreshold(20);
   doubleLeptonThreshold->addThreshold(10);
 
+  handler->addEventVariable("DILEPTHRESH",doubleLeptonThreshold);
+
   ObjectVariableValueInList<int>* dieltriggers = new ObjectVariableValueInList<int>("ID",-1,"DIELTRIGGERS");
   addAcceptTriggers(dieltriggers,getDoubleElectronTriggers());
   handler->addObjectVariable("DIELTRIGGERS",dieltriggers);
@@ -55,10 +57,12 @@ void setupTriggers(BaseHandler* handler,int mode)
     case 1:
       handler->addEventVariable("GEONEMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",1,1000000,"GEONEMUEG_TRIGGERS"));
       handler->addHandlerCut("GEONEMUEG_TRIGGERS");
+      handler->addHandlerCut("DILEPTHRESH");
       break;
     case 2:
       handler->addEventVariable("GEONEDIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",1,1000000,"GEONEDIMU_TRIGGERS"));
       handler->addHandlerCut("GEONEDIMU_TRIGGERS");
+      handler->addHandlerCut("DILEPTHRESH");
 
       handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
       handler->addHandlerCut("ZEROMUEG_TRIGGERS");
@@ -66,6 +70,7 @@ void setupTriggers(BaseHandler* handler,int mode)
     case 3:
       handler->addEventVariable("GEONEDIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",1,1000000,"GEONEDIEL_TRIGGERS"));
       handler->addHandlerCut("GEONEDIEL_TRIGGERS");
+      handler->addHandlerCut("DILEPTHRESH");
 
       handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
       handler->addHandlerCut("ZEROMUEG_TRIGGERS");

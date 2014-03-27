@@ -22,7 +22,7 @@ class ObjectVariableLorentzVectorInRange : public ObjectVariable {
 
   bool calculate(SignatureObject* sigObj)
   {
-    double value = (sigObj->*m_function)();
+    double value = ((TLorentzVector*)sigObj->*m_function)();
     bool retval = true;
     if(value < m_low)retval = false;
     if(value > m_high)retval = false;

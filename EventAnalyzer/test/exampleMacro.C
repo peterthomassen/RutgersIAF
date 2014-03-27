@@ -1,6 +1,6 @@
 void exampleMacro(const char* ifname="."
 		  , const char* ofname="exampleAnalyzer.root"
-		  , int mode = 0
+		  , int mode = 3
 		  , const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
 )
 {
@@ -10,7 +10,7 @@ void exampleMacro(const char* ifname="."
 
   TChain* tree = new TChain("SkimTree");
   TString input=ifname;
-  input += "/*.root";
+  input += "/eve*.root";
   tree->Add(input);
 
   SkimTreeReader* reader = new SkimTreeReader(tree);
@@ -19,13 +19,14 @@ void exampleMacro(const char* ifname="."
 
   handler->readGoodRunLumiFromJSON(TString(json));
 
-  //handler->setDebugMode(true);
+  handler->setDebugMode(true);
 
   setupProducts(handler);
   setupTriggers(handler,mode);
   setupVariables(handler);
   setupFilterCuts(handler);
-  setupSignatures(handler);
+  //setupSignatures(handler);
+  setupOnZSignatures(handler);
   addHistograms(handler);
 
   handler->initSignatures();
