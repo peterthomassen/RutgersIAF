@@ -562,7 +562,7 @@ void SkimTreeReader::createMCParticles()
 {
   vector<SignatureObject*> mcparticles;
   for(int i = 0; i < mc_part_n; i++){
-    SignatureObject* mcpart = new SignatureObject(mc_part_px[i],mc_part_py[i],mc_part_pz[i],mc_part_energy[i]);
+    SignatureObject* mcpart = new SignatureObject(max(mc_part_px[i],1e-4),mc_part_py[i],mc_part_pz[i],mc_part_energy[i]);
     mcpart->setVariable("PDGID",mc_part_pdgID[i]);
     mcpart->setVariable("VX",mc_part_vx[i]);
     mcpart->setVariable("VY",mc_part_vy[i]);
