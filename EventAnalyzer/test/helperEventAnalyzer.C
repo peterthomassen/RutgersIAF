@@ -305,6 +305,34 @@ void setupFilterCuts(BaseHandler* handler)
 void setupMC(BaseHandler* handler, TString pufile)
 {
 
+  TFile infile(pufile.Data());
+  TH1F* pu = (TH1F*)infile.Get("puweights");
+  pu->SetDirectory(0);
+  EventVariableTH1<double>* pureweight = new EventVariableTH1<double>("pureweight","TRUENUMINTERACTIONS",pu);
+  handler->addEventVariable("PUWEIGHT",pureweight);
+  handler->addWeightVariable("PUWEIGHT");
+
+  //eps_inf*erf((pt-c)/sigma) + eps_c * (1-erf((pt-c)/sigma))
+  TF1* electronIDISO = new TF1("elidiso","(TMath::Erf((x-[0])/[1])*([2]-[3])+[3])*(TMath::Erf((x-[0])/[4])*([5]-[6])+[6])",8,10000);
+  electronIDISO->SetParameter(0,8);
+  electronIDISO->SetParameter(1,40);
+  electronIDISO->SetParameter(2,1.0055);
+  electronIDISO->SetParameter(3,0.90);
+  electronIDISO->SetParameter(4,11.83);
+  electronIDISO->SetParameter(5,1.0074);
+  electronIDISO->SetParameter(6,0.76);
+
+  TF1* muonIDISO = new TF1("muidiso","(TMath::Erf((x-[0])/[1])*([2]-[3])+[3])*[4]",8,10000);
+  muonIDISO->SetParameter(0,8);
+  muonIDISO->SetParameter(1,10.9);
+  muonIDISO->SetParameter(2,0.9905);
+  muonIDISO->SetParameter(3,0.8584);
+  muonIDISO->SetParameter(4,0.9901);
+
+  handler->addEventVariable("ELIDISOWEIGHT",new EventVariableObjectWeightPtTF1("ELIDISO","goodElectrons",electronIDISO));
+  handler->addEventVariable("MUIDISOWEIGHT",new EventVariableObjectWeightPtTF1("MUIDISO","goodMuons",muonIDISO));
+  handler->addWeightVariable("ELIDISOWEIGHT");
+  handler->addWeightVariable("MUIDISOWEIGHT");
 
 }
 
