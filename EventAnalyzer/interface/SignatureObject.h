@@ -31,6 +31,8 @@ class SignatureObject : public TLorentzVector {
   std::map<TString,SignatureObject*> getAssociates(){return m_association_map;}
   void setAssociates(std::map<TString,SignatureObject*> c){m_association_map = c;}
 
+  double Eta() const;
+
  protected:
   std::map<TString,double> m_variableMapDouble;
   std::map<TString,int> m_variableMapInt;
@@ -69,6 +71,11 @@ inline void SignatureObject::setAssociate(TString name, SignatureObject* associa
     std::cerr<<"Warning changing associate"<<std::endl;
   }
   m_association_map[name] = associate;
+}
+
+// This override is to prevent a warning if pT is zero (which is the case for incoming particles in simulation)
+inline double SignatureObject::Eta() const {
+  return -log(tan(Vect().Theta()/2));
 }
 
 inline void SignatureObject::setVariable(TString name, int val)
