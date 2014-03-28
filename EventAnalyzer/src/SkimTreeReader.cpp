@@ -562,7 +562,7 @@ void SkimTreeReader::createMCParticles()
 {
   vector<SignatureObject*> mcparticles;
   for(int i = 0; i < mc_part_n; i++){
-    SignatureObject* mcpart = new SignatureObject(max(mc_part_px[i],1e-4),mc_part_py[i],mc_part_pz[i],mc_part_energy[i]);
+    SignatureObject* mcpart = new SignatureObject(mc_part_px[i],mc_part_py[i],mc_part_pz[i],mc_part_energy[i]);
     mcpart->setVariable("PDGID",mc_part_pdgID[i]);
     mcpart->setVariable("VX",mc_part_vx[i]);
     mcpart->setVariable("VY",mc_part_vy[i]);
@@ -586,7 +586,7 @@ void SkimTreeReader::createTracks()
   vector<SignatureObject*> recotracks;
   vector<SignatureObject*> mcparticles = getProduct("ALLMCPARTICLES");
   for(int i = 0; i < reco_track_n; i++){
-    SignatureObject* recotrack = new SignatureObject(0.01,0,0,0);
+    SignatureObject* recotrack = new SignatureObject(0.0,0,0,0);
     recotrack->SetPtEtaPhiM(reco_track_pt[i],reco_track_eta[i],reco_track_phi[i],0);
     if(reco_track_genParticle_ntID[i] >= 0 && reco_track_genParticle_ntID[i] < (int)mcparticles.size()) {
       recotrack->setAssociate("GENPARTICLE",mcparticles[reco_track_genParticle_ntID[i]]);
@@ -1006,7 +1006,7 @@ void SkimTreeReader::createRecoVertices()
 {
   vector<SignatureObject*> recovertices;
   for(int i = 0; i < reco_vertex_n; i++){
-    SignatureObject* recovertex = new SignatureObject(0.01,0,0,0);
+    SignatureObject* recovertex = new SignatureObject(0.0,0,0,0);
     recovertex->setVariable("X",reco_vertex_x[i]);
     recovertex->setVariable("Y",reco_vertex_y[i]);
     recovertex->setVariable("Z",reco_vertex_z[i]);
@@ -1027,7 +1027,7 @@ void SkimTreeReader::createTaus()
   vector<SignatureObject*> mcparticles = getProduct("ALLMCPARTICLES");
   vector<SignatureObject*> taus;
   for(int i = 0; i < pat_tau_n; i++){
-    SignatureObject* tau = new SignatureObject(0.01,0,0,0);
+    SignatureObject* tau = new SignatureObject(0.0,0,0,0);
     tau->SetPtEtaPhiM(pat_tau_pt[i],pat_tau_eta[i],pat_tau_phi[i],1.777);
     SignatureObject* leadtrack = findTauLeadingTrack(tau);
     if(leadtrack)tau->setAssociate("LEADTRACK",leadtrack);
@@ -1117,7 +1117,7 @@ void SkimTreeReader::createTaus()
 void SkimTreeReader::createMET()
 {
   vector<SignatureObject*> mets;
-  SignatureObject* met = new SignatureObject(0.01,0,0,0);
+  SignatureObject* met = new SignatureObject(0.0,0,0,0);
   met->SetPtEtaPhiM(pf_met_pt,0,pf_met_phi,0);
   met->setVariable("PAT_SUMET",pat_met_sumEt);
   met->setVariable("PF_PT",pf_met_pt);
@@ -1144,7 +1144,7 @@ void SkimTreeReader::createTriggers()
 {
   vector<SignatureObject*> triggers;
   for(int i = 0; i < (int)hlt_triggers_npassed; i++){
-    SignatureObject* trigger = new SignatureObject(0.01,0,0,0);
+    SignatureObject* trigger = new SignatureObject(0.0,0,0,0);
     trigger->setVariable("TRIGGER",hlt_triggers[i]);
     trigger->setVariable("ID",hlt_triggers_id[i]);
     trigger->setVariable("PRESCALE",hlt_triggers_prescale_HLT[i]);
