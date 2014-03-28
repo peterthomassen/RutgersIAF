@@ -14,6 +14,7 @@ ChannelHandler::ChannelHandler(TString ofname)
   m_luminosity = 0;
   m_luminosity_error = 0.044;
   m_ofname = ofname;
+  m_suffix_for_count = "ST";
 
 }
 //-------------------
@@ -546,7 +547,7 @@ void ChannelHandler::readSimulation()
     double xsec = m_simu_xsec_map[simuName];
     //double xsecerr = m_simu_xsecerr_map[simuName];
     TFile f(fileName.Data());
-    TH1F* noCut_ST = (TH1F*)f.Get("noCutSignature_ST");
+    TH1F* noCut_ST = (TH1F*)f.Get("noCutSignature_"+m_suffix_for_count);
     float totalEvents = noCut_ST->Integral();
     cout<<simuName<<" "<<fileName<<" "<<totalEvents<<endl;
     if(totalEvents <= 0.0)continue;
@@ -554,7 +555,7 @@ void ChannelHandler::readSimulation()
       TString channelName = m_input_channelNames[i];
       //cout<<channelName<<endl;
       Channel* channel = m_input_channels[channelName];
-      TH1F* histo = (TH1F*)f.Get(channelName+"_ST");
+      TH1F* histo = (TH1F*)f.Get(channelName+"_"+m_suffix_for_count);
       float thisEvents = histo->Integral();
       //cout<<simuName<<" "<<channelName<<" "<<thisEvents<<endl;
       double efficiency = 0;
@@ -597,9 +598,9 @@ void ChannelHandler::readData()
     for(int j = 0; j < (int)m_input_channelNames.size(); j++){
       TString channelName = m_input_channelNames[j];
       //cout<<channelName<<endl;
-      TH1F* histo = (TH1F*)f.Get(channelName+"_ST");
+      TH1F* histo = (TH1F*)f.Get(channelName+"_"+m_suffix_for_count);
       if(histo == 0) {
-        DEBUG("Trying to get _ST histogram for channel");
+        DEBUG("Trying to get _"+m_suffix_for_count+" histogram for channel");
         DEBUG(channelName);
         assert(histo != 0);
       }
