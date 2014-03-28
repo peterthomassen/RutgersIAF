@@ -38,17 +38,17 @@ class ChannelHandler : public TObject {
 
   //manage data
   void addDataFile(TString);
-  void setLuminosity(double c){m_luminosity = c;}
-  double getLuminosity(){return m_luminosity;}
-  void setLuminosityError(double c){m_luminosity_error = c;}
-  double getLuminosityError(){return m_luminosity_error;}
+  virtual void setLuminosity(double c){m_luminosity = c;}
+  virtual double getLuminosity(){return m_luminosity;}
+  virtual void setLuminosityError(double c){m_luminosity_error = c;}
+  virtual double getLuminosityError(){return m_luminosity_error;}
 
   //manage channels
   void addInputChannel(TString);
   void addInputChannel(TString, Channel*);
   void addSumChannel(TString);
   void addSumChannelAttribute(TString,TString,double);
-  std::map<TString, Channel*> getSumChannels(){return m_sum_channels;}
+  virtual std::map<TString, Channel*> getSumChannels(){return m_sum_channels;}
   void printSumChannels();
 
   void addFakeObjectNames(TString,TString);
@@ -69,6 +69,9 @@ class ChannelHandler : public TObject {
   void processChannels();//do background calculations, etc
   int addChannels();//sum various output channels
   void finish();//create histograms close stuff, etc
+
+  virtual void setSuffixForCount(TString c) {m_suffix_for_count = c;}
+  virtual TString getSuffixForCount(){return m_suffix_for_count;}
 
  private:
 
@@ -97,6 +100,7 @@ class ChannelHandler : public TObject {
   double m_luminosity;
   double m_luminosity_error;
   TString m_ofname;
+  TString m_suffix_for_count;
 
   ClassDef(ChannelHandler,1);
 };
