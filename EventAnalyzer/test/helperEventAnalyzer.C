@@ -194,7 +194,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodJets","JET_CHARGEDHADRONFRACTION");
   handler->addProductCut("goodJets","JET_NCONSTITUENTS");
   handler->addProductCut("goodJets","JET_NEUTRALEMFRACTION");
-  handler->addProductCut("goodJets","JET_NEUTRLAHADRONFRACTION");
+  handler->addProductCut("goodJets","JET_NEUTRALHADRONFRACTION");
 
   handler->addObjectVariable("BJET_CSVL", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.244,1000.0));
   handler->addObjectVariable("BJET_CSVM", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.679,1000.0));
