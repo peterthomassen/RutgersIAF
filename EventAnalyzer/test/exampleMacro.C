@@ -5,6 +5,7 @@ void exampleMacro(const char* ifname="."
 )
 {
   gSystem->Load("libRutgersIAF2012EventAnalyzer.so");
+  gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
   gROOT->ProcessLine(".L helperEventAnalyzer.C");
   gROOT->ProcessLine(".L helperTriggers.C");
 

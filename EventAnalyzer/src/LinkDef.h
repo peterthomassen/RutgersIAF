@@ -1,9 +1,6 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariablePtInRange.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableEtaInRange.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableLorentzVectorInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValueInList.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
@@ -111,8 +108,5 @@
 #pragma link C++ class ObjectVariableValueInList<double>+;
 #pragma link C++ class ObjectVariableValueInList<TString>+;
 #pragma link C++ class ObjectVariableValueInList<bool>+;
-#pragma link C++ class ObjectVariableLorentzVectorInRange+;
-#pragma link C++ class ObjectVariableEtaInRange+;
 #pragma link C++ class ObjectVariableMethod+;
-#pragma link C++ class ObjectVariablePtInRange+;
 #endif
