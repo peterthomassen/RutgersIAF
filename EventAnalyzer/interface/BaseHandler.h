@@ -9,7 +9,8 @@
 #include <TObject.h>
 #include <string>
 
-class Signature;
+#include "Signature.h"
+
 class SignatureWithBjets;
 class SignatureTH1F;
 class SignatureTH2F;
