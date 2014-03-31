@@ -23,6 +23,7 @@ public:
   }
 
 
+  using TH1F::Fill;
   Int_t Fill(BaseHandler* handler)
   {
     Int_t dummy = -1;

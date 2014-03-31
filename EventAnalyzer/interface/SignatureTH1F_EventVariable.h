@@ -13,7 +13,8 @@ public:
     
   SignatureTH1F_EventVariable(TH1F h):SignatureTH1F(h) {}
   SignatureTH1F_EventVariable():SignatureTH1F() {}
-	
+  
+  using TH1F::Fill;
   Int_t Fill(BaseHandler* handler)
   {
     T value;

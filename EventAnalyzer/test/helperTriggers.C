@@ -1,121 +1,9 @@
-void setupTriggers(BaseHandler* handler,int mode)
-{
-  EventVariableThreshold* doubleLeptonThreshold = new EventVariableThreshold("DILEPTHRESH","goodMuons");
-  doubleLeptonThreshold->addProduct("goodElectrons");
-  doubleLeptonThreshold->addProduct("goodTracks");
-  doubleLeptonThreshold->addThreshold(20);
-  doubleLeptonThreshold->addThreshold(10);
-
-  handler->addEventVariable("DILEPTHRESH",doubleLeptonThreshold);
-
-  ObjectVariableValueInList<int>* dieltriggers = new ObjectVariableValueInList<int>("ID",-1,"DIELTRIGGERS");
-  addAcceptTriggers(dieltriggers,getDoubleElectronTriggers());
-  handler->addObjectVariable("DIELTRIGGERS",dieltriggers);
-
-  ObjectVariableValueInList<int>* dimutriggers = new ObjectVariableValueInList<int>("ID",-1,"DImuTRIGGERS");
-  addAcceptTriggers(dimutriggers,getDoubleMuonTriggers());
-  handler->addObjectVariable("DIMUTRIGGERS",dimutriggers);
-
-  ObjectVariableValueInList<int>* muegtriggers = new ObjectVariableValueInList<int>("ID",-1,"MUEGTRIGGERS");
-  addAcceptTriggers(muegtriggers,getMuonElectronTriggers());
-  handler->addObjectVariable("MUEGTRIGGERS",muegtriggers);
-
-  ObjectVariableValueInList<int>* sieltriggers = new ObjectVariableValueInList<int>("ID",-1,"SIELTRIGGERS");
-  addAcceptTriggers(sieltriggers,getSingleElectronTriggers());
-  handler->addObjectVariable("SINGLEELTRIGGERS",sieltriggers);
-
-  ObjectVariableValueInList<int>* simutriggers = new ObjectVariableValueInList<int>("ID",-1,"SIMUTRIGGERS");
-  addAcceptTriggers(simutriggers,getSingleMuonTriggers());
-  handler->addObjectVariable("SINGLEMUTRIGGERS",simutriggers);
-
-  handler->addObjectVariable("GOODPRESCALE", new ObjectVariableValue<int>("PRESCALE",1,"GOODPRESCALE"));
-
-  handler->addProduct("DiElTriggers","TRIGGERS");
-  handler->addProductCut("DiElTriggers","DIELTRIGGERS");
-  handler->addProductCut("DiElTriggers","GOODPRESCALE");
-  handler->addProduct("DiMuTriggers","TRIGGERS");
-  handler->addProductCut("DiMuTriggers","DIMUTRIGGERS");
-  handler->addProductCut("DiMuTriggers","GOODPRESCALE");
-  handler->addProduct("MuEGTriggers","TRIGGERS");
-  handler->addProductCut("MuEGTriggers","MUEGTRIGGERS");
-  handler->addProductCut("MuEGTriggers","GOODPRESCALE");
-  handler->addProduct("SiElTriggers","TRIGGERS");
-  handler->addProductCut("SiElTriggers","SINGLEELTRIGGERS");
-  handler->addProductCut("SiElTriggers","GOODPRESCALE");
-  handler->addProduct("SiMuTriggers","TRIGGERS");
-  handler->addProductCut("SiMuTriggers","SINGLEMUTRIGGERS");
-  handler->addProductCut("SiMuTriggers","GOODPRESCALE");
-
-  handler->addEventVariable("N_DIEL_TRIGGERS",new EventVariableN("NDIELTRIGGERS","DiElTriggers"));
-  handler->addEventVariable("N_DIMU_TRIGGERS",new EventVariableN("NDIMUTRIGGERS","DiMuTriggers"));
-  handler->addEventVariable("N_MUEG_TRIGGERS",new EventVariableN("NMUEGTRIGGERS","MuEGTriggers"));
-  handler->addEventVariable("N_SIEL_TRIGGERS",new EventVariableN("NSIELTRIGGERS","SiElTriggers"));
-  handler->addEventVariable("N_SIMU_TRIGGERS",new EventVariableN("NSIMUTRIGGERS","SiMuTriggers"));
-
-
-  switch(mode){
-    case 1:
-      handler->addEventVariable("GEONEMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",1,1000000,"GEONEMUEG_TRIGGERS"));
-      handler->addHandlerCut("GEONEMUEG_TRIGGERS");
-      handler->addHandlerCut("DILEPTHRESH");
-      break;
-    case 2:
-      handler->addEventVariable("GEONEDIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",1,1000000,"GEONEDIMU_TRIGGERS"));
-      handler->addHandlerCut("GEONEDIMU_TRIGGERS");
-      handler->addHandlerCut("DILEPTHRESH");
-
-      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
-      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
-      break;
-    case 3:
-      handler->addEventVariable("GEONEDIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",1,1000000,"GEONEDIEL_TRIGGERS"));
-      handler->addHandlerCut("GEONEDIEL_TRIGGERS");
-      handler->addHandlerCut("DILEPTHRESH");
-
-      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
-      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
-
-      handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
-      handler->addHandlerCut("ZERODIMU_TRIGGERS");
-
-      break;
-    case 4:
-      handler->addEventVariable("GEONESIMU_TRIGGERS",new EventVariableInRange<int>("N_SIMU_TRIGGERS",1,1000000,"GEONESIMU_TRIGGERS"));
-      handler->addHandlerCut("GEONESIMU_TRIGGERS");
-
-      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
-      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
-
-      handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
-      handler->addHandlerCut("ZERODIMU_TRIGGERS");
-
-      handler->addEventVariable("ZERODIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",0,0,"ZERODIEL_TRIGGERS"));
-      handler->addHandlerCut("ZERODIEL_TRIGGERS");
-
-      break;
-    case 5:
-      handler->addEventVariable("GEONESIEL_TRIGGERS",new EventVariableInRange<int>("N_SIEL_TRIGGERS",1,1000000,"GEONESIEL_TRIGGERS"));
-      handler->addHandlerCut("GEONESIEL_TRIGGERS");
-
-      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
-      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
-
-      handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
-      handler->addHandlerCut("ZERODIMU_TRIGGERS");
-
-      handler->addEventVariable("ZERODIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",0,0,"ZERODIEL_TRIGGERS"));
-      handler->addHandlerCut("ZERODIEL_TRIGGERS");
-
-      handler->addEventVariable("ZEROSIMU_TRIGGERS",new EventVariableInRange<int>("N_SIMU_TRIGGERS",0,0,"ZEROSIMU_TRIGGERS"));
-      handler->addHandlerCut("ZEROSIMU_TRIGGERS");
-
-      break;
-
-  default:
-    break;
-  }
-
-}
+#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
 
 //--------------------------------
 //--------------------------------
@@ -489,3 +377,121 @@ vector<int> getHTTriggers()
 }
 //--------------------------------
 //--------------------------------
+void setupTriggers(BaseHandler* handler,int mode)
+{
+  EventVariableThreshold* doubleLeptonThreshold = new EventVariableThreshold("DILEPTHRESH","goodMuons");
+  doubleLeptonThreshold->addProduct("goodElectrons");
+  doubleLeptonThreshold->addProduct("goodTracks");
+  doubleLeptonThreshold->addThreshold(20);
+  doubleLeptonThreshold->addThreshold(10);
+
+  handler->addEventVariable("DILEPTHRESH",doubleLeptonThreshold);
+
+  ObjectVariableValueInList<int>* dieltriggers = new ObjectVariableValueInList<int>("ID",-1,"DIELTRIGGERS");
+  addAcceptTriggers(dieltriggers,getDoubleElectronTriggers());
+  handler->addObjectVariable("DIELTRIGGERS",dieltriggers);
+
+  ObjectVariableValueInList<int>* dimutriggers = new ObjectVariableValueInList<int>("ID",-1,"DImuTRIGGERS");
+  addAcceptTriggers(dimutriggers,getDoubleMuonTriggers());
+  handler->addObjectVariable("DIMUTRIGGERS",dimutriggers);
+
+  ObjectVariableValueInList<int>* muegtriggers = new ObjectVariableValueInList<int>("ID",-1,"MUEGTRIGGERS");
+  addAcceptTriggers(muegtriggers,getMuonElectronTriggers());
+  handler->addObjectVariable("MUEGTRIGGERS",muegtriggers);
+
+  ObjectVariableValueInList<int>* sieltriggers = new ObjectVariableValueInList<int>("ID",-1,"SIELTRIGGERS");
+  addAcceptTriggers(sieltriggers,getSingleElectronTriggers());
+  handler->addObjectVariable("SINGLEELTRIGGERS",sieltriggers);
+
+  ObjectVariableValueInList<int>* simutriggers = new ObjectVariableValueInList<int>("ID",-1,"SIMUTRIGGERS");
+  addAcceptTriggers(simutriggers,getSingleMuonTriggers());
+  handler->addObjectVariable("SINGLEMUTRIGGERS",simutriggers);
+
+  handler->addObjectVariable("GOODPRESCALE", (new ObjectVariableValue<int>("PRESCALE",1,"GOODPRESCALE")));
+
+  handler->addProduct("DiElTriggers","TRIGGERS");
+  handler->addProductCut("DiElTriggers","DIELTRIGGERS");
+  handler->addProductCut("DiElTriggers","GOODPRESCALE");
+  handler->addProduct("DiMuTriggers","TRIGGERS");
+  handler->addProductCut("DiMuTriggers","DIMUTRIGGERS");
+  handler->addProductCut("DiMuTriggers","GOODPRESCALE");
+  handler->addProduct("MuEGTriggers","TRIGGERS");
+  handler->addProductCut("MuEGTriggers","MUEGTRIGGERS");
+  handler->addProductCut("MuEGTriggers","GOODPRESCALE");
+  handler->addProduct("SiElTriggers","TRIGGERS");
+  handler->addProductCut("SiElTriggers","SINGLEELTRIGGERS");
+  handler->addProductCut("SiElTriggers","GOODPRESCALE");
+  handler->addProduct("SiMuTriggers","TRIGGERS");
+  handler->addProductCut("SiMuTriggers","SINGLEMUTRIGGERS");
+  handler->addProductCut("SiMuTriggers","GOODPRESCALE");
+
+  handler->addEventVariable("N_DIEL_TRIGGERS",new EventVariableN("NDIELTRIGGERS","DiElTriggers"));
+  handler->addEventVariable("N_DIMU_TRIGGERS",new EventVariableN("NDIMUTRIGGERS","DiMuTriggers"));
+  handler->addEventVariable("N_MUEG_TRIGGERS",new EventVariableN("NMUEGTRIGGERS","MuEGTriggers"));
+  handler->addEventVariable("N_SIEL_TRIGGERS",new EventVariableN("NSIELTRIGGERS","SiElTriggers"));
+  handler->addEventVariable("N_SIMU_TRIGGERS",new EventVariableN("NSIMUTRIGGERS","SiMuTriggers"));
+
+
+  switch(mode){
+    case 1:
+      handler->addEventVariable("GEONEMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",1,1000000,"GEONEMUEG_TRIGGERS"));
+      handler->addHandlerCut("GEONEMUEG_TRIGGERS");
+      handler->addHandlerCut("DILEPTHRESH");
+      break;
+    case 2:
+      handler->addEventVariable("GEONEDIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",1,1000000,"GEONEDIMU_TRIGGERS"));
+      handler->addHandlerCut("GEONEDIMU_TRIGGERS");
+      handler->addHandlerCut("DILEPTHRESH");
+
+      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
+      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
+      break;
+    case 3:
+      handler->addEventVariable("GEONEDIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",1,1000000,"GEONEDIEL_TRIGGERS"));
+      handler->addHandlerCut("GEONEDIEL_TRIGGERS");
+      handler->addHandlerCut("DILEPTHRESH");
+
+      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
+      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
+
+      handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
+      handler->addHandlerCut("ZERODIMU_TRIGGERS");
+
+      break;
+    case 4:
+      handler->addEventVariable("GEONESIMU_TRIGGERS",new EventVariableInRange<int>("N_SIMU_TRIGGERS",1,1000000,"GEONESIMU_TRIGGERS"));
+      handler->addHandlerCut("GEONESIMU_TRIGGERS");
+
+      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
+      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
+
+      handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
+      handler->addHandlerCut("ZERODIMU_TRIGGERS");
+
+      handler->addEventVariable("ZERODIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",0,0,"ZERODIEL_TRIGGERS"));
+      handler->addHandlerCut("ZERODIEL_TRIGGERS");
+
+      break;
+    case 5:
+      handler->addEventVariable("GEONESIEL_TRIGGERS",new EventVariableInRange<int>("N_SIEL_TRIGGERS",1,1000000,"GEONESIEL_TRIGGERS"));
+      handler->addHandlerCut("GEONESIEL_TRIGGERS");
+
+      handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
+      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
+
+      handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
+      handler->addHandlerCut("ZERODIMU_TRIGGERS");
+
+      handler->addEventVariable("ZERODIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",0,0,"ZERODIEL_TRIGGERS"));
+      handler->addHandlerCut("ZERODIEL_TRIGGERS");
+
+      handler->addEventVariable("ZEROSIMU_TRIGGERS",new EventVariableInRange<int>("N_SIMU_TRIGGERS",0,0,"ZEROSIMU_TRIGGERS"));
+      handler->addHandlerCut("ZEROSIMU_TRIGGERS");
+
+      break;
+
+  default:
+    break;
+  }
+
+}

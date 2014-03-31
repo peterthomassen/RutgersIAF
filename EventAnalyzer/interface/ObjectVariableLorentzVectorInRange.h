@@ -12,7 +12,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
 
-typedef double (TLorentzVector::*SOfunction) ();
+typedef double (SignatureObject::*SOfunction)() const;
 
 class ObjectVariableLorentzVectorInRange : public ObjectVariable {
  public:
@@ -22,7 +22,7 @@ class ObjectVariableLorentzVectorInRange : public ObjectVariable {
 
   bool calculate(SignatureObject* sigObj)
   {
-    double value = ((TLorentzVector*)sigObj->*m_function)();
+    double value = (sigObj->*m_function)();
     bool retval = true;
     if(value < m_low)retval = false;
     if(value > m_high)retval = false;

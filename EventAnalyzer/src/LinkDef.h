@@ -1,3 +1,4 @@
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariablePtInRange.h"
@@ -112,5 +113,6 @@
 #pragma link C++ class ObjectVariableValueInList<bool>+;
 #pragma link C++ class ObjectVariableLorentzVectorInRange+;
 #pragma link C++ class ObjectVariableEtaInRange+;
+#pragma link C++ class ObjectVariableMethod+;
 #pragma link C++ class ObjectVariablePtInRange+;
 #endif

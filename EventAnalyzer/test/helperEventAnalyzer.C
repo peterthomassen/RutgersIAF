@@ -1,4 +1,27 @@
-typedef double (TLorentzVector::*SOfunction)();
+#include <TF1.h>
+#include <TH1F.h>
+#include <TLorentzVector.h>
+#include <TString.h>
+#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableCombined.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableEtaInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariablePtInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRelIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableReversed.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_EventVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
 
 TString makeName(int qMu, int nMu,int qEl,int nEl, int qTr, int nTr)
 {
@@ -67,6 +90,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL","endcapEta"));
   handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<double>("CHARGE",0,10,"CHARGEPOS"));
   handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<double>("CHARGE",-10,0,"CHARGENEG"));
+  handler->addObjectVariable("PT",new ObjectVariableMethod("PT", &SignatureObject::Pt));
+  handler->addObjectVariable("ETA",new ObjectVariableMethod("ETA", &SignatureObject::Eta));
 
 
   /////////////////
@@ -286,9 +311,16 @@ void setupVariables(BaseHandler* handler)
 void addHistograms(BaseHandler* handler)
 {
   SignatureTH1F_EventVariable<double>* h_ht = new SignatureTH1F_EventVariable<double>("HT","HT","H_{T} Distribution",200,0,2000);
-  SignatureTH1F_EventVariable<double>* h_met = new SignatureTH1F_EventVariable<double>("MET","MET","MET Distribution",50,0,500);
   handler->addHistogram(h_ht);
+  
+  SignatureTH1F_EventVariable<double>* h_met = new SignatureTH1F_EventVariable<double>("MET","MET","MET Distribution",50,0,500);
   handler->addHistogram(h_met);
+  
+  SignatureTH1F_ObjectVariable<double>* h_pt = new SignatureTH1F_ObjectVariable<double>("PT","PT","goodElectrons","PT Distribution",100,0,1000);
+  handler->addHistogram(h_pt);
+  
+  SignatureTH1F_ObjectVariable<double>* h_eta = new SignatureTH1F_ObjectVariable<double>("ETA","ETA","goodElectrons","ETA Distribution",100,-3,3);
+  handler->addHistogram(h_eta);
 }
 
 
