@@ -25,6 +25,9 @@ TString makeName(int qMu, int nMu,int qEl,int nEl, int qTr, int nTr)
     name += "p";
   }
   name += abs(qMu);
+
+  if(nTr == 0)return name;
+
   name += "T";
   name += nTr;
 
@@ -78,7 +81,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("MUON_VALID_MUON_HITS",new ObjectVariableInRange<int>("NVALIDMUONHITS",1,10000,"MUON_VALID_MUON_HITS"));
   handler->addObjectVariable("MUON_NORMALIZED_CHI2",new ObjectVariableInRange<double>("NORMALIZEDCHI2",0,10,"MUON_NORMALIZED_CHI2"));
   handler->addObjectVariable("MUON_INNER_VERT_DZ",new ObjectVariableInRange<double>("INNERVERTDZ",-0.5,0.5,"MUON_INNER_VERT_DZ"));
-  handler->addObjectVariable("MUON_PROMPT",new ObjectVariableInRange<double>("INNERVERTDXY",0,0.02,"MUON_PROMPT"));
+  handler->addObjectVariable("MUON_PROMPT",new ObjectVariableInRange<double>("INNERVERTDXY",-0.02,0.02,"MUON_PROMPT"));
   handler->addObjectVariable("MUON_NONPROMPT",new ObjectVariableInRange<double>("INNERVERTDXY",0.03,1000,"MUON_NONPROMPT"));
 
   handler->addProduct("goodMuons","ALLMUONS");
@@ -369,43 +372,88 @@ void setupSignatures(BaseHandler* handler)
     }
   }
 
+  //Signal channels
   for(int i_posMuons = 0; i_posMuons < 4; i_posMuons++){
     for(int i_negMuons = 0; i_negMuons < 4; i_negMuons++){
       for(int i_posElectrons = 0; i_posElectrons < 4; i_posElectrons++){
 	for(int i_negElectrons = 0; i_negElectrons < 4; i_negElectrons++){
-	  for(int i_posTracks = 0; i_posTracks < 4; i_posTracks++){
-	    for(int i_negTracks = 0; i_negTracks < 4; i_negTracks++){
-	      if(i_posMuons + i_negMuons + i_posElectrons + i_negElectrons + i_posTracks + i_negTracks != 3)continue;
-	      int nMu = i_posMuons + i_negMuons;
-	      int nEl = i_posElectrons + i_negElectrons;
-	      int nTr = i_posTracks + i_negTracks;
-	      int qMu = i_posMuons - i_negMuons;
-	      int qEl = i_posElectrons - i_negElectrons;
-	      int qTr = i_posTracks - i_negTracks;
-	      TString chanName = makeName(qMu,nMu,qEl,nEl,qTr,nTr);
-
-	      TString cut_posMuons = TString::Format("NPOSGOODMUONSEQ%i",i_posMuons);
-	      TString cut_negMuons = TString::Format("NNEGGOODMUONSEQ%i",i_negMuons);
-	      TString cut_posElectrons = TString::Format("NPOSGOODELECTRONSEQ%i",i_posElectrons);
-	      TString cut_negElectrons = TString::Format("NNEGGOODELECTRONSEQ%i",i_negElectrons);
-	      TString cut_posTracks = TString::Format("NPOSGOODTRACKSEQ%i",i_posTracks);
-	      TString cut_negTracks = TString::Format("NNEGGOODTRACKSEQ%i",i_negTracks);
-
-	      handler->addSignature(chanName)
-		->addCut(cut_posMuons)
-		->addCut(cut_negMuons)
-		->addCut(cut_posElectrons)
-		->addCut(cut_negElectrons)
-		->addCut(cut_posTracks)
-		->addCut(cut_negTracks)
-		;
-	    }
-	  }
+	  if(i_posMuons + i_negMuons + i_posElectrons + i_negElectrons != 3)continue;
+	  int nMu = i_posMuons + i_negMuons;
+	  int nEl = i_posElectrons + i_negElectrons;
+	  //int nTr = i_posTracks + i_negTracks;
+	  int qMu = i_posMuons - i_negMuons;
+	  int qEl = i_posElectrons - i_negElectrons;
+	  //int qTr = i_posTracks - i_negTracks;
+	  TString chanName = makeName(qMu,nMu,qEl,nEl,0,0);
+	  
+	  //cout<<chanName<<" mu+: "<<i_posMuons<<" mu-: "<<i_negMuons<<" el+: "<<i_posElectrons<<" el-: "<<i_negElectrons<<" tr+: "<<i_posTracks<<" tr-: "<<i_negTracks<<" "<<endl;
+	  
+	  TString cut_posMuons = TString::Format("NPOSGOODMUONSEQ%i",i_posMuons);
+	  TString cut_negMuons = TString::Format("NNEGGOODMUONSEQ%i",i_negMuons);
+	  TString cut_posElectrons = TString::Format("NPOSGOODELECTRONSEQ%i",i_posElectrons);
+	  TString cut_negElectrons = TString::Format("NNEGGOODELECTRONSEQ%i",i_negElectrons);
+	  
+	  handler->addSignature(chanName)
+	    ->addCut(cut_posMuons)
+	    ->addCut(cut_negMuons)
+	    ->addCut(cut_posElectrons)
+	    ->addCut(cut_negElectrons)
+	    ;
 	}
       }
     }
   }
 
+  cout<<"test"<<endl;
+
+
+  //Sideband channels
+  for(int i_posMuons = 0; i_posMuons < 4; i_posMuons++){
+    for(int i_negMuons = 0; i_negMuons < 4; i_negMuons++){
+      for(int i_posElectrons = 0; i_posElectrons < 4; i_posElectrons++){
+	for(int i_negElectrons = 0; i_negElectrons < 4; i_negElectrons++){
+	  if(i_posMuons + i_negMuons + i_posElectrons + i_negElectrons != 2)continue;
+	  //cout<<i_posMuons<<" "<<i_negMuons<<" "<<i_posElectrons<<" "<<i_negElectrons<<endl;
+	  for(int i_tracks = 1; i_tracks < 4; i_tracks++){
+	    int nMu = i_posMuons + i_negMuons;
+	    int nEl = i_posElectrons + i_negElectrons;
+	    int nTr = i_tracks;
+	    int qMu = i_posMuons - i_negMuons;
+	    int qEl = i_posElectrons - i_negElectrons;
+	    int qTrp = i_tracks;
+	    int qTrn = -i_tracks;
+	    TString chanNamep = makeName(qMu,nMu,qEl,nEl,qTrp,nTr);
+	    TString chanNamem = makeName(qMu,nMu,qEl,nEl,qTrn,nTr);
+	    
+	    cout<<chanNamep<<" mu+: "<<i_posMuons<<" mu-: "<<i_negMuons<<" el+: "<<i_posElectrons<<" el-: "<<i_negElectrons<<" tr: "<<i_tracks<<endl;
+	    
+	    TString cut_posMuons = TString::Format("NPOSGOODMUONSEQ%i",i_posMuons);
+	    TString cut_negMuons = TString::Format("NNEGGOODMUONSEQ%i",i_negMuons);
+	    TString cut_posElectrons = TString::Format("NPOSGOODELECTRONSEQ%i",i_posElectrons);
+	    TString cut_negElectrons = TString::Format("NNEGGOODELECTRONSEQ%i",i_negElectrons);
+	    TString cut_posTracks = TString::Format("NPOSGOODTRACKSEQ%i",i_tracks);
+	    TString cut_negTracks = TString::Format("NNEGGOODTRACKSEQ%i",i_tracks);
+	    
+	    handler->addSignature(chanNamep)
+	      ->addCut(cut_posMuons)
+	      ->addCut(cut_negMuons)
+	      ->addCut(cut_posElectrons)
+	      ->addCut(cut_negElectrons)
+	      ->addCut(cut_posTracks)
+	      ;
+	    handler->addSignature(chanNamem)
+	      ->addCut(cut_posMuons)
+	      ->addCut(cut_negMuons)
+	      ->addCut(cut_posElectrons)
+	      ->addCut(cut_negElectrons)
+	      ->addCut(cut_negTracks)
+	      ;
+	  }
+	}
+      }
+    }
+  }
+ 
 
 
 }
