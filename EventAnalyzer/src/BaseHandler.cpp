@@ -64,7 +64,8 @@ void BaseHandler::printSignature(Signature* sig)
   bool hasRun = m_reader->getVariable("RUN",run);
   bool hasLumi = m_reader->getVariable("LUMI",lumiBlock);
   bool hasEvent = m_reader->getVariable("EVENT",event);
-  cout<<sig->getName()<<" "<<run<<" "<<lumiBlock<<" "<<event<<endl;
+  if(hasRun && hasLumi && hasEvent)
+    cout<<sig->getName()<<" "<<run<<" "<<lumiBlock<<" "<<event<<endl;
 }
 //-----------------------------------------
 Signature* BaseHandler::addSignature(const char* name, const char* option)
