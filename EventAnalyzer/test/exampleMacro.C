@@ -19,13 +19,13 @@ void exampleMacro(const char* ifname="."
 
   handler->readGoodRunLumiFromJSON(TString(json));
 
-  handler->setDebugMode(true);
+  //handler->setDebugMode(true);
 
   setupProducts(handler);
   setupTriggers(handler,mode);
   setupVariables(handler);
   setupFilterCuts(handler);
-  //setupSignatures(handler);
+  setupSignatures(handler);
   setupOnZSignatures(handler);
   addHistograms(handler);
 
