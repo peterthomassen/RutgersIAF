@@ -12,11 +12,9 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableCombined.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableEtaInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariablePtInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRelIso.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableReversed.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
@@ -72,27 +70,27 @@ void setupProducts(BaseHandler* handler)
   //////////////////
   ///General Cuts///
   //////////////////
-  ObjectVariablePtInRange* leptonPtCut = new ObjectVariablePtInRange(10.0,10000.0,"leptonPtCut");
-  ObjectVariableEtaInRange* leptonEtaCut = new ObjectVariableEtaInRange(-2.4,2.4,"leptonEtaCut");
-  ObjectVariablePtInRange* PT40 = new ObjectVariablePtInRange(40.0,10000.0,"PT40");
+  handler->addObjectVariable("PT",new ObjectVariableMethod("PT", &SignatureObject::Pt));
+  handler->addObjectVariable("ETA",new ObjectVariableMethod("ETA", &SignatureObject::Eta));
+  ObjectVariableInRange<double>* leptonPtCut = new ObjectVariableInRange<double>("PT",10.0,10000.0,"leptonPtCut");
+  ObjectVariableInRange<double>* leptonEtaCut = new ObjectVariableInRange<double>("ETA",-2.4,2.4,"leptonEtaCut");
+  ObjectVariableInRange<double>* PT40 = new ObjectVariableInRange<double>("PT",40.0,10000.0,"PT40");
   handler->addObjectVariable("MUONTOTALISO",new ObjectVariableMuonTotalIso("TOTALISO"),false);
   handler->addObjectVariable("ELECTRONTOTALISO",new ObjectVariableElectronTotalIso("TOTALISO"),false);
   handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
 
   handler->addObjectVariable("PT10",leptonPtCut);
-  handler->addObjectVariable("PT20",new ObjectVariablePtInRange(20.0,10000.0,"PT20"));
-  handler->addObjectVariable("PT30",new ObjectVariablePtInRange(30.0,10000.0,"PT30"));
+  handler->addObjectVariable("PT20",new ObjectVariableInRange<double>("PT",20.0,10000.0,"PT20"));
+  handler->addObjectVariable("PT30",new ObjectVariableInRange<double>("PT",30.0,10000.0,"PT30"));
   handler->addObjectVariable("PT40",PT40);
-  handler->addObjectVariable("ETA2p3",new ObjectVariableEtaInRange(-2.3,2.3,"ETA2p3"));
+  handler->addObjectVariable("ETA2p3",new ObjectVariableInRange<double>("ETA",-2.3,2.3,"ETA2p3"));
   handler->addObjectVariable("ETA2p4",leptonEtaCut);
-  handler->addObjectVariable("ETA2p5",new ObjectVariableEtaInRange(-2.5,2.5,"ETA2p5"));
+  handler->addObjectVariable("ETA2p5",new ObjectVariableInRange<double>("ETA",-2.5,2.5,"ETA2p5"));
   handler->addObjectVariable("IREL0p15",new ObjectVariableInRange<double>("RELISO",0,0.15,"IREL0p15"));
-  handler->addObjectVariable("BARREL",new ObjectVariableEtaInRange(-1.5,1.5,"barrelEta"));
+  handler->addObjectVariable("BARREL",new ObjectVariableInRange<double>("ETA",-1.5,1.5,"barrelEta"));
   handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL","endcapEta"));
   handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<double>("CHARGE",0,10,"CHARGEPOS"));
   handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<double>("CHARGE",-10,0,"CHARGENEG"));
-  handler->addObjectVariable("PT",new ObjectVariableMethod("PT", &SignatureObject::Pt));
-  handler->addObjectVariable("ETA",new ObjectVariableMethod("ETA", &SignatureObject::Eta));
 
 
   /////////////////
@@ -318,11 +316,17 @@ void addHistograms(BaseHandler* handler)
   SignatureTH1F_EventVariable<double>* h_met = new SignatureTH1F_EventVariable<double>("MET","MET","MET Distribution",50,0,500);
   handler->addHistogram(h_met);
   
-  SignatureTH1F_ObjectVariable<double>* h_pt = new SignatureTH1F_ObjectVariable<double>("PT","PT","goodElectrons","PT Distribution",100,0,1000);
-  handler->addHistogram(h_pt);
+  SignatureTH1F_ObjectVariable<double>* h_ptEl = new SignatureTH1F_ObjectVariable<double>("PTel","PT","goodElectrons","PT Distribution",100,0,1000);
+  handler->addHistogram(h_ptEl);
   
-  SignatureTH1F_ObjectVariable<double>* h_eta = new SignatureTH1F_ObjectVariable<double>("ETA","ETA","goodElectrons","ETA Distribution",100,-3,3);
-  handler->addHistogram(h_eta);
+  SignatureTH1F_ObjectVariable<double>* h_etaEl = new SignatureTH1F_ObjectVariable<double>("ETAel","ETA","goodElectrons","ETA Distribution",100,-3,3);
+  handler->addHistogram(h_etaEl);
+  
+  SignatureTH1F_ObjectVariable<double>* h_ptMu = new SignatureTH1F_ObjectVariable<double>("PTmu","PT","goodMuons","PT Distribution",100,0,1000);
+  handler->addHistogram(h_ptMu);
+  
+  SignatureTH1F_ObjectVariable<double>* h_etaMu = new SignatureTH1F_ObjectVariable<double>("ETAmu","ETA","goodMuons","ETA Distribution",100,-3,3);
+  handler->addHistogram(h_etaMu);
 }
 
 

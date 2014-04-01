@@ -102,6 +102,7 @@ class BaseHandler : virtual public TObject {
 
   void addDumpEvent(int,int,long);
 
+  void setMode(std::string name, int mode = 1){m_mode[name] = mode;}
   int getMode(std::string name);
 
   void readGoodRunLumi(TString c);
