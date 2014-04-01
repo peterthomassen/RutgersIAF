@@ -11,6 +11,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTriggerWeight.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTF1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
@@ -94,6 +95,7 @@
 #pragma link C++ class EventVariableTH1<long>+;
 #pragma link C++ class EventVariableTH1<double>+;
 #pragma link C++ class EventVariableObjectWeightPtTF1+;
+#pragma link C++ class EventVariableTriggerWeight+;
 #pragma link C++ class ObjectVariableMuonTotalIso+;
 #pragma link C++ class ObjectVariableElectronTotalIso+;
 #pragma link C++ class ObjectVariableRelIso+;
