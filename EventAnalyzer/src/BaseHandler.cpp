@@ -145,7 +145,11 @@ void BaseHandler::eventLoop()
 void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 {
   int nevents = m_reader->GetEntries();
-  for(m_currentEntry = 0; m_currentEntry < nevents; m_currentEntry++){
+  int nEntryLow = getMode("nEntryLow");
+  int nEntryHigh = getMode("nEntryHigh");
+  if(nEntryHigh == 0) nEntryHigh = nevents;
+  
+  for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 
     m_reader->GetEntry(m_currentEntry);
     if (m_currentEntry % 100000 == 0)cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
