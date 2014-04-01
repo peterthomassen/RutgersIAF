@@ -5,7 +5,7 @@ void exampleMacro(const char* ifname="."
 )
 {
   gSystem->Load("libRutgersIAF2012EventAnalyzer.so");
-  gROOT->ProcessLine(".L helperEventAnalyzer.C");
+  gROOT->ProcessLine(".L helperEventAnalyzer.C+");
   gROOT->ProcessLine(".L helperTriggers.C");
 
   TChain* tree = new TChain("SkimTree");

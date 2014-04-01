@@ -1,6 +1,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariablePtInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableEtaInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableLorentzVectorInRange.h"
@@ -115,4 +116,5 @@
 #pragma link C++ class ObjectVariableEtaInRange+;
 #pragma link C++ class ObjectVariableMethod+;
 #pragma link C++ class ObjectVariablePtInRange+;
+#pragma link C++ class ObjectComparisonSkimRecoTracks+;
 #endif
