@@ -308,9 +308,6 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("HT",HT);
   handler->addEventVariable("MET",MET);
   handler->addEventVariable("OSSF",OSSF);
-
-  EventVariableTriggerWeight* triggerWeight = new EventVariableTriggerWeight("TRIGGERWEIGHT");
-  handler->addEventVariable("TRIGGERWEIGHT", triggerWeight);
 }
 
 void addHistograms(BaseHandler* handler)
@@ -379,7 +376,9 @@ void setupMC(BaseHandler* handler, TString pufile)
   handler->addEventVariable("MUIDISOWEIGHT",new EventVariableObjectWeightPtTF1("MUIDISO","goodMuons",muonIDISO));
   handler->addWeightVariable("ELIDISOWEIGHT");
   handler->addWeightVariable("MUIDISOWEIGHT");
-
+  
+  handler->addEventVariable("TRIGGERWEIGHT", new EventVariableTriggerWeight("TRIGGERWEIGHT"));
+  handler->addWeightVariable("TRIGGERWEIGHT");
 }
 
 void setupOnZSignatures(BaseHandler* handler)

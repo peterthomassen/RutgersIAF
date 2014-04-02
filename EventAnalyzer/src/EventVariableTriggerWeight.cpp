@@ -63,7 +63,6 @@ bool EventVariableTriggerWeight::calculate(BaseHandler* handler) {
 	}
 	
 	double weight = 1 - p;
-	cout << "[PT] Trigger weight: " << weight << endl;
 	handler->setVariable(getName(), weight);
 	return true;
 }
