@@ -36,6 +36,7 @@ class BaseHandler : virtual public TObject {
   virtual ~BaseHandler();
 
   friend class SignatureTreeWriter;
+  friend class PeterTreeWriter;
 
   ////////////////    
   //Manage Event//

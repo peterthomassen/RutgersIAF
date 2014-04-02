@@ -9,6 +9,8 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTriggerWeight.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValue.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableCombined.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
@@ -307,6 +309,8 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("MET",MET);
   handler->addEventVariable("OSSF",OSSF);
 
+  EventVariableTriggerWeight* triggerWeight = new EventVariableTriggerWeight("TRIGGERWEIGHT");
+  handler->addEventVariable("TRIGGERWEIGHT", triggerWeight);
 }
 
 void addHistograms(BaseHandler* handler)
