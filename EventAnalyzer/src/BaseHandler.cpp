@@ -149,7 +149,7 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
   int nevents = m_reader->GetEntries();
   int nEntryLow = getMode("nEntryLow");
   int nEntryHigh = getMode("nEntryHigh");
-  if(nEntryHigh == 0) nEntryHigh = nevents;
+  if(nEntryHigh == 0 || nEntryHigh > nevents) nEntryHigh = nevents;
   
   for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 
