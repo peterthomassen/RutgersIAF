@@ -473,7 +473,7 @@ void BaseHandler::createProducts()
 	vector<SignatureObject*> f_product;
 	for(int j = 0; j < (int)i_product.size(); j++){
 	  bool passed = doAnd;
-	  for(int k = 0; k < (int)comp_product.size() && passed != doAnd; k++){
+	  for(int k = 0; k < (int)comp_product.size() && passed == doAnd; k++){
 	    bool pass = comparison->passCut(i_product[j],comp_product[k]);
 	    if(doAnd) passed = pass && passed;
 	    else passed = pass || passed;
