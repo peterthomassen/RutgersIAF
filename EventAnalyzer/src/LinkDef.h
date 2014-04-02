@@ -41,6 +41,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableCombined.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/PeterTreeWriter.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -113,4 +114,5 @@
 #pragma link C++ class ObjectVariableValueInList<bool>+;
 #pragma link C++ class ObjectVariableMethod+;
 #pragma link C++ class ObjectComparisonSkimRecoTracks+;
+#pragma link C++ class PeterTreeWriter+;
 #endif
