@@ -21,6 +21,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_N.h"
 
 TString makeName(int qMu, int nMu,int qEl,int nEl, int qTr, int nTr)
 {
@@ -392,6 +393,20 @@ void setupOnZSignatures(BaseHandler* handler)
     ->addCut("getwoGoodElectrons")
     ->addCut("ONZ")
     ;
+
+  SignatureTH1F_N* nnegmuons = new SignatureTH1F_N("nmuonsneg","negGoodMuons");
+  SignatureTH1F_N* nposmuons = new SignatureTH1F_N("nmuonspos","posGoodMuons");
+  SignatureTH1F_N* nnegelectrons = new SignatureTH1F_N("nelectronsneg","negGoodElectrons");
+  SignatureTH1F_N* nposelectrons = new SignatureTH1F_N("nelectronspos","posGoodElectrons");
+  SignatureTH1F_N* nnegtracks = new SignatureTH1F_N("ntracksneg","negGoodTracks");
+  SignatureTH1F_N* npostracks = new SignatureTH1F_N("ntrackspos","posGoodTracks");
+
+  handler->addHistogram(nnegmuons,"OnZ");
+  handler->addHistogram(nposmuons,"OnZ");
+  handler->addHistogram(nnegelectrons,"OnZ");
+  handler->addHistogram(nposelectrons,"OnZ");
+  handler->addHistogram(nnegtracks,"OnZ");
+  handler->addHistogram(npostracks,"OnZ");
 
 }
 
