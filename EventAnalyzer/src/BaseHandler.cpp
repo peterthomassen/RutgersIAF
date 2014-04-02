@@ -17,6 +17,8 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_CountWeight.h"
 
+#include <assert.h>
+
 using namespace std;
 
 ClassImp(BaseHandler)
@@ -496,16 +498,23 @@ void BaseHandler::resetProducts()
 //-----------------------------------------
 void BaseHandler::calcPhysicsWeight()
 {
-  m_physicsWeight = 1.0;
-
-  for(int i = 0; i < (int)m_weight_variables.size(); i++){
-    TString weightname = m_weight_variables[i];
-  }
-
-  //////////////////////
-  /////Btag weights/////
-  //////////////////////
-
+	m_physicsWeight = 1.0;
+	if(getMode("debugPhysicsWeights")) {
+		cout << "Weights:";
+	}
+	for(int i = 0; i < (int)m_weight_variables.size(); i++){
+		TString weightname = m_weight_variables[i];
+		double weight;
+		bool success = getVariable(weightname, weight);
+		assert(success);
+		m_physicsWeight *= weight;
+		if(getMode("debugPhysicsWeights")) {
+			cout << " " << weightname << "=" << weight;
+		}
+	}
+	if(getMode("debugPhysicsWeights")) {
+		cout << "\n";
+	}
 }
 //-----------------------------------------
 //-----------------------------------------
