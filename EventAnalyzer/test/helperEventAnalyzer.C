@@ -317,6 +317,9 @@ void addHistograms(BaseHandler* handler)
   
   SignatureTH1F_EventVariable<double>* h_met = new SignatureTH1F_EventVariable<double>("MET","MET","MET Distribution",50,0,500);
   handler->addHistogram(h_met);
+
+  SignatureTH1F_EventVariable<double>* h_mossf = new SignatureTH1F_EventVariable<double>("MLL","MOSSF","M_{ll} Distribution",200,0,200);
+  handler->addHistogram(h_mossf);
   
   SignatureTH1F_ObjectVariable<double>* h_ptEl = new SignatureTH1F_ObjectVariable<double>("PTel","PT","goodElectrons","PT Distribution",100,0,1000);
   handler->addHistogram(h_ptEl);
