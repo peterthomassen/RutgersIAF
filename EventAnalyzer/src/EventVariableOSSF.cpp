@@ -14,10 +14,10 @@ void EventVariableOSSF::addProduct(TString pname)
 
 bool EventVariableOSSF::calculate(BaseHandler* handler)
 {
-  double minMass = 1000;
+  double minMass = 1e6;
   double maxMass = 0;
   int nOSSF = 0;
-  bool onZ = false;
+  double bestMass = 0;
   for(int i = 0; i < (int)m_productnames.size(); i++){
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     int nPlus = 0;
@@ -35,15 +35,17 @@ bool EventVariableOSSF::calculate(BaseHandler* handler)
 	  double mass = (TLorentzVector(*v[k])+TLorentzVector(*v[j])).M();
 	  if(mass < minMass)minMass = mass;
 	  if(mass > maxMass)maxMass = mass;
-	  if(fabs(mass - m_zmass) < m_zwidth)onZ = true;
+	  if(fabs(m_zmass - mass) < fabs(m_zmass - bestMass)) bestMass = mass;
 	}
       }
     }
     nOSSF += min(nPlus,nMinus);
   }
+  bool onZ = (fabs(bestMass - m_zmass) < m_zwidth);
 
   handler->setVariable(TString::Format("%sOSSFMINMLL",m_prefix.Data()),minMass);
   handler->setVariable(TString::Format("%sOSSFMAXMLL",m_prefix.Data()),maxMass);
+  handler->setVariable(TString::Format("%sMOSSF",m_prefix.Data()),bestMass);
   handler->setVariable(TString::Format("%sNOSSF",m_prefix.Data()),nOSSF);
   handler->setVariable(TString::Format("%sONZ",m_prefix.Data()),onZ);
   return true;
