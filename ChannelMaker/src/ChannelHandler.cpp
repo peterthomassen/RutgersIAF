@@ -333,11 +333,11 @@ void ChannelHandler::processChannel(TString c)
 	TString hname = (*hIter).first;
 	TH1F* hnew1d = fakeChannel->getHistogram1d(hname,"Observed");
 	TH2F* hnew2d = fakeChannel->getHistogram2d(hname,"Observed");
-	if(hnew1d){
+	if(hnew1d && hnew1d->GetEntries() > 0){
 	  TH1F* hclone = (TH1F*)hnew1d->Clone("h1temp");
 	  hclone->Scale(chanTotal * typeFakeRate * weight / hclone->Integral());
 	  channel->addHistogram(hname,fakeType,hclone);
-	}else if(hnew2d){
+	}else if(hnew2d && hnew2d->GetEntries() > 0){
 	  TH2F* hclone = (TH2F*)hnew2d->Clone("h2temp");
 	  hclone->Scale(chanTotal* typeFakeRate * weight / hclone->Integral());
 	  channel->addHistogram(hname,fakeType,hclone);
@@ -408,11 +408,11 @@ void ChannelHandler::processChannel(TString c)
 	TString hname = (*hIter).first;
 	TH1F* hnew1d = fakeChannel->getHistogram1d(hname,"Observed");
 	TH2F* hnew2d = fakeChannel->getHistogram2d(hname,"Observed");
-	if(hnew1d){
+	if(hnew1d && hnew1d->GetEntries() > 0){
 	  TH1F* hclone = (TH1F*)hnew1d->Clone("h1temp");
 	  hclone->Scale(ddHisto->Integral() / hclone->Integral());
 	  channel->addHistogram(hname,fakeName,hclone);
-	}else if(hnew2d){
+	}else if(hnew2d && hnew2d->GetEntries() >0 ){
 	  TH2F* hclone = (TH2F*)hnew2d->Clone("h2temp");
 	  hclone->Scale(ddHisto->Integral() / hclone->Integral());
 	  channel->addHistogram(hname,fakeName,hclone);
@@ -580,7 +580,7 @@ void ChannelHandler::readSimulation()
 	//cout<<simuName<<" "<<channelName<<" "<<type.Data()<<" "<<(*hIter).first<<endl;
 	h->SetDirectory(0);
 	h->Sumw2();
-	h->Scale(xsec/totalEvents);
+	h->Scale(xsec/totalEvents*m_luminosity);
 	channel->addHistogram((*hIter).first,simuName,h);
       }
 
