@@ -1,6 +1,6 @@
-void exampleMacro(const char* ifname="."
+void exampleMacro(const char* ifname="/cms/rcg/rcgray/2012/DataLinks2012/DoubleElectron_missing_runs_v1_32ipb_Run2012B_Nov30/All"
 		  , const char* ofname="exampleAnalyzer.root"
-		  , int mode = 3
+		  , int mode = 0
 		  , const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
 )
 {
@@ -11,7 +11,7 @@ void exampleMacro(const char* ifname="."
 
   TChain* tree = new TChain("SkimTree");
   TString input=ifname;
-  input += "/eve*.root";
+  input += "/*.root";
   tree->Add(input);
 
   SkimTreeReader* reader = new SkimTreeReader(tree);
@@ -26,7 +26,8 @@ void exampleMacro(const char* ifname="."
   setupTriggers(handler,mode);
   setupVariables(handler);
   setupFilterCuts(handler);
-  setupSignatures(handler);
+
+  //setupSignatures(handler);
   setupOnZSignatures(handler);
   addHistograms(handler);
 
