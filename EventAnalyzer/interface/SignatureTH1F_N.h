@@ -15,6 +15,7 @@ public:
     SignatureTH1F_N(TH1F h):SignatureTH1F(h) {}
     SignatureTH1F_N():SignatureTH1F() {}
 	
+	using TH1F::Fill;
     Int_t Fill(BaseHandler*);
 
     void addProduct(TString);
