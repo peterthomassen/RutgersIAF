@@ -5,8 +5,10 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariablePairMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTriggerWeight.h"
@@ -291,23 +293,41 @@ void setupProducts(BaseHandler* handler)
 
 void setupVariables(BaseHandler* handler)
 {
+  const double mZ = 91;
+  const double mW = 80.385;
+  
   EventVariableSumPT* ST = new EventVariableSumPT("ST","goodMuons");
   ST->addProduct("goodElectrons");
   ST->addProduct("goodTaus");
   ST->addProduct("goodJets");
   ST->addProduct("MET");
+  handler->addEventVariable("ST",ST);
 
   EventVariableSumPT* HT = new EventVariableSumPT("HT","goodJets");
+  handler->addEventVariable("HT",HT);
 
   EventVariableSumPT* MET = new EventVariableSumPT("MET","MET");
-
-  EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",91,15);
-  OSSF->addProduct("goodElectrons");
-
-  handler->addEventVariable("ST",ST);
-  handler->addEventVariable("HT",HT);
   handler->addEventVariable("MET",MET);
+
+  EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,15);
+  OSSF->addProduct("goodElectrons");
   handler->addEventVariable("OSSF",OSSF);
+
+  EventVariableMT* MT = new EventVariableMT("MT", mZ);
+  handler->addEventVariable("MT",MT);
+
+  EventVariablePairMass* mWdijet = new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10);
+  handler->addEventVariable("WDIJETMASS", mWdijet);
+  
+  EventVariableN* nLeptons = new EventVariableN("NLEPTONS", "goodElectrons");
+  nLeptons->addProduct("goodMuons");
+  handler->addEventVariable("NLEPTONS", nLeptons);
+  
+  EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
+  handler->addEventVariable("DILEPTONS", dileptons);
+  
+  EventVariableValue<bool>* writeEvent = new EventVariableValue<bool>("DILEPTONS", true, "WRITEEVENT");
+  handler->addEventVariable("WRITEEVENT", writeEvent);
 }
 
 void addHistograms(BaseHandler* handler)
