@@ -1,5 +1,6 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
@@ -50,6 +51,7 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 #pragma link C++ class EventVariable+;
+#pragma link C++ class EventVariableMT+;
 #pragma link C++ class SignatureObject+;
 #pragma link C++ class ObjectVariableInRange<int>+;
 #pragma link C++ class ObjectVariableInRange<double>+;
