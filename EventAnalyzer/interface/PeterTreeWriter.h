@@ -5,35 +5,37 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeWriter.h"
 #include <map>
 
+class BaseHandler;
 class TTree;
 class TString;
 class TFile;
-class BaseHandler;
 //class TClonesArray;
+class TBranch;
 
 class PeterTreeWriter : public BaseTreeWriter{
- public:
-  PeterTreeWriter(BaseHandler*,TString);
-  virtual ~PeterTreeWriter();
+public:
+	PeterTreeWriter(BaseHandler*,TString);
+	virtual ~PeterTreeWriter();
+	
+	virtual void finish();
+	virtual void fillTree();
 
-  virtual void finish();
-  virtual void fillTree();
-
- private:
-  //TClonesArray* m_clonesarray;
-  std::map<TString,double> m_variable_map_double;
-  std::map<TString,int> m_variable_map_int;
-  std::map<TString,long> m_variable_map_long;
-  std::map<TString,TString> m_variable_map_TString;
-  std::map<TString,bool> m_variable_map_bool;
-
-  double m_met;
-  double m_ht;
-  double m_st;
-  int m_NOSSF;
-
-  ClassDef(PeterTreeWriter,1);
-
+private:
+	//TClonesArray* m_clonesarray;
+	
+	bool m_false;
+	bool m_true;
+	
+	unsigned short m_fBits; // This tells us how many muckets in m_bits we need. It will usually be around m_nBits/8
+	unsigned short m_nBits; // Number of bits in the event
+	unsigned char m_bits[(1 << (sizeof(m_nBits)*8)) / sizeof(unsigned char)]; // This gives 2^(sizeof(nbits)*8) / sizeof(*m_bits) = 2^16 / 8 = 8192 buckets à 8 bit = 65536 bits
+	
+	std::map<TString, std::pair<TBranch*, TBranch*> > m_branches;
+	std::map<TString, UInt_t> m_boolIndex;
+	
+	virtual void processVariable(TString, void*, TString);
+	
+	ClassDef(PeterTreeWriter,1);
 };
 
 
