@@ -17,7 +17,7 @@ bool EventVariableOSSF::calculate(BaseHandler* handler)
   double minMass = 1e6;
   double maxMass = 0;
   int nOSSF = 0;
-  double bestMass = 0;
+  double bestMass = 1e6;
   for(int i = 0; i < (int)m_productnames.size(); i++){
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     int nPlus = 0;
