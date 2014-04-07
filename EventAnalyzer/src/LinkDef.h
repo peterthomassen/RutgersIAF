@@ -119,4 +119,8 @@
 #pragma link C++ class ObjectVariableMethod+;
 #pragma link C++ class ObjectComparisonSkimRecoTracks+;
 #pragma link C++ class PeterTreeWriter+;
+//#pragma link C++ class std::vector<double>+;	// dictionary shipped with ROOT
+#pragma link C++ class std::vector<int>+;
+//#pragma link C++ class std::vector<long>+;	// dictionary shipped with ROOT
+#pragma link C++ class std::vector<TString>+;
 #endif
