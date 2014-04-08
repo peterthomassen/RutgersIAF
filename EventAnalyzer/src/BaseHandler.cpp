@@ -1166,6 +1166,7 @@ void BaseHandler::analyzeEvent()
         printSignature(m_preHandlerCutSignatures[s]);
         m_preHandlerCutSignatures[s]->fillHistograms();
         isSigVec[s+nSig+nBjetSig]=1;
+	setVariable(m_preHandlerCutSignatures[s]->getName(),true);
       }
     }
     ////////////////////////////
@@ -1182,12 +1183,14 @@ void BaseHandler::analyzeEvent()
           printSignature(m_Signatures[s]);
           m_Signatures[s]->fillHistograms();
           isSigVec[s]=1;
+	  setVariable(m_Signatures[s]->getName(),true);
           if(m_doPriorityList)break;
         }
       }
       double baseweight = m_physicsWeight;
       for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
         if(m_bjetSignatures[s]->isSignature()){
+	  setVariable(m_bjetSignatures[s]->getName(),true);
           if(m_bTagged >= m_bjetSignatures[s]->getLow() && m_bTagged <= m_bjetSignatures[s]->getHigh()){
             printSignature(m_bjetSignatures[s]);
             isSigVec[s + nSig] = 1;
