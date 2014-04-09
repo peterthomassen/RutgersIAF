@@ -16,7 +16,7 @@ void EventVariablePairMass::addProduct(TString pname) {
 bool EventVariablePairMass::calculate(BaseHandler* handler) {
 	double minMass = 1e6;
 	double maxMass = 0;
-	double bestMass = 0;
+	double bestMass = 1e6;
 	for(size_t i = 0; i < m_productnames.size(); i++){
 		vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
 		for(size_t j = 0; j < v.size(); j++){
