@@ -44,7 +44,7 @@ bool EventVariableMT::calculate(BaseHandler* handler) {
 	TLorentzVector wl;
 	
 	// Loop over the two flavors that the dilepton pair from Z can contain (including 1e1tau and 1m1tau)
-	for(int iFlavor = 0; iFlavor < 1; ++iFlavor) {
+	for(int iFlavor = 0; iFlavor <= 1; ++iFlavor) {
 		std::vector<SignatureObject*> lepFl1, lepFl2;
 		std::vector<double> chargeFl1, chargeFl2;
 		if(iFlavor == 0) {
@@ -64,7 +64,7 @@ bool EventVariableMT::calculate(BaseHandler* handler) {
 		if(ll.M() == 0 && lepFl1.size() == 3) {
 			double bestMll = 1e6;
 			int worstIndex = -1;
-			for(int i = 0; i < (int)lepFl1.size(); i ++) {
+			for(int i = 0; i < (int)lepFl1.size(); i++) {
 				for(int j = i+1; j < (int)lepFl1.size(); j++){
 					if(chargeFl1[i] * chargeFl1[j] > 0) {
 						continue;
