@@ -296,6 +296,10 @@ void setupVariables(BaseHandler* handler)
   const double mZ = 91;
   const double mW = 80.385;
   
+  handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
+  handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
+  handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
+  
   EventVariableSumPT* ST = new EventVariableSumPT("ST","goodMuons");
   ST->addProduct("goodElectrons");
   ST->addProduct("goodTaus");
@@ -412,8 +416,6 @@ void setupMC(BaseHandler* handler, TString pufile)
 
 void setupOnZSignatures(BaseHandler* handler)
 {
-  handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
-  handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
   handler->addEventVariable("getwoGoodMuons", new EventVariableInRange<int>("NGOODMUONS",2,100000));
   handler->addEventVariable("getwoGoodElectrons",new EventVariableInRange<int>("NGOODELECTRONS",2,100000));
 
