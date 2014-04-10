@@ -299,6 +299,7 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
   handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
   handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
+  handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
   
   EventVariableSumPT* ST = new EventVariableSumPT("ST","goodMuons");
   ST->addProduct("goodElectrons");
