@@ -24,17 +24,17 @@ bool EventVariableMT::calculate(BaseHandler* handler) {
 	}
 	
 	std::vector<double> chargeMu(mu.size());
-	for(size_t i = 0; i < el.size(); ++i) {
+	for(size_t i = 0; i < mu.size(); ++i) {
 		double charge;
-		assert(el[i]->getVariable("CHARGE",charge));
-		chargeEl[i] = charge;
+		assert(mu[i]->getVariable("CHARGE",charge));
+		chargeMu[i] = charge;
 	}
 	
 	std::vector<double> chargeTau(tau.size());
-	for(size_t i = 0; i < el.size(); ++i) {
+	for(size_t i = 0; i < tau.size(); ++i) {
 		double charge;
-		assert(el[i]->getVariable("CHARGE",charge));
-		chargeEl[i] = charge;
+		assert(tau[i]->getVariable("CHARGE",charge));
+		chargeTau[i] = charge;
 	}
 	
 	double MT = 0;
