@@ -319,6 +319,12 @@ void setupVariables(BaseHandler* handler)
   EventVariablePairMass* mWdijet = new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10);
   handler->addEventVariable("WDIJETMASS", mWdijet);
   
+  EventVariableN* nbJetsCSVM = new EventVariableN("NBJETSCSVM", "bJetsCSVM");
+  handler->addEventVariable("NBJETSCSVM", nbJetsCSVM);
+  
+  EventVariableN* nbJetsCSVL = new EventVariableN("NBJETSCSVL", "bJetsCSVL");
+  handler->addEventVariable("NBJETSCSVL", nbJetsCSVL);
+  
   EventVariableN* nLeptons = new EventVariableN("NLEPTONS", "goodElectrons");
   nLeptons->addProduct("goodMuons");
   handler->addEventVariable("NLEPTONS", nLeptons);
