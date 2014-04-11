@@ -159,7 +159,7 @@ void DelphesHandler::readMCParticles()
 //-----------------------------------------
 void DelphesHandler::readRecoVertices()
 {
-  SignatureRecoVertex* vert = new SignatureRecoVertex(0,0,0);
+  //SignatureRecoVertex* vert = new SignatureRecoVertex(0,0,0);
   //double sumPt = 0;
   //int nTrack = 0;
   /*
