@@ -189,7 +189,7 @@ void setupProducts(BaseHandler* handler)
   ///Tau Cuts///
   //////////////
 
-  handler->addObjectVariable("TAU_DECAYMODFINDING",new ObjectVariableValue<int>("DISC_DECAYMODEFINDING",1));
+  handler->addObjectVariable("TAU_DECAYMODEFINDING",new ObjectVariableValue<int>("DISC_DECAYMODEFINDING",1));
   handler->addObjectVariable("TAU_AGAINSTELECTRONMVA",new ObjectVariableValue<int>("DISC_AGAINSTELECTRONMVA",1));
   handler->addObjectVariable("TAU_AGAINSTMUONTIGHT",new ObjectVariableValue<int>("DISC_AGAINSTMUONTIGHT",1));
   handler->addObjectVariable("TAU_BYLOOSECOMBINEDISODBSUMPTCORR",new ObjectVariableValue<int>("DISC_BYLOOSECOMBINEDISODBSUMPTCORR",1));
@@ -332,6 +332,7 @@ void setupVariables(BaseHandler* handler)
   
   EventVariableN* nLeptons = new EventVariableN("NLEPTONS", "goodElectrons");
   nLeptons->addProduct("goodMuons");
+  nLeptons->addProduct("goodTaus");
   handler->addEventVariable("NLEPTONS", nLeptons);
   
   EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
