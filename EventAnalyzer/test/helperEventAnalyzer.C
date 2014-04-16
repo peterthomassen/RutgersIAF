@@ -189,10 +189,10 @@ void setupProducts(BaseHandler* handler)
   ///Tau Cuts///
   //////////////
 
-  handler->addObjectVariable("TAU_DECAYMODEFINDING",new ObjectVariableValue<int>("DISC_DECAYMODEFINDING",1));
-  handler->addObjectVariable("TAU_AGAINSTELECTRONMVA",new ObjectVariableValue<int>("DISC_AGAINSTELECTRONMVA",1));
-  handler->addObjectVariable("TAU_AGAINSTMUONTIGHT",new ObjectVariableValue<int>("DISC_AGAINSTMUONTIGHT",1));
-  handler->addObjectVariable("TAU_BYLOOSECOMBINEDISODBSUMPTCORR",new ObjectVariableValue<int>("DISC_BYLOOSECOMBINEDISODBSUMPTCORR",1));
+  handler->addObjectVariable("TAU_DECAYMODEFINDING",new ObjectVariableInRange<double>("DISC_DECAYMODEFINDING",0.9,1e6));
+  handler->addObjectVariable("TAU_AGAINSTELECTRONMVA",new ObjectVariableInRange<double>("DISC_AGAINSTELECTRONMVA",0.9,1e6));
+  handler->addObjectVariable("TAU_AGAINSTMUONTIGHT",new ObjectVariableInRange<double>("DISC_AGAINSTMUONTIGHT",0.9,1e6));
+  handler->addObjectVariable("TAU_BYLOOSECOMBINEDISODBSUMPTCORR",new ObjectVariableInRange<double>("DISC_BYLOOSECOMBINEDISODBSUMPTCORR",0.9,1e6));
   handler->addObjectVariable("TAU_CHARGE_ZERO",new ObjectVariableInRange<double>("PF_SIGNALCHARGE",-0.9,0.9));
   handler->addObjectVariable("TAU_SIGNAL_CHARGE",new ObjectVariableReversed("TAU_CHARGE_ZERO"));
 
