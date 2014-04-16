@@ -536,3 +536,9 @@ void setupSignatures(BaseHandler* handler)
 
 
 }
+
+
+void setupControlRegions(BaseHandler* handler)
+{
+
+}
