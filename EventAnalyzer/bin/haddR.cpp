@@ -2,8 +2,8 @@
   2014-04-11
   Peter Thomassen <peter.thomassen@cern.ch>
   
-  This program will add histograms (see note) and Trees from a list of root files and write them
-  to a target root file. It has special treatment for trees created by the Rutgers EventAnalyer.
+  This program will add histograms and Trees from a list of root files and write them to a target 
+  root file (like hadd). It has special treatment for trees created by the Rutgers EventAnalyer.
   This software is based on the ROOT hadd tool.
 */
 
@@ -214,7 +214,7 @@ int main( int argc, char **argv )
 {
 
    if ( argc < 3 || "-h" == string(argv[1]) || "--help" == string(argv[1]) ) {
-      cout << "This is a modified version of ROOT hadd that implements special treatment for trees with name RutgersTree." << endl;
+      cout << "This is a modified version of ROOT hadd that implements special treatment for trees with name treeR." << endl;
       cout << "Usage: " << argv[0] << " [-f[0-9]] [-k] [-T] [-O] [-n maxopenedfiles] [-v verbosity] targetfile source1 [source2 source3 ...]" << endl;
       cout << "This program will add histograms from a list of root files and write them" << endl;
       cout << "to a target root file. The target file is newly created and must not " << endl;
