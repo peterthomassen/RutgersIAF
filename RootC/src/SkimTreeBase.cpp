@@ -85,7 +85,7 @@ pair<Double_t,Double_t> SkimTreeBase::getWConstrainedMETZ(TLorentzVector lep4V, 
   Double_t c=X*X-my_met*my_met;
   
   Double_t b2m4ac=b*b-4.0*a*c;
-  Double_t met_z=0.0;
+//  Double_t met_z=0.0;
   if( b2m4ac > 0.0 && a < 0.0)
     {
       Double_t met_z1=(-b+sqrt(b2m4ac))/(2.0*a);
@@ -95,8 +95,8 @@ pair<Double_t,Double_t> SkimTreeBase::getWConstrainedMETZ(TLorentzVector lep4V, 
       TLorentzVector met4v1; met4v1.SetPxPyPzE(met_x,met_y,met_z1,met_e1);
       TLorentzVector met4v2; met4v2.SetPxPyPzE(met_x,met_y,met_z2,met_e2);
       //Now get the two possible masses
-      Double_t m1=(lep4V+met4v1).M();
-      Double_t m2=(lep4V+met4v2).M();
+//      Double_t m1=(lep4V+met4v1).M();
+//      Double_t m2=(lep4V+met4v2).M();
       //std::cout<<"Two possible pz,eta,mw pairs: "<<met_z1<<","<<met4v1.Eta()<<","<<m1<<"   "<<met_z2<<","<<met4v2.Eta()<<","<<m2<<std::endl;
       mypair.first=met_z1; 
       mypair.second=met_z2;
@@ -1643,9 +1643,9 @@ Double_t SkimTreeBase::getJetDropHCalPt(Int_t ntID)
   //Double_t averagePiResponse=0.40;
   //Double_t sigmaPiResponse=0.20;
 
-  Double_t parton_pt=-999.0;
-  if( pat_jet_genParton_ntID[ntID] > -1 )
-    parton_pt=mc_part_pt[pat_jet_genParton_ntID[ntID]];
+//  Double_t parton_pt=-999.0;
+//  if( pat_jet_genParton_ntID[ntID] > -1 )
+//    parton_pt=mc_part_pt[pat_jet_genParton_ntID[ntID]];
   
   TLorentzVector jnoHplusT4v=jCharged4v+(pat_jet_emf[ntID])*j4v+sumMuon4v;
   //if( parton_pt > 20.0 )
@@ -2189,9 +2189,9 @@ Double_t SkimTreeBase::getJetECalPlusMuPt(Int_t ntID)
   //Double_t sigmaPiResponse=0.20; 
   
   //TLorentzVector jnoHplusT4v=(1.0-pat_jet_emf[ntID])*j4v+sumMuon4v+sumElectron4v;
-  Double_t parton_pt=-999.0;
-  if( pat_jet_genParton_ntID[ntID] > -1 )
-    parton_pt=mc_part_pt[pat_jet_genParton_ntID[ntID]];
+//  Double_t parton_pt=-999.0;
+//  if( pat_jet_genParton_ntID[ntID] > -1 )
+//    parton_pt=mc_part_pt[pat_jet_genParton_ntID[ntID]];
   TLorentzVector jnoHplusT4v=(pat_jet_emf[ntID])*j4v+sumMuon4v;
   return jnoHplusT4v.Pt();
 }
@@ -2242,9 +2242,9 @@ Double_t SkimTreeBase::getJetHCalPlusMuPt(Int_t ntID)
   //Double_t sigmaPiResponse=0.20;
   
   //TLorentzVector jnoHplusT4v=(1.0-pat_jet_emf[ntID])*j4v+sumMuon4v+sumElectron4v;
-  Double_t parton_pt=-999.0;
-  if( pat_jet_genParton_ntID[ntID] > -1 )
-    parton_pt=mc_part_pt[pat_jet_genParton_ntID[ntID]];
+//  Double_t parton_pt=-999.0;
+//  if( pat_jet_genParton_ntID[ntID] > -1 )
+//    parton_pt=mc_part_pt[pat_jet_genParton_ntID[ntID]];
   TLorentzVector jnoHplusT4v=(1.0-pat_jet_emf[ntID])*j4v+sumMuon4v;
   return jnoHplusT4v.Pt();
 }
@@ -2727,7 +2727,7 @@ Int_t SkimTreeBase::MuIDTight2012(Int_t ntID)
 {
 	//June 5, 2012 Selection:
 	Int_t trkID=pat_muon_trackID[ntID];
-	Int_t globaltrkID=pat_muon_globalTrackID[ntID];
+//	Int_t globaltrkID=pat_muon_globalTrackID[ntID];
 
 	if(pat_muon_isGlobalMuonPromptTight[ntID]!=1) return 0; //1, 3, 4 above
 	//if(pat_muon_isPF[ntID]!=1) return 0; //2 above: Jun 5: Commented out
@@ -3196,14 +3196,14 @@ void SkimTreeBase::getWZCandidates(vector<pair<TString,Int_t> > leptons, vector<
       //IF ON Z, pick it, else if on W pick it, else pick one closest to W mass
 
       Int_t id=0;
-      Int_t id_skip=1;
+//      Int_t id_skip=1;
 
       //if( 
 
       if( fabs(dymass[0]-92.0) > fabs(dymass[1]-92.0) )
 	{
 	  id=1;
-	  id_skip=0;
+//	  id_skip=0;
 	}
       
       

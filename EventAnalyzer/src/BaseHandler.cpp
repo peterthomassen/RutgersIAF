@@ -164,8 +164,12 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 
     if(!hasRun || !hasLumi || !hasEvent)continue;
 
-    if(onlyRun >= 0 && (run != onlyRun || event != onlyEvent)) continue;
-    
+    if(onlyRun >= 0) {
+		if(run != onlyRun || event != onlyEvent) {
+			continue;
+		}
+		cout << "This is entry " << m_currentEntry << endl;
+	}
 
     if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end())dumpEventInfo();
     if(m_doRunLumiCheck || m_doRunLumiCheckFromJSON){

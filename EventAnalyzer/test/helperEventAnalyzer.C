@@ -189,7 +189,7 @@ void setupProducts(BaseHandler* handler)
   ///Tau Cuts///
   //////////////
 
-  handler->addObjectVariable("TAU_DECAYMODFINDING",new ObjectVariableValue<int>("DISC_DECAYMODEFINDING",1));
+  handler->addObjectVariable("TAU_DECAYMODEFINDING",new ObjectVariableValue<int>("DISC_DECAYMODEFINDING",1));
   handler->addObjectVariable("TAU_AGAINSTELECTRONMVA",new ObjectVariableValue<int>("DISC_AGAINSTELECTRONMVA",1));
   handler->addObjectVariable("TAU_AGAINSTMUONTIGHT",new ObjectVariableValue<int>("DISC_AGAINSTMUONTIGHT",1));
   handler->addObjectVariable("TAU_BYLOOSECOMBINEDISODBSUMPTCORR",new ObjectVariableValue<int>("DISC_BYLOOSECOMBINEDISODBSUMPTCORR",1));
@@ -296,6 +296,11 @@ void setupVariables(BaseHandler* handler)
   const double mZ = 91;
   const double mW = 80.385;
   
+  handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
+  handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
+  handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
+  handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
+  
   EventVariableSumPT* ST = new EventVariableSumPT("ST","goodMuons");
   ST->addProduct("goodElectrons");
   ST->addProduct("goodTaus");
@@ -319,8 +324,15 @@ void setupVariables(BaseHandler* handler)
   EventVariablePairMass* mWdijet = new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10);
   handler->addEventVariable("WDIJETMASS", mWdijet);
   
+  EventVariableN* nbJetsCSVM = new EventVariableN("NBJETSCSVM", "bJetsCSVM");
+  handler->addEventVariable("NBJETSCSVM", nbJetsCSVM);
+  
+  EventVariableN* nbJetsCSVL = new EventVariableN("NBJETSCSVL", "bJetsCSVL");
+  handler->addEventVariable("NBJETSCSVL", nbJetsCSVL);
+  
   EventVariableN* nLeptons = new EventVariableN("NLEPTONS", "goodElectrons");
   nLeptons->addProduct("goodMuons");
+  nLeptons->addProduct("goodTaus");
   handler->addEventVariable("NLEPTONS", nLeptons);
   
   EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
@@ -406,8 +418,6 @@ void setupMC(BaseHandler* handler, TString pufile)
 
 void setupOnZSignatures(BaseHandler* handler)
 {
-  handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
-  handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
   handler->addEventVariable("getwoGoodMuons", new EventVariableInRange<int>("NGOODMUONS",2,100000));
   handler->addEventVariable("getwoGoodElectrons",new EventVariableInRange<int>("NGOODELECTRONS",2,100000));
 

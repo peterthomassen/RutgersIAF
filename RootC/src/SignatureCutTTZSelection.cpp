@@ -82,7 +82,7 @@ bool SignatureCutTTZSelection::passCut(BaseHandler* handler)const
   TString outline;
   SignatureObject* ll;
   SignatureObject* sl;
-  SignatureObject* tl;
+  SignatureObject* tl = 0;
   if((m_dyCandidates[selection]).first->Pt() > (m_dyCandidates[selection]).second->Pt()){
     ll = (m_dyCandidates[selection]).first;
     sl = (m_dyCandidates[selection]).second;

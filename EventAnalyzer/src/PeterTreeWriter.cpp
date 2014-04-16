@@ -12,6 +12,7 @@ ClassImp(PeterTreeWriter)
 PeterTreeWriter::PeterTreeWriter(BaseHandler* handler,TString treename)
 : BaseTreeWriter(handler,treename) {
 	m_tree->Branch("bits", &m_bits);
+	m_tree->SetAlias("I", "Iteration$ == 0");
 }
 
 PeterTreeWriter::~PeterTreeWriter() { }

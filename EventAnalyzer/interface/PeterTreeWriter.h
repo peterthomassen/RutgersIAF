@@ -77,9 +77,8 @@ void PeterTreeWriter::processVariable(std::map<TString, T> varMap, TString type)
 				branch->Fill();
 			}
 			
-			branches->insert(std::make_pair(it->first, branch));
-			branchIt = branches->end();
-			--branchIt;
+			std::pair<std::map<TString, TBranch*>::iterator, bool> insPair = branches->insert(std::make_pair(it->first, branch));
+			branchIt = insPair.first;
 		}
 		
 		reinterpret_cast<std::vector<T>*>(((TBranchElement*)(branchIt->second))->GetObject())->push_back(it->second);

@@ -16,20 +16,33 @@ void EventVariablePairMass::addProduct(TString pname) {
 bool EventVariablePairMass::calculate(BaseHandler* handler) {
 	double minMass = 1e6;
 	double maxMass = 0;
-	double bestMass = 0;
+	double bestMass = 1e6;
+	
+	bool enoughObjects = false;
+	
 	for(size_t i = 0; i < m_productnames.size(); i++){
 		vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
+		if(v.size() > 1) {
+			enoughObjects = true;
+		}
 		for(size_t j = 0; j < v.size(); j++){
 			for(size_t k = j+1; k < v.size(); k++){
-				double mass = (*v[k]+*v[j]).M();
+				double mass = (*v[j] + *v[k]).M();
 				minMass = min(minMass, mass);
 				maxMass = max(maxMass, mass);
-				if(m_peak && fabs(m_peak - mass) < fabs(m_peak - bestMass)) bestMass = mass;
+				if(m_peak && fabs(m_peak - mass) < fabs(m_peak - bestMass)) {
+					bestMass = mass;
+				}
 			}
 		}
 	}
+	
+	if(!enoughObjects) {
+		return false;
+	}
+	
 	bool onPeak = (fabs(bestMass - m_peak) < m_width);
-
+	
 	handler->setVariable(TString::Format("%sMPAIRMIN",m_prefix.Data()),minMass);
 	handler->setVariable(TString::Format("%sMPAIRMAX",m_prefix.Data()),maxMass);
 	if(m_peak) {
