@@ -46,9 +46,9 @@ class Signature : public TObject {
   void fillHistograms();
   virtual void init(); //initialize
   virtual void finish();
-  void addHistogram(SignatureTH1F* c){m_1dhistograms.push_back(c);}
-  void addHistogram(SignatureTH2F* c){m_2dhistograms.push_back(c);}
-  void addHistogram(SignatureTH3F* c){m_3dhistograms.push_back(c);}
+  Signature* addHistogram(SignatureTH1F* c){m_1dhistograms.push_back(c); return this;}
+  Signature* addHistogram(SignatureTH2F* c){m_2dhistograms.push_back(c); return this;}
+  Signature* addHistogram(SignatureTH3F* c){m_3dhistograms.push_back(c); return this;}
   void setDoEventDump(bool c = true){m_doEventDump = c;}
 
  protected:
