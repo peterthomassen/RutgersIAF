@@ -1,2 +1,3 @@
 <use name="root"/>
 <bin name="haddR" file="haddR.cpp"/>
+<bin name="lheReader" file="lheReader.cpp"/>
