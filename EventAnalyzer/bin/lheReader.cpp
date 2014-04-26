@@ -63,7 +63,6 @@ void lheReader::ntuplizer(TString output)
   std::string beginevent = "<event>";
   std::string endevent = "</event>";
 
-  Int_t i = 0; // array index
   Int_t event_count = 0;
   Int_t event_line_count = 0;
 
@@ -190,8 +189,6 @@ void lheReader::ntuplizer(TString output)
           particle_phi->push_back(temp.Phi());
           particle_energy->push_back(temp.E());
 
-          ++i;
-
           if (debug) {
             std::cout << lheline << std::endl;
             std::cout << pdgID << "    " << state << "    " << mother1 << "    " << mother2 << "  " 
@@ -202,7 +199,7 @@ void lheReader::ntuplizer(TString output)
 
         // Find end of event
         else if (lheline == endevent) {
-          i = 0;
+
           eventswitch = false;
           event_line_count = 0;
 
