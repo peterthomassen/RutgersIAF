@@ -1,80 +1,93 @@
 #ifndef lheReader_h
 #define lheReader_h
 
+#include <vector>
 #include <fstream>
 
 #include <TString.h>
 
+//
+// class declaration
+//
 class lheReader {
 
   public:
-    // Default constructor
-      lheReader(void);
+    // default constructor
+    lheReader(void);
  
-    // Virtual destructor
-      ~lheReader();
+    // virtual destructor
+    ~lheReader();
 
     // lheReader ifstream
-      ifstream fileinput;
+    ifstream fileinput;
 
-    // lheReader Arrays and Variables
-      static const Int_t  MAXMCPART = 1000;
+    bool debug;
 
-      Int_t    run;
-      Int_t    event;
-      Int_t    lumi;
-      Int_t    mc_particle_n;
-      Int_t    mc_particle_pdgID[MAXMCPART];
-      Int_t    mc_particle_state[MAXMCPART];
-      Int_t    mc_particle_mother1[MAXMCPART];
-      Int_t    mc_particle_mother2[MAXMCPART];
-      Int_t    mc_particle_color[MAXMCPART];
-      Int_t    mc_particle_anticolor[MAXMCPART];
-      Float_t  mc_particle_Px[MAXMCPART];
-      Float_t  mc_particle_Py[MAXMCPART];
-      Float_t  mc_particle_Pz[MAXMCPART];
-      Float_t  mc_particle_E[MAXMCPART];
-      Float_t  mc_particle_mass[MAXMCPART];
-      Double_t mc_particle_ctau[MAXMCPART];
-      Double_t mc_particle_spincosine[MAXMCPART];
+    // lheReader data members
+    Int_t    run;
+    Int_t    event;
+    Int_t    lumi;
+    Int_t    particle_n;
+    Int_t    process_ID;
 
-      Float_t  mc_particle_pt[MAXMCPART];
-      Float_t  mc_particle_eta[MAXMCPART];
-      Float_t  mc_particle_phi[MAXMCPART];
-      Float_t  mc_particle_energy[MAXMCPART];
+    Float_t  event_weight;
+    Float_t  factorization_scale;
+    Float_t  alpha_em;
+    Float_t  alpha_s;
 
-      Int_t    n;
-      Int_t    pdgID;
-      Int_t    state;
-      Int_t    mother1;
-      Int_t    mother2;
-      Int_t    color;
-      Int_t    anticolor;
-      Float_t  Px;
-      Float_t  Py;
-      Float_t  Pz;
-      Float_t  E;
-      Float_t  Mass;
-      Double_t ctau;
-      Double_t spincosine;
+    std::vector<Int_t>     *particle_pdgID;
+    std::vector<Int_t>     *particle_state;
+    std::vector<Int_t>     *particle_mother1;
+    std::vector<Int_t>     *particle_mother2;
+    std::vector<Int_t>     *particle_color;
+    std::vector<Int_t>     *particle_anticolor;
+    std::vector<Double_t>  *particle_Px;
+    std::vector<Double_t>  *particle_Py;
+    std::vector<Double_t>  *particle_Pz;
+    std::vector<Double_t>  *particle_E;
+    std::vector<Double_t>  *particle_mass;
+    std::vector<Double_t>  *particle_ctau;
+    std::vector<Double_t>  *particle_spincosine;
+    std::vector<Double_t>  *particle_pt;
+    std::vector<Double_t>  *particle_eta;
+    std::vector<Double_t>  *particle_phi;
+    std::vector<Double_t>  *particle_energy;
 
-    // lheReader Methods
-      void lhefile(TString);
-      void ntuplizer(TString);
+    Int_t    pdgID;
+    Int_t    state;
+    Int_t    mother1;
+    Int_t    mother2;
+    Int_t    color;
+    Int_t    anticolor;
 
-      Int_t getRun(void);
-      void setRun(Int_t);
+    Float_t  Px;
+    Float_t  Py;
+    Float_t  Pz;
+    Float_t  E;
+    Float_t  Mass;
+    Float_t  ctau;
+    Float_t  spincosine;
 
-      Int_t getEvent(void);
-      void setEvent(Int_t);
+    // lheReader methods
+    bool getDebug(void);
+    void setDebug(const char *);
 
-      Int_t getLumi(void);
-      void setLumi(Int_t);
+    void lhefile(TString);
+    void ntuplizer(TString);
+
+    Int_t getRun(void);
+    void setRun(const char *);
+
+    Int_t getEvent(void);
+    void setEvent(const char *);
+
+    Int_t getLumi(void);
+    void setLumi(const char *);
 
   private:
-      Int_t    run_number;
-      Int_t    event_number;
-      Int_t    lumi_number;
+    Int_t    run_number;
+    Int_t    event_number;
+    Int_t    lumi_number;
 
   protected:
 

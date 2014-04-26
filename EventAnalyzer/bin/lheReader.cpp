@@ -1,12 +1,13 @@
-///////////////////////////////////////////////////////////////////////
-//
-//   This Class produces a TTree from an LHE file
-//
-//   Written by: Emmanuel Contreras-Campana
-//
-//   Date: 04-25-2013
-//
-///////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+//                                                  //
+//   This Class produces a TTree from an LHE file   //
+//                                                  //
+//   Written by: Emmanuel Contreras-Campana and     //
+//               Christian Contreras-Campana        //
+//                                                  //
+//   Date: 04-25-2013                               //
+//                                                  //
+//////////////////////////////////////////////////////
 
 #include <string>
 #include <sstream>
@@ -18,6 +19,43 @@
 
 #include "lheReader.h"
 
+//
+// constructors and destructor
+//
+
+lheReader::lheReader()
+{
+  setRun("1");
+  setEvent("1");
+  setLumi("1");
+
+  debug = false;
+}
+
+lheReader::~lheReader()
+{
+
+}
+
+//
+// member functions
+//
+
+bool lheReader::getDebug()
+{
+  return debug;
+}
+
+void lheReader::setDebug(const char *db)
+{
+  std::stringstream ss(db);
+  ss >> std::boolalpha >> debug;
+}
+
+void lheReader::lhefile(TString lhefilename)
+{
+  fileinput.open(lhefilename);
+}
 
 void lheReader::ntuplizer(TString output)
 {
@@ -25,37 +63,42 @@ void lheReader::ntuplizer(TString output)
   std::string beginevent = "<event>";
   std::string endevent = "</event>";
 
+  Int_t i = 0; // array index
+  Int_t event_count = 0;
+  Int_t event_line_count = 0;
+
+  bool eventswitch = false;
+
   TFile *fileoutput = new TFile(output,"RECREATE","Demo root file with trees");
 
   TTree *LHETree = new TTree("LHETree","Events in LHE File");
 
-  Int_t i = 0; // array index
-  Int_t event_count = 0;
-
-  bool eventswitch = false;
-  bool debug = false;
-
   LHETree->Branch("run",&run,"run/I");
   LHETree->Branch("event",&event,"event/I");
-  LHETree->Branch("lumi",lumi,"lumi/I");
-  LHETree->Branch("particle_n",&mc_particle_n,"mc_particle_n/I");
-  LHETree->Branch("pdgID",&mc_particle_pdgID,"mc_particle_pdgID[mc_particle_n]/I");
-  LHETree->Branch("state",&mc_particle_state,"mc_particle_state[mc_particle_n]/I");
-  LHETree->Branch("mother1",&mc_particle_mother1,"mc_particle_mother1[mc_particle_n]/I");
-  LHETree->Branch("mother2",&mc_particle_mother2,"mc_particle_mother2[mc_particle_n]/I");
-  LHETree->Branch("color",&mc_particle_color,"mc_particle_color[mc_particle_n]/I");
-  LHETree->Branch("anticolor",&mc_particle_anticolor,"mc_particle_anticolor[mc_particle_n]/I");
-  LHETree->Branch("Px",&mc_particle_Px,"mc_particle_Px[mc_particle_n]/F");
-  LHETree->Branch("Py",&mc_particle_Py,"mc_particle_Py[mc_particle_n]/F");
-  LHETree->Branch("Pz",&mc_particle_Pz,"mc_particle_Pz[mc_particle_n]/F");
-  LHETree->Branch("E",&mc_particle_E,"mc_particle_E[mc_particle_n]/F");
-  LHETree->Branch("mass",&mc_particle_mass,"mc_particle_mass[mc_particle_n]/F");
-  LHETree->Branch("ctau",&mc_particle_ctau,"mc_particle_ctau[mc_particle_n]/D");
-  LHETree->Branch("spincosine",&mc_particle_spincosine,"mc_particle_spincosine[mc_particle_n]/D");
-  LHETree->Branch("pt",&mc_particle_pt,"mc_particle_pt[mc_particle_n]/F");
-  LHETree->Branch("eta",&mc_particle_eta,"mc_particle_eta[mc_particle_n]/F");
-  LHETree->Branch("phi",&mc_particle_phi,"mc_particle_phi[mc_particle_n]/F");
-  LHETree->Branch("energy",&mc_particle_energy,"mc_particle_energy[mc_particle_n]/F");
+  LHETree->Branch("lumi",&lumi,"lumi/I");
+  LHETree->Branch("particle_n",&particle_n,"particle_n/I");
+  LHETree->Branch("process_ID",&process_ID,"process_ID/I");
+  LHETree->Branch("event_weight",&event_weight,"event_weight/F");
+  LHETree->Branch("factorization_scale",&factorization_scale,"factorization_scale/F");
+  LHETree->Branch("alpha_em",&alpha_em,"alpha_em/F");
+  LHETree->Branch("alpha_s",&alpha_s,"alpha_s/F");
+  LHETree->Branch("pdgID","std::vector<Int_t>",&particle_pdgID);
+  LHETree->Branch("state","std::vector<Int_t>",&particle_state);
+  LHETree->Branch("mother1","std::vector<Int_t>",&particle_mother1);
+  LHETree->Branch("mother2","std::vector<Int_t>",&particle_mother2);
+  LHETree->Branch("color","std::vector<Int_t>",&particle_color);
+  LHETree->Branch("anticolor","std::vector<Int_t>",&particle_anticolor);
+  LHETree->Branch("Px","std::vector<Double_t>",&particle_Px);
+  LHETree->Branch("Py","std::vector<Double_t>",&particle_Py);
+  LHETree->Branch("Pz","std::vector<Double_t>",&particle_Pz);
+  LHETree->Branch("E","std::vector<Double_t>",&particle_E);
+  LHETree->Branch("mass","std::vector<Double_t>",&particle_mass);
+  LHETree->Branch("ctau","std::vector<Double_t>",&particle_ctau);
+  LHETree->Branch("spincosine","std::vector<Double_t>",&particle_spincosine);
+  LHETree->Branch("pt","std::vector<Double_t>",&particle_pt);
+  LHETree->Branch("eta","std::vector<Double_t>",&particle_eta);
+  LHETree->Branch("phi","std::vector<Double_t>",&particle_phi);
+  LHETree->Branch("energy","std::vector<Double_t>",&particle_energy);
 
   if (fileinput.is_open()) {
 
@@ -65,6 +108,7 @@ void lheReader::ntuplizer(TString output)
 
     while (getline(fileinput, lheline)) {
 
+      // Find begining of event
       if (lheline == beginevent) {
         eventswitch = true;
 
@@ -84,28 +128,69 @@ void lheReader::ntuplizer(TString output)
 
       if (eventswitch) {
 
-        if (debug) {
-          std::cout << "lheline " << lheline << std::endl;
-          std::cout << "lheline.length " << lheline.length() << std::endl;
-        }
+        ++event_line_count;
 
-        // 66 characters in Madgraph and 68 characters in Pythia
-        if (lheline.length() > 65 && lheline.length() < 69) {
+        // Find line with event level information
+        if (event_line_count == 1) {
 
           std::stringstream ss(lheline);
-          ss >> mc_particle_n;
+          ss >> particle_n >> process_ID >> event_weight >> factorization_scale >> alpha_em >> alpha_s;
 
           if (debug) {
-            std::cout << "mc_particle_n = " << mc_particle_n << std::endl;
+            std::cout << lheline << std::endl;
+            std::cout << "particle_n = " << particle_n << std::endl;
+            std::cout << "process_ID = " << process_ID << std::endl;
+            std::cout << "event_weight = " << event_weight << std::endl;
+            std::cout << "factorization_scale = " << factorization_scale << std::endl;
+            std::cout << "alpha_em = " << alpha_em << std::endl;
+            std::cout << "alpha_s = " << alpha_s << std::endl;
           }
         }
 
-        else if (lheline != "</event>") {
+        // Find line with particle level information
+        else if (event_line_count > 1 && lheline != "</event>") {
 
           std::stringstream ss(lheline);
 
           ss >> pdgID >> state >> mother1 >> mother2 >> color >> anticolor
              >> Px >> Py >> Pz >> E >> Mass >> ctau >> spincosine;
+
+          particle_pdgID->push_back(pdgID);
+          particle_state->push_back(state);
+          particle_mother1->push_back(mother1);
+          particle_mother2->push_back(mother2);
+          particle_color->push_back(color);
+          particle_anticolor->push_back(anticolor);
+          particle_Px->push_back(Px);
+          particle_Py->push_back(Py);
+          particle_Pz->push_back(Pz);
+          particle_E->push_back(E);
+          particle_mass->push_back(Mass);
+          particle_ctau->push_back(ctau);
+          particle_spincosine->push_back(spincosine);
+
+          TLorentzVector temp;
+          temp.SetPxPyPzE(Px, Py, Pz , E);
+
+          particle_pt->push_back(temp.Pt());
+
+          // Supress large eta value warnings by setting it to a large value by hand
+          if (temp.Pt() == 0.0 && temp.Pz() > 0.0) {
+            particle_eta->push_back(10e10);
+          }
+
+          else if (temp.Pt() == 0.0 && temp.Pz() < 0.0) {
+            particle_eta->push_back(-10e10);
+          }
+
+          else {
+            particle_eta->push_back(temp.Eta());
+          }
+
+          particle_phi->push_back(temp.Phi());
+          particle_energy->push_back(temp.E());
+
+          ++i;
 
           if (debug) {
             std::cout << lheline << std::endl;
@@ -113,54 +198,33 @@ void lheReader::ntuplizer(TString output)
                       << color << "    " << anticolor << "  " << Px << " " << Py << "  " << Pz << "  " 
                       << E << "  " << Mass << " " << ctau << " " << spincosine << std::endl;
           }
+        }
 
-          mc_particle_pdgID[i] = pdgID;
-          mc_particle_state[i] = state;
-          mc_particle_mother1[i] = mother1;
-          mc_particle_mother2[i] = mother2;
-          mc_particle_color[i] = color;
-          mc_particle_anticolor[i] = anticolor;
-          mc_particle_Px[i] = Px;
-          mc_particle_Py[i] = Py;
-          mc_particle_Pz[i] = Pz;
-          mc_particle_E[i] = E;
-          mc_particle_mass[i] = Mass;
-          mc_particle_ctau[i] = ctau;
-          mc_particle_spincosine[i] = spincosine;
-
-          TLorentzVector temp;
-          temp.SetPxPyPzE(Px, Py, Pz , E);
-
-          mc_particle_pt[i] = temp.Pt();
-
-          // Supress large eta value warnings by setting it to a large value by hand
-          if (temp.Pt() == 0.0 && temp.Pz() > 0.0) {
-            mc_particle_eta[i] = 10e10;
-          }
-
-          else if (temp.Pt() == 0.0 && temp.Pz() < 0.0) {
-            mc_particle_eta[i] = -10e10;
-          }
-
-          else {
-            mc_particle_eta[i] = temp.Eta();
-          }
-
-          mc_particle_phi[i] = temp.Phi();
-          mc_particle_energy[i] = temp.E();
-
-          ++i;
-
-          if (debug) {
-            std::cout << "mc_particle_pdgID = " << pdgID << std::endl;
-          }
-        } // end length 136 loop
-
+        // Find end of event
         else if (lheline == endevent) {
           i = 0;
           eventswitch = false;
+          event_line_count = 0;
 
           LHETree->Fill();
+
+          particle_pdgID->clear();
+          particle_state->clear();
+          particle_mother1->clear();
+          particle_mother2->clear();
+          particle_color->clear();
+          particle_anticolor->clear();
+          particle_Px->clear();
+          particle_Py->clear();
+          particle_Pz->clear();
+          particle_E->clear();
+          particle_mass->clear();
+          particle_ctau->clear();
+          particle_spincosine->clear();
+          particle_pt->clear();
+          particle_eta->clear();
+          particle_phi->clear();
+          particle_energy->clear();
 
           if (debug) {
             std::cout << "Found end of event!! " << eventswitch << std::endl;
@@ -168,8 +232,7 @@ void lheReader::ntuplizer(TString output)
         }
       }
 
-      // This else-statement is intended to skip over header information
-      // from either MadGraph or Pythia LHE files
+      // Find header file information and skip over it
       else {
         if (debug) {
           std::cout << "Line skipped!!" << std::endl;
@@ -186,19 +249,15 @@ void lheReader::ntuplizer(TString output)
   fileoutput->Close();
 }
 
-void lheReader::lhefile(TString lhefilename)
-{
-  fileinput.open(lhefilename);
-}
-
 Int_t lheReader::getRun(void)
 {
   return run_number;
 }
 
-void lheReader::setRun(Int_t r)
+void lheReader::setRun(const char *r)
 {
-  run_number = r;
+  std::stringstream ss(r);
+  ss >> run_number;
 }
 
 Int_t lheReader::getEvent(void)
@@ -206,9 +265,10 @@ Int_t lheReader::getEvent(void)
   return event_number;
 }
 
-void lheReader::setEvent(Int_t e)
+void lheReader::setEvent(const char *e)
 {
-  event_number = e;
+  std::stringstream ss(e);
+  ss >> event_number;
 }
 
 Int_t lheReader::getLumi(void)
@@ -216,37 +276,50 @@ Int_t lheReader::getLumi(void)
   return lumi_number;
 }
  
-void lheReader::setLumi(Int_t l)
+void lheReader::setLumi(const char *l)
 {
-  lumi_number = l;
-}
-
-lheReader::lheReader()
-{
-  setRun(1);
-  setEvent(1);
-  setLumi(1);
-}
-
-lheReader::~lheReader()
-{
-
+  std::stringstream ss(l);
+  ss >> lumi_number;
 }
 
 int main(int argc, char **argv)
 {
   lheReader *handler = new lheReader();
 
-  //"/cms/emmanuel/2012/coNLSP/store/lhe/delta0/coNLSP_chargino1400_gluino1700_delta0.lhe"
-  //"coNLSP_chargino1400_gluino1700_delta0.root"
-
-  if (argc < 1) {
+  if (argc < 2) {
     std::cout << "Please specify the LHE filename!" << std::endl;
+  }
+
+  else if (argc == 4) {
+    handler->setRun(argv[3]);
+  }
+
+  else if (argc == 5) {
+    handler->setRun(argv[3]);
+    handler->setEvent(argv[4]);
+  }
+
+  else if (argc == 6) {
+    handler->setRun(argv[3]);
+    handler->setEvent(argv[4]);
+    handler->setLumi(argv[5]);
+  }
+
+  else if (argc == 7) {
+    handler->setRun(argv[3]);
+    handler->setEvent(argv[4]);
+    handler->setLumi(argv[5]);
+    handler->setDebug(argv[6]);
+  }
+
+  else {
+    std::cout << "You have specified too many arguments!" << std::endl;
   }
 
   handler->lhefile(argv[1]);
   handler->ntuplizer(argv[2]);
 
   delete handler;
+
   return 0;
 }
