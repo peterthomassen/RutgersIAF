@@ -309,7 +309,7 @@ int main(int argc, char **argv)
     handler->setDebug(argv[6]);
   }
 
-  else {
+  else if (argc > 7) {
     std::cout << "You have specified too many arguments!" << std::endl;
   }
 
