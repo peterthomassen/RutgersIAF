@@ -29,7 +29,7 @@ lheReader::lheReader()
   setEvent("1");
   setLumi("1");
 
-  debug = false;
+  m_debug = false;
 }
 
 lheReader::~lheReader()
@@ -43,13 +43,13 @@ lheReader::~lheReader()
 
 bool lheReader::getDebug()
 {
-  return debug;
+  return m_debug;
 }
 
 void lheReader::setDebug(const char *db)
 {
   std::stringstream ss(db);
-  ss >> std::boolalpha >> debug;
+  ss >> std::boolalpha >> m_debug;
 }
 
 void lheReader::lhefile(TString lhefilename)
@@ -101,7 +101,7 @@ void lheReader::ntuplizer(TString output)
 
   if (fileinput.is_open()) {
 
-    if (debug) {
+    if (m_debug) {
       std::cout << "File is open!!" << std::endl;
     }
 
@@ -111,7 +111,7 @@ void lheReader::ntuplizer(TString output)
       if (lheline == beginevent) {
         eventswitch = true;
 
-        if (debug) {
+        if (m_debug) {
           std::cout << "Found begining of event!! " << eventswitch << std::endl;
           std::cout << "Inside event!!" << std::endl;
         }
@@ -135,7 +135,7 @@ void lheReader::ntuplizer(TString output)
           std::stringstream ss(lheline);
           ss >> particle_n >> process_ID >> event_weight >> factorization_scale >> alpha_em >> alpha_s;
 
-          if (debug) {
+          if (m_debug) {
             std::cout << lheline << std::endl;
             std::cout << "particle_n = " << particle_n << std::endl;
             std::cout << "process_ID = " << process_ID << std::endl;
@@ -189,7 +189,7 @@ void lheReader::ntuplizer(TString output)
           m_phi->push_back(temp.Phi());
           m_energy->push_back(temp.E());
 
-          if (debug) {
+          if (m_debug) {
             std::cout << lheline << std::endl;
             std::cout << pdgID << "    " << state << "    " << mother1 << "    " << mother2 << "  " 
                       << color << "    " << anticolor << "  " << Px << " " << Py << "  " << Pz << "  " 
@@ -223,7 +223,7 @@ void lheReader::ntuplizer(TString output)
           m_phi->clear();
           m_energy->clear();
 
-          if (debug) {
+          if (m_debug) {
             std::cout << "Found end of event!! " << eventswitch << std::endl;
           }
         }
@@ -231,7 +231,7 @@ void lheReader::ntuplizer(TString output)
 
       // Find header file information and skip over it
       else {
-        if (debug) {
+        if (m_debug) {
           std::cout << "Line skipped!!" << std::endl;
         }
 

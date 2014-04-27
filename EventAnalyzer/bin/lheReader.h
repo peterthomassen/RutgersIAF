@@ -21,7 +21,7 @@ class lheReader {
     // lheReader ifstream
     ifstream fileinput;
 
-    bool debug;
+    bool m_debug;
 
     // lheReader data members
     Int_t    run;
