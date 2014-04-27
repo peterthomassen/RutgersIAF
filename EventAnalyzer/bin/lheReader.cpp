@@ -81,23 +81,23 @@ void lheReader::ntuplizer(TString output)
   LHETree->Branch("factorization_scale",&factorization_scale,"factorization_scale/F");
   LHETree->Branch("alpha_em",&alpha_em,"alpha_em/F");
   LHETree->Branch("alpha_s",&alpha_s,"alpha_s/F");
-  LHETree->Branch("pdgID","std::vector<Int_t>",&particle_pdgID);
-  LHETree->Branch("state","std::vector<Int_t>",&particle_state);
-  LHETree->Branch("mother1","std::vector<Int_t>",&particle_mother1);
-  LHETree->Branch("mother2","std::vector<Int_t>",&particle_mother2);
-  LHETree->Branch("color","std::vector<Int_t>",&particle_color);
-  LHETree->Branch("anticolor","std::vector<Int_t>",&particle_anticolor);
-  LHETree->Branch("Px","std::vector<Double_t>",&particle_Px);
-  LHETree->Branch("Py","std::vector<Double_t>",&particle_Py);
-  LHETree->Branch("Pz","std::vector<Double_t>",&particle_Pz);
-  LHETree->Branch("E","std::vector<Double_t>",&particle_E);
-  LHETree->Branch("mass","std::vector<Double_t>",&particle_mass);
-  LHETree->Branch("ctau","std::vector<Double_t>",&particle_ctau);
-  LHETree->Branch("spincosine","std::vector<Double_t>",&particle_spincosine);
-  LHETree->Branch("pt","std::vector<Double_t>",&particle_pt);
-  LHETree->Branch("eta","std::vector<Double_t>",&particle_eta);
-  LHETree->Branch("phi","std::vector<Double_t>",&particle_phi);
-  LHETree->Branch("energy","std::vector<Double_t>",&particle_energy);
+  LHETree->Branch("pdgID","std::vector<Int_t>",&m_pdgID);
+  LHETree->Branch("state","std::vector<Int_t>",&m_state);
+  LHETree->Branch("mother1","std::vector<Int_t>",&m_mother1);
+  LHETree->Branch("mother2","std::vector<Int_t>",&m_mother2);
+  LHETree->Branch("color","std::vector<Int_t>",&m_color);
+  LHETree->Branch("anticolor","std::vector<Int_t>",&m_anticolor);
+  LHETree->Branch("Px","std::vector<Double_t>",&m_Px);
+  LHETree->Branch("Py","std::vector<Double_t>",&m_Py);
+  LHETree->Branch("Pz","std::vector<Double_t>",&m_Pz);
+  LHETree->Branch("E","std::vector<Double_t>",&m_E);
+  LHETree->Branch("mass","std::vector<Double_t>",&m_mass);
+  LHETree->Branch("ctau","std::vector<Double_t>",&m_ctau);
+  LHETree->Branch("spincosine","std::vector<Double_t>",&m_spincosine);
+  LHETree->Branch("pt","std::vector<Double_t>",&m_pt);
+  LHETree->Branch("eta","std::vector<Double_t>",&m_eta);
+  LHETree->Branch("phi","std::vector<Double_t>",&m_phi);
+  LHETree->Branch("energy","std::vector<Double_t>",&m_energy);
 
   if (fileinput.is_open()) {
 
@@ -154,40 +154,40 @@ void lheReader::ntuplizer(TString output)
           ss >> pdgID >> state >> mother1 >> mother2 >> color >> anticolor
              >> Px >> Py >> Pz >> E >> Mass >> ctau >> spincosine;
 
-          particle_pdgID->push_back(pdgID);
-          particle_state->push_back(state);
-          particle_mother1->push_back(mother1);
-          particle_mother2->push_back(mother2);
-          particle_color->push_back(color);
-          particle_anticolor->push_back(anticolor);
-          particle_Px->push_back(Px);
-          particle_Py->push_back(Py);
-          particle_Pz->push_back(Pz);
-          particle_E->push_back(E);
-          particle_mass->push_back(Mass);
-          particle_ctau->push_back(ctau);
-          particle_spincosine->push_back(spincosine);
+          m_pdgID->push_back(pdgID);
+          m_state->push_back(state);
+          m_mother1->push_back(mother1);
+          m_mother2->push_back(mother2);
+          m_color->push_back(color);
+          m_anticolor->push_back(anticolor);
+          m_Px->push_back(Px);
+          m_Py->push_back(Py);
+          m_Pz->push_back(Pz);
+          m_E->push_back(E);
+          m_mass->push_back(Mass);
+          m_ctau->push_back(ctau);
+          m_spincosine->push_back(spincosine);
 
           TLorentzVector temp;
           temp.SetPxPyPzE(Px, Py, Pz , E);
 
-          particle_pt->push_back(temp.Pt());
+          m_pt->push_back(temp.Pt());
 
           // Supress large eta value warnings by setting it to a large value by hand
           if (temp.Pt() == 0.0 && temp.Pz() > 0.0) {
-            particle_eta->push_back(10e10);
+            m_eta->push_back(10e10);
           }
 
           else if (temp.Pt() == 0.0 && temp.Pz() < 0.0) {
-            particle_eta->push_back(-10e10);
+            m_eta->push_back(-10e10);
           }
 
           else {
-            particle_eta->push_back(temp.Eta());
+            m_eta->push_back(temp.Eta());
           }
 
-          particle_phi->push_back(temp.Phi());
-          particle_energy->push_back(temp.E());
+          m_phi->push_back(temp.Phi());
+          m_energy->push_back(temp.E());
 
           if (debug) {
             std::cout << lheline << std::endl;
@@ -205,23 +205,23 @@ void lheReader::ntuplizer(TString output)
 
           LHETree->Fill();
 
-          particle_pdgID->clear();
-          particle_state->clear();
-          particle_mother1->clear();
-          particle_mother2->clear();
-          particle_color->clear();
-          particle_anticolor->clear();
-          particle_Px->clear();
-          particle_Py->clear();
-          particle_Pz->clear();
-          particle_E->clear();
-          particle_mass->clear();
-          particle_ctau->clear();
-          particle_spincosine->clear();
-          particle_pt->clear();
-          particle_eta->clear();
-          particle_phi->clear();
-          particle_energy->clear();
+          m_pdgID->clear();
+          m_state->clear();
+          m_mother1->clear();
+          m_mother2->clear();
+          m_color->clear();
+          m_anticolor->clear();
+          m_Px->clear();
+          m_Py->clear();
+          m_Pz->clear();
+          m_E->clear();
+          m_mass->clear();
+          m_ctau->clear();
+          m_spincosine->clear();
+          m_pt->clear();
+          m_eta->clear();
+          m_phi->clear();
+          m_energy->clear();
 
           if (debug) {
             std::cout << "Found end of event!! " << eventswitch << std::endl;
