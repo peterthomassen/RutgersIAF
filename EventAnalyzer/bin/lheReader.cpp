@@ -283,8 +283,9 @@ int main(int argc, char **argv)
 {
   lheReader *handler = new lheReader();
 
-  if (argc < 2) {
-    std::cout << "Please specify the LHE filename!" << std::endl;
+  if (argc < 3) {
+    std::cout << "Usage: " << argv[0] << " input.lhe output.root [run] [event] [lumi] [debugFlag]" << std::endl;
+    return 1;
   }
 
   else if (argc == 4) {
