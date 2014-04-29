@@ -322,8 +322,11 @@ void ChannelHandler::processChannel(TString c)
 	cout<<"WARNING unfinished background used: "<<fakeChannel->getName()<<" during "<<channel->getName()<<endl;
       }    
       double chanTotal = (double)fakeChannel->m_events;
-      chanTotal -= fakeChannel->m_simu_total*m_luminosity;
-      chanTotal -= fakeChannel->m_datadriven_total;
+
+      //Other subtractions done here
+
+      //chanTotal -= fakeChannel->m_simu_total*m_luminosity;
+      //chanTotal -= fakeChannel->m_datadriven_total;
       //cout<<chanName<<" "<<(double)fakeChannel->getEvents()<<" "<<chanTotal<<endl;
       if(chanTotal < 0)chanTotal = 0.0;
       typeTotal += chanTotal * typeFakeRate * weight;

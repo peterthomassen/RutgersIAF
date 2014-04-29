@@ -2,6 +2,9 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsObjectVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValueInList.h"
@@ -119,8 +122,16 @@
 #pragma link C++ class ObjectVariableMethod+;
 #pragma link C++ class ObjectComparisonSkimRecoTracks+;
 #pragma link C++ class PeterTreeWriter+;
-//#pragma link C++ class std::vector<double>+;	// dictionary shipped with ROOT
 #pragma link C++ class std::vector<int>+;
-//#pragma link C++ class std::vector<long>+;	// dictionary shipped with ROOT
 #pragma link C++ class std::vector<TString>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsEventVariable<double,double>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsEventVariable<int,double>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsEventVariable<double,int>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsEventVariable<int,int>+;
+#pragma link C++ class EventVariableObjectVariableMax<int>+;
+#pragma link C++ class EventVariableObjectVariableMax<double>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsObjectVariable<int,int>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsObjectVariable<double,int>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsObjectVariable<int,double>+;
+#pragma link C++ class SignatureTH2F_EventVariableVsObjectVariable<double,double>+;
 #endif
