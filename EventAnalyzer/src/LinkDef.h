@@ -2,6 +2,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_ObjectVariableVsObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
@@ -134,4 +135,8 @@
 #pragma link C++ class SignatureTH2F_EventVariableVsObjectVariable<double,int>+;
 #pragma link C++ class SignatureTH2F_EventVariableVsObjectVariable<int,double>+;
 #pragma link C++ class SignatureTH2F_EventVariableVsObjectVariable<double,double>+;
+#pragma link C++ class SignatureTH2F_ObjectVariableVsObjectVariable<int,int>+;
+#pragma link C++ class SignatureTH2F_ObjectVariableVsObjectVariable<int,double>+;
+#pragma link C++ class SignatureTH2F_ObjectVariableVsObjectVariable<double,int>+;
+#pragma link C++ class SignatureTH2F_ObjectVariableVsObjectVariable<double,double>+;
 #endif
