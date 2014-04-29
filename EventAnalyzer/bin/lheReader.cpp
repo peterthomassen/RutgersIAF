@@ -76,7 +76,7 @@ void lheReader::ntuplizer(TString output)
   LHETree->Branch("event",&event,"event/I");
   LHETree->Branch("lumi",&lumi,"lumi/I");
   LHETree->Branch("particle_n",&particle_n,"particle_n/I");
-  LHETree->Branch("process_ID",&process_ID,"process_ID/I");
+  LHETree->Branch("processID",&processID,"processID/I");
   LHETree->Branch("event_weight",&event_weight,"event_weight/F");
   LHETree->Branch("factorization_scale",&factorization_scale,"factorization_scale/F");
   LHETree->Branch("alpha_em",&alpha_em,"alpha_em/F");
@@ -133,12 +133,12 @@ void lheReader::ntuplizer(TString output)
         if (event_line_count == 1) {
 
           std::stringstream ss(lheline);
-          ss >> particle_n >> process_ID >> event_weight >> factorization_scale >> alpha_em >> alpha_s;
+          ss >> particle_n >> processID >> event_weight >> factorization_scale >> alpha_em >> alpha_s;
 
           if (m_debug) {
             std::cout << lheline << std::endl;
             std::cout << "particle_n = " << particle_n << std::endl;
-            std::cout << "process_ID = " << process_ID << std::endl;
+            std::cout << "processID = " << processID << std::endl;
             std::cout << "event_weight = " << event_weight << std::endl;
             std::cout << "factorization_scale = " << factorization_scale << std::endl;
             std::cout << "alpha_em = " << alpha_em << std::endl;

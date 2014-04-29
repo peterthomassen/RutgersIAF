@@ -28,7 +28,7 @@ class lheReader {
     Int_t    event;
     Int_t    lumi;
     Int_t    particle_n;
-    Int_t    process_ID;
+    Int_t    processID;
 
     Float_t  event_weight;
     Float_t  factorization_scale;
