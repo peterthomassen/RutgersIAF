@@ -54,14 +54,8 @@ public :
    std::vector<Double_t> *m_Py;
    std::vector<Double_t> *m_Pz;
    std::vector<Double_t> *m_E;
-   std::vector<Double_t> *m_mass;
    std::vector<Double_t> *m_ctau;
-   std::vector<Double_t> *m_spincosine;
-   std::vector<Double_t> *m_pt;
-   std::vector<Double_t> *m_eta;
-   std::vector<Double_t> *m_phi;
-   std::vector<Double_t> *m_energy;
-   
+   std::vector<Double_t> *m_spincosine;   
    
    ClassDef(LHETreeReader,1);
 };
