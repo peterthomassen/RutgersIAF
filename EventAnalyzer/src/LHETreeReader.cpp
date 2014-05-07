@@ -56,6 +56,14 @@ void LHETreeReader::createMCParticles()
     mcpart->setVariable("SPINCOSINE",(*m_spincosine)[i]);
     mcpart->setVariable("COLOR",(*m_color)[i]);
     mcpart->setVariable("ANTICOLOR",(*m_anticolor)[i]);
+    mcpart->setVariable("MOTHER_NTID",(*m_mother1)[i]-1);
+    mcpart->setVariable("SECONDARY_MOTHER_NTID",(*m_mother2)[i]-1);
+    if((*m_mother1)[i] >= 0 && (*m_mother1)[i]-1 < (int)mcparticles.size()){
+      mcpart->setAssociate("MOTHER",mcparticles[(*m_mother1)[i]-1]);
+    }
+    if((*m_mother1)[i] > 0 && (*m_mother2)[i]-1 < (int)mcparticles.size()){
+      mcpart->setAssociate("SECONDARY_MOTHER",mcparticles[(*m_mother2)[i]-1]);
+    }
     mcparticles.push_back(mcpart);
   }
   m_productmap["ALLMCPARTICLES"] = mcparticles;
