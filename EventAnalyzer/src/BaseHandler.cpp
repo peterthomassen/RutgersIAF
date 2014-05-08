@@ -185,11 +185,11 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 				cout << "This is entry " << m_currentEntry << endl;
 			}
 			
-			if(getDebugMode() && m_trackFakeCombinationIndex == 0) {
+			if(onlyRun >= 0 && m_trackFakeCombinationIndex == 0 && getDebugMode()) {
 				m_reader->dumpEventInfo();
 			}
 			
-			if(getDebugMode()) cout << "EVENT=" << event << ", trackComboIndex=" << m_trackFakeCombinationIndex << '\n';
+			if(getMode("trackFakeCombination")) cout << "E=" << event << " it=" << m_trackFakeCombinationIndex << '\n';
 			
 			if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end()) {
 				dumpEventInfo();
@@ -535,13 +535,13 @@ void BaseHandler::createProducts()
 					case 1:
 						m_products["goodElectrons"].push_back(m_products[pname][trackIndex]);
 						m_products[pname].erase(m_products[pname].begin() + trackIndex);
-						if(getDebugMode()) cout << "treated track " << trackIndex << " as electron\n";
+						if(getDebugMode()) cout << "t=" << trackIndex << "->el\n";
 						++nFakeElectrons;
 						break;
 					case 2:
 						m_products["goodMuons"].push_back(m_products[pname][trackIndex]);
 						m_products[pname].erase(m_products[pname].begin() + trackIndex);
-						if(getDebugMode()) cout << "treated track " << trackIndex << " as muon\n";
+						if(getDebugMode()) cout << "t=" << trackIndex << "->mu\n";
 						++nFakeMuons;
 						break;
 				}
