@@ -127,11 +127,6 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodMuons","MUON_INNER_VERT_DZ");
   handler->addProductCut("goodMuons","MUON_PROMPT");
 
-  handler->addProduct("posGoodMuons","goodMuons");
-  handler->addProductCut("posGoodMuons","POSITIVE");
-  handler->addProduct("negGoodMuons","goodMuons");
-  handler->addProductCut("negGoodMuons","NEGATIVE");
-
   ///////////////////
   ///Electron Cuts///
   //////////////////
@@ -180,11 +175,6 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodElectrons","ELECTRON_CONVERSION");
   handler->addProductCut("goodElectrons","ELECTRON_VERT_DZ");
 
-  handler->addProduct("posGoodElectrons","goodElectrons");
-  handler->addProductCut("posGoodElectrons","POSITIVE");
-  handler->addProduct("negGoodElectrons","goodElectrons");
-  handler->addProductCut("negGoodElectrons","NEGATIVE");
-
   //////////////
   ///Tau Cuts///
   //////////////
@@ -231,11 +221,6 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("BJET_CSVL", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.244,1000.0));
   handler->addObjectVariable("BJET_CSVM", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.679,1000.0));
 
-  handler->addProduct("bJetsCSVL","goodJets");
-  handler->addProduct("bJetsCSVM","bJetsCSVL");
-  handler->addProductCut("bJetsCSVL","BJET_CSVL");
-  handler->addProductCut("bJetsCSVM","BJET_CSVM");
-
   ////////////////
   ///Track Cuts///
   /////////////////
@@ -255,11 +240,6 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodTracks","TRACK_BEAM_D0");
   handler->addProductCut("goodTracks","TRACK_VERT_DZ");
   handler->addProductCut("goodTracks","TRACK_PROMPT");
-
-  handler->addProduct("posGoodTracks","goodTracks");
-  handler->addProductCut("posGoodTracks","POSITIVE");
-  handler->addProduct("negGoodTracks","goodTracks");
-  handler->addProductCut("negGoodTracks","NEGATIVE");
 
 
   /////////////////////////
@@ -287,6 +267,31 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
   handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
   handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
+
+
+  //////////////////////////
+  ///add derived products///
+  //////////////////////////
+
+  handler->addProduct("posGoodMuons","goodMuons");
+  handler->addProductCut("posGoodMuons","POSITIVE");
+  handler->addProduct("negGoodMuons","goodMuons");
+  handler->addProductCut("negGoodMuons","NEGATIVE");
+
+  handler->addProduct("posGoodElectrons","goodElectrons");
+  handler->addProductCut("posGoodElectrons","POSITIVE");
+  handler->addProduct("negGoodElectrons","goodElectrons");
+  handler->addProductCut("negGoodElectrons","NEGATIVE");
+
+  handler->addProduct("bJetsCSVL","goodJets");
+  handler->addProduct("bJetsCSVM","bJetsCSVL");
+  handler->addProductCut("bJetsCSVL","BJET_CSVL");
+  handler->addProductCut("bJetsCSVM","BJET_CSVM");
+
+  handler->addProduct("posGoodTracks","goodTracks");
+  handler->addProductCut("posGoodTracks","POSITIVE");
+  handler->addProduct("negGoodTracks","goodTracks");
+  handler->addProductCut("negGoodTracks","NEGATIVE");
 
 }
 
