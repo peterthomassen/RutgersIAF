@@ -154,9 +154,13 @@ class BaseHandler : virtual public TObject {
   bool m_doRunLumiCheckFromJSON;
   int m_checkedRun;
   int m_checkedLumi;
+  unsigned m_trackFakeCombination;
+  unsigned m_trackFakeCombinationIndex;
   bool m_isRunLumiGood;
   bool checkRunLumi(int r, int l);
   bool checkRunLumiFromJSON(int RunNumber, int LumiNumber, bool debug = false);
+  
+  int power(int, int);
   
   std::map<std::string, int> m_mode;
   ////////////
