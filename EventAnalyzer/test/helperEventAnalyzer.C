@@ -4,6 +4,7 @@
 #include <TString.h>
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
@@ -322,6 +323,11 @@ void setupVariables(BaseHandler* handler)
   EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,15);
   OSSF->addProduct("goodElectrons");
   handler->addEventVariable("OSSF",OSSF);
+
+  EventVariableMass* massLeptons = new EventVariableMass("MLEPTONS", "goodElectrons");
+  massLeptons->addProduct("goodMuons");
+  massLeptons->addProduct("goodTaus");
+  handler->addEventVariable("MLEPTONS", massLeptons);
 
   EventVariableMT* MT = new EventVariableMT("MT", mZ);
   handler->addEventVariable("MT",MT);
