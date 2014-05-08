@@ -1218,3 +1218,216 @@ void SkimTreeReader::createVariables()
   setVariable("BUNCHCROSSING",pileup_bunchCrossing);
 
 }
+
+void SkimTreeReader::dumpEventInfo()
+{
+  std::stringstream eventStream;
+  eventStream<<"Run:"<<run<<" Lumi:"<<lumiBlock<<" Event:"<<event<<": ";
+  TString eventString=eventStream.str();
+  std::cout<<eventString<<std::endl;
+  std::cout<<"rho: "<<pat_rho<<std::endl;
+  std::cout<<eventString<<" TC_MET: "<<tc_met_pt<<" phi: "<<tc_met_phi<<std::endl;
+  std::cout<<eventString<<" PF_MET: "<<pf_met_pt<<" phi: "<<pf_met_phi<<std::endl;
+  std::cout<<eventString<<" PAT_MET: "<<pat_met_pt<<" phi: "<<pat_met_phi<<std::endl;
+  std::cout<<eventString<<" PAT_MET_sumEt: "<<pat_met_sumEt<<std::endl;
+  std::cout<<eventString<<" PAT_MET_phi: "<<pat_met_phi<<std::endl;
+  std::cout<<eventString<<"Muons:"<<pat_muon_n<<std::endl;
+  for( Int_t i=0; i<pat_muon_n; i++)
+    {
+      std::cout<<eventString<<"Muon:  Index:"<<i
+               <<"  pt:"<<pat_muon_pt[i]<<"  eta:"<<pat_muon_eta[i]
+	       <<"  phi:"<<pat_muon_phi[i]<<"  q:"<<pat_muon_charge[i]
+               <<"  GM:"<<pat_muon_isGlobalMuon[i]<<" GMPT:"
+	       <<pat_muon_isGlobalMuonPromptTight[i]<<"  Tracker:"<<pat_muon_isTrackerMuon[i] << " isPF: "<<pat_muon_isPF[i]
+	       <<" numMatches: "<<pat_muon_numberOfMatches[i]
+	       <<" layersWM: "<<reco_track_ntrackerLayersWM[pat_muon_globalTrackID[i]]
+	//<<"  Nthits:"<<reco_track_nValidTrackerHits[pat_muon_trackID[i]]
+	//<<"  nphit:"<<reco_track_nValidPixelHits[pat_muon_trackID[i]]
+	//     <<"  nmhit:"<<reco_track_nValidMuonHits[pat_muon_trackID[i]]
+               <<"  globalnmhit:"<<reco_track_nValidMuonHits[pat_muon_globalTrackID[i]]
+               <<std::endl;
+      std::cout<<eventString<<"Muon:  Index:"<<i
+	/*               <<"  globalndof:"<<reco_track_ndof[pat_muon_globalTrackID[i]]
+               <<"  globalchi2/dof:"<<reco_track_chi2[pat_muon_globalTrackID[i]]/reco_track_ndof[pat_muon_globalTrackID[i]]
+               <<"  beamDxy:"<<reco_track_beam_dxy[pat_muon_trackID[i]]
+               <<"  beamDz:"<<reco_track_beam_dz[pat_muon_trackID[i]]
+               <<"  tIso:"<<pat_muon_trackIso[i]
+               <<"  hIso:"<<pat_muon_hcaloIso[i]
+               <<"  eIso:"<<pat_muon_ecaloIso[i]*/
+	       <<" normalizedChi2: "<<pat_muon_normalizedChi2[i]
+	       <<" vertDz: "<<pat_muon_innerVertDz[i]
+	       <<" vertDxy: "<<pat_muon_innerVertDxy[i]
+	       <<" pixelhits: "<<pat_muon_innerNumberOfValidPixelHits[i]
+	       <<" chargedHadronIso: "<<pat_muon_PF_chargedHadronIso[i]
+	       <<" neutralHadronIso: "<<pat_muon_PF_neutralHadronIso[i]
+	       <<" photonIso: "<<pat_muon_PF_photonIso[i]
+	       <<" beta: "<<pat_muon_beta[i]
+               <<std::endl;
+      
+    }
+  std::cout<<eventString<<"Electrons:"<<pat_electron_n<<std::endl;
+  for( Int_t i=0; i<pat_electron_n;i++)
+    {
+      std::cout<<eventString<<"Electron: pt:"<<pat_electron_pt[i]<<" eta:"<<pat_electron_eta[i]<<" phi:"<<pat_electron_phi[i]<<" q:"<<pat_electron_charge[i]
+	       <<" HoE:"<<pat_electron_hadOverEm[i]<<" sigmaIetaIeta:"<<pat_electron_sigmaIetaIeta[i]
+	       <<" dPhi:"<<pat_electron_deltaPhi[i]<<" dEta:"<<pat_electron_deltaEta[i]
+	       <<" eidTight:"<<eidCut("eidTight",i)<<" eidLoose:"<<eidCut("eidLoose",i)<<" eidRobustLoose:"<<eidCut("eidRobustLoose",i)
+	       <<" eidRobustTight:"<<eidCut("eidRobustTight",i)<<" eidRobustHighEnergy:"<<eidCut("eidRobustHighEnergy",i)
+	       <<std::endl;
+      std::cout<<"electron "<<i
+	///<<" tIso:"<<pat_electron_trackIso[i]
+	//    <<" hIso:"<<pat_electron_hcaloIso[i]
+	//     <<" eIso:"<<pat_electron_ecaloIso[i]
+	       <<" chargedIso: "<<pat_electron_PF_chargedHadronIso[i]
+	       <<" neutralIso: "<<pat_electron_PF_neutralHadronIso[i]
+	       <<" photonIso: "<<pat_electron_PF_photonIso[i]
+	       <<" 1/E - 1/p: "<<pat_electron_fMVAVar_IoEmIoP[i]
+	       <<" vertProb: "<<(int)pat_electron_conv_vtxProb[i]
+	       <<" nExpected: "<<pat_electron_NumberOfExpectedInnerHits[i]
+	       <<" vertDz: "<<pat_electron_fMVAVar_dz[i]
+	       <<" vertDxy: "<<pat_electron_fMVAVar_d0[i]
+	       <<" isConversion: "<<pat_electron_IsConversion[i]
+	       <<std::endl;
+
+    }
+
+  std::cout<<eventString<<"Taus:"<<pat_tau_n<<std::endl;
+  for(int i = 0; i < pat_tau_n; i++){
+    std::cout<<eventString<<"tau: pt: "<<pat_tau_pt[i]<<" eta: "<<pat_tau_eta[i]<<" phi: "<<pat_photon_phi[i]<<" charge: "<<pat_tau_PF_signalCharge[i]<<endl;
+    std::cout<<eventString<<"decaymodefinding: "<<pat_tau_PF_Discriminants[i][19]<<" againstelectronmva: "<<pat_tau_PF_Discriminants[i][29]<<" againstmvatight "<<pat_tau_PF_Discriminants[i][24]<<" byloosecombinedisodbsumptcorr: "<<pat_tau_PF_Discriminants[i][26]<<std::endl;
+  }
+
+  std::cout<<eventString<<"Photons:"<<pat_photon_n<<std::endl;
+  for( Int_t i=0; i<pat_photon_n; i++)
+    {
+      std::cout<<eventString<<"Photon: pt:"<<pat_photon_pt[i]<<" eta:"<<pat_photon_eta[i]<<" phi:"<<pat_photon_phi[i]
+	       <<" endcap:"<<pat_photon_endcap[i]<<" barrel:"<<pat_photon_barrel[i]
+	       <<" HoE:"<<pat_photon_hadOverEm[i]<<" sigmaIetaIeta:"<<pat_photon_sigmaIetaIeta[i]
+	       <<" tIso:"<<pat_photon_trackIso[i]
+	       <<" cIso:"<<pat_photon_caloIso[i]
+	       <<std::endl;
+      
+    }
+  
+  std::cout<<eventString<<"Tracks:"<<reco_track_n<<std::endl;
+  for( Int_t i=0; i<reco_track_n; i++)
+    {
+      std::cout<<eventString<<"Track: Index:"<<i<<"  pt:"<<reco_track_pt[i]
+               <<"  eta+/-error:"<<reco_track_eta[i]<<"+/-"<<reco_track_etaError[i]
+               <<"  phi+/-error:"<<reco_track_phi[i]<<"+/-"<<reco_track_phiError[i]
+               <<"  q:"<<reco_track_charge[i]
+               <<"  Global:"<<reco_track_isGlobal[i]<<" Muon:"<<reco_track_isMuon[i]
+	       <<" Tracker:"<<reco_track_isTracker[i]
+               <<"  Nthits:"<<reco_track_nValidTrackerHits[i]
+               <<"  nphit:"<<reco_track_nValidPixelHits[i]
+               <<std::endl;
+      
+      std::cout<<eventString<<"Track: Index:"<<i
+               <<"  nmhit:"<<reco_track_nValidMuonHits[i]
+               <<"  ndof:"<<reco_track_ndof[i]
+               <<"  chi2/dof:"<<reco_track_chi2[i]/reco_track_ndof[i]
+               <<"  beamDxy:"<<reco_track_beam_dxy[i]
+               <<"  beamDz:"<<reco_track_beam_dz[i]
+               <<"  TrackIso:"<<reco_track_trackIso[i]
+               <<"  CaloIso:"<<reco_track_caloIso[i]
+               <<"  Vx:"<<reco_track_vx[i]
+               <<"  Vy:"<<reco_track_vy[i]
+               <<"  Vz:"<<reco_track_vz[i]
+               <<std::endl;
+      
+      std::cout<<eventString<<"Track: Index:"<<i
+               <<"  VertWeight:"<<reco_track_vertWeight[i]
+               <<"  VertDxy:"<<reco_track_vert_dxy[i]
+               <<"  nlph:"<<reco_track_nLostPixelHits[i]
+               <<"  nlth:"<<reco_track_nLostTrackerHits[i]
+               <<"  Dxy+/-error:"<<reco_track_dxy[i]<<"+/-"<<reco_track_dxyError[i]
+               <<"  Dz+/-error:"<<reco_track_dz[i]<<"+/-"<<reco_track_dzError[i]
+               <<std::endl;
+    }
+  std::cout<<eventString<<"Jets:"<<pat_jet_n<<std::endl;
+  for( Int_t i=0; i<pat_jet_n; i++)
+    {
+      std::cout<<eventString<<"Jet: pt:"<<pat_jet_pt[i]<<"  eta:"<<pat_jet_eta[i]<<"  phi:"<<pat_jet_phi[i]
+               <<"  ntracks:"<<pat_jet_ntracks[i]
+               <<"  emf:"<<pat_jet_emf[i]
+               <<"  raw Et:"<<pat_jet_raw_et[i]
+               <<"  raw Pt:"<<pat_jet_raw_pt[i]
+	       <<" trackCountBDisc:"<<pat_jet_bDiscriminator_trackCount[i]
+	       <<" ssVertBDisc:"<<pat_jet_bDiscriminator_ssVertex[i]
+	       <<" CSV: " <<pat_jet_bDiscPositive[i][10]
+               <<std::endl;
+      
+      for(Int_t j=0; j<pat_jet_ntracks[i]; j++)
+        {
+          std::cout<<eventString<<"TrackID:"<<pat_jet_trkIDs[i][j]<<std::endl;
+        }
+    }
+  std::cout<<eventString<<"Vertices:"<<reco_vertex_n<<std::endl;
+  for( Int_t i=0; i<reco_vertex_n; i++)
+    {
+      std::cout<<eventString<<"Vertices: WSumPt:"<<reco_vertex_wSumPt[i]<<" nTrack:"<<reco_vertex_ntrack[i]
+               <<"  x +/-xe:"<<reco_vertex_x[i]<<"+/-"<<reco_vertex_ex[i]
+               <<"  y +/-ye:"<<reco_vertex_y[i]<<"+/-"<<reco_vertex_ey[i]
+               <<"  z +/-ze:"<<reco_vertex_z[i]<<"+/-"<<reco_vertex_ez[i]
+               <<"  ndof:"<<reco_vertex_ndof[i]
+               <<"  chi2:"<<reco_vertex_chi2[i]
+               <<std::endl;
+    }
+
+  std::cout<<"Triggers Fired: ";
+  for( Int_t i=0; i<hlt_triggers_npassed; i++)
+    {
+      std::cout<<hlt_triggers_id[i]<<", ";
+    }
+  std::cout<<std::endl;
+}
+
+Int_t SkimTreeReader::eidCut(TString cutType, Int_t ntID)
+{
+  if( ntID < 0 || ntID > pat_electron_n-1 )
+    {
+      std::cout<<"WARNING: eidCut... you asked for electron outside of range "<<std::endl;
+      return -1;
+    }
+
+  Int_t cut=-99;
+  if( cutType == "eidTight" )
+    {
+      cut=pat_electron_eidTight[ntID];
+    }
+  else if( cutType == "eidLoose" )
+    {
+      cut=pat_electron_eidLoose[ntID];
+    }
+  else if( cutType == "eidRobustLoose" )
+    {
+      cut=pat_electron_eidRobustLoose[ntID];
+    }
+  else if( cutType == "eidRobustTight" )
+    {
+      cut=pat_electron_eidRobustTight[ntID];
+    }
+  else if( cutType == "eidRobustHighEnergy" )
+    {
+      cut=pat_electron_eidRobustHighEnergy[ntID];
+    }
+  else
+    {
+      std::cout<<"Warning: eidCut: cutType: "<<cutType<<" is not recognized!!!"<<std::endl;
+      return -1;
+    }
+  
+  //Value Map Key
+  //0: fails
+  //1: passes electron ID only
+  //2: passes electron Isolation only
+  //3: passes electron ID and Isolation only
+  //4: passes conversion rejection
+  //5: passes conversion rejection and ID
+  //6: passes conversion rejection and Isolation
+  //7: passes the whole selection
+  
+  if( cut == 1 || cut == 3 || cut == 5 || cut == 7 )
+    return 1;
+  return 0;
+}

@@ -600,6 +600,7 @@ simpleSecondaryVertexNegativeHighPurBJetTags 3
    SkimTreeReader(TTree *tree);
    virtual ~SkimTreeReader();
    virtual void     Init(TTree *tree);
+   void dumpEventInfo();
 
  protected:
    void makeProducts();
@@ -618,6 +619,7 @@ simpleSecondaryVertexNegativeHighPurBJetTags 3
    void createVariables();
    double calculateJetBeta(int,int);
    SignatureObject* findTauLeadingTrack(SignatureObject*);
+   Int_t eidCut(TString, Int_t);
 
    ClassDef(SkimTreeReader,1);
 };
