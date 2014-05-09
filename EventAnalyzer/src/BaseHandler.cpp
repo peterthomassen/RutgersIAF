@@ -1216,10 +1216,13 @@ ObjectVariable* BaseHandler::getObjectVariable(TString varname)
 //-----------------------------------------
 void BaseHandler::analyzeEvent()
 {
+    bool saveEvent = false;
+    bool isSet = getVariable("WRITEEVENT",saveEvent);
+    if(m_writer && isSet && saveEvent)m_writer->fillTree();
 
-    ////////////////////////////////////////////////////////////////
-    //Get all Physics objects and calculate all Physics quantities//
-    ////////////////////////////////////////////////////////////////
+	if(m_trackFakeCombinationIndex > 0) {
+		return;
+	}
 
     m_noCutSignature->fillHistograms();
 
@@ -1293,9 +1296,6 @@ void BaseHandler::analyzeEvent()
         }
       }
     }
-    bool saveEvent = false;
-    bool isSet = getVariable("WRITEEVENT",saveEvent);
-    if(m_writer && isSet && saveEvent)m_writer->fillTree();
 
 }
 //-----------------------------------------
