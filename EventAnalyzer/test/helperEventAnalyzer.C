@@ -3,11 +3,13 @@
 #include <TLorentzVector.h>
 #include <TString.h>
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableCombined.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOS.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariablePairMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
@@ -329,6 +331,10 @@ void setupVariables(BaseHandler* handler)
   massLeptons->addProduct("goodTaus");
   handler->addEventVariable("MLEPTONS", massLeptons);
 
+  EventVariableOS* mLowDY = new EventVariableOS("MLOWDY", "goodElectrons", "LOWDY");
+  mLowDY->addProduct("goodMuons");
+  handler->addEventVariable("MLOWDY", mLowDY);
+  
   EventVariableMT* MT = new EventVariableMT("MT", mZ);
   handler->addEventVariable("MT",MT);
 
@@ -349,7 +355,10 @@ void setupVariables(BaseHandler* handler)
   EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
   handler->addEventVariable("DILEPTONS", dileptons);
   
-  EventVariableValue<bool>* writeEvent = new EventVariableValue<bool>("DILEPTONS", true, "WRITEEVENT");
+  EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e6, "MLOWDYCUT");
+  handler->addEventVariable("MLOWDYCUT", mLowDYcut);
+  
+  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
   handler->addEventVariable("WRITEEVENT", writeEvent);
 }
 

@@ -31,6 +31,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableReversed.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableCombined.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOS.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariablePairMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
@@ -81,6 +82,7 @@
 #pragma link C++ class EventVariableMass+;
 #pragma link C++ class EventVariableN+;
 #pragma link C++ class EventVariableOSSF+;
+#pragma link C++ class EventVariableOS+;
 #pragma link C++ class EventVariablePairMass+;
 #pragma link C++ class EventVariableCombined+;
 #pragma link C++ class EventVariableReversed+;
