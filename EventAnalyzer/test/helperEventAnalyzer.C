@@ -13,6 +13,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariablePairMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTriggerWeight.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValue.h"
