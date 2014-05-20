@@ -244,6 +244,15 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodTracks","TRACK_VERT_DZ");
   handler->addProductCut("goodTracks","TRACK_PROMPT");
 
+  //////////////////
+  //Threshold cuts//
+  //////////////////
+  EventVariableThreshold* firstLeptonThreshold = new EventVariableThreshold("FIRSTLEPTHRESH","goodMuons");
+  firstLeptonThreshold->addProduct("goodElectrons");
+  firstLeptonThreshold->addThreshold(20);
+  handler->addEventVariable("FIRSTLEPTHRESH",firstLeptonThreshold);
+  handler->addHandlerCut("FIRSTLEPTHRESH");
+
 
   /////////////////////////
   ///handler comparisons///
