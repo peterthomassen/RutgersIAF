@@ -534,14 +534,16 @@ void BaseHandler::createProducts()
 						break;
 					case 1:
 						m_products["goodElectrons"].push_back(m_products[pname][trackIndex]);
+						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
+						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
 						m_products[pname].erase(m_products[pname].begin() + trackIndex);
-						if(getDebugMode()) cout << "t=" << trackIndex << "->el\n";
 						++nFakeElectrons;
 						break;
 					case 2:
 						m_products["goodMuons"].push_back(m_products[pname][trackIndex]);
+						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
+						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
 						m_products[pname].erase(m_products[pname].begin() + trackIndex);
-						if(getDebugMode()) cout << "t=" << trackIndex << "->mu\n";
 						++nFakeMuons;
 						break;
 				}
