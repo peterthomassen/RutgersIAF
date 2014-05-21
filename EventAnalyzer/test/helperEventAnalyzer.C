@@ -29,6 +29,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_EventVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonElectron.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_N.h"
 
 TString makeName(int qMu, int nMu,int qEl,int nEl, int qTr, int nTr)
@@ -264,9 +265,10 @@ void setupProducts(BaseHandler* handler)
   ObjectComparisonDeltaR* deltaR0p3 = new ObjectComparisonDeltaR(0.3);
   ObjectComparisonDeltaR* deltaR0p4 = new ObjectComparisonDeltaR(0.4);
   ObjectComparisonSkimRecoTracks* trackSelfComp = new ObjectComparisonSkimRecoTracks(0.005);
+  ObjectComparisonElectron* electronSelfComp = new ObjectComparisonElectron(0.1);
 
   handler->addProductSelfComparison("goodMuons",deltaR0p1);
-  handler->addProductSelfComparison("goodElectrons",deltaR0p1);
+  handler->addProductSelfComparison("goodElectrons",electronSelfComp);
   handler->addProductSelfComparison("goodTracks",trackSelfComp);
 
   handler->addProductComparison("goodElectrons","goodMuons",deltaR0p1);
