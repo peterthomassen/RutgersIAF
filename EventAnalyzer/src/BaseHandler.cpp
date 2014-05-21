@@ -159,11 +159,13 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 	int nevents = m_reader->GetEntries();
 	int nEntryLow = getMode("nEntryLow");
 	int nEntryHigh = getMode("nEntryHigh");
+	bool done = false;
 	if(nEntryHigh == 0 || nEntryHigh > nevents) {
 		nEntryHigh = nevents;
 	}
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 		m_trackFakeCombination = 0;
+		if(done) break;
 		for(m_trackFakeCombinationIndex = 0; m_trackFakeCombinationIndex <= m_trackFakeCombination; ++m_trackFakeCombinationIndex) {
 			m_reader->GetEntry(m_currentEntry);
 			if (m_currentEntry % 100000 == 0) {
@@ -183,6 +185,7 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 					continue;
 				}
 				cout << "This is entry " << m_currentEntry << endl;
+				done = true;
 			}
 			
 			if(onlyRun >= 0 && m_trackFakeCombinationIndex == 0 && getDebugMode()) {
