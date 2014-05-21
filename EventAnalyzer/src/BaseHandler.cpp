@@ -473,7 +473,7 @@ void BaseHandler::createProducts()
       bool doAnd = (*findSelf).second.second;
       for(int k = 0; k < (int)i_product.size(); k++){
 	  bool passed = doAnd;
-	  for(int j = 0; j < k && passed != doAnd; j++){
+	  for(int j = 0; j < k; j++){
 	    bool pass = comparison->passCut(i_product[k],i_product[j]);
 	    if(doAnd) passed = pass && passed;
 	    else passed = pass || passed;
