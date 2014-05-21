@@ -35,6 +35,8 @@ class BaseTreeReader : public TObject{
   virtual void setVariable(TString,TString);
   virtual void setVariable(TString,double);
   virtual void setVariable(TString,bool);
+  
+  virtual void dumpEventInfo() { }
 
  protected:
   TTree* m_inTree;

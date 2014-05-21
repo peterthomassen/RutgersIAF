@@ -3,13 +3,17 @@
 #include <TLorentzVector.h>
 #include <TString.h>
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableCombined.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOS.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariablePairMass.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTriggerWeight.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValue.h"
@@ -127,11 +131,6 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodMuons","MUON_INNER_VERT_DZ");
   handler->addProductCut("goodMuons","MUON_PROMPT");
 
-  handler->addProduct("posGoodMuons","goodMuons");
-  handler->addProductCut("posGoodMuons","POSITIVE");
-  handler->addProduct("negGoodMuons","goodMuons");
-  handler->addProductCut("negGoodMuons","NEGATIVE");
-
   ///////////////////
   ///Electron Cuts///
   //////////////////
@@ -180,11 +179,6 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodElectrons","ELECTRON_CONVERSION");
   handler->addProductCut("goodElectrons","ELECTRON_VERT_DZ");
 
-  handler->addProduct("posGoodElectrons","goodElectrons");
-  handler->addProductCut("posGoodElectrons","POSITIVE");
-  handler->addProduct("negGoodElectrons","goodElectrons");
-  handler->addProductCut("negGoodElectrons","NEGATIVE");
-
   //////////////
   ///Tau Cuts///
   //////////////
@@ -231,11 +225,6 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("BJET_CSVL", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.244,1000.0));
   handler->addObjectVariable("BJET_CSVM", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.679,1000.0));
 
-  handler->addProduct("bJetsCSVL","goodJets");
-  handler->addProduct("bJetsCSVM","bJetsCSVL");
-  handler->addProductCut("bJetsCSVL","BJET_CSVL");
-  handler->addProductCut("bJetsCSVM","BJET_CSVM");
-
   ////////////////
   ///Track Cuts///
   /////////////////
@@ -256,10 +245,14 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodTracks","TRACK_VERT_DZ");
   handler->addProductCut("goodTracks","TRACK_PROMPT");
 
-  handler->addProduct("posGoodTracks","goodTracks");
-  handler->addProductCut("posGoodTracks","POSITIVE");
-  handler->addProduct("negGoodTracks","goodTracks");
-  handler->addProductCut("negGoodTracks","NEGATIVE");
+  //////////////////
+  //Threshold cuts//
+  //////////////////
+  EventVariableThreshold* firstLeptonThreshold = new EventVariableThreshold("FIRSTLEPTHRESH","goodMuons");
+  firstLeptonThreshold->addProduct("goodElectrons");
+  firstLeptonThreshold->addThreshold(20);
+  handler->addEventVariable("FIRSTLEPTHRESH",firstLeptonThreshold);
+  handler->addHandlerCut("FIRSTLEPTHRESH");
 
 
   /////////////////////////
@@ -287,6 +280,31 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
   handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
   handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
+
+
+  //////////////////////////
+  ///add derived products///
+  //////////////////////////
+
+  handler->addProduct("posGoodMuons","goodMuons");
+  handler->addProductCut("posGoodMuons","POSITIVE");
+  handler->addProduct("negGoodMuons","goodMuons");
+  handler->addProductCut("negGoodMuons","NEGATIVE");
+
+  handler->addProduct("posGoodElectrons","goodElectrons");
+  handler->addProductCut("posGoodElectrons","POSITIVE");
+  handler->addProduct("negGoodElectrons","goodElectrons");
+  handler->addProductCut("negGoodElectrons","NEGATIVE");
+
+  handler->addProduct("bJetsCSVL","goodJets");
+  handler->addProduct("bJetsCSVM","bJetsCSVL");
+  handler->addProductCut("bJetsCSVL","BJET_CSVL");
+  handler->addProductCut("bJetsCSVM","BJET_CSVM");
+
+  handler->addProduct("posGoodTracks","goodTracks");
+  handler->addProductCut("posGoodTracks","POSITIVE");
+  handler->addProduct("negGoodTracks","goodTracks");
+  handler->addProductCut("negGoodTracks","NEGATIVE");
 
 }
 
@@ -318,6 +336,15 @@ void setupVariables(BaseHandler* handler)
   OSSF->addProduct("goodElectrons");
   handler->addEventVariable("OSSF",OSSF);
 
+  EventVariableMass* massLeptons = new EventVariableMass("MLEPTONS", "goodElectrons");
+  massLeptons->addProduct("goodMuons");
+  massLeptons->addProduct("goodTaus");
+  handler->addEventVariable("MLEPTONS", massLeptons);
+
+  EventVariableOS* mLowDY = new EventVariableOS("MLOWDY", "goodElectrons", "LOWDY");
+  mLowDY->addProduct("goodMuons");
+  handler->addEventVariable("MLOWDY", mLowDY);
+  
   EventVariableMT* MT = new EventVariableMT("MT", mZ);
   handler->addEventVariable("MT",MT);
 
@@ -338,7 +365,10 @@ void setupVariables(BaseHandler* handler)
   EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
   handler->addEventVariable("DILEPTONS", dileptons);
   
-  EventVariableValue<bool>* writeEvent = new EventVariableValue<bool>("DILEPTONS", true, "WRITEEVENT");
+  EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e6, "MLOWDYCUT");
+  handler->addEventVariable("MLOWDYCUT", mLowDYcut);
+  
+  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
   handler->addEventVariable("WRITEEVENT", writeEvent);
 }
 
