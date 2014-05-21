@@ -1221,34 +1221,37 @@ ObjectVariable* BaseHandler::getObjectVariable(TString varname)
 //-----------------------------------------
 void BaseHandler::analyzeEvent()
 {
-    bool saveEvent = false;
-    bool isSet = getVariable("WRITEEVENT",saveEvent);
-    if(m_writer && isSet && saveEvent)m_writer->fillTree();
+	unsigned int nSig = m_Signatures.size();
+	unsigned int nBjetSig = m_bjetSignatures.size();
+	unsigned int nPreSig = m_preHandlerCutSignatures.size();
+	vector<int> isSigVec(nSig + nBjetSig + nPreSig,0);
+	
+	if(m_trackFakeCombinationIndex == 0) {
+		m_noCutSignature->fillHistograms();
 
-	if(m_trackFakeCombinationIndex > 0) {
-		return;
+		if(m_debugMode)printDebugInfo();
+
+		for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
+		  if(m_preHandlerCutSignatures[s]->isSignature()){
+			printSignature(m_preHandlerCutSignatures[s]);
+			m_preHandlerCutSignatures[s]->fillHistograms();
+			isSigVec[s+nSig+nBjetSig]=1;
+		setVariable(m_preHandlerCutSignatures[s]->getName(),true);
+		  }
+		}
 	}
-
-    m_noCutSignature->fillHistograms();
-
-    if(m_debugMode)printDebugInfo();
-
-    unsigned int nSig = m_Signatures.size();
-    unsigned int nBjetSig = m_bjetSignatures.size();
-    unsigned int nPreSig = m_preHandlerCutSignatures.size();
-    vector<int> isSigVec(nSig + nBjetSig + nPreSig,0);
-    for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
-      if(m_preHandlerCutSignatures[s]->isSignature()){
-        printSignature(m_preHandlerCutSignatures[s]);
-        m_preHandlerCutSignatures[s]->fillHistograms();
-        isSigVec[s+nSig+nBjetSig]=1;
-	setVariable(m_preHandlerCutSignatures[s]->getName(),true);
-      }
-    }
     ////////////////////////////
     //Check handler level cuts//
     ////////////////////////////
     if(applyHandlerCuts()){
+
+		bool saveEvent = false;
+		bool isSet = getVariable("WRITEEVENT",saveEvent);
+		if(m_writer && isSet && saveEvent)m_writer->fillTree();
+
+		if(m_trackFakeCombinationIndex > 0) {
+			return;
+		}
 
 
     ////////////////////////////////////////////////////////////
