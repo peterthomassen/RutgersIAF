@@ -179,6 +179,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodElectrons","ELECTRON_EMINUSP");
   handler->addProductCut("goodElectrons","ELECTRON_CONVERSION");
   handler->addProductCut("goodElectrons","ELECTRON_VERT_DZ");
+  handler->addProductCut("goodElectrons","ELECTRON_NOTGAP");
 
   //////////////
   ///Tau Cuts///
