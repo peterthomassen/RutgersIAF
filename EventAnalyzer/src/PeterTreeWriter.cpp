@@ -36,18 +36,12 @@ void PeterTreeWriter::fillTree() {
 	for(std::map<TString, bool>::iterator it = m_handler->m_variable_map_bool.begin(); it != m_handler->m_variable_map_bool.end(); ++it) {
 		int idx = m_boolIndex[it->first] / (sizeof(unsigned char) * 8);
 		int off = m_boolIndex[it->first] % (sizeof(unsigned char) * 8);
+		// Do not change this: haddR relies on how the alias is defined
 		m_tree->SetAlias(it->first, TString::Format("(bits[%d] & (1 << %d)) > 0", idx, off));
 		if(it->second) {
 			m_bits[idx] |= 1 << off;
 		}
 	}
-	
-/*	for(size_t i = 0; i < nBits; ++i) {
-		bool humanReadable = true;
-		size_t j = humanReadable ? (nBits - i - 1) 	: i;
-		cout << (bool)(m_bits[j/8] & (1 << (j%8)));
-	}
-	cout << '\n';*/
 	
 	m_tree->Fill();
 }
