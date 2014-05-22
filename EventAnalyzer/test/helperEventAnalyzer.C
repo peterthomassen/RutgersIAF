@@ -12,6 +12,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOS.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariablePairMass.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableReversed.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
@@ -138,7 +139,7 @@ void setupProducts(BaseHandler* handler)
 
   handler->addObjectVariable("ELECTRON_INGAPPOS",new ObjectVariableInRange<double>("FMVAVAR_ETA",1.4442,1.566,"ELECTRON_INGAPPOS"));
   handler->addObjectVariable("ELECTRON_INGAPNEG",new ObjectVariableInRange<double>("FMVAVAR_ETA",-1.566,-1.4442,"ELECTRON_INGAPNEG"));
-  ObjectVariableCombined* electron_ingap = new ObjectVariableCombined("ELECTRON_INGAPPOS","ELECTRONINGAPNEG",false,"ELECTORN_INGAP");
+  ObjectVariableCombined* electron_ingap = new ObjectVariableCombined("ELECTRON_INGAPPOS","ELECTRON_INGAPNEG",false,"ELECTORN_INGAP");
   handler->addObjectVariable("ELECTRON_INGAP",electron_ingap);
   handler->addObjectVariable("ELECTRON_NOTGAP",new ObjectVariableReversed("ELECTRON_INGAP","ELECTRON_NOTGAP"));
   handler->addObjectVariable("ELECTRON_BARREL_DETA",new ObjectVariableInRange<double>("DELTAETA",-0.007,0.007,"ELECTRON_BARREL_DETA"));
@@ -368,10 +369,24 @@ void setupVariables(BaseHandler* handler)
   EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
   handler->addEventVariable("DILEPTONS", dileptons);
   
+  EventVariableInRange<int>* trileptons = new EventVariableInRange<int>("NLEPTONS", 3, 1e6, "TRILEPTONS");
+  handler->addEventVariable("TRILEPTONS", trileptons);
+  
   EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e6, "MLOWDYCUT");
   handler->addEventVariable("MLOWDYCUT", mLowDYcut);
   
+  EventVariableInRange<double>* mLeptonsOnZ = new EventVariableInRange<double>("MLEPTONS", mZ-15, mZ+15, "MLEPTONSONZ");
+  handler->addEventVariable("MLEPTONSONZ", mLeptonsOnZ);
+
+  EventVariableCombined* trileptonOnZcut = new EventVariableCombined("TRILEPTONS", "MALLLEPTONSONZ", true, "TRILEPTONONZ");
+  handler->addEventVariable("TRILEPTONONZ", trileptonOnZcut);
+  
+  EventVariableReversed* notTrileptonOnZcut = new EventVariableReversed("TRILEPTONONZ", "NOTTRILEPTONONZ");
+  handler->addEventVariable("NOTTRILEPTONONZ", notTrileptonOnZcut);
+  
   EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
+//  EventVariableValue<bool>* writeEvent = new EventVariableValue<bool>("DILEPTONS", true, "WRITEEVENT");
+  writeEvent->addVariable("NOTTRILEPTONONZ");
   handler->addEventVariable("WRITEEVENT", writeEvent);
 }
 
