@@ -283,39 +283,45 @@ int main(int argc, char **argv)
 {
   lheReader *handler = new lheReader();
 
-  if (argc < 3) {
+  if (argc < 2) {
     std::cout << "Usage: " << argv[0] << " input.lhe output.root [run] [event] [lumi] [debugFlag]" << std::endl;
     return 1;
   }
 
-  else if (argc == 4) {
-    handler->setRun(argv[3]);
+  else if (argc == 2 || argc > 7) {
+    std::cout << "You have specified too few or too many arguments!" << std::endl;
+    return 1;
   }
 
-  else if (argc == 5) {
-    handler->setRun(argv[3]);
-    handler->setEvent(argv[4]);
-  }
+  for (int i = 1; i < argc; ++i) {
 
-  else if (argc == 6) {
-    handler->setRun(argv[3]);
-    handler->setEvent(argv[4]);
-    handler->setLumi(argv[5]);
-  }
+    switch(i) {
 
-  else if (argc == 7) {
-    handler->setRun(argv[3]);
-    handler->setEvent(argv[4]);
-    handler->setLumi(argv[5]);
-    handler->setDebug(argv[6]);
-  }
+      case 1:
+        handler->lhefile(argv[i]);
+        break;
 
-  else if (argc > 7) {
-    std::cout << "You have specified too many arguments!" << std::endl;
-  }
+      case 2:
+        handler->ntuplizer(argv[i]);
+        break;
 
-  handler->lhefile(argv[1]);
-  handler->ntuplizer(argv[2]);
+      case 3:
+        handler->setRun(argv[i]);
+        break;
+
+      case 4:
+        handler->setEvent(argv[i]);
+        break;
+
+      case 5:
+        handler->setLumi(argv[i]);
+        break;
+
+      case 6:
+        handler->setDebug(argv[i]);
+        break;
+      }
+  }
 
   delete handler;
 
