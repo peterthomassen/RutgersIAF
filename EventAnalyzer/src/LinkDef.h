@@ -53,6 +53,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableInRange.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/PeterTreeWriter.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/TheoryTreeWriter.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
@@ -149,4 +150,5 @@
 #pragma link C++ class LHETreeReader+;
 #pragma link C++ class ObjectVariableTauTotalIso+;
 #pragma link C++ class ObjectComparisonElectron+;
+#pragma link C++ class TheoryTreeWriter+;
 #endif
