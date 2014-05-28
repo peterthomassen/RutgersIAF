@@ -366,6 +366,7 @@ tree->Branch("n_tracksNINP", &n_tracksNINP, "n_tracksNINP/I");
     fChain->GetEntry(m_currentEntry);
     if (m_currentEntry % 100000 == 0)cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
     if(onlyRun >= 0 && (run != onlyRun || event != onlyEvent)) continue;
+    if(onlyRun >= 0) std::cout << "E=" << event << std::endl;
 
     if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end())SkimTreeBase::dumpEventInfo();
     if(m_doRunLumiCheck || m_doRunLumiCheckFromJSON){

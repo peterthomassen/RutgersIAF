@@ -20,7 +20,7 @@ class ObjectCut : public TObject {
 
   virtual bool passCut(SignatureObject*) const = 0;
   virtual bool operator()(SignatureObject*) const = 0;
-  TString getName(){return m_name;}
+  TString getName() const {return m_name;}
   void setName(TString name){m_name = name;}
 
  private:
