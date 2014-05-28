@@ -378,7 +378,7 @@ void setupVariables(BaseHandler* handler)
   EventVariableInRange<double>* mLeptonsOnZ = new EventVariableInRange<double>("MLEPTONS", mZ-15, mZ+15, "MLEPTONSONZ");
   handler->addEventVariable("MLEPTONSONZ", mLeptonsOnZ);
 
-  EventVariableCombined* trileptonOnZcut = new EventVariableCombined("TRILEPTONS", "MALLLEPTONSONZ", true, "TRILEPTONONZ");
+  EventVariableCombined* trileptonOnZcut = new EventVariableCombined("TRILEPTONS", "MLEPTONSONZ", true, "TRILEPTONONZ");
   handler->addEventVariable("TRILEPTONONZ", trileptonOnZcut);
   
   EventVariableReversed* notTrileptonOnZcut = new EventVariableReversed("TRILEPTONONZ", "NOTTRILEPTONONZ");
