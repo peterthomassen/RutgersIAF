@@ -33,7 +33,7 @@ ClassImp(TheoryTreeWriter)
 TheoryTreeWriter::TheoryTreeWriter(BaseHandler* handler, TString treename)
 : BaseTreeWriter(handler, treename)
 {
-  //Initialize the ID Codes for the theory Ntuple
+  // Initialize the ID Codes for the theory Ntuple
   m_theoryID_photon = 0.0;
   m_theoryID_electron = 1.0;
   m_theoryID_muon = 2.0;
@@ -50,10 +50,11 @@ TheoryTreeWriter::TheoryTreeWriter(BaseHandler* handler, TString treename)
   m_theoryID_wtmass = 11.0;
 
   // Initialize any variables that you want to. This is your constructor
-  m_object = new TClonesArray("TLorentzVector");
-
   m_debug = 0;
   m_nobject = 0;
+  m_weight = 1.0;
+
+  m_object = new TClonesArray("TLorentzVector");
 
   m_object_type = new vector<double>;
   m_object_btag = new vector<double>;
@@ -68,6 +69,7 @@ TheoryTreeWriter::TheoryTreeWriter(BaseHandler* handler, TString treename)
   m_object_scalar = new vector<double>;
   m_evtnum = new vector<double>;
 
+  m_tree->Branch("weight", &m_weight,"m_weight/D");
   m_tree->Branch("object", "TClonesArray",&m_object, 32000, 0);
   m_tree->Branch("nobject",&m_nobject,"m_nobject/I");
   m_tree->Branch("object_type", "vector<double>",&m_object_type);
@@ -211,9 +213,9 @@ void TheoryTreeWriter::fillTree()
   bool hasLT =  m_handler->getVariable("LT",lt);
   bool hasHT =  m_handler->getVariable("HT",ht);
 
-  //handler->getPhysicsWeight()
+  m_weight = m_handler->getPhysicsWeight();
 
-  // Add run event 
+  // Add run, event, and lumi number
   if (hasRun && hasLumi && hasEvent) {
     addEvtNum(run,event,lumiBlock);
   }

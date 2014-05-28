@@ -37,6 +37,8 @@ class TheoryTreeWriter : public BaseTreeWriter {
     int m_debug;
     int m_nobject;
 
+    double m_weight;
+
     std::vector<double>* m_object_type;
     std::vector<double>* m_object_btag;
     std::vector<double>* m_object_dum1;
@@ -51,8 +53,6 @@ class TheoryTreeWriter : public BaseTreeWriter {
     std::vector<double>* m_evtnum;
 
     TClonesArray *m_object;
-
-  private:
 
     Double_t m_theoryID_photon;
     Double_t m_theoryID_electron;
@@ -69,7 +69,9 @@ class TheoryTreeWriter : public BaseTreeWriter {
     Double_t m_theoryID_dymass;
     Double_t m_theoryID_wtmass;
 
-  ClassDef(TheoryTreeWriter,1);
+  private:
+
+    ClassDef(TheoryTreeWriter,1);
 };
 
 #endif
