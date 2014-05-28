@@ -46,8 +46,9 @@ Signature* Signature::addCut(TString cutname)
 bool Signature::isSignature()
 {
   for(int i = 0; i < (int)m_Cuts.size(); i++){
-    if(m_handler->getDebugMode())cout<<getName()<<" "<<m_Cuts[i]<<endl;
-    if(!m_handler->passCut(m_Cuts[i])){
+    bool pass = m_handler->passCut(m_Cuts[i]);
+    if(m_handler->getDebugMode())cout<<getName()<<" "<<m_Cuts[i]<<"="<<pass<<endl;
+    if(!pass){
       //cout<<getName()<<" "<<m_Cuts[i]->getName()<<endl;
       return false;
     }

@@ -8,6 +8,12 @@ using namespace std;
 
 bool ObjectVariableElectronTotalIso::calculate(SignatureObject* sigObj)
 {
+  double pdgid = 0;
+  bool hasPdgid = sigObj->getVariable("PDGID", pdgid);
+  if(!hasPdgid || fabs(fabs(pdgid) - 11) > 1E-6) {
+	  return false;
+  }
+
   double chargedHadronIso = 0;
   bool isSet_chargedHadronIso = sigObj->getVariable("CHARGEDHADRONISO",chargedHadronIso);
   double neutralHadronIso = 0;

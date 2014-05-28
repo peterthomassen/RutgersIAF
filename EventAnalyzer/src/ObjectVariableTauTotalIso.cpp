@@ -7,6 +7,12 @@ ClassImp(ObjectVariableTauTotalIso)
 
 bool ObjectVariableTauTotalIso::calculate(SignatureObject* sigObj)
 {
+  double pdgid = 0;
+  bool hasPdgid = sigObj->getVariable("PDGID", pdgid);
+  if(!hasPdgid || fabs(fabs(pdgid) - 15) > 1E-6) {
+	  return false;
+  }
+
   int tauIsoDisc = 0;
   if(!sigObj->getVariable("DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR",tauIsoDisc))
     return false;
