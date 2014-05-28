@@ -1142,7 +1142,7 @@ void SignatureHandler::calcMT()
 	for(int j = i+1; j < (int)m_good_electrons.size(); j++){
 	  if(((SignatureObjectElectron*)m_good_electrons[i])->getCharge() * ((SignatureObjectElectron*)m_good_electrons[j])->getCharge() > 0)continue;
 	  double badMll = (*((TLorentzVector*)m_good_electrons[i])+*((TLorentzVector*)m_good_electrons[j])).M();
-	  if(fabs(badMll - 92) < fabs(bestMll - 92)){
+	  if(fabs(badMll - 91) < fabs(bestMll - 91)){
 	    bestMll = badMll;
 	    vll = *((TLorentzVector*)m_good_electrons[i]) + *((TLorentzVector*)m_good_electrons[j]);
 	    worstIndex = 3 - i - j;
@@ -1157,7 +1157,7 @@ void SignatureHandler::calcMT()
 	for(int j = i+1; j < (int)m_good_muons.size(); j++){
 	  if(((SignatureObjectMuon*)m_good_muons[i])->getCharge() * ((SignatureObjectMuon*)m_good_muons[j])->getCharge() > 0)continue;
 	  double badMll = (*((TLorentzVector*)m_good_muons[i])+*((TLorentzVector*)m_good_muons[j])).M();
-	  if(fabs(badMll - 92) < fabs(bestMll - 92)){
+	  if(fabs(badMll - 91) < fabs(bestMll - 91)){
 	  bestMll = badMll;
 	  vll = *((TLorentzVector*)m_good_muons[i]) + *((TLorentzVector*)m_good_muons[j]);
 	  worstIndex = 3 - i - j;
@@ -1292,7 +1292,6 @@ void SignatureHandler::calcMT()
   TLorentzVector metv;
   metv.SetPtEtaPhiM(pf_met_pt,0,pf_met_phi,0);
   m_MT = sqrt(2*pf_met_pt * wl.Pt() * ( 1 - cos(wl.DeltaPhi(metv))));
-
 }
 //-----------------------------------------
 vector<SignatureTrigger*> SignatureHandler::getTriggers()
