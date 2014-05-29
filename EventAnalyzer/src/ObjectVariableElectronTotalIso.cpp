@@ -10,7 +10,8 @@ bool ObjectVariableElectronTotalIso::calculate(SignatureObject* sigObj)
 {
   double pdgid = 0;
   bool hasPdgid = sigObj->getVariable("PDGID", pdgid);
-  if(!hasPdgid || fabs(fabs(pdgid) - 11) > 1E-6) {
+  // Do not enforce electron PDGID here -- also allow unset PDGID (for tracks)
+  if(hasPdgid && fabs(fabs(pdgid) - 11) > 1E-6) {
 	  return false;
   }
 
