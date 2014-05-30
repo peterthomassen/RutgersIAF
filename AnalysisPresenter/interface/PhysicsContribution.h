@@ -14,6 +14,12 @@ public:
 	virtual ~PhysicsContribution();
 	
 	THnBase* fillTHn(const THnBase*, std::string, std::string);
+	double getLumi() const;
+	THnBase* getTHn();
+
+	void setRange(const char*, double, double, bool = true);
+	void setRange(const char*, double);
+	void setRange(const char*);
 
 private:
 	TString m_filename;

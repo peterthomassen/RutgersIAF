@@ -15,15 +15,17 @@ public:
 	Assembler(TString);
 	virtual ~Assembler();
 	
-	bool addData(PhysicsContribution*);
+	void addBackground(PhysicsContribution*);
+	void addData(PhysicsContribution*);
+	void addSignal(PhysicsContribution*);
 	
-	THnBase* process(std::string, std::string);
+	void process(std::string, std::string);
 	
-	void writeTablePT(THnBase*);
-	void writeMET(THnBase*);
-	bool setAxisRange(THnBase*, const char*, double, double, bool = true);
-	bool setAxisRange(THnBase*, const char*, double);
-	bool setAxisRange(THnBase*, const char*);
+	void setRange(const char*, double, double, bool = true);
+	void setRange(const char*, double);
+	void setRange(const char*);
+	
+	void write(const char*);
 
 private:
 	TString m_ofname;

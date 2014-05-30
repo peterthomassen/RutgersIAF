@@ -2,6 +2,7 @@
 
 #include <assert.h>
 
+#include "TAxis.h"
 #include "TFile.h"
 #include "THnBase.h"
 #include "TTree.h"
@@ -16,15 +17,15 @@ PhysicsContribution::PhysicsContribution(TString filename, double lumi, TString 
 }
 
 PhysicsContribution::~PhysicsContribution() {
-	/* no-op atm*/
+	delete m_hn;
 }
 
 THnBase* PhysicsContribution::fillTHn(const THnBase* hn, std::string varexp, std::string selection) {
-	if(m_hn) {
-		delete m_hn;
-	}
+	delete m_hn;
+	
 	m_hn = (THnBase*)hn->Clone();
 	
+	cout << "Running " << m_filename << " (lumi=" << m_lumi << "/pb) ";
 	TFile f(m_filename);
 	if(f.IsZombie()) {
 		return 0;
@@ -37,6 +38,11 @@ THnBase* PhysicsContribution::fillTHn(const THnBase* hn, std::string varexp, std
 	int step = 10000;
 	Double_t x[m_hn->GetNdimensions()];
 	for(int k = 0; k < treeR->GetEntries(); k += step) {
+		if(k % (10 * step) == 9 * step) {
+			cout << (int)(10*k/treeR->GetEntries()) << flush;
+		} else {
+			cout << '.' << flush;
+		}
 		treeR->Draw(varexp.c_str(), selection.c_str(), "goff candle", step, k);
 		for(int i = 0; i < treeR->GetSelectedRows(); ++i) {
 			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
@@ -49,5 +55,52 @@ THnBase* PhysicsContribution::fillTHn(const THnBase* hn, std::string varexp, std
 	delete treeR;
 	f.Close();
 	
+	cout << endl;
+	
 	return m_hn;
+}
+
+double PhysicsContribution::getLumi() const {
+	return m_lumi;
+}
+
+THnBase* PhysicsContribution::getTHn() {
+	return m_hn;
+}
+
+void PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {
+	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
+	if(!axis) {
+		cerr << "Could not find axis " << name << endl;
+		exit(1);
+	}
+	
+	Int_t first = axis->FindFixBin(lo);
+	Int_t last  = axis->FindFixBin(hi);
+	if(!includeLast) {
+		--last;
+	}
+	
+	axis->SetRange(first, last);
+}
+
+void PhysicsContribution::setRange(const char* name, double lo) {
+	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
+	if(!axis) {
+		cerr << "Could not find axis " << name << endl;
+		exit(1);
+	}
+	axis->SetRange();
+	Int_t first = axis->FindFixBin(lo);
+	Int_t last  = axis->GetLast() + 1;
+	axis->SetRange(first, last);
+}
+
+void PhysicsContribution::setRange(const char* name) {
+	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
+	if(!axis) {
+		cerr << "Could not find axis " << name << endl;
+		exit(1);
+	}
+	axis->SetRange();
 }

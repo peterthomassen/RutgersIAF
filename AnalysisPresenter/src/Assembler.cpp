@@ -8,10 +8,9 @@
 #include "TObjString.h"
 #include "TPRegexp.h"
 
-#ifndef __CINT__
 #include <boost/foreach.hpp>
+#include <boost/range/join.hpp>
 #include <boost/tokenizer.hpp>
-#endif
 
 #include "RutgersIAF2012/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContribution.h"
@@ -27,20 +26,30 @@ Assembler::Assembler(TString ofname) {
 }
 
 Assembler::~Assembler() {
-	/* no-op atm*/
+	/* no-op */
 }
 
-bool Assembler::addData(PhysicsContribution* pc) {
+void Assembler::addBackground(PhysicsContribution* pc) {
+	m_background.push_back(pc);
+}
+
+void Assembler::addData(PhysicsContribution* pc) {
+	if(m_data.size() > 0) {
+		cerr << "More than one data input file not supported." << endl;
+		exit(1);
+	}
 	m_data.push_back(pc);
-	return true;
 }
 
-THnBase* Assembler::process(std::string varexp, std::string selection) {
+void Assembler::addSignal(PhysicsContribution* pc) {
+	m_signal.push_back(pc);
+}
+
+void Assembler::process(std::string varexp, std::string selection) {
 	std::vector<TString> varNames;
 	std::vector<double> rangeMin, rangeMax;
 	std::vector<int> nbins;
 	
-#ifndef __CINT__
 	cout << varexp << endl;
 	boost::char_separator<char> sep(":");
 	boost::tokenizer<boost::char_separator<char> > tokens(varexp, sep);
@@ -48,7 +57,7 @@ THnBase* Assembler::process(std::string varexp, std::string selection) {
 		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *([0-9]+(\\.[0-9]+)?) *, *([0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)?\\}").MatchS(t.c_str());
 		if(matches->GetLast() < 0) {
 			cerr << "Invalid variable specification: " << t << endl;
-			return 0;
+			return;
 		}
 		TString var = ((TObjString*)matches->At(1))->GetString();
 		Double_t min = ((TObjString*)matches->At(2))->GetString().Atof();
@@ -67,7 +76,6 @@ THnBase* Assembler::process(std::string varexp, std::string selection) {
 		varexp += ":" + varNames[i];
 	}
 	cout << varexp << endl;
-#endif
 	
 	THnSparse* hs = new THnSparseD("hSparse", varexp.c_str(), varNames.size(), &nbins[0], &rangeMin[0], &rangeMax[0]);
 	hs->Sumw2();
@@ -76,109 +84,75 @@ THnBase* Assembler::process(std::string varexp, std::string selection) {
 		hs->GetAxis(i)->SetTitle(varNames[i]);
 	}
 	
-	return m_data[0]->fillTHn(hs, varexp, selection);
+	auto contributionsMC = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+		contribution->fillTHn(hs, varexp, selection);
+	}
+	delete hs;
 }
 
-void Assembler::writeTablePT(THnBase* hs) {
-	// So far, now taus and no b-jets
-	setAxisRange(hs, "NGOODTAUS", 0, 0);
-	setAxisRange(hs, "NBJETSCSVM", 0, 0);
-	
-	// Low HT first
-	setAxisRange(hs, "HT", 0, 200, false);
-	cout << "\n\n==== HT < 200" << endl;
-	
-	// DY0, no requirements on ONZ
-	cout << "\nDY0" << endl;
-	setAxisRange(hs, "NOSSF", 0, 0);
-	setAxisRange(hs, "ONZ");
-	writeMET(hs);
-	
-	// DYz1
-	cout << "\nDYz1" << endl;
-	setAxisRange(hs, "NOSSF", 1, 1);
-	setAxisRange(hs, "ONZ", 1, 1);
-	writeMET(hs);
-	
-	// DYl1
-	cout << "\nDYl1" << endl;
-	setAxisRange(hs, "NOSSF", 1, 1);
-	setAxisRange(hs, "ONZ", 0, 0);
-	setAxisRange(hs, "MOSSF", 0, 76, false);
-	writeMET(hs);
-	
-	// DYh1
-	cout << "\nDYh1" << endl;
-	setAxisRange(hs, "NOSSF", 1, 1);
-	setAxisRange(hs, "ONZ", 0, 0);
-	setAxisRange(hs, "MOSSF", 106);
-	writeMET(hs);
-	
-	// DYo1
-	cout << "\nDYo1" << endl;
-	setAxisRange(hs, "NOSSF", 1, 1);
-	setAxisRange(hs, "ONZ", 0, 0);
-	setAxisRange(hs, "MOSSF");
-	writeMET(hs);
+void Assembler::setRange(const char* name, double lo, double hi, bool includeLast) {
+	auto contributionsMC = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+		contribution->setRange(name, lo, hi, includeLast);
+	}
 }
 
-void Assembler::writeMET(THnBase* hn) {
-	TH1D* h = hn->Projection(7, "E");
-	//h->Draw();
+void Assembler::setRange(const char* name, double lo) {
+	auto contributionsMC = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+		contribution->setRange(name, lo);
+	}
+}
+
+void Assembler::setRange(const char* name) {
+	auto contributionsMC = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+		contribution->setRange(name);
+	}
+}
+
+void Assembler::write(const char* name) {
+	TAxis* axis = (TAxis*)m_data[0]->getTHn()->GetListOfAxes()->FindObject(name);
+	if(!axis) {
+		cerr << "Could not find axis " << name << endl;
+		exit(1);
+	}
 	
-	double sum = 0;
-	for(int i = 1; i <= h->GetNbinsX(); ++i) {
-		double content = h->GetBinContent(i);
-		double lo = h->GetXaxis()->GetBinLowEdge(i);
-		double hi = h->GetXaxis()->GetBinUpEdge(i);
-		if(i < h->GetNbinsX()) {
-			printf("%d-%d	%d\n", (int)lo, (int)hi, (int)content);
+	int dim = m_data[0]->getTHn()->GetListOfAxes()->IndexOf(axis);
+	TH1D* hData = m_data[0]->getTHn()->Projection(dim, "E");
+	//hData->Draw();
+	
+	TH1D* hBackground = (TH1D*)hData->Clone();
+	hBackground->Reset();
+	for(auto &contribution : m_background) {
+		TH1D* hContribution = contribution->getTHn()->Projection(dim, "E");
+		double scale = m_data[0]->getLumi() / contribution->getLumi();
+		hBackground->Add(hContribution, scale);
+	}
+	cout << hBackground->Integral() << endl;
+	
+	double sumData = 0;
+	double sumBackground = 0;
+	double sumBackgroundUnc2 = 0;
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+		double contentData = hData->GetBinContent(i);
+		double contentBackground = hBackground->GetBinContent(i);
+		double uncBackground = hBackground->GetBinError(i);
+		double lo = hData->GetXaxis()->GetBinLowEdge(i);
+		double hi = hData->GetXaxis()->GetBinUpEdge(i);
+		if(i < hData->GetNbinsX()) {
+			printf("%s %d-%d	%d : %.2f ± %.2f\n", name, (int)lo, (int)hi, (int)contentData, contentBackground, uncBackground);
 		} else {
-			content += h->GetBinContent(i + 1);
-			printf("%d-inf	%d\n", (int)lo, (int)content);
+			contentData += hData->GetBinContent(i + 1);
+			contentBackground += hBackground->GetBinContent(i + 1);
+			printf("%s %d-inf	%d : %.2f ± %.2f\n", name, (int)lo, (int)contentData, contentBackground, uncBackground);
 		}
-		sum += content;
+		sumData += contentData;
+		sumBackground += contentBackground;
+		sumBackgroundUnc2 += uncBackground * uncBackground;
 	}
-	delete h;
-}
-
-bool Assembler::setAxisRange(THnBase* hn, const char* name, double lo, double hi, bool includeLast) {
-	TAxis* axis = (TAxis*)hn->GetListOfAxes()->FindObject(name);
-	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
-	}
+	printf("Sum: %.2f : %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundUnc2));
 	
-	Int_t first = axis->FindFixBin(lo);
-	Int_t last  = axis->FindFixBin(hi);
-	if(!includeLast) {
-		--last;
-	}
-	
-	axis->SetRange(first, last);
-	
-	return true;
-}
-
-bool Assembler::setAxisRange(THnBase* hn, const char* name, double lo) {
-	TAxis* axis = (TAxis*)hn->GetListOfAxes()->FindObject(name);
-	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
-	}
-	axis->SetRange();
-	Int_t first = axis->FindFixBin(lo);
-	Int_t last  = axis->GetLast() + 1;
-	axis->SetRange(first, last);
-	return true;
-}
-
-bool Assembler::setAxisRange(THnBase* hn, const char* name) {
-	TAxis* axis = (TAxis*)hn->GetListOfAxes()->FindObject(name);
-	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
-	}
-	axis->SetRange();
-	return true;
+	delete hData;
 }
