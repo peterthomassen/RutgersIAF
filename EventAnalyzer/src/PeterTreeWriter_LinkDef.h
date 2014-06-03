@@ -6,7 +6,6 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 #pragma link C++ class PeterTreeWriter+;
-#pragma link C++ class PeterTreeWriter+;
 #pragma link C++ class std::vector<int>+;
 #pragma link C++ class std::vector<TString>+;
 #endif
