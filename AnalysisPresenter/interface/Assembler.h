@@ -15,12 +15,11 @@ public:
 	Assembler(TString);
 	virtual ~Assembler();
 	
-	void addBackground(PhysicsContribution*);
-	void addData(PhysicsContribution*);
-	void addSignal(PhysicsContribution*);
+	void addContribution(PhysicsContribution*);
 	
-	void process(std::string, std::string);
+	void process(std::string, TString);
 	
+	void setFakeRate(TString, double);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);

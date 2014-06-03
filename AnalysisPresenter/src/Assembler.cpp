@@ -11,6 +11,7 @@
 #include <boost/foreach.hpp>
 #include <boost/range/join.hpp>
 #include <boost/tokenizer.hpp>
+#include <exception>
 
 #include "RutgersIAF2012/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContribution.h"
@@ -29,23 +30,22 @@ Assembler::~Assembler() {
 	/* no-op */
 }
 
-void Assembler::addBackground(PhysicsContribution* pc) {
-	m_background.push_back(pc);
-}
-
-void Assembler::addData(PhysicsContribution* pc) {
-	if(m_data.size() > 0) {
-		cerr << "More than one data input file not supported." << endl;
-		exit(1);
+void Assembler::addContribution(PhysicsContribution* contribution) {
+	if(contribution->isData()) {
+		if(m_data.size() > 0) {
+			throw std::runtime_error("More than one data input file not supported.");
+		}
+		m_data.push_back(contribution);
+	} else if(contribution->isBackground()) {
+		m_background.push_back(contribution);
+	} else if(contribution->isSignal()) {
+		m_signal.push_back(contribution);
+	} else {
+		throw std::runtime_error("Unable to handle contribution");
 	}
-	m_data.push_back(pc);
 }
 
-void Assembler::addSignal(PhysicsContribution* pc) {
-	m_signal.push_back(pc);
-}
-
-void Assembler::process(std::string varexp, std::string selection) {
+void Assembler::process(std::string varexp, TString selection) {
 	std::vector<TString> varNames;
 	std::vector<double> rangeMin, rangeMax;
 	std::vector<int> nbins;
@@ -91,6 +91,15 @@ void Assembler::process(std::string varexp, std::string selection) {
 	delete hs;
 }
 
+void Assembler::setFakeRate(TString name, double f) {
+	for(auto &contribution : m_data) {
+		contribution->setFakeRate(name, 0);
+	}
+	for(auto &contribution : m_background) {
+		contribution->setFakeRate(name, f);
+	}
+}
+
 void Assembler::setRange(const char* name, double lo, double hi, bool includeLast) {
 	auto contributionsMC = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsMC)) {
@@ -130,7 +139,6 @@ void Assembler::write(const char* name) {
 		double scale = m_data[0]->getLumi() / contribution->getLumi();
 		hBackground->Add(hContribution, scale);
 	}
-	cout << hBackground->Integral() << endl;
 	
 	double sumData = 0;
 	double sumBackground = 0;
