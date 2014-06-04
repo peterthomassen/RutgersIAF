@@ -35,9 +35,9 @@ class TheoryTreeWriter : public BaseTreeWriter {
     virtual void addEvtNum(double run, double evt, double lumi);
 
     int m_debug;
-    int m_nobject;
 
-    double m_weight;
+    int nobject;
+    double weight;
 
     std::vector<double>* m_object_type;
     std::vector<double>* m_object_btag;

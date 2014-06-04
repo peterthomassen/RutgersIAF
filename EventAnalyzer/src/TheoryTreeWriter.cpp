@@ -51,8 +51,9 @@ TheoryTreeWriter::TheoryTreeWriter(BaseHandler* handler, TString treename)
 
   // Initialize any variables that you want to. This is your constructor
   m_debug = 0;
-  m_nobject = 0;
-  m_weight = 1.0;
+
+  nobject = 0;
+  weight = 1.0;
 
   m_object = new TClonesArray("TLorentzVector");
 
@@ -69,9 +70,9 @@ TheoryTreeWriter::TheoryTreeWriter(BaseHandler* handler, TString treename)
   m_object_scalar = new vector<double>;
   m_evtnum = new vector<double>;
 
-  m_tree->Branch("weight", &m_weight,"m_weight/D");
+  m_tree->Branch("weight", &weight,"weight/D");
   m_tree->Branch("object", "TClonesArray",&m_object, 32000, 0);
-  m_tree->Branch("nobject",&m_nobject,"m_nobject/I");
+  m_tree->Branch("nobject",&nobject,"nobject/I");
   m_tree->Branch("object_type", "vector<double>",&m_object_type);
   m_tree->Branch("object_btag","vector<double>",&m_object_btag);
   m_tree->Branch("object_dum1","vector<double>",&m_object_dum1);
@@ -103,6 +104,44 @@ TheoryTreeWriter::~TheoryTreeWriter()
   delete m_evtnum;
 }
 
+void TheoryTreeWriter::addEvtNum(double run, double evt, double lumi)
+{
+  m_evtnum->push_back(run);
+  m_evtnum->push_back(evt);
+  m_evtnum->push_back(lumi);
+
+  if (m_debug==1) {
+    std::cout<<"EvtNum added successfully"<<std::endl;
+  }
+}
+
+void TheoryTreeWriter::addMET(double type, double pt, double phi)
+{
+  double e = pt;
+  double px = pt*cos(phi);
+  double py = pt*sin(phi);
+  double pz = 0;
+
+  Double_t btag = 0;
+  Double_t dum = 0;
+  Double_t scalar = 0;
+
+  TLorentzVector fourvec(px,py,pz,e);
+
+  addObject(fourvec,type,btag,dum,dum,dum,dum,dum,dum,dum,dum,scalar);
+
+  if (m_debug==1) {
+    std::cout<<"MET added successfully"<<std::endl;
+  }
+}
+
+void TheoryTreeWriter::addScalar(double type, double value)
+{
+  Double_t dum = -999.0;
+
+  addObject(TLorentzVector(0,0,0,0),type,0,dum,dum,dum,dum,dum,dum,dum,dum,value);
+}
+
 void TheoryTreeWriter::addObject(TLorentzVector fourvec, double type, double btag)
 {
   Double_t dum = -999.0;
@@ -129,59 +168,12 @@ void TheoryTreeWriter::addObject(TLorentzVector fourvec, double type, double bta
   m_object_dum8->push_back(dum8);
   m_object_scalar->push_back(scalar);
 
-  new ((*m_object)[m_nobject]) TLorentzVector(fourvec);
+  new ((*m_object)[nobject]) TLorentzVector(fourvec);
 
-  ++m_nobject;
+  ++nobject;
   
   if (m_debug==1) {
     std::cout<<"Object added successfully"<<std::endl;
-  }
-}
-
-void TheoryTreeWriter::addMET(double type, double pt, double phi)
-{
-  double e = pt;
-  double px = pt*cos(phi);
-  double py = pt*sin(phi);
-  double pz = 0;
-
-  m_object_type->push_back(type);
-  m_object_btag->push_back(0);
-  m_object_dum1->push_back(0);
-  m_object_dum2->push_back(0);
-  m_object_dum3->push_back(0);
-  m_object_dum4->push_back(0);
-  m_object_dum5->push_back(0);
-  m_object_dum6->push_back(0);
-  m_object_dum7->push_back(0);
-  m_object_dum8->push_back(0);
-  m_object_scalar->push_back(0);
-
-  TLorentzVector fourvec(px,py,pz,e);
-
-  new ((*m_object)[m_nobject]) TLorentzVector(fourvec);
-
-  ++m_nobject;
-  if (m_debug==1) {
-    std::cout<<"MET added successfully"<<std::endl;
-  }
-}
-
-void TheoryTreeWriter::addScalar(double type, double value)
-{
-  Double_t dum = -999.0;
-
-  addObject(TLorentzVector(0,0,0,0),type,0,dum,dum,dum,dum,dum,dum,dum,dum,value);
-}
-
-void TheoryTreeWriter::addEvtNum(double run, double evt, double lumi)
-{
-  m_evtnum->push_back(run);
-  m_evtnum->push_back(evt);
-  m_evtnum->push_back(lumi);
-
-  if (m_debug==1) {
-    std::cout<<"EvtNum added successfully"<<std::endl;
   }
 }
 
@@ -213,7 +205,7 @@ void TheoryTreeWriter::fillTree()
   bool hasLT =  m_handler->getVariable("LT",lt);
   bool hasHT =  m_handler->getVariable("HT",ht);
 
-  m_weight = m_handler->getPhysicsWeight();
+  weight = m_handler->getPhysicsWeight();
 
   // Add run, event, and lumi number
   if (hasRun && hasLumi && hasEvent) {
@@ -317,24 +309,24 @@ void TheoryTreeWriter::fillTree()
   }
 
   // Add Isolated Tracks
-  vector<SignatureObject*> goodIsoTracks = m_handler->getProduct("goodIsoTracks");
+  vector<SignatureObject*> goodTracks = m_handler->getProduct("goodTracks");
 
-  for (Int_t i = 0; i < (Int_t)goodIsoTracks.size(); ++i) {
+  for (Int_t i = 0; i < (Int_t)goodTracks.size(); ++i) {
     double type = -999.0;
     double btag = -999.0;
-    double isoTrack_charge = -999.0;
+    double track_charge = -999.0;
 
-    Double_t track_energy = sqrt(pow(goodIsoTracks[i]->Pt(),2)+pow(goodIsoTracks[i]->Pz(),2)+pow(0.14,2));  // M_pion = 0.140 GeV
+    Double_t track_energy = sqrt(pow(goodTracks[i]->Pt(),2)+pow(goodTracks[i]->Pz(),2)+pow(0.14,2));  // M_pion = 0.140 GeV
 
-    TLorentzVector isoTrack(goodIsoTracks[i]->Px(),goodIsoTracks[i]->Py(),goodIsoTracks[i]->Pz(),track_energy);
+    TLorentzVector track(goodTracks[i]->Px(),goodTracks[i]->Py(),goodTracks[i]->Pz(),track_energy);
 
-    bool hasCharge = goodIsoTracks[i]->getVariable("CHARGE",isoTrack_charge);
+    bool hasCharge = goodTracks[i]->getVariable("CHARGE",track_charge);
 
     if (hasCharge) {
-      type = -m_theoryID_tau_isotrack*isoTrack_charge;
+      type = -m_theoryID_tau_isotrack*track_charge;
     }
 
-    addObject(isoTrack,type,btag);
+    addObject(track,type,btag);
   }
 
   // Add Photons
@@ -379,7 +371,7 @@ void TheoryTreeWriter::fillTree()
     std::cout << "Event " << event << " Filled" <<std::endl;
   }
 
-  m_nobject = 0;
+  nobject = 0;
 
   m_object_type->clear();
   m_object_btag->clear();
