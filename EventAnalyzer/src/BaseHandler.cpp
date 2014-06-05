@@ -588,6 +588,7 @@ void BaseHandler::calcPhysicsWeight()
 	if(getMode("debugPhysicsWeights")) {
 		cout << "\n";
 	}
+	setVariable("WEIGHT", m_physicsWeight);
 }
 //-----------------------------------------
 //-----------------------------------------
