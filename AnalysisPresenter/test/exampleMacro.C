@@ -3,7 +3,7 @@ void exampleMacro(TString ofname = "test.root") {
 	TH1::AddDirectory(false);
 	
 	PhysicsContribution* data = new PhysicsContribution("data", "/cms/thomassen/2014/Analysis/data/histograms/20140529_data.3L.root", 19500);
-	PhysicsContribution* mc1 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZJetsTo3LNu.simulation.root.3L.root", 2016678. / 1.1236);
+	PhysicsContribution* mc1 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZstudy/WZJetsTo3LNu.simulation-old.root.3L.root", 2016678. / 1.1236);
 	PhysicsContribution* dd1 = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140529_dataFake.3L.root", 19500);
 	
 	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,150,3}";
@@ -14,12 +14,14 @@ void exampleMacro(TString ofname = "test.root") {
 	selection += " && (LOWDYOSMINMLL > 12)";
 	//selection += " && MT > 50 && MT < 100";
 	
+	mc1->addFlatUncertainty("xsec", 0.3);
+	
 	Assembler* assembler = new Assembler(ofname);
 	assembler->addContribution(data);
 	assembler->addContribution(mc1);
 	assembler->addContribution(dd1);
-	assembler->setFakeRate("nFakeElectrons", 0.0);
-	assembler->setFakeRate("nFakeMuons", 0.0);
+	assembler->setFakeRate("nFakeElectrons", 0.02508);
+	assembler->setFakeRate("nFakeMuons", 0.01534);
 /*	assembler->addWeight("backgroundMC", "ELIDISOWEIGHT");
 	assembler->addWeight("backgroundMC", "MUIDISOWEIGHT");
 	assembler->addWeight("backgroundMC", "PUWEIGHT");

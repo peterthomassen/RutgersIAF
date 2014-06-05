@@ -86,7 +86,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	
 	auto contributionsMC = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsMC)) {
-		contribution->fillTHn(hs, varexp, selection);
+		contribution->fillContent(hs, varexp, selection);
 	}
 	delete hs;
 }
@@ -122,45 +122,54 @@ void Assembler::setRange(const char* name) {
 }
 
 void Assembler::write(const char* name) {
-	TAxis* axis = (TAxis*)m_data[0]->getTHn()->GetListOfAxes()->FindObject(name);
+	TAxis* axis = (TAxis*)m_data[0]->getContent()->GetListOfAxes()->FindObject(name);
 	if(!axis) {
 		cerr << "Could not find axis " << name << endl;
 		exit(1);
 	}
 	
-	int dim = m_data[0]->getTHn()->GetListOfAxes()->IndexOf(axis);
-	TH1D* hData = m_data[0]->getTHn()->Projection(dim, "E");
+	int dim = m_data[0]->getContent()->GetListOfAxes()->IndexOf(axis);
+	TH1D* hData = m_data[0]->getContent()->Projection(dim, "E");
 	//hData->Draw();
 	
 	TH1D* hBackground = (TH1D*)hData->Clone();
 	hBackground->Reset();
+	TH1D* hBackgroundCorrelatedUncertainty = (TH1D*)hBackground->Clone();
 	for(auto &contribution : m_background) {
-		TH1D* hContribution = contribution->getTHn()->Projection(dim, "E");
+		TH1D* hContribution = contribution->getContent()->Projection(dim, "E");
 		double scale = m_data[0]->getLumi() / contribution->getLumi();
 		hBackground->Add(hContribution, scale);
+		for(auto &contributionUncertainty : contribution->getCorrelatedUncertainties()) {
+			TH1D* hContributionUncertainty = contributionUncertainty.second->Projection(dim, "E");
+			hBackgroundCorrelatedUncertainty->Add(hContributionUncertainty, scale);
+		}
 	}
 	
 	double sumData = 0;
 	double sumBackground = 0;
 	double sumBackgroundUnc2 = 0;
+	double sumBackgroundCorrelatedUnc2 = 0;
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		double contentData = hData->GetBinContent(i);
 		double contentBackground = hBackground->GetBinContent(i);
 		double uncBackground = hBackground->GetBinError(i);
+		double correlatedUncBackground = hBackgroundCorrelatedUncertainty->GetBinContent(i);
 		double lo = hData->GetXaxis()->GetBinLowEdge(i);
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);
 		if(i < hData->GetNbinsX()) {
-			printf("%s %d-%d	%d : %.2f ± %.2f\n", name, (int)lo, (int)hi, (int)contentData, contentBackground, uncBackground);
+			printf("%s %d-%d	%d : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)hi, (int)contentData, contentBackground, uncBackground, correlatedUncBackground);
 		} else {
 			contentData += hData->GetBinContent(i + 1);
 			contentBackground += hBackground->GetBinContent(i + 1);
-			printf("%s %d-inf	%d : %.2f ± %.2f\n", name, (int)lo, (int)contentData, contentBackground, uncBackground);
+			correlatedUncBackground += hBackgroundCorrelatedUncertainty->GetBinContent(i + 1);
+			printf("%s %d-inf	%d : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)contentData, contentBackground, uncBackground, correlatedUncBackground);
 		}
 		sumData += contentData;
 		sumBackground += contentBackground;
 		sumBackgroundUnc2 += uncBackground * uncBackground;
+		sumBackgroundCorrelatedUnc2 += correlatedUncBackground * correlatedUncBackground;
 	}
-	printf("Sum: %.2f : %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundUnc2));
+	printf("Sum: %.2f : %.2f ± %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundUnc2), sqrt(sumBackgroundCorrelatedUnc2));
 	
 	delete hData;
 }

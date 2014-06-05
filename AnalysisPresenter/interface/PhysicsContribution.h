@@ -13,9 +13,13 @@ public:
 	PhysicsContribution(TString, TString, double, TString = "");
 	virtual ~PhysicsContribution();
 	
-	THnBase* fillTHn(const THnBase*, std::string, TString);
+	void addCorrelatedUncertainty(TString, THnBase*);
+	void addFlatUncertainty(TString, double);
+	void applyRelativeUncertainty(THnBase*, TString);
+	THnBase* fillContent(const THnBase*, std::string, TString);
+	THnBase* getContent();
+	std::map<TString, THnBase*> getCorrelatedUncertainties();
 	double getLumi() const;
-	THnBase* getTHn();
 	TString getType() const;
 	
 	bool isBackground() const;
@@ -36,7 +40,9 @@ private:
 	
 	THnBase* m_hn = 0;
 	
+	std::map<TString, THnBase*> m_correlatedUncertaintyHistogramMap;
 	std::map<TString, double> m_fakerateMap;
+	std::map<TString, double> m_flatUncertaintyMap;
 	
 	ClassDef(PhysicsContribution,1);
 };

@@ -24,7 +24,54 @@ PhysicsContribution::~PhysicsContribution() {
 	delete m_hn;
 }
 
-THnBase* PhysicsContribution::fillTHn(const THnBase* hn, std::string varexp, TString selection) {
+void PhysicsContribution::addCorrelatedUncertainty(TString name, THnBase* h) {
+	if(!h || !m_hn) {
+		throw std::runtime_error("Histograms not ready");
+	}
+	if(h->GetNbins() != m_hn->GetNbins()) {
+		throw std::runtime_error("Number of bins in uncertainty histogram does not match");
+	}
+	
+	if(m_correlatedUncertaintyHistogramMap.find(name) != m_correlatedUncertaintyHistogramMap.end()) {
+		cout << "Warning: Overwriting histogram for uncertainty " << name << endl;
+		m_correlatedUncertaintyHistogramMap[name] = h;
+	} else {
+		m_correlatedUncertaintyHistogramMap.insert(make_pair(name, h));
+	}
+}
+
+void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
+	if(isData()) {
+		return;
+	}
+	
+	if(m_flatUncertaintyMap.find(name) != m_flatUncertaintyMap.end()) {
+		cout << "Warning: Changing flat uncertainty " << name << " from " << m_flatUncertaintyMap[name] << " to " << relErr << endl;
+		m_flatUncertaintyMap[name] = relErr;
+	} else {
+		m_flatUncertaintyMap.insert(make_pair(name, relErr));
+	}
+}
+
+void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
+	if(!hIn) {
+		throw std::runtime_error("Null histogram given");
+	}
+	
+	if(m_flatUncertaintyMap.find(name) == m_flatUncertaintyMap.end()) {
+		throw std::runtime_error("Could not find requested flat uncertainty");
+	}
+	
+	THnBase* h = (THnBase*)hIn->Clone();
+	h->CalculateErrors(false);
+	for(int i = 0; i <= h->GetNbins() + 1; ++i) {
+		h->SetBinContent(i, m_flatUncertaintyMap[name] * h->GetBinContent(i));
+	}
+	
+	addCorrelatedUncertainty(name, h);
+}
+
+THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection) {
 	delete m_hn;
 	
 	m_hn = (THnBase*)hn->Clone();
@@ -95,15 +142,23 @@ THnBase* PhysicsContribution::fillTHn(const THnBase* hn, std::string varexp, TSt
 	
 	cout << endl;
 	
+	for(auto &flatUncertainty : m_flatUncertaintyMap) {
+		applyRelativeUncertainty(m_hn, flatUncertainty.first);
+	}
+	
 	return m_hn;
+}
+
+THnBase* PhysicsContribution::getContent() {
+	return m_hn;
+}
+
+auto PhysicsContribution::getCorrelatedUncertainties() -> decltype(m_correlatedUncertaintyHistogramMap) {
+	return m_correlatedUncertaintyHistogramMap;
 }
 
 double PhysicsContribution::getLumi() const {
 	return m_lumi;
-}
-
-THnBase* PhysicsContribution::getTHn() {
-	return m_hn;
 }
 
 TString PhysicsContribution::getType() const {
@@ -150,6 +205,9 @@ void PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	}
 	
 	axis->SetRange(first, last);
+	for(auto &correlatedUncertainty : m_correlatedUncertaintyHistogramMap) {
+		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+	}
 }
 
 void PhysicsContribution::setRange(const char* name, double lo) {
@@ -162,6 +220,9 @@ void PhysicsContribution::setRange(const char* name, double lo) {
 	Int_t first = axis->FindFixBin(lo);
 	Int_t last  = axis->GetLast() + 1;
 	axis->SetRange(first, last);
+	for(auto &correlatedUncertainty : m_correlatedUncertaintyHistogramMap) {
+		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+	}
 }
 
 void PhysicsContribution::setRange(const char* name) {
@@ -171,4 +232,7 @@ void PhysicsContribution::setRange(const char* name) {
 		exit(1);
 	}
 	axis->SetRange();
+	for(auto &correlatedUncertainty : m_correlatedUncertaintyHistogramMap) {
+		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
+	}
 }
