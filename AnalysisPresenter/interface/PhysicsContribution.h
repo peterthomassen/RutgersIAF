@@ -20,6 +20,7 @@ public:
 	THnBase* getContent();
 	std::map<TString, THnBase*> getCorrelatedUncertainties();
 	double getLumi() const;
+	TString getName() const;
 	TString getType() const;
 	
 	bool isBackground() const;

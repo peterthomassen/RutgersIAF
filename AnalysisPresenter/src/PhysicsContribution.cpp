@@ -164,6 +164,10 @@ double PhysicsContribution::getLumi() const {
 	return m_lumi;
 }
 
+TString PhysicsContribution::getName() const {
+	return m_name;
+}
+
 TString PhysicsContribution::getType() const {
 	return m_type;
 }
