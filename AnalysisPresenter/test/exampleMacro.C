@@ -2,6 +2,9 @@ void exampleMacro(TString ofname = "test.root") {
 	gSystem->Load("libRutgersIAF2012AnalysisPresenter.so");
 	TH1::AddDirectory(false);
 	
+	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,150,3}";
+	TString selection = "";
+	
 	PhysicsContribution* data = new PhysicsContribution("data", "/cms/thomassen/2014/Analysis/data/histograms/20140529_data.3L.root", 19500);
 	
 	PhysicsContribution* mc1 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTWWJets.3L.simulation.root", 217213. / 0.002037, "TTWW");
@@ -17,14 +20,9 @@ void exampleMacro(TString ofname = "test.root") {
 	PhysicsContribution* mc11 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsFullLeptonic.3L.simulation.root", 12108679. / 23.08, "TT_FullL");
 	mc11->addWeight("1.5");
 	
-	PhysicsContribution* dd1 = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140529_dataFake.3L.root", 19500, "emuFake");
+	PhysicsContribution* dd1 = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140529_dataFake.3L.root", data->getLumi(), "emuFake");
 	
-	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,150,3}";
-	//std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}";
-	TString selection = "";
-	//TString selection = "NLEPTONS == 3 && (NOSSF == 1 && ONZ) && NGOODTAUS == 0 && HT < 200 && NBJETSCSVM == 0 && MET > 0 && MET < 50";
-	
-	//mc1->addFlatUncertainty("xsec", 0.3);
+	//mc->addFlatUncertainty("xsec", 0.3);
 	
 	Assembler* assembler = new Assembler(ofname);
 	assembler->addContribution(data);
@@ -47,25 +45,25 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->addWeight("PUWEIGHT", "backgroundMC");
 	assembler->addWeight("TRIGGERWEIGHT", "backgroundMC");
 	
+	// Assemble everything
 	assembler->process(varexp, selection);
-//	cout << hn->GetEntries() << endl;
 	
 	// So far, now taus and no b-jets
 	assembler->setRange("NLEPTONS", 3, 3);
 	assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	
-	for(int i = 0; i <= 1; ++i) {
+	// HT loop
+	for(int i = 0; i <= 0; i += 200) {
 		if(i == 0) {
 			assembler->setRange("HT", 0, 200, false);
 			cout << "\n==== HT 0-200" << endl;
-		} else if(i == 1) {
-			break;
+		} else {
 			assembler->setRange("HT", 200);
 			cout << "\n==== HT 200-inf" << endl;
 		}
 		
-		// In general, make no assumption on the OSSF mass (think of DY0)
+		// Reset any OSSF mass cuts from previous loop iteration
 		assembler->setRange("MOSSF");
 		
 		// DY0, no requirements on ONZ
