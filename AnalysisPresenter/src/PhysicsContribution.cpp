@@ -53,6 +53,21 @@ void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
 	}
 }
 
+void PhysicsContribution::addWeight(TString varexp, TString type) {
+	if(type != "" && m_type != type) {
+		return;
+	}
+	
+	if(isData()) {
+		cerr << "Warning: Applying " << m_weights.size() << " weight(s) to data" << endl;
+	}
+	
+	if(std::find(m_weights.begin(), m_weights.end(), varexp) != m_weights.end()) {
+		cout << "Warning: Adding weight " << varexp << " repeatedly" << endl;
+	}
+	m_weights.push_back(varexp);
+}
+
 void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
 	if(!hIn) {
 		throw std::runtime_error("Null histogram given");
@@ -98,17 +113,21 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	selection = TString("(") + selection + TString(")");
 	
-	for(auto &fakerate : m_fakerateMap) {
-		if(isBackground()) {
-			selection += TString::Format(" * pow(%f, %s)", fakerate.second, fakerate.first.Data());
-		}
-		if(isSignal()) {
-			cerr << "Warning: Fake rate treatment currently not implemented for signal\n" << endl;
-		}
+	for(auto &weight : m_weights) {
+		selection += TString(" * ") + weight;
 	}
-	if(m_type == "backgroundMC") {
-		selection += " * ELIDISOWEIGHT * MUIDISOWEIGHT * PUWEIGHT * TRIGGERWEIGHT";
-		if(m_fakerateMap.size() > 0) {
+	
+	// I suppose the following could be entirely in the weights mechanism. But now we have this already.
+	if(m_fakerateMap.size() > 0) {
+		// Apply fake rate
+		if(isBackground()) {
+			for(auto &fakerate : m_fakerateMap) {
+				selection += TString::Format(" * pow(%f, %s)", fakerate.second, fakerate.first.Data());
+			}
+		}
+		
+		// Prune MC
+		if(m_type == "backgroundMC") {
 			TString sum;
 			for(auto it = m_fakerateMap.begin(); it != m_fakerateMap.end(); ++it) {
 				if(it == m_fakerateMap.begin()) {
@@ -118,6 +137,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 				}
 			}
 			selection += TString::Format(" * pow(-1, %s > 0)", sum.Data());
+		}
+		
+		// Signal
+		if(isSignal()) {
+			cerr << "Warning: Fake rate treatment currently not implemented for signal\n" << endl;
 		}
 	}
 	

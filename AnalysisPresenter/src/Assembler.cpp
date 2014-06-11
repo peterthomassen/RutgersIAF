@@ -45,6 +45,12 @@ void Assembler::addContribution(PhysicsContribution* contribution) {
 	}
 }
 
+void Assembler::addWeight(TString varexp, TString type) {
+	for(auto &contribution : boost::join(m_background, m_signal)) {
+		contribution->addWeight(varexp, type);
+	}
+}
+
 void Assembler::process(std::string varexp, TString selection) {
 	std::vector<TString> varNames;
 	std::vector<double> rangeMin, rangeMax;
@@ -139,6 +145,7 @@ void Assembler::write(const char* name) {
 		TH1D* hContribution = contribution->getContent()->Projection(dim, "E");
 		double scale = m_data[0]->getLumi() / contribution->getLumi();
 		hBackground->Add(hContribution, scale);
+		//cout << contribution->getName() << ": " << hContribution->Integral() << "*" << scale << " = " << hContribution->Integral() * scale << endl;
 		for(auto &contributionUncertainty : contribution->getCorrelatedUncertainties()) {
 			TH1D* hContributionUncertainty = contributionUncertainty.second->Projection(dim, "E");
 			hBackgroundCorrelatedUncertainty->Add(hContributionUncertainty, scale);

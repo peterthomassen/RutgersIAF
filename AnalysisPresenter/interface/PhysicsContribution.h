@@ -15,6 +15,7 @@ public:
 	
 	void addCorrelatedUncertainty(TString, THnBase*);
 	void addFlatUncertainty(TString, double);
+	void addWeight(TString, TString = "");
 	void applyRelativeUncertainty(THnBase*, TString);
 	THnBase* fillContent(const THnBase*, std::string, TString);
 	THnBase* getContent();
@@ -44,6 +45,7 @@ private:
 	std::map<TString, THnBase*> m_correlatedUncertaintyHistogramMap;
 	std::map<TString, double> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
+	std::vector<TString> m_weights;
 	
 	ClassDef(PhysicsContribution,1);
 };

@@ -3,30 +3,50 @@ void exampleMacro(TString ofname = "test.root") {
 	TH1::AddDirectory(false);
 	
 	PhysicsContribution* data = new PhysicsContribution("data", "/cms/thomassen/2014/Analysis/data/histograms/20140529_data.3L.root", 19500);
-	PhysicsContribution* mc1 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZstudy/WZJetsTo3LNu.simulation-old.root.3L.root", 2016678. / 1.1236);
-	PhysicsContribution* dd1 = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140529_dataFake.3L.root", 19500);
+	
+	PhysicsContribution* mc1 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTWWJets.3L.simulation.root", 217213. / 0.002037, "TTWW");
+	PhysicsContribution* mc2 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTWJets.3L.simulation.root", 195555. / 0.2149, "TTW");
+	PhysicsContribution* mc3 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTZJets.3L.simulation.root", 209677. / 0.208, "TTZ");
+	PhysicsContribution* mc4 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WWWJets.3L.simulation.root", 220170. / 0.08217, "WWW");
+	PhysicsContribution* mc5 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WWZJets.3L.simulation.root", 221805. / 0.0633, "WWZ");
+	PhysicsContribution* mc6 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZJetsTo3LNu.3L.simulation.root", 2016678. / 1.2030, "WZ");
+	PhysicsContribution* mc7 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZZJets.3L.simulation.root", 219428. / 0.019, "WZZ");
+	PhysicsContribution* mc8 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/ZZJetsTo4L.3L.simulation.root", 4804781. / 0.181, "ZZ");
+	PhysicsContribution* mc9 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/ZZZNoGstarJets.3L.simulation.root", 224572. / 0.004587, "ZZZ");
+	PhysicsContribution* mc10 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsSemiLeptonic.3L.simulation.root", 25365231. / 97.97, "TT_SemiL");
+	PhysicsContribution* mc11 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsFullLeptonic.3L.simulation.root", 12108679. / 23.08, "TT_FullL");
+	mc11->addWeight("1.5");
+	
+	PhysicsContribution* dd1 = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140529_dataFake.3L.root", 19500, "emuFake");
 	
 	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,150,3}";
 	//std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}";
-	TString selection = "!(NLEPTONS == 3 && MLEPTONS > 76 && MLEPTONS < 106)";
-	//std::string selection = "!(MLEPTONS > 76 && MLEPTONS < 106)";
-	//selection += " && nFakeMuons + nFakeElectrons == 0";
-	selection += " && (LOWDYOSMINMLL > 12)";
-	//selection += " && MT > 50 && MT < 100";
+	TString selection = "";
+	//TString selection = "NLEPTONS == 3 && (NOSSF == 1 && ONZ) && NGOODTAUS == 0 && HT < 200 && NBJETSCSVM == 0 && MET > 0 && MET < 50";
 	
-	mc1->addFlatUncertainty("xsec", 0.3);
+	//mc1->addFlatUncertainty("xsec", 0.3);
 	
 	Assembler* assembler = new Assembler(ofname);
 	assembler->addContribution(data);
 	assembler->addContribution(mc1);
+	assembler->addContribution(mc2);
+	assembler->addContribution(mc3);
+	assembler->addContribution(mc4);
+	assembler->addContribution(mc5);
+	assembler->addContribution(mc6);
+	assembler->addContribution(mc7);
+	assembler->addContribution(mc8);
+	assembler->addContribution(mc9);
+	assembler->addContribution(mc10);
+	assembler->addContribution(mc11);
 	assembler->addContribution(dd1);
-	assembler->setFakeRate("nFakeElectrons", 0.02508);
-	assembler->setFakeRate("nFakeMuons", 0.01534);
-/*	assembler->addWeight("backgroundMC", "ELIDISOWEIGHT");
-	assembler->addWeight("backgroundMC", "MUIDISOWEIGHT");
-	assembler->addWeight("backgroundMC", "PUWEIGHT");
-	assembler->addWeight("backgroundMC", "TRIGGERWEIGHT");
-*/	
+	assembler->setFakeRate("nFakeElectrons", 0.02538);
+	assembler->setFakeRate("nFakeMuons", 0.01544);
+	assembler->addWeight("ELIDISOWEIGHT", "backgroundMC");
+	assembler->addWeight("MUIDISOWEIGHT", "backgroundMC");
+	assembler->addWeight("PUWEIGHT", "backgroundMC");
+	assembler->addWeight("TRIGGERWEIGHT", "backgroundMC");
+	
 	assembler->process(varexp, selection);
 //	cout << hn->GetEntries() << endl;
 	
