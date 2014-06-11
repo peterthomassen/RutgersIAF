@@ -106,16 +106,19 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			cerr << "Warning: Fake rate treatment currently not implemented for signal\n" << endl;
 		}
 	}
-	if(m_type == "backgroundMC" && m_fakerateMap.size() > 0) {
-		TString sum;
-		for(auto it = m_fakerateMap.begin(); it != m_fakerateMap.end(); ++it) {
-			if(it == m_fakerateMap.begin()) {
-				sum = it->first;
-			} else {
-				sum += TString(" + ") + it->first;
+	if(m_type == "backgroundMC") {
+		selection += " * ELIDISOWEIGHT * MUIDISOWEIGHT * PUWEIGHT * TRIGGERWEIGHT";
+		if(m_fakerateMap.size() > 0) {
+			TString sum;
+			for(auto it = m_fakerateMap.begin(); it != m_fakerateMap.end(); ++it) {
+				if(it == m_fakerateMap.begin()) {
+					sum = it->first;
+				} else {
+					sum += TString(" + ") + it->first;
+				}
 			}
+			selection += TString::Format(" * pow(-1, %s > 0)", sum.Data());
 		}
-		selection += TString::Format(" * pow(-1, %s > 0) * ELIDISOWEIGHT * MUIDISOWEIGHT * PUWEIGHT * TRIGGERWEIGHT", sum.Data());
 	}
 	
 	cout << endl << selection << endl;
