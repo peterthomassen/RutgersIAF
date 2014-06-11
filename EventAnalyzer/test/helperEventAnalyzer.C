@@ -247,7 +247,48 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodTracks","TRACK_BEAM_D0");
   handler->addProductCut("goodTracks","TRACK_VERT_DZ");
   handler->addProductCut("goodTracks","TRACK_PROMPT");
-
+  
+  /////////////////
+  ///Photon Cuts///
+  /////////////////
+  
+  handler->addObjectVariable("IRELCHARGEDHADRONISO", new ObjectVariableRelIso("IRELCHARGEDHADRONISO", "CHARGEDHADRONISO"));
+  handler->addObjectVariable("IRELNEUTRALHADRONISO", new ObjectVariableRelIso("IRELNEUTRALHADRONISO", "NEUTRALHADRONISO"));
+  handler->addObjectVariable("IRELPHOTONISO", new ObjectVariableRelIso("IRELPHOTONISO", "PHOTONISO"));
+  
+  handler->addObjectVariable("PHOTON_BARREL_SIGMAIETAIETA", new ObjectVariableInRange<double>("SIGMAIETAIETA", -0.011, 0.011));
+  handler->addObjectVariable("PHOTON_BARREL_HADOVEREM", new ObjectVariableInRange<double>("HADOVEREM", -1e6, 0.06));
+  handler->addObjectVariable("PHOTON_BARREL_IRELCHARGEDHADRONISO", new ObjectVariableInRange<double>("IRELCHARGEDHADRONISO", 0, 0.06));
+  handler->addObjectVariable("PHOTON_BARREL_IRELNEUTRALHADRONISO", new ObjectVariableInRange<double>("IRELNEUTRALHADRONISO", 0, 0.16));
+  handler->addObjectVariable("PHOTON_BARREL_IRELPHOTONISO", new ObjectVariableInRange<double>("IRELPHOTONISO", 0, 0.08));
+  
+  handler->addObjectVariable("PHOTON_ENDCAP_SIGMAIETAIETA", new ObjectVariableInRange<double>("SIGMAIETAIETA", -0.034, 0.034));
+  handler->addObjectVariable("PHOTON_ENDCAP_HADOVEREM", new ObjectVariableInRange<double>("HADOVEREM", -1e6, 0.05));
+  handler->addObjectVariable("PHOTON_ENDCAP_IRELCHARGEDHADRONISO", new ObjectVariableInRange<double>("IRELCHARGEDHADRONISO", 0, 0.05));
+  handler->addObjectVariable("PHOTON_ENDCAP_IRELNEUTRALHADRONISO", new ObjectVariableInRange<double>("IRELNEUTRALHADRONISO", 0, 0.10));
+  handler->addObjectVariable("PHOTON_ENDCAP_IRELPHOTONISO", new ObjectVariableInRange<double>("IRELPHOTONISO", 0, 0.12));
+  
+  ObjectVariableCombined* photon_barrel = new ObjectVariableCombined("BARREL", "PHOTON_BARREL_SIGMAIETAIETA", true, "photon_barrel_good");
+  photon_barrel->addVariable("PHOTON_BARREL_HADOVEREM");
+  photon_barrel->addVariable("PHOTON_BARREL_IRELCHARGEDHADRONISO");
+  photon_barrel->addVariable("PHOTON_BARREL_IRELNEUTRALHADRONISO");
+  photon_barrel->addVariable("PHOTON_BARREL_IRELPHOTONISO");
+  handler->addObjectVariable("PHOTON_BARREL", photon_barrel);
+  
+  ObjectVariableCombined* photon_endcap = new ObjectVariableCombined("ENDCAP", "PHOTON_ENDCAP_SIGMAIETAIETA", true, "photon_endcap_good");
+  photon_barrel->addVariable("PHOTON_ENDCAP_HADOVEREM");
+  photon_barrel->addVariable("PHOTON_ENDCAP_IRELCHARGEDHADRONISO");
+  photon_barrel->addVariable("PHOTON_ENDCAP_IRELNEUTRALHADRONISO");
+  photon_barrel->addVariable("PHOTON_ENDCAP_IRELPHOTONISO");
+  handler->addObjectVariable("PHOTON_ENDCAP", photon_endcap);
+  
+  handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL", "PHOTON_ENDCAP", false, "PHOTON_COMBINED"));
+  
+  handler->addProduct("goodPhotons", "ALLPHOTONS");
+  handler->addProductCut("goodPhotons", "PT10");
+  handler->addProductCut("goodPhotons", "ETA2p4");
+  handler->addProductCut("goodPhotons", "PHOTON_COMBINED");
+  
   //////////////////
   //Threshold cuts//
   //////////////////
@@ -284,6 +325,11 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
   handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
   handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
+
+  handler->addProductComparison("goodPhotons","goodMuons",deltaR0p1);
+  handler->addProductComparison("goodPhotons","goodElectrons",deltaR0p1);
+  handler->addProductComparison("goodPhotons","goodTaus",deltaR0p1);
+  handler->addProductComparison("goodPhotons","goodJets",deltaR0p3);
 
 
   //////////////////////////
@@ -322,6 +368,7 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
   handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
   handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
+  handler->addEventVariable("NGOODPHOTONS", new EventVariableN("NGOODPHOTONS","goodPhotons"));
 
   EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");
   LT->addProduct("goodElectrons");
