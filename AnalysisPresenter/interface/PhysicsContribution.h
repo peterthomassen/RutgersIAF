@@ -28,13 +28,14 @@ public:
 	bool isData() const;
 	bool isSignal() const;
 	
+	bool setDebug(bool);
 	void setFakeRate(TString, double);
-	
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
 
 private:
+	bool m_debug = false;
 	TString m_filename;
 	double m_lumi;
 	TString m_name;

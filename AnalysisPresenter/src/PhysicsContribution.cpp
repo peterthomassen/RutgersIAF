@@ -91,7 +91,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	m_hn = (THnBase*)hn->Clone();
 	
-	cout << "Running " << m_filename << " (lumi=" << m_lumi << "/pb) ";
+	cout << "Running " << m_filename << " (" << m_type << ", lumi=" << m_lumi << "/pb) ";
 	TFile f(m_filename);
 	if(f.IsZombie()) {
 		return 0;
@@ -105,7 +105,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		selection = "1";
 	}
 	
-	if(isData()) {
+	if(isData() || isSignal()) {
 		for(auto &fakerate : m_fakerateMap) {
 			selection += TString::Format(" && %s == 0", fakerate.first.Data());
 		}
@@ -141,11 +141,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		
 		// Signal
 		if(isSignal()) {
-			cerr << "Warning: Fake rate treatment currently not implemented for signal\n" << endl;
+			cout << endl << "Notice: Fake rates are being ignored in signal treatment";
 		}
 	}
 	
-	cout << endl << selection << endl;
+	if(m_debug) cout << endl << selection << endl;
 	
 	int step = 10000;
 	Double_t x[m_hn->GetNdimensions()];
@@ -206,6 +206,12 @@ bool PhysicsContribution::isData() const {
 
 bool PhysicsContribution::isSignal() const {
 	return m_type.BeginsWith("signal");
+}
+
+bool PhysicsContribution::setDebug(bool debug) {
+	bool oldDebug = m_debug;
+	m_debug = debug;
+	return oldDebug;
 }
 
 void PhysicsContribution::setFakeRate(TString name, double f) {

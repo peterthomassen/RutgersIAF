@@ -51,6 +51,10 @@ void Assembler::addWeight(TString varexp, TString type) {
 	}
 }
 
+double Assembler::getLumi() const {
+	return m_data[0]->getLumi();
+}
+
 void Assembler::process(std::string varexp, TString selection) {
 	std::vector<TString> varNames;
 	std::vector<double> rangeMin, rangeMax;
@@ -97,12 +101,20 @@ void Assembler::process(std::string varexp, TString selection) {
 	delete hs;
 }
 
-void Assembler::setFakeRate(TString name, double f) {
-	for(auto &contribution : m_data) {
-		contribution->setFakeRate(name, 0);
+void Assembler::setDebug(bool debug) {
+	auto contributionsMC = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+		contribution->setDebug(debug);
 	}
+}
+
+void Assembler::setFakeRate(TString name, double f) {
 	for(auto &contribution : m_background) {
 		contribution->setFakeRate(name, f);
+	}
+	// Declare fake rate so that PhysicsContribution::fillContent() know show to skip events that have fake proxies
+	for(auto &contribution : boost::join(m_data, m_signal)) {
+		contribution->setFakeRate(name, 0);
 	}
 }
 
@@ -152,31 +164,56 @@ void Assembler::write(const char* name) {
 		}
 	}
 	
+	TH1D* hSignal = (TH1D*)hData->Clone();
+	hSignal->Reset();
+	TH1D* hSignalCorrelatedUncertainty = (TH1D*)hSignal->Clone();
+	for(auto &contribution : m_signal) {
+		TH1D* hContribution = contribution->getContent()->Projection(dim, "E");
+		double scale = m_data[0]->getLumi() / contribution->getLumi();
+		hSignal->Add(hContribution, scale);
+		//cout << contribution->getName() << ": " << hContribution->Integral() << "*" << scale << " = " << hContribution->Integral() * scale << endl;
+		for(auto &contributionUncertainty : contribution->getCorrelatedUncertainties()) {
+			TH1D* hContributionUncertainty = contributionUncertainty.second->Projection(dim, "E");
+			hSignalCorrelatedUncertainty->Add(hContributionUncertainty, scale);
+		}
+	}
+	
 	double sumData = 0;
 	double sumBackground = 0;
 	double sumBackgroundUnc2 = 0;
 	double sumBackgroundCorrelatedUnc2 = 0;
+	double sumSignal = 0;
+	double sumSignalUnc2 = 0;
+	double sumSignalCorrelatedUnc2 = 0;
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		double contentData = hData->GetBinContent(i);
 		double contentBackground = hBackground->GetBinContent(i);
 		double uncBackground = hBackground->GetBinError(i);
 		double correlatedUncBackground = hBackgroundCorrelatedUncertainty->GetBinContent(i);
+		double contentSignal = hSignal->GetBinContent(i);
+		double uncSignal = hSignal->GetBinError(i);
+		double correlatedUncSignal = hSignalCorrelatedUncertainty->GetBinContent(i);
 		double lo = hData->GetXaxis()->GetBinLowEdge(i);
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);
 		if(i < hData->GetNbinsX()) {
-			printf("%s %d-%d	%d : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)hi, (int)contentData, contentBackground, uncBackground, correlatedUncBackground);
+			printf("%s %d-%d	%d : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)hi, (int)contentData, contentBackground, uncBackground, correlatedUncBackground, contentSignal, uncSignal, correlatedUncSignal);
 		} else {
 			contentData += hData->GetBinContent(i + 1);
 			contentBackground += hBackground->GetBinContent(i + 1);
 			correlatedUncBackground += hBackgroundCorrelatedUncertainty->GetBinContent(i + 1);
-			printf("%s %d-inf	%d : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)contentData, contentBackground, uncBackground, correlatedUncBackground);
+			contentSignal += hSignal->GetBinContent(i + 1);
+			correlatedUncSignal += hSignalCorrelatedUncertainty->GetBinContent(i + 1);
+			printf("%s %d-inf	%d : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)contentData, contentBackground, uncBackground, correlatedUncBackground, contentSignal, uncSignal, correlatedUncSignal);
 		}
 		sumData += contentData;
 		sumBackground += contentBackground;
 		sumBackgroundUnc2 += uncBackground * uncBackground;
 		sumBackgroundCorrelatedUnc2 += correlatedUncBackground * correlatedUncBackground;
+		sumSignal += contentSignal;
+		sumSignalUnc2 += uncSignal * uncSignal;
+		sumSignalCorrelatedUnc2 += correlatedUncSignal * correlatedUncSignal;
 	}
-	printf("Sum: %.2f : %.2f ± %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundUnc2), sqrt(sumBackgroundCorrelatedUnc2));
+	printf("Sum: %.2f : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundUnc2), sqrt(sumBackgroundCorrelatedUnc2), sumSignal, sqrt(sumSignalUnc2), sqrt(sumSignalCorrelatedUnc2));
 	
 	delete hData;
 }

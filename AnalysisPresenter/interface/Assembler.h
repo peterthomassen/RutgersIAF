@@ -18,8 +18,11 @@ public:
 	void addContribution(PhysicsContribution*);
 	void addWeight(TString, TString = "");
 	
+	double getLumi() const;
+	
 	void process(std::string, TString);
 	
+	void setDebug(bool);
 	void setFakeRate(TString, double);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);

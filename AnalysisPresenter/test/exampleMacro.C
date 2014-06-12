@@ -1,54 +1,50 @@
 void exampleMacro(TString ofname = "test.root") {
 	gSystem->Load("libRutgersIAF2012AnalysisPresenter.so");
-	TH1::AddDirectory(false);
+	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
+	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
 	
+	///////////////////////
+	// Binning/selection //
+	///////////////////////
+	
+	// Specify axes and bins of multidimensional histogram
 	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,150,3}";
+	// Global cuts, if desired
 	TString selection = "";
 	
-	PhysicsContribution* data = new PhysicsContribution("data", "/cms/thomassen/2014/Analysis/data/histograms/20140529_data.3L.root", 19500);
 	
-	PhysicsContribution* mc1 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTWWJets.3L.simulation.root", 217213. / 0.002037, "TTWW");
-	PhysicsContribution* mc2 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTWJets.3L.simulation.root", 195555. / 0.2149, "TTW");
-	PhysicsContribution* mc3 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTZJets.3L.simulation.root", 209677. / 0.208, "TTZ");
-	PhysicsContribution* mc4 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WWWJets.3L.simulation.root", 220170. / 0.08217, "WWW");
-	PhysicsContribution* mc5 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WWZJets.3L.simulation.root", 221805. / 0.0633, "WWZ");
-	PhysicsContribution* mc6 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZJetsTo3LNu.3L.simulation.root", 2016678. / 1.2030, "WZ");
-	PhysicsContribution* mc7 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZZJets.3L.simulation.root", 219428. / 0.019, "WZZ");
-	PhysicsContribution* mc8 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/ZZJetsTo4L.3L.simulation.root", 4804781. / 0.181, "ZZ");
-	PhysicsContribution* mc9 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/ZZZNoGstarJets.3L.simulation.root", 224572. / 0.004587, "ZZZ");
-	PhysicsContribution* mc10 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsSemiLeptonic.3L.simulation.root", 25365231. / 97.97, "TT_SemiL");
-	PhysicsContribution* mc11 = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsFullLeptonic.3L.simulation.root", 12108679. / 23.08, "TT_FullL");
-	mc11->addWeight("1.5");
+	///////////////////////
+	// Signal definition //
+	///////////////////////
+	PhysicsContribution* signal = new PhysicsContribution("signal", "/cms/data25/maritader/sim/Seesaw_Full_M-140_FDS_TuneZ2_8TeV.root", 126612 / 0.0669, "SeesawTo3Lminus_SyncedMC");
+	// For now, the signal weights need to be applied here (this will change shortly)
+	signal->addWeight("ELIDISOWEIGHT");
+	signal->addWeight("MUIDISOWEIGHT");
+	//signal->addWeight("PUWEIGHT");
+	signal->addWeight("TRIGGERWEIGHT");
 	
-	PhysicsContribution* dd1 = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140529_dataFake.3L.root", data->getLumi(), "emuFake");
 	
-	//mc->addFlatUncertainty("xsec", 0.3);
-	
+	////////////////////////
+	// Initialize and run //
+	////////////////////////
 	Assembler* assembler = new Assembler(ofname);
-	assembler->addContribution(data);
-	assembler->addContribution(mc1);
-	assembler->addContribution(mc2);
-	assembler->addContribution(mc3);
-	assembler->addContribution(mc4);
-	assembler->addContribution(mc5);
-	assembler->addContribution(mc6);
-	assembler->addContribution(mc7);
-	assembler->addContribution(mc8);
-	assembler->addContribution(mc9);
-	assembler->addContribution(mc10);
-	assembler->addContribution(mc11);
-	assembler->addContribution(dd1);
-	assembler->setFakeRate("nFakeElectrons", 0.02538);
-	assembler->setFakeRate("nFakeMuons", 0.01544);
-	assembler->addWeight("ELIDISOWEIGHT", "backgroundMC");
-	assembler->addWeight("MUIDISOWEIGHT", "backgroundMC");
-	assembler->addWeight("PUWEIGHT", "backgroundMC");
-	assembler->addWeight("TRIGGERWEIGHT", "backgroundMC");
-	
-	// Assemble everything
+	init(assembler);
+	setupData(assembler);
+	setupBackgroundMC(assembler);
+	setupBackgroundDD(assembler);
+	assembler->addContribution(signal); // It is important to add the signal before setting up the rake rates
+	setupFakeRates(assembler);
+	assembler->setDebug(true);
 	assembler->process(varexp, selection);
 	
-	// So far, now taus and no b-jets
+	
+	/////////////////
+	// Make tables //
+	/////////////////
+	
+	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
+	
+	// So far, exactly 3L, no taus and no b-jets
 	assembler->setRange("NLEPTONS", 3, 3);
 	assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NBJETSCSVM", 0, 0);
@@ -107,7 +103,4 @@ void exampleMacro(TString ofname = "test.root") {
 	}
 	
 	delete assembler;
-	delete data;
-	delete mc1;
-	delete dd1;
 }
