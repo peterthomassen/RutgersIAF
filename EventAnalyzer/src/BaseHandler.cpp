@@ -165,57 +165,60 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 	}
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 		m_trackFakeCombination = 0;
+		m_photonFakeCombination = 0;
 		if(done) break;
 		for(m_trackFakeCombinationIndex = 0; m_trackFakeCombinationIndex <= m_trackFakeCombination; ++m_trackFakeCombinationIndex) {
-			m_reader->GetEntry(m_currentEntry);
-			if (m_currentEntry % 100000 == 0) {
-				cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
-			}
-			
-			int run = 0, lumiBlock = 0;
-			long event = 0;
-			bool hasRun = m_reader->getVariable("RUN",run);
-			bool hasLumi = m_reader->getVariable("LUMI",lumiBlock);
-			bool hasEvent = m_reader->getVariable("EVENT",event);
-			
-			if(!hasRun || !hasLumi || !hasEvent)continue;
-			
-			if(onlyRun >= 0) {
-				if(run != onlyRun || event != onlyEvent) {
-					continue;
+			for(m_photonFakeCombinationIndex = 0; m_photonFakeCombinationIndex <= m_photonFakeCombination; ++m_photonFakeCombinationIndex) {
+				m_reader->GetEntry(m_currentEntry);
+				if (m_currentEntry % 100000 == 0) {
+					cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
 				}
-				cout << "This is entry " << m_currentEntry << endl;
-				done = true;
-			}
-			
-			if(onlyRun >= 0 && m_trackFakeCombinationIndex == 0 && getDebugMode()) {
-				m_reader->dumpEventInfo();
-			}
-			
-			if(getMode("trackFakeCombination")) cout << "E=" << event << " it=" << m_trackFakeCombinationIndex << '\n';
-			
-			if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end()) {
-				dumpEventInfo();
-			}
-			if(m_doRunLumiCheck || m_doRunLumiCheckFromJSON){
-				if(run != m_checkedRun || lumiBlock != m_checkedLumi){
-					m_isRunLumiGood = ((m_doRunLumiCheck && checkRunLumi(run,lumiBlock)) || (m_doRunLumiCheckFromJSON && checkRunLumiFromJSON(run,lumiBlock)));
-					m_checkedRun = run;
-					m_checkedLumi = lumiBlock;
+				
+				int run = 0, lumiBlock = 0;
+				long event = 0;
+				bool hasRun = m_reader->getVariable("RUN",run);
+				bool hasLumi = m_reader->getVariable("LUMI",lumiBlock);
+				bool hasEvent = m_reader->getVariable("EVENT",event);
+				
+				if(!hasRun || !hasLumi || !hasEvent)continue;
+				
+				if(onlyRun >= 0) {
+					if(run != onlyRun || event != onlyEvent) {
+						continue;
+					}
+					cout << "This is entry " << m_currentEntry << endl;
+					done = true;
+				}
+				
+				if(onlyRun >= 0 && m_trackFakeCombinationIndex + m_photonFakeCombinationIndex == 0 && getDebugMode()) {
+					m_reader->dumpEventInfo();
+				}
+				
+				if(getMode("trackFakeCombination")) cout << "E=" << event << " trackIt=" << m_trackFakeCombinationIndex << " photonIt=" << m_photonFakeCombinationIndex << '\n';
+				
+				if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end()) {
+					dumpEventInfo();
+				}
+				if(m_doRunLumiCheck || m_doRunLumiCheckFromJSON){
+					if(run != m_checkedRun || lumiBlock != m_checkedLumi){
+						m_isRunLumiGood = ((m_doRunLumiCheck && checkRunLumi(run,lumiBlock)) || (m_doRunLumiCheckFromJSON && checkRunLumiFromJSON(run,lumiBlock)));
+						m_checkedRun = run;
+						m_checkedLumi = lumiBlock;
 
+						if(!m_isRunLumiGood) {
+							if(getDebugMode()) std::cout << "JSON: Decided against running over run " << run << ", ls " << lumiBlock << std::endl;
+						} else {
+							if(getDebugMode()) std::cout << "JSON: Will run over run " << run << ", ls " << lumiBlock << std::endl;
+						}
+					}
 					if(!m_isRunLumiGood) {
-						if(getDebugMode()) std::cout << "JSON: Decided against running over run " << run << ", ls " << lumiBlock << std::endl;
-					} else {
-						if(getDebugMode()) std::cout << "JSON: Will run over run " << run << ", ls " << lumiBlock << std::endl;
+						continue;
 					}
 				}
-				if(!m_isRunLumiGood) {
-					continue;
-				}
+				
+				prepareEvent();
+				analyzeEvent();
 			}
-			
-			prepareEvent();
-			analyzeEvent();
 		}
 	}//End of event loop
 }
@@ -520,42 +523,103 @@ void BaseHandler::createProducts()
     //////////////////////////////////
     
 	if(pname == "goodTracks" && getMode("trackFakeCombination")) {
-		int nFakeElectrons = 0;
-		int nFakeMuons = 0;
+		int nTrackFakeElectrons = 0;
+		int nTrackFakeMuons = 0;
 		if(m_trackFakeCombinationIndex == 0) {
 			// Number of ways the tracks can be treated as a) tracks, b) electrons, c) muons
 			// Start counting at 0
 			m_trackFakeCombination = power(3, m_products[pname].size()) - 1;
 		} else {
 			assert(m_products[pname].size() > 0);
-			unsigned trackComboIndex = m_trackFakeCombinationIndex;
-			size_t trackIndex = m_products[pname].size() - 1;
-			while(trackComboIndex > 0) {
-				int trackRole = trackComboIndex % 3;
-				switch(trackRole) {
+			unsigned comboIndex = m_trackFakeCombinationIndex;
+			size_t index = m_products[pname].size() - 1;
+			while(comboIndex > 0) {
+				int role = comboIndex % 3;
+				switch(role) {
 					case 0:
 						break;
 					case 1:
-						m_products["goodElectrons"].push_back(m_products[pname][trackIndex]);
+						m_products["goodElectrons"].push_back(m_products[pname][index]);
 						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
 						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
-						m_products[pname].erase(m_products[pname].begin() + trackIndex);
-						++nFakeElectrons;
+						m_products[pname].erase(m_products[pname].begin() + index);
+						++nTrackFakeElectrons;
 						break;
 					case 2:
-						m_products["goodMuons"].push_back(m_products[pname][trackIndex]);
+						m_products["goodMuons"].push_back(m_products[pname][index]);
 						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
 						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
-						m_products[pname].erase(m_products[pname].begin() + trackIndex);
-						++nFakeMuons;
+						m_products[pname].erase(m_products[pname].begin() + index);
+						++nTrackFakeMuons;
 						break;
 				}
-				trackComboIndex /= 3;
-				--trackIndex;
+				comboIndex /= 3;
+				--index;
 			}
 		}
-		setVariable("nFakeElectrons", nFakeElectrons);
-		setVariable("nFakeMuons", nFakeMuons);
+		setVariable("nTrackFakeElectrons", nTrackFakeElectrons);
+		setVariable("nTrackFakeMuons", nTrackFakeMuons);
+	}
+
+    //////////////////////////////////
+    ///add fake leptons from photons///
+    //////////////////////////////////
+    
+	if(pname == "goodPhotons" && getMode("photonFakeCombination")) {
+		int nPhotonFakeElectrons = 0;
+		int nPhotonFakeMuons = 0;
+		if(m_photonFakeCombinationIndex == 0) {
+			// Number of ways the photons can be treated as a) photons, b) el+, c) el-, d) mu+, e) mu-
+			// Start counting at 0
+			m_photonFakeCombination = power(5, m_products[pname].size()) - 1;
+		} else {
+			assert(m_products[pname].size() > 0);
+			unsigned comboIndex = m_photonFakeCombinationIndex;
+			size_t index = m_products[pname].size() - 1;
+			while(comboIndex > 0) {
+				int role = comboIndex % 5;
+				switch(role) {
+					case 0:
+						break;
+					case 1:
+						m_products[pname][index]->setVariable("CHARGE", +1.0);
+						m_products["goodElectrons"].push_back(m_products[pname][index]);
+						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
+						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
+						m_products[pname].erase(m_products[pname].begin() + index);
+						++nPhotonFakeElectrons;
+						break;
+					case 2:
+						m_products[pname][index]->setVariable("CHARGE", -1.0);
+						m_products["goodElectrons"].push_back(m_products[pname][index]);
+						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
+						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
+						m_products[pname].erase(m_products[pname].begin() + index);
+						++nPhotonFakeElectrons;
+						break;
+					case 3:
+						m_products[pname][index]->setVariable("CHARGE", +1.0);
+						m_products["goodMuons"].push_back(m_products[pname][index]);
+						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
+						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
+						m_products[pname].erase(m_products[pname].begin() + index);
+						++nPhotonFakeMuons;
+						break;
+					case 4:
+						m_products[pname][index]->setVariable("CHARGE", -1.0);
+						m_products["goodMuons"].push_back(m_products[pname][index]);
+						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
+						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
+						m_products[pname].erase(m_products[pname].begin() + index);
+						++nPhotonFakeMuons;
+						break;
+				}
+				comboIndex /= 5;
+				--index;
+			}
+		}
+		setVariable("nPhotonFakeElectrons", nPhotonFakeElectrons);
+		setVariable("nPhotonFakeMuons", nPhotonFakeMuons);
 	}
 
   }
@@ -595,7 +659,7 @@ void BaseHandler::calcPhysicsWeight()
 void BaseHandler::prepareEvent()
 {
 
-  if(m_currentEntry == m_lastEntryPrepared && !getMode("trackFakeCombination"))return;
+  if(m_currentEntry == m_lastEntryPrepared && !(getMode("trackFakeCombination") || getMode("photonFakeCombination")))return;
   resetProducts();
   resetVariables();
 
