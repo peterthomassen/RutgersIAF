@@ -257,13 +257,13 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("IRELPHOTONISO", new ObjectVariableRelIso("IRELPHOTONISO", "PHOTONISO"));
   
   handler->addObjectVariable("PHOTON_BARREL_SIGMAIETAIETA", new ObjectVariableInRange<double>("SIGMAIETAIETA", -0.011, 0.011));
-  handler->addObjectVariable("PHOTON_BARREL_HADOVEREM", new ObjectVariableInRange<double>("HADOVEREM", -1e6, 0.06));
+  handler->addObjectVariable("PHOTON_BARREL_HADOVEREM", new ObjectVariableInRange<double>("HADOVEREM", 0.0, 0.06));
   handler->addObjectVariable("PHOTON_BARREL_IRELCHARGEDHADRONISO", new ObjectVariableInRange<double>("IRELCHARGEDHADRONISO", 0, 0.06));
   handler->addObjectVariable("PHOTON_BARREL_IRELNEUTRALHADRONISO", new ObjectVariableInRange<double>("IRELNEUTRALHADRONISO", 0, 0.16));
   handler->addObjectVariable("PHOTON_BARREL_IRELPHOTONISO", new ObjectVariableInRange<double>("IRELPHOTONISO", 0, 0.08));
   
   handler->addObjectVariable("PHOTON_ENDCAP_SIGMAIETAIETA", new ObjectVariableInRange<double>("SIGMAIETAIETA", -0.034, 0.034));
-  handler->addObjectVariable("PHOTON_ENDCAP_HADOVEREM", new ObjectVariableInRange<double>("HADOVEREM", -1e6, 0.05));
+  handler->addObjectVariable("PHOTON_ENDCAP_HADOVEREM", new ObjectVariableInRange<double>("HADOVEREM", 0.0, 0.05));
   handler->addObjectVariable("PHOTON_ENDCAP_IRELCHARGEDHADRONISO", new ObjectVariableInRange<double>("IRELCHARGEDHADRONISO", 0, 0.05));
   handler->addObjectVariable("PHOTON_ENDCAP_IRELNEUTRALHADRONISO", new ObjectVariableInRange<double>("IRELNEUTRALHADRONISO", 0, 0.10));
   handler->addObjectVariable("PHOTON_ENDCAP_IRELPHOTONISO", new ObjectVariableInRange<double>("IRELPHOTONISO", 0, 0.12));
@@ -329,6 +329,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("goodPhotons","goodMuons",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodElectrons",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodTaus",deltaR0p1);
+  handler->addProductComparison("goodPhotons","goodTracks",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodJets",deltaR0p3);
 
 
