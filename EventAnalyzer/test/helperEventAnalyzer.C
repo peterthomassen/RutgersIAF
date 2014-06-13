@@ -33,7 +33,8 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonElectron.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_N.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisionMatchDeltaRCharge.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonMatchDeltaRCharge.h"
+
 TString makeName(int qMu, int nMu,int qEl,int nEl, int qTr, int nTr)
 {
 
