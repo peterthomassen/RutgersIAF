@@ -32,7 +32,8 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonElectron.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_N.h"
-
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisionMatchDeltaRCharge.h"
 TString makeName(int qMu, int nMu,int qEl,int nEl, int qTr, int nTr)
 {
 
@@ -483,6 +484,50 @@ void setupFilterCuts(BaseHandler* handler)
 
 void setupMC(BaseHandler* handler, TString pufile)
 {
+
+
+  ////Additional products
+  
+  ObjectVariableValueInList<int>* pdgid11 = new ObjectVariableValueInList<int>("PDGID",11);
+  pdgid11->addValue(-11);
+  ObjectVariableValueInList<int>* pdgid13 = new ObjectVariableValueInList<int>("PDGID",13);
+  pdgid13->addValue(-13);
+  ObjectVariableValueInList<int>* pdgid15 = new ObjectVariableValueInList<int>("PDGID",15);
+  pdgid15->addValue(-15);
+
+  ObjectVariableValueInList<int>* motherWZTau = new ObjectVariableValueInList<int>("MOTHER_PDGID",24);
+  motherWZTau->addValue(-24);
+  motherWZTau->addValue(25);
+  motherWZTau->addValue(15);
+  motherWZTau->addValue(-15);
+
+
+  handler->addObjectVariable("PDGID11",pdgid11);
+  handler->addObjectVariable("PDGID13",pdgid13);
+  handler->addObjectVariable("PDGID15",pdgid15);
+  handler->addObjectVariable("MOTHERWZTau",motherWZTau);
+
+  handler->addProduct("MCelectrons","ALLMCPARTICLES");
+  handler->addProductCut("MCelectrons","PDGID11");
+
+  handler->addProduct("MCelectronsFromWZTau","MCelectrons");
+  handler->addProductCut("MCelectronsFromWZTau","MOTHERWZTau");
+
+  handler->addProduct("MCmuons","ALLMCPARTICLES");
+  handler->addProductCut("MCmuons","PDGID13");
+
+  handler->addProduct("MCmuonsFromWZTau","MCmuons");
+  handler->addProductCut("MCmuonsFromWZTau","MOTHERWZTau");
+
+  ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
+  handler->addProductSelfComparison("MCmuonsFromWZTau",deltaR0p1);
+  handler->addProductSelfComparison("MCelectronsFromWZTau",deltaR0p1);
+
+  ObjectComparisonMatchDeltaRCharge* mcMatchComparison = new ObjectComparisonMatchDeltaRCharge(0.1);
+  handler->addProductComparison("goodElectrons","MCelectronsFromWZTau",mcMatchComparison,false);
+  handler->addProductComparison("goodMuons","MCmuonsFromWZTau",mcMatchComparison,false);
+
+
 
   TFile infile(pufile.Data());
   TH1F* pu = (TH1F*)infile.Get("puweights");
