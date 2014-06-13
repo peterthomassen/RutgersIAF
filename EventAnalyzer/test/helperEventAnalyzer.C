@@ -439,8 +439,7 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("NOTTRILEPTONONZ", notTrileptonOnZcut);
   
   EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
-//  EventVariableValue<bool>* writeEvent = new EventVariableValue<bool>("DILEPTONS", true, "WRITEEVENT");
-  writeEvent->addVariable("NOTTRILEPTONONZ");
+//  writeEvent->addVariable("NOTTRILEPTONONZ");
   handler->addEventVariable("WRITEEVENT", writeEvent);
 }
 
