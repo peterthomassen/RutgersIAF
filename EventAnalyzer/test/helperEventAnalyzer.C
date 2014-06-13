@@ -496,7 +496,7 @@ void setupMC(BaseHandler* handler, TString pufile)
 
   ObjectVariableValueInList<int>* motherWZTau = new ObjectVariableValueInList<int>("MOTHER_PDGID",24);
   motherWZTau->addValue(-24);
-  motherWZTau->addValue(25);
+  motherWZTau->addValue(23);
   motherWZTau->addValue(15);
   motherWZTau->addValue(-15);
 
