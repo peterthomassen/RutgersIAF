@@ -427,17 +427,29 @@ void setupVariables(BaseHandler* handler)
   EventVariableInRange<int>* trileptons = new EventVariableInRange<int>("NLEPTONS", 3, 1e6, "TRILEPTONS");
   handler->addEventVariable("TRILEPTONS", trileptons);
   
-  EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e6, "MLOWDYCUT");
-  handler->addEventVariable("MLOWDYCUT", mLowDYcut);
-  
   EventVariableInRange<double>* mLeptonsOnZ = new EventVariableInRange<double>("MLEPTONS", mZ-15, mZ+15, "MLEPTONSONZ");
   handler->addEventVariable("MLEPTONSONZ", mLeptonsOnZ);
 
+  EventVariableInRange<double>* met0to50 = new EventVariableInRange<double>("MET", 0, 50, "MET0to50");
+  handler->addEventVariable("MET0to50", met0to50);
+
+  EventVariableInRange<double>* ht0to200 = new EventVariableInRange<double>("HT", 0, 200, "HT0to200");
+  handler->addEventVariable("HT0to200", ht0to200);
+
+  EventVariableReversed* offZ = new EventVariableReversed("ONZ", "OFFZ");
+  handler->addEventVariable("OFFZ", offZ);
+
   EventVariableCombined* trileptonOnZcut = new EventVariableCombined("TRILEPTONS", "MLEPTONSONZ", true, "TRILEPTONONZ");
+  trileptonOnZcut->addVariable("MET0to50");
+  trileptonOnZcut->addVariable("HT0to200");
+  trileptonOnZcut->addVariable("OFFZ");
   handler->addEventVariable("TRILEPTONONZ", trileptonOnZcut);
   
   EventVariableReversed* notTrileptonOnZcut = new EventVariableReversed("TRILEPTONONZ", "NOTTRILEPTONONZ");
   handler->addEventVariable("NOTTRILEPTONONZ", notTrileptonOnZcut);
+  
+  EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e6, "MLOWDYCUT");
+  handler->addEventVariable("MLOWDYCUT", mLowDYcut);
   
   EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
 //  writeEvent->addVariable("NOTTRILEPTONONZ");
