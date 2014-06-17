@@ -15,5 +15,5 @@ BaseTreeWriter::BaseTreeWriter(BaseHandler* handler,TString treename) : m_handle
 
 BaseTreeWriter::~BaseTreeWriter()
 {
-  delete m_tree;
+
 }
