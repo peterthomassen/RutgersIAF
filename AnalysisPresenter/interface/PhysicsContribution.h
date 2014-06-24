@@ -19,14 +19,15 @@ public:
 	void applyRelativeUncertainty(THnBase*, TString);
 	THnBase* fillContent(const THnBase*, std::string, TString);
 	THnBase* getContent();
-	std::map<TString, THnBase*> getCorrelatedUncertainties();
 	double getLumi() const;
 	TString getName() const;
-	TString getType() const;
+	TString getType(const bool detailed = false) const;
 	
 	bool isBackground() const;
 	bool isData() const;
 	bool isSignal() const;
+	
+	std::pair<TH1D*, std::map<TString, TH1D*> > project(const int dim, const double scale = 1.0) const;
 	
 	bool setDebug(bool);
 	void setFakeRate(TString, double);
@@ -42,10 +43,11 @@ private:
 	TString m_type;
 	
 	THnBase* m_hn = 0;
+	std::map<TString, THnBase*> m_hProjectionUncertainties;
 	
-	std::map<TString, THnBase*> m_correlatedUncertaintyHistogramMap;
 	std::map<TString, double> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
+	std::map<TString, THnBase*> m_systematicUncertaintyMap;
 	std::vector<TString> m_weights;
 	
 	ClassDef(PhysicsContribution,1);

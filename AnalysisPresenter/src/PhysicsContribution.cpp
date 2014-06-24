@@ -5,6 +5,7 @@
 
 #include "TAxis.h"
 #include "TFile.h"
+#include "TH1D.h"
 #include "THnBase.h"
 #include "TTree.h"
 
@@ -32,11 +33,11 @@ void PhysicsContribution::addCorrelatedUncertainty(TString name, THnBase* h) {
 		throw std::runtime_error("Number of bins in uncertainty histogram does not match");
 	}
 	
-	if(m_correlatedUncertaintyHistogramMap.find(name) != m_correlatedUncertaintyHistogramMap.end()) {
+	if(m_systematicUncertaintyMap.find(name) != m_systematicUncertaintyMap.end()) {
 		cout << "Warning: Overwriting histogram for uncertainty " << name << endl;
-		m_correlatedUncertaintyHistogramMap[name] = h;
+		m_systematicUncertaintyMap[name] = h;
 	} else {
-		m_correlatedUncertaintyHistogramMap.insert(make_pair(name, h));
+		m_systematicUncertaintyMap.insert(make_pair(name, h));
 	}
 }
 
@@ -77,9 +78,12 @@ void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
 		throw std::runtime_error("Could not find requested flat uncertainty");
 	}
 	
-	THnBase* h = (THnBase*)hIn->Clone();
+	THnBase* h = (THnBase*)hIn->Clone(name);
 	h->CalculateErrors(false);
 	for(int i = 0; i <= h->GetNbins() + 1; ++i) {
+		if(h->GetBinContent(i) == 0) {
+			continue;
+		}
 		h->SetBinContent(i, m_flatUncertaintyMap[name] * h->GetBinContent(i));
 	}
 	
@@ -107,6 +111,9 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	if(isData() || isSignal()) {
 		for(auto &fakerate : m_fakerateMap) {
+			if(!treeR->GetListOfBranches()->FindObject(fakerate.first)) {
+				continue;
+			}
 			selection += TString::Format(" && %s == 0", fakerate.first.Data());
 		}
 	}
@@ -121,22 +128,40 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	if(m_fakerateMap.size() > 0) {
 		// Apply fake rate
 		if(isBackground()) {
+			TString sum;
 			for(auto &fakerate : m_fakerateMap) {
+				if(!treeR->GetListOfBranches()->FindObject(fakerate.first)) {
+					if(m_type == "backgroundDD") {
+						cerr << "could not find branch for fake rate variable " << fakerate.first << endl;
+						throw std::runtime_error("");
+					}
+					continue;
+				}
+				
+				if(sum.Length() == 0) {
+					sum = fakerate.first;
+				} else {
+					sum += TString(" + ") + fakerate.first;
+				}
+				
 				selection += TString::Format(" * pow(%f, %s)", fakerate.second, fakerate.first.Data());
 			}
-		}
-		
-		// Prune MC
-		if(m_type == "backgroundMC") {
-			TString sum;
-			for(auto it = m_fakerateMap.begin(); it != m_fakerateMap.end(); ++it) {
-				if(it == m_fakerateMap.begin()) {
-					sum = it->first;
-				} else {
-					sum += TString(" + ") + it->first;
+			
+			// Prune MC
+			if(m_type == "backgroundMC") {
+				if(sum.Length() > 0) {
+					selection += TString::Format(" * pow(-1, %s > 0)", sum.Data());
 				}
+			} else
+			// Only take fake events from backgroundDD input
+			if(m_type == "backgroundDD") {
+				selection += TString::Format(" * (%s > 0)", sum.Data());
+			} else
+			//
+			{
+				cerr << "background type: " << m_type << endl;
+				throw std::runtime_error("Unknown background type");
 			}
-			selection += TString::Format(" * pow(-1, %s > 0)", sum.Data());
 		}
 		
 		// Signal
@@ -180,10 +205,6 @@ THnBase* PhysicsContribution::getContent() {
 	return m_hn;
 }
 
-auto PhysicsContribution::getCorrelatedUncertainties() -> decltype(m_correlatedUncertaintyHistogramMap) {
-	return m_correlatedUncertaintyHistogramMap;
-}
-
 double PhysicsContribution::getLumi() const {
 	return m_lumi;
 }
@@ -192,8 +213,16 @@ TString PhysicsContribution::getName() const {
 	return m_name;
 }
 
-TString PhysicsContribution::getType() const {
-	return m_type;
+TString PhysicsContribution::getType(const bool detailed) const {
+	if(detailed) {
+		return m_type;
+	}
+	
+	if(isData()) return "data";
+	if(isBackground()) return "background";
+	if(isSignal()) return "signal";
+	
+	throw std::runtime_error("should never make it here");
 }
 
 bool PhysicsContribution::isBackground() const {
@@ -206,6 +235,30 @@ bool PhysicsContribution::isData() const {
 
 bool PhysicsContribution::isSignal() const {
 	return m_type.BeginsWith("signal");
+}
+
+std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const double scale) const {
+	TH1D* projection = m_hn->Projection(dim, "E");
+	// TODO To improve the zerostat uncertainty, we should add an uncertainty of 1/N to empty bins. Unfortunately, we can't get this from the sample luminosity.
+	projection->Scale(scale);
+	
+	// Zerostat
+	for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
+		// After scaling above, the error should be sqrt(N) * scale. Empty bins have error == 0, i.e. error < scale.
+		// (Not sure if we can reliably check GetBinContent() == 0 in float histograms.)
+		if(projection->GetBinError(i) < scale) {
+			projection->SetBinError(i, scale);
+		}
+	}
+	
+	std::map<TString, TH1D*> uncertainties;
+	for(auto &uncertainty : m_systematicUncertaintyMap) {
+		TH1D* hUncertainty = uncertainty.second->Projection(dim, "E");
+		hUncertainty->Scale(scale);
+		uncertainties.insert(make_pair(uncertainty.first, hUncertainty));
+	}
+	
+	return std::make_pair(projection, uncertainties);
 }
 
 bool PhysicsContribution::setDebug(bool debug) {
@@ -242,7 +295,7 @@ void PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	}
 	
 	axis->SetRange(first, last);
-	for(auto &correlatedUncertainty : m_correlatedUncertaintyHistogramMap) {
+	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
 		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 }
@@ -257,7 +310,7 @@ void PhysicsContribution::setRange(const char* name, double lo) {
 	Int_t first = axis->FindFixBin(lo);
 	Int_t last  = axis->GetLast() + 1;
 	axis->SetRange(first, last);
-	for(auto &correlatedUncertainty : m_correlatedUncertaintyHistogramMap) {
+	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
 		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 }
@@ -269,7 +322,7 @@ void PhysicsContribution::setRange(const char* name) {
 		exit(1);
 	}
 	axis->SetRange();
-	for(auto &correlatedUncertainty : m_correlatedUncertaintyHistogramMap) {
+	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
 		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
 }

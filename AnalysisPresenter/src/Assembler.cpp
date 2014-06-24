@@ -8,6 +8,7 @@
 #include "TObjString.h"
 #include "TPRegexp.h"
 
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/range/join.hpp>
 #include <boost/tokenizer.hpp>
@@ -32,9 +33,6 @@ Assembler::~Assembler() {
 
 void Assembler::addContribution(PhysicsContribution* contribution) {
 	if(contribution->isData()) {
-		if(m_data.size() > 0) {
-			throw std::runtime_error("More than one data input file not supported.");
-		}
 		m_data.push_back(contribution);
 	} else if(contribution->isBackground()) {
 		m_background.push_back(contribution);
@@ -52,7 +50,11 @@ void Assembler::addWeight(TString varexp, TString type) {
 }
 
 double Assembler::getLumi() const {
-	return m_data[0]->getLumi();
+	double lumi = 0;
+	for(const auto &contribution : m_data) {
+		lumi += contribution->getLumi();
+	}
+	return lumi;
 }
 
 void Assembler::process(std::string varexp, TString selection) {
@@ -87,6 +89,9 @@ void Assembler::process(std::string varexp, TString selection) {
 	}
 	cout << varexp << endl;
 	
+	m_varexp = varexp;
+	m_selection = selection;
+	
 	THnSparse* hs = new THnSparseD("hSparse", varexp.c_str(), varNames.size(), &nbins[0], &rangeMin[0], &rangeMax[0]);
 	hs->Sumw2();
 	for(size_t i = 0; i < varNames.size(); ++i) {
@@ -94,16 +99,92 @@ void Assembler::process(std::string varexp, TString selection) {
 		hs->GetAxis(i)->SetTitle(varNames[i]);
 	}
 	
-	auto contributionsMC = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+	auto contributionsModel = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		contribution->fillContent(hs, varexp, selection);
 	}
 	delete hs;
 }
 
+void Assembler::project(const char* name) {
+	TAxis* axis = (TAxis*)m_data[0]->getContent()->GetListOfAxes()->FindObject(name);
+	if(!axis) {
+		cerr << "Could not find axis " << name << endl;
+		throw std::runtime_error("");
+	}
+	int dim = m_data[0]->getContent()->GetListOfAxes()->IndexOf(axis);
+	
+	// Clean up from earlier projections
+	for(auto &h : m_hProjections) {
+		for(auto &h2 : h.second) {
+			delete h2.first;
+			for(auto &h3 : h2.second) {
+				delete h3.second;
+			}
+			h2.second.clear();
+		}
+		h.second.clear();
+	}
+	m_hProjections.clear();
+	
+	for(auto &hs : m_hsProjections) {
+		delete hs.second.first;
+		delete hs.second.second;
+	}
+	m_hsProjections.clear();
+	
+	// Project event counts and uncertainty histograms
+	auto contributionsModel = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+		if(m_hProjections.find(contribution->getType()) == m_hProjections.end()) {
+			m_hProjections.insert(make_pair(contribution->getType(), std::map<TH1D*, std::map<TString, TH1D*> >()));
+		}
+		
+		double scale = getLumi() / contribution->getLumi();
+		m_hProjections[contribution->getType()].insert(contribution->project(dim, scale));
+	}
+	
+	// Prepare projections for output
+	std::map<TString, std::vector<std::pair<TH1D*, double>>> vh;
+	for(const auto &typeProjection : m_hProjections) {
+		// Prepare vector of contributions for sorting, and take care of error correlations
+		std::vector<std::pair<TH1D*, double>> vh;
+		THStack* hsUncertainties = new THStack("hsUncertainties", m_varexp + TString(" {") + m_selection + TString("}"));
+		for(const auto &contribution : typeProjection.second) {
+			vh.push_back(make_pair(contribution.first, contribution.first->Integral()));
+			
+			for(const auto &uncertainty : contribution.second) {
+				TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
+				if(hUncertainty) {
+					for(int i = 1; i <= hUncertainty->GetNbinsX(); ++i) {
+						double value = hUncertainty->GetBinContent(i);
+						value = sqrt(value*value + pow(uncertainty.second->GetBinContent(i), 2));
+						hUncertainty->SetBinContent(i, value);
+					}
+				} else {
+					hsUncertainties->Add(uncertainty.second);
+				}
+			}
+		}
+		
+		// Sort by amount of contribution
+		std::sort(vh.begin()
+			, vh.end()
+			, boost::bind(&std::pair<TH1D*, double>::second, _1) < boost::bind(&std::pair<TH1D*, double>::second, _2)
+		);
+		
+		THStack* hs = new THStack("hs", m_varexp + TString(" {") + m_selection + TString("}"));
+		for(const auto &contribution : vh) {
+			hs->Add(contribution.first);
+		}
+		
+		m_hsProjections.insert(make_pair(typeProjection.first, make_pair(hs, hsUncertainties)));
+	}
+}
+
 void Assembler::setDebug(bool debug) {
-	auto contributionsMC = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+	auto contributionsModel = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		contribution->setDebug(debug);
 	}
 }
@@ -112,108 +193,87 @@ void Assembler::setFakeRate(TString name, double f) {
 	for(auto &contribution : m_background) {
 		contribution->setFakeRate(name, f);
 	}
-	// Declare fake rate so that PhysicsContribution::fillContent() know show to skip events that have fake proxies
+	// Declare fake rate so that PhysicsContribution::fillContent() knows how to skip events that have fake proxies
 	for(auto &contribution : boost::join(m_data, m_signal)) {
 		contribution->setFakeRate(name, 0);
 	}
 }
 
 void Assembler::setRange(const char* name, double lo, double hi, bool includeLast) {
-	auto contributionsMC = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+	auto contributionsModel = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		contribution->setRange(name, lo, hi, includeLast);
 	}
 }
 
 void Assembler::setRange(const char* name, double lo) {
-	auto contributionsMC = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+	auto contributionsModel = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		contribution->setRange(name, lo);
 	}
 }
 
 void Assembler::setRange(const char* name) {
-	auto contributionsMC = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsMC)) {
+	auto contributionsModel = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		contribution->setRange(name);
 	}
 }
 
 void Assembler::write(const char* name) {
-	TAxis* axis = (TAxis*)m_data[0]->getContent()->GetListOfAxes()->FindObject(name);
-	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
-	}
-	
-	int dim = m_data[0]->getContent()->GetListOfAxes()->IndexOf(axis);
-	TH1D* hData = m_data[0]->getContent()->Projection(dim, "E");
-	//hData->Draw();
-	
-	TH1D* hBackground = (TH1D*)hData->Clone();
-	hBackground->Reset();
-	TH1D* hBackgroundCorrelatedUncertainty = (TH1D*)hBackground->Clone();
-	for(auto &contribution : m_background) {
-		TH1D* hContribution = contribution->getContent()->Projection(dim, "E");
-		double scale = m_data[0]->getLumi() / contribution->getLumi();
-		hBackground->Add(hContribution, scale);
-		//cout << contribution->getName() << ": " << hContribution->Integral() << "*" << scale << " = " << hContribution->Integral() * scale << endl;
-		for(auto &contributionUncertainty : contribution->getCorrelatedUncertainties()) {
-			TH1D* hContributionUncertainty = contributionUncertainty.second->Projection(dim, "E");
-			hBackgroundCorrelatedUncertainty->Add(hContributionUncertainty, scale);
-		}
-	}
-	
-	TH1D* hSignal = (TH1D*)hData->Clone();
-	hSignal->Reset();
-	TH1D* hSignalCorrelatedUncertainty = (TH1D*)hSignal->Clone();
-	for(auto &contribution : m_signal) {
-		TH1D* hContribution = contribution->getContent()->Projection(dim, "E");
-		double scale = m_data[0]->getLumi() / contribution->getLumi();
-		hSignal->Add(hContribution, scale);
-		//cout << contribution->getName() << ": " << hContribution->Integral() << "*" << scale << " = " << hContribution->Integral() * scale << endl;
-		for(auto &contributionUncertainty : contribution->getCorrelatedUncertainties()) {
-			TH1D* hContributionUncertainty = contributionUncertainty.second->Projection(dim, "E");
-			hSignalCorrelatedUncertainty->Add(hContributionUncertainty, scale);
-		}
-	}
+	project(name);
 	
 	double sumData = 0;
 	double sumBackground = 0;
-	double sumBackgroundUnc2 = 0;
-	double sumBackgroundCorrelatedUnc2 = 0;
+	double sumBackgroundStat2 = 0;
+	double sumBackgroundSyst = 0;
 	double sumSignal = 0;
-	double sumSignalUnc2 = 0;
-	double sumSignalCorrelatedUnc2 = 0;
-	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
-		double contentData = hData->GetBinContent(i);
-		double contentBackground = hBackground->GetBinContent(i);
-		double uncBackground = hBackground->GetBinError(i);
-		double correlatedUncBackground = hBackgroundCorrelatedUncertainty->GetBinContent(i);
-		double contentSignal = hSignal->GetBinContent(i);
-		double uncSignal = hSignal->GetBinError(i);
-		double correlatedUncSignal = hSignalCorrelatedUncertainty->GetBinContent(i);
-		double lo = hData->GetXaxis()->GetBinLowEdge(i);
-		double hi = hData->GetXaxis()->GetBinUpEdge(i);
-		if(i < hData->GetNbinsX()) {
-			printf("%s %d-%d	%d : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)hi, (int)contentData, contentBackground, uncBackground, correlatedUncBackground, contentSignal, uncSignal, correlatedUncSignal);
-		} else {
-			contentData += hData->GetBinContent(i + 1);
-			contentBackground += hBackground->GetBinContent(i + 1);
-			correlatedUncBackground += hBackgroundCorrelatedUncertainty->GetBinContent(i + 1);
-			contentSignal += hSignal->GetBinContent(i + 1);
-			correlatedUncSignal += hSignalCorrelatedUncertainty->GetBinContent(i + 1);
-			printf("%s %d-inf	%d : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", name, (int)lo, (int)contentData, contentBackground, uncBackground, correlatedUncBackground, contentSignal, uncSignal, correlatedUncSignal);
+	double sumSignalStat2 = 0;
+	double sumSignalSyst = 0;
+	cout << "data entries: " << m_hProjections["data"].begin()->first->GetEntries() << endl;
+	cout << "data integral: " << m_hProjections["data"].begin()->first->Integral() << endl;
+	cout << "data integral w/ overflow: " << m_hProjections["data"].begin()->first->Integral(0, m_hProjections["data"].begin()->first->GetNbinsX() + 1) << endl;
+	for(int i = 1; i <= m_hProjections["data"].begin()->first->GetNbinsX() + 1; ++i) {
+		double lo = m_hProjections["data"].begin()->first->GetXaxis()->GetBinLowEdge(i);
+		double hi = m_hProjections["data"].begin()->first->GetXaxis()->GetBinUpEdge(i);
+		
+		double contentData = 0;
+		double contentBackground = 0;
+		double contentBackgroundStat = 0;
+		double contentBackgroundSyst = 0;
+		double contentSignal = 0;
+		double contentSignalStat = 0;
+		double contentSignalSyst = 0;
+		if(m_hsProjections["data"].first) contentData = ((TH1D*)m_hsProjections["data"].first->GetStack()->Last())->GetBinContent(i);
+		if(m_hsProjections["background"].first) {
+			TH1D* h = (TH1D*)m_hsProjections["background"].first->GetStack()->Last();
+			contentBackground = h->GetBinContent(i);
+			contentBackgroundStat = h->GetBinError(i);
+			if(m_hsProjections["background"].second->GetStack()) {
+				contentBackgroundSyst = ((TH1D*)m_hsProjections["background"].second->GetStack()->Last())->GetBinContent(i);
+			}
 		}
+		if(m_hsProjections["signal"].first) {
+			TH1D* h = (TH1D*)m_hsProjections["signal"].first->GetStack()->Last();
+			contentSignal = h->GetBinContent(i);
+			contentSignalStat = h->GetBinError(i);
+			if(m_hsProjections["signal"].second->GetStack()) {
+				contentSignalSyst = ((TH1D*)m_hsProjections["signal"].second->GetStack()->Last())->GetBinContent(i);
+			}
+		}
+		if(i <= m_hProjections["data"].begin()->first->GetNbinsX()) {
+			cout << name << " " << (int)lo << "-" << (int)hi;
+		} else {
+			cout << name << " " << (int)lo << "-" << "inf";
+		}
+		printf("	%d : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", (int)contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst, contentSignal, contentSignalStat, contentSignalSyst);
 		sumData += contentData;
 		sumBackground += contentBackground;
-		sumBackgroundUnc2 += uncBackground * uncBackground;
-		sumBackgroundCorrelatedUnc2 += correlatedUncBackground * correlatedUncBackground;
+		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
+		sumBackgroundSyst += contentBackgroundSyst;
 		sumSignal += contentSignal;
-		sumSignalUnc2 += uncSignal * uncSignal;
-		sumSignalCorrelatedUnc2 += correlatedUncSignal * correlatedUncSignal;
+		sumSignalStat2 += contentSignalStat*contentSignalStat;
+		sumSignalSyst += contentSignalSyst;
 	}
-	printf("Sum: %.2f : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundUnc2), sqrt(sumBackgroundCorrelatedUnc2), sumSignal, sqrt(sumSignalUnc2), sqrt(sumSignalCorrelatedUnc2));
-	
-	delete hData;
+	printf("Sum:	%.2f : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst, sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
 }

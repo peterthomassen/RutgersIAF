@@ -17,11 +17,12 @@ void exampleMacro(TString ofname = "test.root") {
 	// Signal definition //
 	///////////////////////
 	PhysicsContribution* signal = new PhysicsContribution("signal", "/cms/data25/maritader/sim/Seesaw_Full_M-140_FDS_TuneZ2_8TeV.root", 126612 / 0.0669, "SeesawTo3Lminus_SyncedMC");
-	// For now, the signal weights need to be applied here (this will change shortly)
+	// For now, the signal weights need to be applied here (maybe simplify this in the future?)
 	signal->addWeight("ELIDISOWEIGHT");
 	signal->addWeight("MUIDISOWEIGHT");
-	//signal->addWeight("PUWEIGHT");
+//	signal->addWeight("PUWEIGHT");
 	signal->addWeight("TRIGGERWEIGHT");
+	signal->addFlatUncertainty("dummy", 0.2);
 	
 	
 	////////////////////////
@@ -100,6 +101,9 @@ void exampleMacro(TString ofname = "test.root") {
 		assembler->setRange("ONZ", 0, 0);
 		assembler->setRange("MOSSF");
 		assembler->write("MET");
+		
+		
+		// TOOD Add bin with DYz1 with trileptons on Z
 	}
 	
 	delete assembler;
