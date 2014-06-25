@@ -10,7 +10,7 @@
 class PhysicsContribution : public TObject {
 
 public:
-	PhysicsContribution(TString, TString, double, TString = "");
+	PhysicsContribution(TString, TString, double, TString);
 	virtual ~PhysicsContribution();
 	
 	void addCorrelatedUncertainty(TString, THnBase*);
@@ -30,7 +30,7 @@ public:
 	std::pair<TH1D*, std::map<TString, TH1D*> > project(const int dim, const double scale = 1.0) const;
 	
 	bool setDebug(bool);
-	void setFakeRate(TString, double);
+	void setFakeRate(TString, TString);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
@@ -45,7 +45,7 @@ private:
 	THnBase* m_hn = 0;
 	std::map<TString, THnBase*> m_hProjectionUncertainties;
 	
-	std::map<TString, double> m_fakerateMap;
+	std::map<TString, TString> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
 	std::map<TString, THnBase*> m_systematicUncertaintyMap;
 	std::vector<TString> m_weights;

@@ -144,7 +144,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 					sum += TString(" + ") + fakerate.first;
 				}
 				
-				selection += TString::Format(" * pow(%f, %s)", fakerate.second, fakerate.first.Data());
+				selection += TString::Format(" * pow(%s, %s)", fakerate.second.Data(), fakerate.first.Data());
 			}
 			
 			// Prune MC
@@ -239,17 +239,18 @@ bool PhysicsContribution::isSignal() const {
 
 std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const double scale) const {
 	TH1D* projection = m_hn->Projection(dim, "E");
-	// TODO To improve the zerostat uncertainty, we should add an uncertainty of 1/N to empty bins. Unfortunately, we can't get this from the sample luminosity.
-	projection->Scale(scale);
-	
-	// Zerostat
-	for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
-		// After scaling above, the error should be sqrt(N) * scale. Empty bins have error == 0, i.e. error < scale.
-		// (Not sure if we can reliably check GetBinContent() == 0 in float histograms.)
-		if(projection->GetBinError(i) < scale) {
-			projection->SetBinError(i, scale);
+	// Zerostat uncertainty for background and signal samples
+	if(!isData()) {
+		for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
+			if(projection->GetBinContent(i) == 0) {
+				if(m_type == "backgroundDD" && i > 0) {
+					cerr << "Overestimating zerostat uncertainty for " << m_name << " data-driven background in bin " << i << " -- need to multiply by fake rate" << endl;
+				}
+				projection->SetBinError(i, 1);
+			}
 		}
 	}
+	projection->Scale(scale);
 	
 	std::map<TString, TH1D*> uncertainties;
 	for(auto &uncertainty : m_systematicUncertaintyMap) {
@@ -267,10 +268,10 @@ bool PhysicsContribution::setDebug(bool debug) {
 	return oldDebug;
 }
 
-void PhysicsContribution::setFakeRate(TString name, double f) {
-	if(isData() && f != 0) {
+void PhysicsContribution::setFakeRate(TString name, TString f) {
+	if(isData() && f != "0") {
 		cerr << "Warning: Ignoring request to apply fake rate to data sample\n";
-		f = 0;
+		f = "0";
 	}
 	
 	if(m_fakerateMap.find(name) != m_fakerateMap.end()) {

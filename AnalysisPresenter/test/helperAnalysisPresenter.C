@@ -10,7 +10,7 @@ void init(Assembler* assembler) {
 }
 
 void setupData(Assembler* assembler) {
-	PhysicsContribution* data = new PhysicsContribution("data", "/cms/thomassen/2014/Analysis/data/histograms/20140618_data.3L.root", 19500);
+	PhysicsContribution* data = new PhysicsContribution("data", "/cms/thomassen/2014/Analysis/data/histograms/20140618_data.3L.root", 19500, "2012data");
 	assembler->addContribution(data);
 }
 
@@ -25,12 +25,12 @@ void setupBackgroundMC(Assembler* assembler) {
 	mc.push_back(new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/WZZJets.3L.simulation.root", 219428. / 0.019, "WZZ"));
 	mc.push_back(new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/ZZJetsTo4L.3L.simulation.root", 4804781. / 0.181, "ZZ"));
 	mc.push_back(new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/ZZZNoGstarJets.3L.simulation.root", 224572. / 0.004587, "ZZZ"));
-	mc.push_back(new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsSemiLeptonic.3L.simulation.root", 25365231. / 97.97, "TT_SemiL"));
+//	mc.push_back(new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsSemiLeptonic.3L.simulation.root", 25365231. / 97.97, "TT_SemiL"));
 	
 	PhysicsContribution* ttbar = new PhysicsContribution("backgroundMC", "/cms/thomassen/2014/Analysis/simulation/histograms/TTJetsFullLeptonic.3L.simulation.root", 12108679. / 23.08, "TT_FullL");
 	ttbar->addWeight("1.5");
 	ttbar->addFlatUncertainty("xsec", 0.3);
-	mc.push_back(ttbar);
+//	mc.push_back(ttbar);
 	
 	for(auto &contribution : mc) {
 		assembler->addContribution(contribution);
@@ -42,18 +42,23 @@ void setupBackgroundMC(Assembler* assembler) {
 void setupBackgroundDD(Assembler* assembler) {
 	std::vector<PhysicsContribution*> dd;
 	dd.push_back(new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140618_fakeTracks.root", assembler->getLumi(), "fakeTracks"));
-	dd.push_back(new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140618_fakePhotons.root", assembler->getLumi(), "fakePhotons"));
-	dd.push_back(new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140618_fakeMixed.root", assembler->getLumi(), "fakeMixed"));
+	//dd.push_back(new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140618_fakePhotons.root", assembler->getLumi(), "fakePhotons"));
+	//dd.push_back(new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140618_fakeMixed.root", assembler->getLumi(), "fakeMixed"));
 	
 	for(auto &contribution : dd) {
-		contribution->addFlatUncertainty("test", 0.5);
+		//contribution->addFlatUncertainty("test", 0.5);
 		assembler->addContribution(contribution);
 	}
 }
 
 void setupFakeRates(Assembler* assembler) {
-	assembler->setFakeRate("nTrackFakeElectrons", 0.02538);
-	assembler->setFakeRate("nTrackFakeMuons", 0.01544);
-	assembler->setFakeRate("nPhotonFakeElectrons", 0);
-	assembler->setFakeRate("nPhotonFakeMuons", 0);
+	//assembler->setFakeRate("nTrackFakeElectrons", "0.02538");
+	//assembler->setFakeRate("nTrackFakeMuons", "0.01544");
+	
+	// Matt's numbers
+	assembler->setFakeRate("nTrackFakeElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.028 + (HT > 200) * 0.05 ) + (NBJETSCSVM > 1) * 0.11");
+	assembler->setFakeRate("nTrackFakeMuons", "(NBJETSCSVM == 0) * 0.018 + (NBJETSCSVM > 1) * 0.13");
+	
+	assembler->setFakeRate("nPhotonFakeElectrons", "0");
+	assembler->setFakeRate("nPhotonFakeMuons", "0");
 }

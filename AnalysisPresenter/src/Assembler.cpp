@@ -140,7 +140,7 @@ void Assembler::project(const char* name) {
 			m_hProjections.insert(make_pair(contribution->getType(), std::map<TH1D*, std::map<TString, TH1D*> >()));
 		}
 		
-		double scale = getLumi() / contribution->getLumi();
+		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
 		m_hProjections[contribution->getType()].insert(contribution->project(dim, scale));
 	}
 	
@@ -189,13 +189,13 @@ void Assembler::setDebug(bool debug) {
 	}
 }
 
-void Assembler::setFakeRate(TString name, double f) {
+void Assembler::setFakeRate(TString name, TString f) {
 	for(auto &contribution : m_background) {
 		contribution->setFakeRate(name, f);
 	}
 	// Declare fake rate so that PhysicsContribution::fillContent() knows how to skip events that have fake proxies
 	for(auto &contribution : boost::join(m_data, m_signal)) {
-		contribution->setFakeRate(name, 0);
+		contribution->setFakeRate(name, "0");
 	}
 }
 
@@ -230,9 +230,9 @@ void Assembler::write(const char* name) {
 	double sumSignal = 0;
 	double sumSignalStat2 = 0;
 	double sumSignalSyst = 0;
-	cout << "data entries: " << m_hProjections["data"].begin()->first->GetEntries() << endl;
-	cout << "data integral: " << m_hProjections["data"].begin()->first->Integral() << endl;
-	cout << "data integral w/ overflow: " << m_hProjections["data"].begin()->first->Integral(0, m_hProjections["data"].begin()->first->GetNbinsX() + 1) << endl;
+	//cout << "data entries: " << m_hProjections["data"].begin()->first->GetEntries() << endl;
+	//cout << "data integral: " << m_hProjections["data"].begin()->first->Integral() << endl;
+	//cout << "data integral w/ overflow: " << m_hProjections["data"].begin()->first->Integral(0, m_hProjections["data"].begin()->first->GetNbinsX() + 1) << endl;
 	for(int i = 1; i <= m_hProjections["data"].begin()->first->GetNbinsX() + 1; ++i) {
 		double lo = m_hProjections["data"].begin()->first->GetXaxis()->GetBinLowEdge(i);
 		double hi = m_hProjections["data"].begin()->first->GetXaxis()->GetBinUpEdge(i);
@@ -266,7 +266,11 @@ void Assembler::write(const char* name) {
 		} else {
 			cout << name << " " << (int)lo << "-" << "inf";
 		}
-		printf("	%d : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", (int)contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst, contentSignal, contentSignalStat, contentSignalSyst);
+		printf("	%d : %.2f ± %.2f ± %.2f", (int)contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
+		if(m_hsProjections["signal"].first) {
+			printf(" : %.2f ± %.2f ± %.2f", contentSignal, contentSignalStat, contentSignalSyst);
+		}
+		cout << endl;
 		sumData += contentData;
 		sumBackground += contentBackground;
 		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
@@ -275,5 +279,9 @@ void Assembler::write(const char* name) {
 		sumSignalStat2 += contentSignalStat*contentSignalStat;
 		sumSignalSyst += contentSignalSyst;
 	}
-	printf("Sum:	%.2f : %.2f ± %.2f ± %.2f : %.2f ± %.2f ± %.2f\n", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst, sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
+	printf("Sum:	%.2f : %.2f ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	if(m_hsProjections["signal"].first) {
+		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
+	}
+	cout << endl;
 }

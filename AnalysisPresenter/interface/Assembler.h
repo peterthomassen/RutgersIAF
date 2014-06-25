@@ -25,7 +25,7 @@ public:
 	void project(const char*);
 	
 	void setDebug(bool);
-	void setFakeRate(TString, double);
+	void setFakeRate(TString, TString);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
