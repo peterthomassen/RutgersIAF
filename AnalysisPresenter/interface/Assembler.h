@@ -10,10 +10,12 @@
 
 #include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContribution.h"
 
+class TFile;
+
 class Assembler : public TObject {
 
 public:
-	Assembler(TString);
+	Assembler(TString, Option_t* options = "CREATE");
 	virtual ~Assembler();
 	
 	void addContribution(PhysicsContribution*);
@@ -22,19 +24,20 @@ public:
 	std::pair<double, std::pair<double, double>> getBin(TString, int);
 	double getLumi() const;
 	
+	void print(const char*, const bool binForOverflow = true);
 	void process(std::string, TString);
 	void project(const char*, const bool binForOverflow);
+	void save();
+	void save(const char*, const bool binForOverflow = true);
 	
 	void setDebug(bool);
 	void setFakeRate(TString, TString);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
-	
-	void write(const char*, const bool binForOverflow = true);
 
 private:
-	TString m_ofname;
+	TFile* m_outfile = 0;
 	
 	std::vector<PhysicsContribution*> m_data;
 	std::vector<PhysicsContribution*> m_background;

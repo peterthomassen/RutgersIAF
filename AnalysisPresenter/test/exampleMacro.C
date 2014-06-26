@@ -28,7 +28,7 @@ void exampleMacro(TString ofname = "test.root") {
 	////////////////////////
 	// Initialize and run //
 	////////////////////////
-	Assembler* assembler = new Assembler(ofname);
+	Assembler* assembler = new Assembler(ofname, "RECREATE");
 	init(assembler);
 	setupData(assembler);
 	setupBackgroundMC(assembler);
@@ -37,6 +37,7 @@ void exampleMacro(TString ofname = "test.root") {
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	assembler->process(varexp, selection);
+	assembler->save();
 	
 	
 	/////////////////
@@ -56,7 +57,7 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
-	assembler->write("MET");
+	assembler->print("MET");
 	cout << endl;
 	assembler->setRange("MLEPTONS");
 	
@@ -86,6 +87,8 @@ void exampleMacro(TString ofname = "test.root") {
 					assembler->setRange("NBJETSCSVM", 0, 0);
 					cout << "\n==== 0b" << endl;
 				} else {
+					delete assembler;
+					return;
 					assembler->setRange("NBJETSCSVM", 1);
 					cout << "\n==== >=1b" << endl;
 				}
@@ -98,14 +101,15 @@ void exampleMacro(TString ofname = "test.root") {
 					cout << "DY0" << endl;
 					assembler->setRange("NOSSF", 0, 0);
 					assembler->setRange("ONZ");
-					assembler->write("MET");
+					assembler->print("MET");
 					
 					// DYz1
 					cout << endl;
 					cout << "DYz1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 1, 1);
-					assembler->write("MET");
+					assembler->print("MET");
+					assembler->save("MET");
 					
 					// DYl1
 					cout << endl;
@@ -113,7 +117,7 @@ void exampleMacro(TString ofname = "test.root") {
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 0, 0);
 					assembler->setRange("MOSSF", 0, 76, false);
-					assembler->write("MET");
+					assembler->print("MET");
 					
 					// DYh1
 					cout << endl;
@@ -121,7 +125,7 @@ void exampleMacro(TString ofname = "test.root") {
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 0, 0);
 					assembler->setRange("MOSSF", 106);
-					assembler->write("MET");
+					assembler->print("MET");
 				}
 				
 				if(nLeptons == 4) {
@@ -129,35 +133,35 @@ void exampleMacro(TString ofname = "test.root") {
 					cout << "DY0" << endl;
 					assembler->setRange("NOSSF", 0, 0);
 					assembler->setRange("ONZ");
-					assembler->write("MET");
+					assembler->print("MET");
 					
 					// DYz1
 					cout << endl;
 					cout << "DYz1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 1, 1);
-					assembler->write("MET");
+					assembler->print("MET");
 					
 					// DYn1
 					cout << endl;
 					cout << "DYn1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 0, 0);
-					assembler->write("MET");
+					assembler->print("MET");
 					
 					// DYz2
 					cout << endl;
 					cout << "DYz2" << endl;
 					assembler->setRange("NOSSF", 2, 2);
 					assembler->setRange("ONZ", 1, 1);
-					assembler->write("MET");
+					assembler->print("MET");
 					
 					// DYn2
 					cout << endl;
 					cout << "DYn2" << endl;
 					assembler->setRange("NOSSF", 2, 2);
 					assembler->setRange("ONZ", 0, 0);
-					assembler->write("MET");
+					assembler->print("MET");
 				}
 			}
 		}
