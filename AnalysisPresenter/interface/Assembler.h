@@ -19,10 +19,11 @@ public:
 	void addContribution(PhysicsContribution*);
 	void addWeight(TString, TString = "");
 	
+	std::pair<double, std::pair<double, double>> getBin(TString, int);
 	double getLumi() const;
 	
 	void process(std::string, TString);
-	void project(const char*);
+	void project(const char*, const bool binForOverflow);
 	
 	void setDebug(bool);
 	void setFakeRate(TString, TString);
@@ -30,7 +31,7 @@ public:
 	void setRange(const char*, double);
 	void setRange(const char*);
 	
-	void write(const char*);
+	void write(const char*, const bool binForOverflow = true);
 
 private:
 	TString m_ofname;

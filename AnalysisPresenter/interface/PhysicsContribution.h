@@ -18,16 +18,18 @@ public:
 	void addWeight(TString, TString = "");
 	void applyRelativeUncertainty(THnBase*, TString);
 	THnBase* fillContent(const THnBase*, std::string, TString);
-	THnBase* getContent();
+	THnBase* getContent() const;
 	double getLumi() const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
+	
+	static void incorporateOverflow(TH1D* &);
 	
 	bool isBackground() const;
 	bool isData() const;
 	bool isSignal() const;
 	
-	std::pair<TH1D*, std::map<TString, TH1D*> > project(const int dim, const double scale = 1.0) const;
+	std::pair<TH1D*, std::map<TString, TH1D*> > project(const int dim, const double scale = 1.0, const bool binForOverflow = false) const;
 	
 	bool setDebug(bool);
 	void setFakeRate(TString, TString);

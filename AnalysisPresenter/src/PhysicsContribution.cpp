@@ -201,7 +201,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	return m_hn;
 }
 
-THnBase* PhysicsContribution::getContent() {
+THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
 }
 
@@ -225,6 +225,26 @@ TString PhysicsContribution::getType(const bool detailed) const {
 	throw std::runtime_error("should never make it here");
 }
 
+void PhysicsContribution::incorporateOverflow(TH1D* &h) {
+	// Adapted from http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=6764
+	UInt_t nx = h->GetNbinsX() + 1;
+	Double_t* xbins = new Double_t[nx + 1];
+	for (UInt_t i = 0; i < nx; ++i) {
+		xbins[i] = h->GetBinLowEdge(i+1);
+	}
+	xbins[nx] = xbins[nx - 1] + h->GetBinWidth(nx);
+	TH1D* htmp = new TH1D(h->GetName(), h->GetTitle(), nx, xbins);
+	htmp->SetXTitle(h->GetXaxis()->GetTitle());
+	htmp->SetYTitle(h->GetYaxis()->GetTitle());
+	for (UInt_t i = 0; i <= nx; ++i) {
+		htmp->SetBinContent(i, h->GetBinContent(i));
+		htmp->SetBinError(i, h->GetBinError(i));
+	}
+	htmp->SetEntries(h->GetEntries());
+	delete h;
+	h = htmp;
+}
+
 bool PhysicsContribution::isBackground() const {
 	return m_type.BeginsWith("background");
 }
@@ -237,7 +257,7 @@ bool PhysicsContribution::isSignal() const {
 	return m_type.BeginsWith("signal");
 }
 
-std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const double scale) const {
+std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const double scale, const bool binForOverflow) const {
 	TH1D* projection = m_hn->Projection(dim, "E");
 	// Zerostat uncertainty for background and signal samples
 	if(!isData()) {
@@ -252,10 +272,17 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 	}
 	projection->Scale(scale);
 	
+	if(binForOverflow) {
+		incorporateOverflow(projection);
+	}
+	
 	std::map<TString, TH1D*> uncertainties;
 	for(auto &uncertainty : m_systematicUncertaintyMap) {
 		TH1D* hUncertainty = uncertainty.second->Projection(dim, "E");
 		hUncertainty->Scale(scale);
+		if(binForOverflow) {
+			incorporateOverflow(hUncertainty);
+		}
 		uncertainties.insert(make_pair(uncertainty.first, hUncertainty));
 	}
 	

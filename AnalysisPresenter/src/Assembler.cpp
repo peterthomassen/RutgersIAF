@@ -23,8 +23,7 @@ using namespace std;
 
 ClassImp(Assembler)
 
-Assembler::Assembler(TString ofname) {
-	m_ofname = ofname;
+Assembler::Assembler(TString ofname) : m_ofname(ofname) {
 }
 
 Assembler::~Assembler() {
@@ -47,6 +46,19 @@ void Assembler::addWeight(TString varexp, TString type) {
 	for(auto &contribution : boost::join(m_background, m_signal)) {
 		contribution->addWeight(varexp, type);
 	}
+}
+
+std::pair<double, std::pair<double, double>> Assembler::getBin(TString type, int i) {
+	std::pair<double, std::pair<double, double>> value;
+	if(m_hsProjections[type].first) {
+		TH1D* h = (TH1D*)m_hsProjections[type].first->GetStack()->Last();
+		value.first = h->GetBinContent(i);
+		value.second.first = h->GetBinError(i);
+		if(m_hsProjections[type].second->GetStack()) {
+			value.second.second = ((TH1D*)m_hsProjections[type].second->GetStack()->Last())->GetBinContent(i);
+		}
+	}
+	return value;
 }
 
 double Assembler::getLumi() const {
@@ -106,7 +118,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	delete hs;
 }
 
-void Assembler::project(const char* name) {
+void Assembler::project(const char* name, const bool binForOverflow) {
 	TAxis* axis = (TAxis*)m_data[0]->getContent()->GetListOfAxes()->FindObject(name);
 	if(!axis) {
 		cerr << "Could not find axis " << name << endl;
@@ -141,7 +153,7 @@ void Assembler::project(const char* name) {
 		}
 		
 		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
-		m_hProjections[contribution->getType()].insert(contribution->project(dim, scale));
+		m_hProjections[contribution->getType()].insert(contribution->project(dim, scale, binForOverflow));
 	}
 	
 	// Prepare projections for output
@@ -220,8 +232,8 @@ void Assembler::setRange(const char* name) {
 	}
 }
 
-void Assembler::write(const char* name) {
-	project(name);
+void Assembler::write(const char* name, const bool binForOverflow) {
+	project(name, binForOverflow);
 	
 	double sumData = 0;
 	double sumBackground = 0;
@@ -233,51 +245,40 @@ void Assembler::write(const char* name) {
 	//cout << "data entries: " << m_hProjections["data"].begin()->first->GetEntries() << endl;
 	//cout << "data integral: " << m_hProjections["data"].begin()->first->Integral() << endl;
 	//cout << "data integral w/ overflow: " << m_hProjections["data"].begin()->first->Integral(0, m_hProjections["data"].begin()->first->GetNbinsX() + 1) << endl;
-	for(int i = 1; i <= m_hProjections["data"].begin()->first->GetNbinsX() + 1; ++i) {
+	for(int i = 1; i <= m_hProjections["data"].begin()->first->GetNbinsX(); ++i) {
 		double lo = m_hProjections["data"].begin()->first->GetXaxis()->GetBinLowEdge(i);
 		double hi = m_hProjections["data"].begin()->first->GetXaxis()->GetBinUpEdge(i);
 		
-		double contentData = 0;
-		double contentBackground = 0;
-		double contentBackgroundStat = 0;
-		double contentBackgroundSyst = 0;
-		double contentSignal = 0;
-		double contentSignalStat = 0;
-		double contentSignalSyst = 0;
-		if(m_hsProjections["data"].first) contentData = ((TH1D*)m_hsProjections["data"].first->GetStack()->Last())->GetBinContent(i);
-		if(m_hsProjections["background"].first) {
-			TH1D* h = (TH1D*)m_hsProjections["background"].first->GetStack()->Last();
-			contentBackground = h->GetBinContent(i);
-			contentBackgroundStat = h->GetBinError(i);
-			if(m_hsProjections["background"].second->GetStack()) {
-				contentBackgroundSyst = ((TH1D*)m_hsProjections["background"].second->GetStack()->Last())->GetBinContent(i);
-			}
-		}
-		if(m_hsProjections["signal"].first) {
-			TH1D* h = (TH1D*)m_hsProjections["signal"].first->GetStack()->Last();
-			contentSignal = h->GetBinContent(i);
-			contentSignalStat = h->GetBinError(i);
-			if(m_hsProjections["signal"].second->GetStack()) {
-				contentSignalSyst = ((TH1D*)m_hsProjections["signal"].second->GetStack()->Last())->GetBinContent(i);
-			}
-		}
-		if(i <= m_hProjections["data"].begin()->first->GetNbinsX()) {
+		double contentData = getBin("data", i).first;
+		sumData += contentData;
+		
+		auto background = getBin("background", i);
+		double contentBackground = background.first;
+		double contentBackgroundStat = background.second.first;
+		double contentBackgroundSyst = background.second.second;
+		sumBackground += contentBackground;
+		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
+		sumBackgroundSyst += contentBackgroundSyst;
+		
+		if(i < m_hProjections["data"].begin()->first->GetNbinsX() || !binForOverflow) {
 			cout << name << " " << (int)lo << "-" << (int)hi;
 		} else {
 			cout << name << " " << (int)lo << "-" << "inf";
 		}
 		printf("	%d : %.2f ± %.2f ± %.2f", (int)contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
+		
 		if(m_hsProjections["signal"].first) {
+			auto signal = getBin("signal", i);
+			double contentSignal = signal.first;
+			double contentSignalStat = signal.second.first;
+			double contentSignalSyst = signal.second.second;
+			sumSignal += contentSignal;
+			sumSignalStat2 += contentSignalStat*contentSignalStat;
+			sumSignalSyst += contentSignalSyst;
+			
 			printf(" : %.2f ± %.2f ± %.2f", contentSignal, contentSignalStat, contentSignalSyst);
 		}
 		cout << endl;
-		sumData += contentData;
-		sumBackground += contentBackground;
-		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
-		sumBackgroundSyst += contentBackgroundSyst;
-		sumSignal += contentSignal;
-		sumSignalStat2 += contentSignalStat*contentSignalStat;
-		sumSignalSyst += contentSignalSyst;
 	}
 	printf("Sum:	%.2f : %.2f ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
 	if(m_hsProjections["signal"].first) {
