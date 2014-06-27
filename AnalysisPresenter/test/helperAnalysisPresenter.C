@@ -56,8 +56,8 @@ void setupFakeRates(Assembler* assembler) {
 	//assembler->setFakeRate("nTrackFakeMuons", "0.01544");
 	
 	// Matt's numbers
-	assembler->setFakeRate("nTrackFakeElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.028 + (HT > 200) * 0.05 ) + (NBJETSCSVM > 1) * 0.11");
-	assembler->setFakeRate("nTrackFakeMuons", "(NBJETSCSVM == 0) * 0.018 + (NBJETSCSVM > 1) * 0.13");
+	assembler->setFakeRate("nTrackFakeElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.028 + (HT > 200) * 0.05 ) + (NBJETSCSVM >= 1) * 0.11");
+	assembler->setFakeRate("nTrackFakeMuons", "(NBJETSCSVM == 0) * 0.018 + (NBJETSCSVM >= 1) * 0.13");
 	
 	assembler->setFakeRate("nPhotonFakeElectrons", "0");
 	assembler->setFakeRate("nPhotonFakeMuons", "0");
