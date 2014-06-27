@@ -114,7 +114,11 @@ void Assembler::print(const char* name, const bool binForOverflow) {
 		} else {
 			cout << name << " " << (int)lo << "-" << "inf";
 		}
-		printf("	%d : %.2f ± %.2f ± %.2f", (int)contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
+		if(contentBackground > 5) {
+			printf("	%.0f : %.2f ± %.2f ± %.2f ± %.2f", contentData, contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
+		} else {
+			printf("	%.0f : %.2f ± n/a ± %.2f ± %.2f", contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
+		}
 		
 		if(m_hsProjections["signal"].first) {
 			auto signal = getBin("signal", i);
@@ -129,7 +133,11 @@ void Assembler::print(const char* name, const bool binForOverflow) {
 		}
 		cout << endl;
 	}
-	printf("Sum:	%.2f : %.2f ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	if(sumBackground > 5) {
+		printf("Sum:		%.0f : %.2f ± %.2f ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	} else {
+		printf("Sum:		%.0f : %.2f ± n/a ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	}
 	if(m_hsProjections["signal"].first) {
 		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
 	}
