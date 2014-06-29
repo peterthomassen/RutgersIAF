@@ -15,6 +15,10 @@ using namespace std;
 
 ClassImp(PhysicsContribution)
 
+PhysicsContribution::PhysicsContribution() {
+	/* no-op */
+}
+
 PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumi, TString name) : m_filename(filename), m_lumi(lumi), m_name(name), m_type(type) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");

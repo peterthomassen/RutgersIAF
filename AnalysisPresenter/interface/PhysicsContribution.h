@@ -10,6 +10,7 @@
 class PhysicsContribution : public TObject {
 
 public:
+	PhysicsContribution();
 	PhysicsContribution(TString, TString, double, TString);
 	virtual ~PhysicsContribution();
 	

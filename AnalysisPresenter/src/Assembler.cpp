@@ -24,6 +24,10 @@ using namespace std;
 
 ClassImp(Assembler)
 
+Assembler::Assembler() {
+	/* no-op */
+}
+
 Assembler::Assembler(TString outfileName, Option_t* options) {
 	if(outfileName.Length()) {
 		m_outfile = new TFile(outfileName.Data(), options);
@@ -60,19 +64,6 @@ void Assembler::addWeight(TString varexp, TString type) {
 	}
 }
 
-std::pair<double, std::pair<double, double>> Assembler::getBin(TString type, int i) {
-	std::pair<double, std::pair<double, double>> value;
-	if(m_hsProjections[type].first) {
-		TH1D* h = (TH1D*)m_hsProjections[type].first->GetStack()->Last();
-		value.first = h->GetBinContent(i);
-		value.second.first = h->GetBinError(i);
-		if(m_hsProjections[type].second->GetStack()) {
-			value.second.second = ((TH1D*)m_hsProjections[type].second->GetStack()->Last())->GetBinContent(i);
-		}
-	}
-	return value;
-}
-
 double Assembler::getLumi() const {
 	double lumi = 0;
 	for(const auto &contribution : m_data) {
@@ -98,18 +89,17 @@ void Assembler::print(const char* name, const bool binForOverflow) {
 		double lo = m_hProjections["data"].begin()->first->GetXaxis()->GetBinLowEdge(i);
 		double hi = m_hProjections["data"].begin()->first->GetXaxis()->GetBinUpEdge(i);
 		
-		double contentData = getBin("data", i).first;
+		double contentData = m_projection->getBin("data", i);
 		sumData += contentData;
 		
-		auto background = getBin("background", i);
-		double contentBackground = background.first;
-		double contentBackgroundStat = background.second.first;
-		double contentBackgroundSyst = background.second.second;
+		double contentBackground = m_projection->getBin("background", i);
+		double contentBackgroundStat = m_projection->getBinStat("background", i);
+		double contentBackgroundSyst = m_projection->getBinSyst("background", i);
 		sumBackground += contentBackground;
 		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
 		sumBackgroundSyst += contentBackgroundSyst;
 		
-		if(i < m_hProjections["data"].begin()->first->GetNbinsX() || !binForOverflow) {
+		if(i < m_hProjections["data"].begin()->first->GetNbinsX() || !m_projection->hasOverflowIncluded()) {
 			cout << name << " " << (int)lo << "-" << (int)hi;
 		} else {
 			cout << name << " " << (int)lo << "-" << "inf";
@@ -120,11 +110,10 @@ void Assembler::print(const char* name, const bool binForOverflow) {
 			printf("	%.0f : %.2f ± n/a ± %.2f ± %.2f", contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
 		}
 		
-		if(m_hsProjections["signal"].first) {
-			auto signal = getBin("signal", i);
-			double contentSignal = signal.first;
-			double contentSignalStat = signal.second.first;
-			double contentSignalSyst = signal.second.second;
+		if(m_projection->has("signal")) {
+			double contentSignal = m_projection->getBin("signal", i);
+			double contentSignalStat = m_projection->getBinStat("signal", i);
+			double contentSignalSyst = m_projection->getBinSyst("signal", i);
 			sumSignal += contentSignal;
 			sumSignalStat2 += contentSignalStat*contentSignalStat;
 			sumSignalSyst += contentSignalSyst;
@@ -138,7 +127,7 @@ void Assembler::print(const char* name, const bool binForOverflow) {
 	} else {
 		printf("Sum:		%.0f : %.2f ± n/a ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
 	}
-	if(m_hsProjections["signal"].first) {
+	if(m_projection->has("signal")) {
 		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
 	}
 	cout << endl;
@@ -214,11 +203,7 @@ void Assembler::project(const char* name, const bool binForOverflow) {
 	}
 	m_hProjections.clear();
 	
-	for(auto &hs : m_hsProjections) {
-		delete hs.second.first;
-		delete hs.second.second;
-	}
-	m_hsProjections.clear();
+	delete m_projection;
 	
 	// Project event counts and uncertainty histograms
 	auto contributionsModel = boost::join(m_background, m_signal);
@@ -231,7 +216,8 @@ void Assembler::project(const char* name, const bool binForOverflow) {
 		m_hProjections[contribution->getType()].insert(contribution->project(dim, scale, binForOverflow));
 	}
 	
-	// Prepare projections for output
+	// Prepare projection for output: Combine correlated uncertainties and assemble contributions into histogram stack
+	m_projection = new Projection(name, binForOverflow);
 	std::map<TString, std::vector<std::pair<TH1D*, double>>> vh;
 	for(const auto &typeProjection : m_hProjections) {
 		// Prepare vector of contributions for sorting, and take care of error correlations
@@ -265,7 +251,7 @@ void Assembler::project(const char* name, const bool binForOverflow) {
 			hs->Add(contribution.first);
 		}
 		
-		m_hsProjections.insert(make_pair(typeProjection.first, make_pair(hs, hsUncertainties)));
+		m_projection->add(typeProjection.first, hs, hsUncertainties);
 	}
 }
 
@@ -273,6 +259,7 @@ void Assembler::save() {
 	m_outfile->cd();
 	cerr << "Currently only saving THn of first data file" << endl;
 	m_data[0]->getContent()->Write("data");
+	this->Write("assembler");
 	m_outfile->Flush();
 }
 
@@ -280,7 +267,7 @@ void Assembler::save(const char* name, const bool binForOverflow) {
 	project(name, binForOverflow);
 	
 	m_outfile->cd();
-	if(m_hsProjections["data"].first) {
+/*	if(m_hsProjections["data"].first) {
 		m_hsProjections["data"].first->Write(TString(name) + TString("_data"));
 		m_hsProjections["data"].second->Write(TString(name) + TString("_dataSyst"));
 	}
@@ -292,7 +279,7 @@ void Assembler::save(const char* name, const bool binForOverflow) {
 		m_hsProjections["signal"].first->Write(TString(name) + TString("_signal"));
 		m_hsProjections["signal"].second->Write(TString(name) + TString("_signalSyst"));
 	}
-	m_outfile->Flush();
+*/	m_outfile->Flush();
 }
 
 void Assembler::setDebug(bool debug) {
