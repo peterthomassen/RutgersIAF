@@ -25,7 +25,6 @@ public:
 	
 	double getLumi() const;
 	
-	void print(const char*, const bool binForOverflow = true);
 	void process(std::string, TString);
 	Projection* project(const char*, const bool binForOverflow);
 	void save();

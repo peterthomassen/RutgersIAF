@@ -7,6 +7,7 @@
 #include "TStyle.h"
 
 #include <assert.h>
+#include <cmath>
 #include <exception>
 
 #include "RutgersIAF2012/RootC/interface/debug.h"
@@ -134,4 +135,65 @@ TCanvas* Projection::plot(bool log, double xminFit, double xmaxFit) {
 	hRatio->Fit("pol0", "", "SAME", xminFit, xmaxFit);
 	
 	return m_canvas;
+}
+
+void Projection::print() const {
+	double sumData = 0;
+	double sumBackground = 0;
+	double sumBackgroundStat2 = 0;
+	double sumBackgroundSyst = 0;
+	double sumSignal = 0;
+	double sumSignalStat2 = 0;
+	double sumSignalSyst = 0;
+	
+	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	//cout << "data entries: " << hData->GetEntries() << endl;
+	//cout << "data integral: " << hData->Integral() << endl;
+	//cout << "data integral w/ overflow: " << hData->Integral(0, hData->GetNbinsX() + 1) << endl;
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+		double lo = hData->GetXaxis()->GetBinLowEdge(i);
+		double hi = hData->GetXaxis()->GetBinUpEdge(i);
+		
+		double contentData = getBin("data", i);
+		sumData += contentData;
+		
+		double contentBackground = getBin("background", i);
+		double contentBackgroundStat = getBinStat("background", i);
+		double contentBackgroundSyst = getBinSyst("background", i);
+		sumBackground += contentBackground;
+		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
+		sumBackgroundSyst += contentBackgroundSyst;
+		
+		if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
+			cout << m_name << " " << (int)lo << "-" << (int)hi;
+		} else {
+			cout << m_name << " " << (int)lo << "-" << "inf";
+		}
+		if(contentBackground > 5) {
+			printf("	%.0f : %.2f ± %.2f ± %.2f ± %.2f", contentData, contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
+		} else {
+			printf("	%.0f : %.2f ± n/a ± %.2f ± %.2f", contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
+		}
+		
+		if(has("signal")) {
+			double contentSignal = getBin("signal", i);
+			double contentSignalStat = getBinStat("signal", i);
+			double contentSignalSyst = getBinSyst("signal", i);
+			sumSignal += contentSignal;
+			sumSignalStat2 += contentSignalStat*contentSignalStat;
+			sumSignalSyst += contentSignalSyst;
+			
+			printf(" : %.2f ± %.2f ± %.2f", contentSignal, contentSignalStat, contentSignalSyst);
+		}
+		cout << endl;
+	}
+	if(sumBackground > 5) {
+		printf("Sum:		%.0f : %.2f ± %.2f ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	} else {
+		printf("Sum:		%.0f : %.2f ± n/a ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	}
+	if(has("signal")) {
+		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
+	}
+	cout << endl;
 }

@@ -72,67 +72,6 @@ double Assembler::getLumi() const {
 	return lumi;
 }
 
-void Assembler::print(const char* name, const bool binForOverflow) {
-	project(name, binForOverflow);
-	
-	double sumData = 0;
-	double sumBackground = 0;
-	double sumBackgroundStat2 = 0;
-	double sumBackgroundSyst = 0;
-	double sumSignal = 0;
-	double sumSignalStat2 = 0;
-	double sumSignalSyst = 0;
-	//cout << "data entries: " << m_hProjections["data"].begin()->first->GetEntries() << endl;
-	//cout << "data integral: " << m_hProjections["data"].begin()->first->Integral() << endl;
-	//cout << "data integral w/ overflow: " << m_hProjections["data"].begin()->first->Integral(0, m_hProjections["data"].begin()->first->GetNbinsX() + 1) << endl;
-	for(int i = 1; i <= m_hProjections["data"].begin()->first->GetNbinsX(); ++i) {
-		double lo = m_hProjections["data"].begin()->first->GetXaxis()->GetBinLowEdge(i);
-		double hi = m_hProjections["data"].begin()->first->GetXaxis()->GetBinUpEdge(i);
-		
-		double contentData = m_projection->getBin("data", i);
-		sumData += contentData;
-		
-		double contentBackground = m_projection->getBin("background", i);
-		double contentBackgroundStat = m_projection->getBinStat("background", i);
-		double contentBackgroundSyst = m_projection->getBinSyst("background", i);
-		sumBackground += contentBackground;
-		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
-		sumBackgroundSyst += contentBackgroundSyst;
-		
-		if(i < m_hProjections["data"].begin()->first->GetNbinsX() || !m_projection->hasOverflowIncluded()) {
-			cout << name << " " << (int)lo << "-" << (int)hi;
-		} else {
-			cout << name << " " << (int)lo << "-" << "inf";
-		}
-		if(contentBackground > 5) {
-			printf("	%.0f : %.2f ± %.2f ± %.2f ± %.2f", contentData, contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
-		} else {
-			printf("	%.0f : %.2f ± n/a ± %.2f ± %.2f", contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
-		}
-		
-		if(m_projection->has("signal")) {
-			double contentSignal = m_projection->getBin("signal", i);
-			double contentSignalStat = m_projection->getBinStat("signal", i);
-			double contentSignalSyst = m_projection->getBinSyst("signal", i);
-			sumSignal += contentSignal;
-			sumSignalStat2 += contentSignalStat*contentSignalStat;
-			sumSignalSyst += contentSignalSyst;
-			
-			printf(" : %.2f ± %.2f ± %.2f", contentSignal, contentSignalStat, contentSignalSyst);
-		}
-		cout << endl;
-	}
-	if(sumBackground > 5) {
-		printf("Sum:		%.0f : %.2f ± %.2f ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
-	} else {
-		printf("Sum:		%.0f : %.2f ± n/a ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
-	}
-	if(m_projection->has("signal")) {
-		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
-	}
-	cout << endl;
-}
-
 void Assembler::process(std::string varexp, TString selection) {
 	std::vector<TString> varNames;
 	std::vector<double> rangeMin, rangeMax;

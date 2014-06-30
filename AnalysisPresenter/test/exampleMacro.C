@@ -88,7 +88,7 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
-	assembler->print("MET");
+	assembler->project("MET", true)->print();
 	assembler->setRange("MLEPTONS");
 	
 	// nLeptons loop
@@ -131,14 +131,14 @@ void exampleMacro(TString ofname = "test.root") {
 					cout << "DY0" << endl;
 					assembler->setRange("NOSSF", 0, 0);
 					assembler->setRange("ONZ");
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 					
 					// DYz1
 					cout << endl;
 					cout << "DYz1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 1, 1);
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 					assembler->save("MET");
 					//assembler->save("MET", "L3Tau0DYz1B0HT0to200");
 					
@@ -148,7 +148,7 @@ void exampleMacro(TString ofname = "test.root") {
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 0, 0);
 					assembler->setRange("MOSSF", 0, 76, false);
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 					
 					// DYh1
 					cout << endl;
@@ -156,7 +156,7 @@ void exampleMacro(TString ofname = "test.root") {
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 0, 0);
 					assembler->setRange("MOSSF", 106);
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 				}
 				
 				if(nLeptons == 4) {
@@ -164,35 +164,35 @@ void exampleMacro(TString ofname = "test.root") {
 					cout << "DY0" << endl;
 					assembler->setRange("NOSSF", 0, 0);
 					assembler->setRange("ONZ");
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 					
 					// DYz1
 					cout << endl;
 					cout << "DYz1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 1, 1);
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 					
 					// DYn1
 					cout << endl;
 					cout << "DYn1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
 					assembler->setRange("ONZ", 0, 0);
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 					
 					// DYz2
 					cout << endl;
 					cout << "DYz2" << endl;
 					assembler->setRange("NOSSF", 2, 2);
 					assembler->setRange("ONZ", 1, 1);
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 					
 					// DYn2
 					cout << endl;
 					cout << "DYn2" << endl;
 					assembler->setRange("NOSSF", 2, 2);
 					assembler->setRange("ONZ", 0, 0);
-					assembler->print("MET");
+					assembler->project("MET", true)->print();
 				}
 			}
 		}
