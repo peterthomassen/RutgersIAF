@@ -38,7 +38,7 @@ Assembler::Assembler(TString outfileName, Option_t* options) {
 }
 
 Assembler::~Assembler() {
-	cout << "Running Assembler destructor ...";
+	cout << "Saving output file ...";
 	if(m_outfile) {
 		m_outfile->Close();
 		delete m_outfile;
@@ -182,7 +182,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	delete hs;
 }
 
-void Assembler::project(const char* name, const bool binForOverflow) {
+Projection* Assembler::project(const char* name, const bool binForOverflow) {
 	TAxis* axis = (TAxis*)m_data[0]->getContent()->GetListOfAxes()->FindObject(name);
 	if(!axis) {
 		cerr << "Could not find axis " << name << endl;
@@ -247,12 +247,17 @@ void Assembler::project(const char* name, const bool binForOverflow) {
 		);
 		
 		THStack* hs = new THStack("hs", m_varexp + TString(" {") + m_selection + TString("}"));
+		unsigned int i = 2;
 		for(const auto &contribution : vh) {
+			contribution.first->SetFillColor(i);
 			hs->Add(contribution.first);
+			++i;
 		}
 		
 		m_projection->add(typeProjection.first, hs, hsUncertainties);
 	}
+	
+	return m_projection;
 }
 
 void Assembler::save() {
@@ -317,5 +322,12 @@ void Assembler::setRange(const char* name) {
 	auto contributionsModel = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		contribution->setRange(name);
+	}
+}
+
+void Assembler::setRange() {
+	auto contributionsModel = boost::join(m_background, m_signal);
+	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+		contribution->setRange();
 	}
 }

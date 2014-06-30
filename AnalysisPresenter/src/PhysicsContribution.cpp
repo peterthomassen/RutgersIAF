@@ -112,6 +112,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	if(selection == "") {
 		selection = "1";
 	}
+	m_selection = selection;
 	
 	if(isData() || isSignal()) {
 		for(auto &fakerate : m_fakerateMap) {
@@ -263,6 +264,16 @@ bool PhysicsContribution::isSignal() const {
 
 std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const double scale, const bool binForOverflow) const {
 	TH1D* projection = m_hn->Projection(dim, "E");
+	if(isData()) {
+		projection->SetName(m_name);
+		TString title = m_selection;
+		for(const auto &rangeString : m_rangeStrings) {
+			title += TString(" && ") + rangeString.second;
+		}
+		projection->SetTitle(title);
+	} else {
+		projection->SetTitle(m_name);
+	}
 	// Zerostat uncertainty for background and signal samples
 	if(!isData()) {
 		for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
@@ -330,6 +341,14 @@ void PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
 		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
+	
+	if(lo == hi) {
+		m_rangeStrings[name] = TString::Format("%s == %.0f", name, lo);
+	} else if(includeLast) {
+		m_rangeStrings[name] = TString::Format("%s >= %.0f && %s <= %.0f", name, lo, name, hi);
+	} else {
+		m_rangeStrings[name] = TString::Format("%s >= %.0f && %s < %.0f", name, lo, name, hi);
+	}
 }
 
 void PhysicsContribution::setRange(const char* name, double lo) {
@@ -345,6 +364,8 @@ void PhysicsContribution::setRange(const char* name, double lo) {
 	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
 		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
+	
+	m_rangeStrings[name] = TString::Format("%s >= %.0f", name, lo);
 }
 
 void PhysicsContribution::setRange(const char* name) {
@@ -357,4 +378,12 @@ void PhysicsContribution::setRange(const char* name) {
 	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
 		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
+	
+	m_rangeStrings.erase(name);
+}
+
+void PhysicsContribution::setRange() {
+	m_hn->GetListOfAxes()->R__FOR_EACH(TAxis,SetRange)();
+	
+	m_rangeStrings.clear();
 }

@@ -37,12 +37,14 @@ public:
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
+	void setRange();
 
 private:
 	bool m_debug = false;
 	TString m_filename;
 	double m_lumi;
 	TString m_name;
+	TString m_selection;
 	TString m_type;
 	
 	THnBase* m_hn = 0;
@@ -50,6 +52,7 @@ private:
 	
 	std::map<TString, TString> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
+	std::map<TString, TString> m_rangeStrings;
 	std::map<TString, THnBase*> m_systematicUncertaintyMap;
 	std::vector<TString> m_weights;
 	

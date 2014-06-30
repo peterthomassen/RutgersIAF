@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "TCanvas.h"
 #include "THStack.h"
 #include "TROOT.h"
 
@@ -23,9 +24,12 @@ public:
 	
 	bool has(TString type) const;
 	bool hasOverflowIncluded() const;
+	
+	TCanvas* plot(bool log = true, double xminFit = 0, double xmaxFit = 0);
 
 private:
 	bool m_binForOverflow;
+	TCanvas* m_canvas = 0;
 	TString m_name;
 	
 	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties

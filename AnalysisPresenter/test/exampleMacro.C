@@ -8,7 +8,8 @@ void exampleMacro(TString ofname = "test.root") {
 	///////////////////////
 	
 	// Specify axes and bins of multidimensional histogram
-	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,100,2}:MLEPTONS{76,106}";
+	//std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,100,2}:MLEPTONS{76,106}";
+	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,20}:MET{0,200,4}:MLEPTONS{76,106}";
 	// Global cuts, if desired
 	TString selection = "NOTTRILEPTONONZ";
 	
@@ -40,11 +41,41 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->save();
 	
 	
+	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
+	
+	// Make some proof-of-concept plots
+	
+	assembler->setRange("NLEPTONS", 3, 3);
+	assembler->setRange("NGOODTAUS", 0, 0);
+	
+	assembler->setRange("NOSSF", 0, 0);
+	assembler->project("MET", true)->plot()->SaveAs("L3DY0_MET.pdf");
+	assembler->project("HT", true)->plot()->SaveAs("L3DY0_HT.pdf");
+	
+	assembler->setRange("NOSSF", 1, 1);
+	assembler->setRange("ONZ", 1, 1);
+	assembler->project("MET", true)->plot()->SaveAs("L3DYz1_MET.pdf");
+	assembler->project("HT", true)->plot()->SaveAs("L3DYz1_HT.pdf");
+	
+	assembler->setRange("NOSSF", 1, 1);
+	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
+	assembler->setRange("MOSSF", 0, 76, false);
+	assembler->project("MET", true)->plot()->SaveAs("L3DYl1_MET.pdf");
+	assembler->project("HT", true)->plot()->SaveAs("L3DYl1_HT.pdf");
+	
+	assembler->setRange("NOSSF", 1, 1);
+	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
+	assembler->setRange("MOSSF", 106);
+	assembler->project("MET", true)->plot()->SaveAs("L3DYh1_MET.pdf");
+	assembler->project("HT", true)->plot()->SaveAs("L3DYh1_HT.pdf");
+	
+	
 	/////////////////
 	// Make tables //
 	/////////////////
 	
-	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
+	// Reset all cuts
+	assembler->setRange();
 	
 	// So far, no taus
 	assembler->setRange("NGOODTAUS", 0, 0);
@@ -58,7 +89,6 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->print("MET");
-	cout << endl;
 	assembler->setRange("MLEPTONS");
 	
 	// nLeptons loop
@@ -110,6 +140,7 @@ void exampleMacro(TString ofname = "test.root") {
 					assembler->setRange("ONZ", 1, 1);
 					assembler->print("MET");
 					assembler->save("MET");
+					//assembler->save("MET", "L3Tau0DYz1B0HT0to200");
 					
 					// DYl1
 					cout << endl;
@@ -165,7 +196,6 @@ void exampleMacro(TString ofname = "test.root") {
 				}
 			}
 		}
-		// TOOD Add bin with DYz1 && trileptons on Z
 	}
 	
 	delete assembler;

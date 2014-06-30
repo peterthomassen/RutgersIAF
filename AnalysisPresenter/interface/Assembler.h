@@ -27,7 +27,7 @@ public:
 	
 	void print(const char*, const bool binForOverflow = true);
 	void process(std::string, TString);
-	void project(const char*, const bool binForOverflow);
+	Projection* project(const char*, const bool binForOverflow);
 	void save();
 	void save(const char*, const bool binForOverflow = true);
 	
@@ -36,6 +36,7 @@ public:
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
+	void setRange();
 
 private:
 	TFile* m_outfile = 0;
