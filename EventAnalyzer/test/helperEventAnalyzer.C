@@ -34,6 +34,7 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_N.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonMatchDeltaRCharge.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSmearMET.h"
 
 TString makeName(int qMu, int nMu,int qEl,int nEl, int qTr, int nTr)
 {
@@ -362,7 +363,7 @@ void setupProducts(BaseHandler* handler)
 }
 
 
-void setupVariables(BaseHandler* handler)
+void setupVariables(BaseHandler* handler,bool isMC = false)
 {
   const double mZ = 91;
   const double mW = 80.385;
@@ -372,6 +373,19 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
   handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
   handler->addEventVariable("NGOODPHOTONS", new EventVariableN("NGOODPHOTONS","goodPhotons"));
+
+  handler->addEventVariable("NRECOVERTICES", new EventVariableN("NRECOVERTICES","ALLRECOVERTICES"));
+
+  EventVariableSumPT* HT = new EventVariableSumPT("HT","goodJets");
+  handler->addEventVariable("HT",HT);
+
+  if(isMC){
+    EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NRECOVERTICES",2.68,4.14,3.48,2.68,5.10,3.48);
+    MET->setSeed(3141592654);
+    handler->addEventVariable("MET",MET);
+  }else{
+    EventVariableSumPT* MET = new EventVariableSumPT("MET","MET");
+  }
 
   EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");
   LT->addProduct("goodElectrons");
@@ -384,12 +398,6 @@ void setupVariables(BaseHandler* handler)
   ST->addProduct("goodJets");
   ST->addProduct("MET");
   handler->addEventVariable("ST",ST);
-
-  EventVariableSumPT* HT = new EventVariableSumPT("HT","goodJets");
-  handler->addEventVariable("HT",HT);
-
-  EventVariableSumPT* MET = new EventVariableSumPT("MET","MET");
-  handler->addEventVariable("MET",MET);
 
   EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,15);
   OSSF->addProduct("goodElectrons");
