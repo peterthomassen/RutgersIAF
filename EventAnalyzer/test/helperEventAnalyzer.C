@@ -386,6 +386,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false)
     handler->addEventVariable("MET",MET);
   }else{
     EventVariableSumPT* MET = new EventVariableSumPT("MET","MET");
+    handler->addEventVariable("MET",MET);
   }
 
   EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");
