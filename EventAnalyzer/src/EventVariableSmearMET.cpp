@@ -26,6 +26,6 @@ bool EventVariableSmearMET::calculate(BaseHandler* handler)
     v[j]->SetX(px);
     v[j]->SetY(py);
   }
-  handler->setVariable(getName(),ptsum);
+  handler->setVariable(getName(),sqrt(ptsum));
   return true;
 }
