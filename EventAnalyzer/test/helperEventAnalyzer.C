@@ -94,6 +94,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
 
   handler->addObjectVariable("PT10",leptonPtCut);
+  handler->addObjectVariable("PT15",new ObjectVariableInRange<double>("PT",15.0,10000.0,"PT15"));
   handler->addObjectVariable("PT20",new ObjectVariableInRange<double>("PT",20.0,10000.0,"PT20"));
   handler->addObjectVariable("PT30",new ObjectVariableInRange<double>("PT",30.0,10000.0,"PT30"));
   handler->addObjectVariable("PT40",PT40);
@@ -288,7 +289,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL", "PHOTON_ENDCAP", false, "PHOTON_COMBINED"));
   
   handler->addProduct("goodPhotons", "ALLPHOTONS");
-  handler->addProductCut("goodPhotons", "PT10");
+  handler->addProductCut("goodPhotons", "PT15");
   handler->addProductCut("goodPhotons", "ETA2p4");
   handler->addProductCut("goodPhotons", "PHOTON_COMBINED");
   
@@ -385,6 +386,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false)
     handler->addEventVariable("MET",MET);
   }else{
     EventVariableSumPT* MET = new EventVariableSumPT("MET","MET");
+    handler->addEventVariable("MET",MET);
   }
 
   EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");
@@ -398,6 +400,15 @@ void setupVariables(BaseHandler* handler,bool isMC = false)
   ST->addProduct("goodJets");
   ST->addProduct("MET");
   handler->addEventVariable("ST",ST);
+
+  EventVariableSumPT* pTgoodMuons = new EventVariableSumPT("PTGOODMUONS","goodMuons");
+  handler->addEventVariable("PTGOODMUONS",pTgoodMuons);
+
+  EventVariableSumPT* pTgoodElectrons = new EventVariableSumPT("PTGOODELECTRONS","goodElectrons");
+  handler->addEventVariable("PTGOODELECTRONS",pTgoodElectrons);
+
+  EventVariableSumPT* pTgoodPhotons = new EventVariableSumPT("PTGOODPHOTONS","goodPhotons");
+  handler->addEventVariable("PTGOODPHOTONS",pTgoodPhotons);
 
   EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,15);
   OSSF->addProduct("goodElectrons");
