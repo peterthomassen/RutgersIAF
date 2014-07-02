@@ -582,6 +582,11 @@ void BaseHandler::createProducts()
 					case 0:
 						break;
 					case 1:
+						*m_products[pname][index] *= 0.8;
+						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+							TString varname = m_object_variable_list[k];
+							m_object_variables[varname]->calculate(m_products[pname][index]);
+						}
 						m_products[pname][index]->setVariable("CHARGE", +1.0);
 						m_products["goodElectrons"].push_back(m_products[pname][index]);
 						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
@@ -590,6 +595,11 @@ void BaseHandler::createProducts()
 						++nPhotonFakeElectrons;
 						break;
 					case 2:
+						*m_products[pname][index] *= 0.8;
+						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+							TString varname = m_object_variable_list[k];
+							m_object_variables[varname]->calculate(m_products[pname][index]);
+						}
 						m_products[pname][index]->setVariable("CHARGE", -1.0);
 						m_products["goodElectrons"].push_back(m_products[pname][index]);
 						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
@@ -598,6 +608,11 @@ void BaseHandler::createProducts()
 						++nPhotonFakeElectrons;
 						break;
 					case 3:
+						*m_products[pname][index] *= 0.8;
+						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+							TString varname = m_object_variable_list[k];
+							m_object_variables[varname]->calculate(m_products[pname][index]);
+						}
 						m_products[pname][index]->setVariable("CHARGE", +1.0);
 						m_products["goodMuons"].push_back(m_products[pname][index]);
 						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
@@ -606,6 +621,11 @@ void BaseHandler::createProducts()
 						++nPhotonFakeMuons;
 						break;
 					case 4:
+						*m_products[pname][index] *= 0.8;
+						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+							TString varname = m_object_variable_list[k];
+							m_object_variables[varname]->calculate(m_products[pname][index]);
+						}
 						m_products[pname][index]->setVariable("CHARGE", -1.0);
 						m_products["goodMuons"].push_back(m_products[pname][index]);
 						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
