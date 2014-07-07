@@ -29,22 +29,6 @@ PhysicsContribution::~PhysicsContribution() {
 	delete m_hn;
 }
 
-void PhysicsContribution::addCorrelatedUncertainty(TString name, THnBase* h) {
-	if(!h || !m_hn) {
-		throw std::runtime_error("Histograms not ready");
-	}
-	if(h->GetNbins() != m_hn->GetNbins()) {
-		throw std::runtime_error("Number of bins in uncertainty histogram does not match");
-	}
-	
-	if(m_systematicUncertaintyMap.find(name) != m_systematicUncertaintyMap.end()) {
-		cout << "Warning: Overwriting histogram for uncertainty " << name << endl;
-		m_systematicUncertaintyMap[name] = h;
-	} else {
-		m_systematicUncertaintyMap.insert(make_pair(name, h));
-	}
-}
-
 void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
 	if(isData()) {
 		return;
@@ -85,13 +69,27 @@ void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
 	THnBase* h = (THnBase*)hIn->Clone(name);
 	h->CalculateErrors(false);
 	for(int i = 0; i <= h->GetNbins() + 1; ++i) {
-		if(h->GetBinContent(i) == 0) {
-			continue;
-		}
 		h->SetBinContent(i, m_flatUncertaintyMap[name] * h->GetBinContent(i));
+		h->SetBinError(i, 0);
 	}
 	
-	addCorrelatedUncertainty(name, h);
+	applyUncertainty(name, h);
+}
+
+void PhysicsContribution::applyUncertainty(TString name, THnBase* h) {
+	if(!h || !m_hn) {
+		throw std::runtime_error("Histograms not ready");
+	}
+	if(h->GetNbins() != m_hn->GetNbins()) {
+		throw std::runtime_error("Number of bins in uncertainty histogram does not match");
+	}
+	
+	if(m_uncertaintyMap.find(name) != m_uncertaintyMap.end()) {
+		cout << "Warning: Overwriting histogram for uncertainty " << name << endl;
+		m_uncertaintyMap[name] = h;
+	} else {
+		m_uncertaintyMap.insert(make_pair(name, h));
+	}
 }
 
 THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection) {
@@ -292,7 +290,7 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 	}
 	
 	std::map<TString, TH1D*> uncertainties;
-	for(auto &uncertainty : m_systematicUncertaintyMap) {
+	for(auto &uncertainty : m_uncertaintyMap) {
 		TH1D* hUncertainty = uncertainty.second->Projection(dim, "E");
 		hUncertainty->Scale(scale);
 		if(binForOverflow) {
@@ -338,8 +336,8 @@ void PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	}
 	
 	axis->SetRange(first, last);
-	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
-		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+	for(auto &uncertainty : m_uncertaintyMap) {
+		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
 	if(lo == hi) {
@@ -361,8 +359,8 @@ void PhysicsContribution::setRange(const char* name, double lo) {
 	Int_t first = axis->FindFixBin(lo);
 	Int_t last  = axis->GetLast() + 1;
 	axis->SetRange(first, last);
-	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
-		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+	for(auto &uncertainty : m_uncertaintyMap) {
+		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
 	m_rangeStrings[name] = TString::Format("%s >= %.0f", name, lo);
@@ -375,8 +373,8 @@ void PhysicsContribution::setRange(const char* name) {
 		exit(1);
 	}
 	axis->SetRange();
-	for(auto &correlatedUncertainty : m_systematicUncertaintyMap) {
-		((TAxis*)correlatedUncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
+	for(auto &uncertainty : m_uncertaintyMap) {
+		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
 	
 	m_rangeStrings.erase(name);

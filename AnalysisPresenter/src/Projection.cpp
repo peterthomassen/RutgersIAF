@@ -64,7 +64,7 @@ bool Projection::hasOverflowIncluded() const {
 	return m_binForOverflow;
 }
 
-TCanvas* Projection::plot(bool log, double xminFit, double xmaxFit) {
+TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxFit) {
 	m_canvas = new TCanvas("c1", "c1", 700, 700);
 	
 	TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
@@ -75,6 +75,13 @@ TCanvas* Projection::plot(bool log, double xminFit, double xmaxFit) {
 	// TODO Not cloning causes segfault ...
 	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
+	if(sqrtError) {
+		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+			double content = hBackground->GetBinContent(i);
+			double error = hBackground->GetBinError(i);
+			hBackground->SetBinError(i, sqrt(error*error + content));
+		}
+	}
 	
 	TH1* hRatio = (TH1*)hData->Clone("hRatio");
 	hData->SetMaximum(max(hData->GetMaximum(), hBackground->GetMaximum()) * (1 + 0.5));

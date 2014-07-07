@@ -25,7 +25,7 @@ public:
 	bool has(TString type) const;
 	bool hasOverflowIncluded() const;
 	
-	TCanvas* plot(bool log = true, double xminFit = 0, double xmaxFit = 0);
+	TCanvas* plot(bool log = true, bool sqrtError = false, double xminFit = 0, double xmaxFit = 0);
 	void print() const;
 
 private:
