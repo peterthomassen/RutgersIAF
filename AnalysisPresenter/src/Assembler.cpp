@@ -116,7 +116,9 @@ void Assembler::process(std::string varexp, TString selection) {
 	
 	auto contributionsModel = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsModel)) {
-		contribution->fillContent(hs, varexp, selection);
+		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
+		cout << "scale for " << contribution->getName() << ": " << scale << endl;
+		contribution->fillContent(hs, varexp, selection, scale);
 	}
 	delete hs;
 }
@@ -151,8 +153,7 @@ Projection* Assembler::project(const char* name, const bool binForOverflow) {
 			m_hProjections.insert(make_pair(contribution->getType(), std::map<TH1D*, std::map<TString, TH1D*> >()));
 		}
 		
-		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
-		m_hProjections[contribution->getType()].insert(contribution->project(dim, scale, binForOverflow));
+		m_hProjections[contribution->getType()].insert(contribution->project(dim, binForOverflow));
 	}
 	
 	// Prepare projection for output: Combine correlated uncertainties and assemble contributions into histogram stack

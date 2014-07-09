@@ -92,7 +92,7 @@ void PhysicsContribution::applyUncertainty(TString name, THnBase* h) {
 	}
 }
 
-THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection) {
+THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale) {
 	delete m_hn;
 	
 	m_hn = (THnBase*)hn->Clone();
@@ -124,7 +124,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	selection = TString("(") + selection + TString(")");
 	
 	for(auto &weight : m_weights) {
-		selection += TString(" * ") + weight;
+		selection += TString(" * (") + weight + TString(")");
 	}
 	
 	// I suppose the following could be entirely in the weights mechanism. But now we have this already.
@@ -176,12 +176,22 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	if(m_debug) cout << endl << selection << endl;
 	
 	int step = 10000;
+	int n = treeR->GetEntries();
+	if(!isData() && scale < 0.01) {
+		n /= (0.01 / scale);
+		cout << "Changing scale = " << scale << " --> 0.01, N = " << treeR->GetEntries() << " --> " << n << endl;
+		cout << "=== TODO Make sure that last event gets read, and n+1 gets not read" << endl;
+		scale = 0.01;
+	}
 	Double_t x[m_hn->GetNdimensions()];
-	for(int k = 0; k < treeR->GetEntries(); k += step) {
+	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
 			cout << (int)(10*k/treeR->GetEntries()) << flush;
 		} else {
 			cout << '.' << flush;
+		}
+		if(k + step > n) {
+			step = n - k;
 		}
 		treeR->Draw(varexp.c_str(), selection.Data(), "goff candle", step, k);
 		for(int i = 0; i < treeR->GetSelectedRows(); ++i) {
@@ -196,6 +206,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	f.Close();
 	
 	cout << endl;
+	
+	m_hn->Scale(scale);
 	
 	for(auto &flatUncertainty : m_flatUncertaintyMap) {
 		applyRelativeUncertainty(m_hn, flatUncertainty.first);
@@ -260,7 +272,7 @@ bool PhysicsContribution::isSignal() const {
 	return m_type.BeginsWith("signal");
 }
 
-std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const double scale, const bool binForOverflow) const {
+std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const bool binForOverflow) const {
 	TH1D* projection = m_hn->Projection(dim, "E");
 	if(isData()) {
 		projection->SetName(m_name);
@@ -283,8 +295,6 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 			}
 		}
 	}
-	projection->Scale(scale);
-	
 	if(binForOverflow) {
 		incorporateOverflow(projection);
 	}
@@ -292,7 +302,6 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 	std::map<TString, TH1D*> uncertainties;
 	for(auto &uncertainty : m_uncertaintyMap) {
 		TH1D* hUncertainty = uncertainty.second->Projection(dim, "E");
-		hUncertainty->Scale(scale);
 		if(binForOverflow) {
 			incorporateOverflow(hUncertainty);
 		}

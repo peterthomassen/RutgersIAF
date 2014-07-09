@@ -14,11 +14,9 @@ public:
 	PhysicsContribution(TString, TString, double, TString);
 	virtual ~PhysicsContribution();
 	
-	void addCorrelatedUncertainty(TString, THnBase*);
 	void addFlatUncertainty(TString, double);
 	void addWeight(TString, TString = "");
-	void applyRelativeUncertainty(THnBase*, TString);
-	THnBase* fillContent(const THnBase*, std::string, TString);
+	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0);
 	THnBase* getContent() const;
 	double getLumi() const;
 	TString getName() const;
@@ -30,7 +28,7 @@ public:
 	bool isData() const;
 	bool isSignal() const;
 	
-	std::pair<TH1D*, std::map<TString, TH1D*> > project(const int dim, const double scale = 1.0, const bool binForOverflow = false) const;
+	std::pair<TH1D*, std::map<TString, TH1D*> > project(const int dim, const bool binForOverflow = false) const;
 	
 	bool setDebug(bool);
 	void setFakeRate(TString, TString);
@@ -38,6 +36,10 @@ public:
 	void setRange(const char*, double);
 	void setRange(const char*);
 	void setRange();
+
+protected:
+	void applyRelativeUncertainty(THnBase*, TString);
+	void applyUncertainty(TString, THnBase*);
 
 private:
 	bool m_debug = false;
@@ -53,7 +55,7 @@ private:
 	std::map<TString, TString> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
 	std::map<TString, TString> m_rangeStrings;
-	std::map<TString, THnBase*> m_systematicUncertaintyMap;
+	std::map<TString, THnBase*> m_uncertaintyMap;
 	std::vector<TString> m_weights;
 	
 	ClassDef(PhysicsContribution,1);
