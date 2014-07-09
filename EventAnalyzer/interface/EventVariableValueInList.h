@@ -12,6 +12,8 @@ class EventVariableValueInList : public EventVariable
   EventVariableValueInList(TString variable, T value, TString name = "variablevaluecut") : EventVariable(name),m_variable(variable) { m_values.push_back(value);}
   virtual ~EventVariableValueInList(){}
 
+  void addValue(T value){m_values.push_back(value);}
+
   bool calculate(BaseHandler* handler) {
     T value;
     if(!handler->getVariable(m_variable,value))return false;
