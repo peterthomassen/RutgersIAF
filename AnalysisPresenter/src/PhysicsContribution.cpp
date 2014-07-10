@@ -19,7 +19,7 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumi, TString name) : m_filename(filename), m_lumi(lumi), m_name(name), m_type(type) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumi, TString name, bool unordered) : m_filename(filename), m_lumi(lumi), m_name(name), m_type(type), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
@@ -92,7 +92,7 @@ void PhysicsContribution::applyUncertainty(TString name, THnBase* h) {
 	}
 }
 
-THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale) {
+THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale, const double minScale) {
 	delete m_hn;
 	
 	m_hn = (THnBase*)hn->Clone();
@@ -177,12 +177,14 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	int step = 10000;
 	int n = treeR->GetEntries();
-	if(!isData() && scale < 0.01) {
-		n /= (0.01 / scale);
-		cout << "Changing scale = " << scale << " --> 0.01, N = " << treeR->GetEntries() << " --> " << n << endl;
-		cout << "=== TODO Make sure that last event gets read, and n+1 gets not read" << endl;
-		scale = 0.01;
+	// Limit reading of MC such that the scale factor is no less than minScale (default: 0.01) if the sample is randomly distributed (as given by m_unordered).
+	// This means that we are skipping MC events beyond 100 times the data luminosity.
+	if(!isData() && m_unordered && scale < minScale) {
+		n /= minScale / scale;
+		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scale << " --> " << minScale << endl;
+		scale = minScale;
 	}
+	cout << "scale: " << scale << endl;
 	Double_t x[m_hn->GetNdimensions()];
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {

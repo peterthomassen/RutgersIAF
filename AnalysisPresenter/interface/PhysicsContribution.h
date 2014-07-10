@@ -11,12 +11,12 @@ class PhysicsContribution : public TObject {
 
 public:
 	PhysicsContribution();
-	PhysicsContribution(TString, TString, double, TString);
+	PhysicsContribution(TString type, TString filename, double lumi, TString name, bool unordered = true);
 	virtual ~PhysicsContribution();
 	
 	void addFlatUncertainty(TString, double);
 	void addWeight(TString, TString = "");
-	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0);
+	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	THnBase* getContent() const;
 	double getLumi() const;
 	TString getName() const;
@@ -48,6 +48,7 @@ private:
 	TString m_name;
 	TString m_selection;
 	TString m_type;
+	bool m_unordered;
 	
 	THnBase* m_hn = 0;
 	std::map<TString, THnBase*> m_hProjectionUncertainties;

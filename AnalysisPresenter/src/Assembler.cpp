@@ -117,7 +117,6 @@ void Assembler::process(std::string varexp, TString selection) {
 	auto contributionsModel = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
-		cout << "scale for " << contribution->getName() << ": " << scale << endl;
 		contribution->fillContent(hs, varexp, selection, scale);
 	}
 	delete hs;
