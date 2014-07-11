@@ -161,25 +161,30 @@ void Projection::print() const {
 		double lo = hData->GetXaxis()->GetBinLowEdge(i);
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);
 		
-		double contentData = getBin("data", i);
-		sumData += contentData;
-		
-		double contentBackground = getBin("background", i);
-		double contentBackgroundStat = getBinStat("background", i);
-		double contentBackgroundSyst = getBinSyst("background", i);
-		sumBackground += contentBackground;
-		sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
-		sumBackgroundSyst += contentBackgroundSyst;
-		
 		if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
 			cout << m_name << " " << (int)lo << "-" << (int)hi;
 		} else {
 			cout << m_name << " " << (int)lo << "-" << "inf";
 		}
-		if(contentBackground > 5) {
-			printf("	%.0f : %.2f ± %.2f ± %.2f ± %.2f", contentData, contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
-		} else {
-			printf("	%.0f : %.2f ± n/a ± %.2f ± %.2f", contentData, contentBackground, contentBackgroundStat, contentBackgroundSyst);
+		
+		double contentData = getBin("data", i);
+		sumData += contentData;
+		
+		printf("	%.0f", contentData);
+		
+		if(has("background")) {
+			double contentBackground = getBin("background", i);
+			double contentBackgroundStat = getBinStat("background", i);
+			double contentBackgroundSyst = getBinSyst("background", i);
+			sumBackground += contentBackground;
+			sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
+			sumBackgroundSyst += contentBackgroundSyst;
+			
+			if(contentBackground > 5) {
+				printf(" : %.2f ± %.2f ± %.2f ± %.2f", contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
+			} else {
+				printf(" : %.2f ± n/a ± %.2f ± %.2f", contentBackground, contentBackgroundStat, contentBackgroundSyst);
+			}
 		}
 		
 		if(has("signal")) {
@@ -194,10 +199,13 @@ void Projection::print() const {
 		}
 		cout << endl;
 	}
-	if(sumBackground > 5) {
-		printf("Sum:		%.0f : %.2f ± %.2f ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
-	} else {
-		printf("Sum:		%.0f : %.2f ± n/a ± %.2f ± %.2f", sumData, sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	printf("Sum:		%.0f", sumData);
+	if(has("background")) {
+		if(sumBackground > 5) {
+			printf(" : %.2f ± %.2f ± %.2f ± %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
+		} else {
+			printf(" : %.2f ± n/a ± %.2f ± %.2f", sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
+		}
 	}
 	if(has("signal")) {
 		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
