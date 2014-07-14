@@ -31,6 +31,7 @@ BaseHandler::BaseHandler(TString ofname, BaseTreeReader* reader)
   m_checkedLumi = -1;
   m_isRunLumiGood = true;
   m_trackFakeCombination = 0;
+  m_trackFakeCombinationIndex = 0;
 
   m_isMC = false;
   m_physicsWeight = 1.0;
@@ -1306,11 +1307,12 @@ ObjectVariable* BaseHandler::getObjectVariable(TString varname)
 //-----------------------------------------
 void BaseHandler::analyzeEvent()
 {
+
 	unsigned int nSig = m_Signatures.size();
 	unsigned int nBjetSig = m_bjetSignatures.size();
 	unsigned int nPreSig = m_preHandlerCutSignatures.size();
 	vector<int> isSigVec(nSig + nBjetSig + nPreSig,0);
-	
+
 	if(m_trackFakeCombinationIndex == 0) {
 		m_noCutSignature->fillHistograms();
 
