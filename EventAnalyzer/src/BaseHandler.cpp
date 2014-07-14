@@ -32,6 +32,7 @@ BaseHandler::BaseHandler(TString ofname, BaseTreeReader* reader)
   m_isRunLumiGood = true;
   m_trackFakeCombination = 0;
   m_trackFakeCombinationIndex = 0;
+  m_debugMode = false;
 
   m_isMC = false;
   m_physicsWeight = 1.0;
