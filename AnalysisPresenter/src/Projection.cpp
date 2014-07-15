@@ -74,10 +74,20 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	
 	// TODO Not cloning causes segfault ...
 	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	if(hasOverflowIncluded()) {
+		// Set overflow bin content to make it show up in statistics box
+		auto nEntries = hData->GetEntries();
+		hData->SetBinContent(hData->GetNbinsX() + 1, hData->GetBinContent(hData->GetNbinsX()));
+		hData->SetEntries(nEntries);
+	}
+	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
 	if(sqrtError) {
 		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
 			double content = hBackground->GetBinContent(i);
+			if(content < 5) {
+				continue;
+			}
 			double error = hBackground->GetBinError(i);
 			hBackground->SetBinError(i, sqrt(error*error + content));
 		}
@@ -99,6 +109,7 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	hBackground->Draw("E2 SAME");
 	hData->Draw("SAME");
 	hData->Draw("AXIS SAME");
+	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	
 	TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
