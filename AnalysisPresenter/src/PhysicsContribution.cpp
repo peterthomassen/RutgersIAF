@@ -284,6 +284,7 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 		}
 		projection->SetTitle(title);
 	} else {
+		projection->SetName(m_name);
 		projection->SetTitle(m_name);
 	}
 	// Zerostat uncertainty for background and signal samples

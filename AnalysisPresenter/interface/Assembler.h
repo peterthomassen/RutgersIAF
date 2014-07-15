@@ -44,7 +44,7 @@ private:
 	std::vector<PhysicsContribution*> m_background;
 	std::vector<PhysicsContribution*> m_signal;
 	
-	std::map<TString, std::map<TH1D*, std::map<TString, TH1D*> > > m_hProjections; // Example: m_hProjections["backgroundDD"] is a map whose keys are pointers to data-driven background histograms, including statistical uncertainties. The value is a vector that contains systematic uncertainty histograms.
+	std::map<TString, std::vector<std::pair<TH1D*, std::map<TString, TH1D*>>>> m_hProjections; // Example: m_hProjections["backgroundDD"] is a vector of pairs whose .first are pointers to data-driven background histograms, including statistical uncertainties. The .second is a map that contains systematic uncertainty histograms.
 	Projection* m_projection = 0;
 	
 	TString m_varexp;
