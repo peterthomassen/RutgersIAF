@@ -526,7 +526,11 @@ void BaseHandler::createProducts()
     
 	if(pname == "goodTracks" && getMode("trackFakeCombination")) {
 		int nTrackFakeElectrons = 0;
+		int nTrackFakePosElectrons = 0;
+		int nTrackFakeNegElectrons = 0;
 		int nTrackFakeMuons = 0;
+		int nTrackFakePosMuons = 0;
+		int nTrackFakeNegMuons = 0;
 		if(m_trackFakeCombinationIndex == 0) {
 			// Number of ways the tracks can be treated as a) tracks, b) electrons, c) muons
 			// Start counting at 0
@@ -536,6 +540,8 @@ void BaseHandler::createProducts()
 			unsigned comboIndex = m_trackFakeCombinationIndex;
 			size_t index = m_products[pname].size() - 1;
 			while(comboIndex > 0) {
+				double charge = 0;
+				assert(m_products[pname][index]->getVariable("CHARGE", charge));
 				int role = comboIndex % 3;
 				switch(role) {
 					case 0:
@@ -546,6 +552,11 @@ void BaseHandler::createProducts()
 						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
 						m_products[pname].erase(m_products[pname].begin() + index);
 						++nTrackFakeElectrons;
+						if(charge > 0) {
+							++nTrackFakePosElectrons;
+						} else {
+							++nTrackFakeNegElectrons;
+						}
 						break;
 					case 2:
 						m_products["goodMuons"].push_back(m_products[pname][index]);
@@ -553,6 +564,11 @@ void BaseHandler::createProducts()
 						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
 						m_products[pname].erase(m_products[pname].begin() + index);
 						++nTrackFakeMuons;
+						if(charge > 0) {
+							++nTrackFakePosMuons;
+						} else {
+							++nTrackFakeNegMuons;
+						}
 						break;
 				}
 				comboIndex /= 3;
@@ -560,7 +576,11 @@ void BaseHandler::createProducts()
 			}
 		}
 		setVariable("nTrackFakeElectrons", nTrackFakeElectrons);
+		setVariable("nTrackFakePosElectrons", nTrackFakePosElectrons);
+		setVariable("nTrackFakeNegElectrons", nTrackFakeNegElectrons);
 		setVariable("nTrackFakeMuons", nTrackFakeMuons);
+		setVariable("nTrackFakePosMuons", nTrackFakePosMuons);
+		setVariable("nTrackFakeNegMuons", nTrackFakeNegMuons);
 	}
 
     //////////////////////////////////
@@ -569,7 +589,11 @@ void BaseHandler::createProducts()
     
 	if(pname == "goodPhotons" && getMode("photonFakeCombination")) {
 		int nPhotonFakeElectrons = 0;
+		int nPhotonFakePosElectrons = 0;
+		int nPhotonFakeNegElectrons = 0;
 		int nPhotonFakeMuons = 0;
+		int nPhotonFakePosMuons = 0;
+		int nPhotonFakeNegMuons = 0;
 		if(m_photonFakeCombinationIndex == 0) {
 			// Number of ways the photons can be treated as a) photons, b) el+, c) el-, d) mu+, e) mu-
 			// Start counting at 0
@@ -595,6 +619,7 @@ void BaseHandler::createProducts()
 						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
 						m_products[pname].erase(m_products[pname].begin() + index);
 						++nPhotonFakeElectrons;
+						++nPhotonFakePosElectrons;
 						break;
 					case 2:
 						*m_products[pname][index] *= 0.8;
@@ -608,6 +633,7 @@ void BaseHandler::createProducts()
 						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
 						m_products[pname].erase(m_products[pname].begin() + index);
 						++nPhotonFakeElectrons;
+						++nPhotonFakeNegElectrons;
 						break;
 					case 3:
 						*m_products[pname][index] *= 0.8;
@@ -621,6 +647,7 @@ void BaseHandler::createProducts()
 						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
 						m_products[pname].erase(m_products[pname].begin() + index);
 						++nPhotonFakeMuons;
+						++nPhotonFakePosMuons;
 						break;
 					case 4:
 						*m_products[pname][index] *= 0.8;
@@ -634,6 +661,7 @@ void BaseHandler::createProducts()
 						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
 						m_products[pname].erase(m_products[pname].begin() + index);
 						++nPhotonFakeMuons;
+						++nPhotonFakeNegMuons;
 						break;
 				}
 				comboIndex /= 5;
@@ -641,7 +669,11 @@ void BaseHandler::createProducts()
 			}
 		}
 		setVariable("nPhotonFakeElectrons", nPhotonFakeElectrons);
+		setVariable("nPhotonFakePosElectrons", nPhotonFakePosElectrons);
+		setVariable("nPhotonFakeNegElectrons", nPhotonFakeNegElectrons);
 		setVariable("nPhotonFakeMuons", nPhotonFakeMuons);
+		setVariable("nPhotonFakePosMuons", nPhotonFakePosMuons);
+		setVariable("nPhotonFakeNegMuons", nPhotonFakeNegMuons);
 	}
 
   }
