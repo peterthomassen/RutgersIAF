@@ -334,11 +334,11 @@ void PhysicsContribution::setFakeRate(TString name, TString f) {
 	}
 }
 
-void PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {
+bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {
 	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
 	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
+		cerr << "setRange: Could not find axis " << name << endl;
+		return false;
 	}
 	
 	Int_t first = axis->FindFixBin(lo);
@@ -359,13 +359,15 @@ void PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	} else {
 		m_rangeStrings[name] = TString::Format("%s >= %.0f && %s < %.0f", name, lo, name, hi);
 	}
+	
+	return true;
 }
 
-void PhysicsContribution::setRange(const char* name, double lo) {
+bool PhysicsContribution::setRange(const char* name, double lo) {
 	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
 	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
+		cerr << "setRange: Could not find axis " << name << endl;
+		return false;
 	}
 	axis->SetRange();
 	Int_t first = axis->FindFixBin(lo);
@@ -376,13 +378,15 @@ void PhysicsContribution::setRange(const char* name, double lo) {
 	}
 	
 	m_rangeStrings[name] = TString::Format("%s >= %.0f", name, lo);
+	
+	return true;
 }
 
-void PhysicsContribution::setRange(const char* name) {
+bool PhysicsContribution::setRange(const char* name) {
 	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
 	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
+		cerr << "setRange: Could not find axis " << name << endl;
+		return false;
 	}
 	axis->SetRange();
 	for(auto &uncertainty : m_uncertaintyMap) {
@@ -390,10 +394,17 @@ void PhysicsContribution::setRange(const char* name) {
 	}
 	
 	m_rangeStrings.erase(name);
+	
+	return true;
 }
 
-void PhysicsContribution::setRange() {
-	m_hn->GetListOfAxes()->R__FOR_EACH(TAxis,SetRange)();
+bool PhysicsContribution::setRange() {
+	m_hn->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
+	for(auto &uncertainty : m_uncertaintyMap) {
+		uncertainty.second->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
+	}
 	
 	m_rangeStrings.clear();
+	
+	return true;
 }

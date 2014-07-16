@@ -32,10 +32,10 @@ public:
 	
 	bool setDebug(bool);
 	void setFakeRate(TString, TString);
-	void setRange(const char*, double, double, bool = true);
-	void setRange(const char*, double);
-	void setRange(const char*);
-	void setRange();
+	bool setRange(const char*, double, double, bool = true);
+	bool setRange(const char*, double);
+	bool setRange(const char*);
+	bool setRange();
 
 protected:
 	void applyRelativeUncertainty(THnBase*, TString);
