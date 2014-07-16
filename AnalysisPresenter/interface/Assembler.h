@@ -16,8 +16,7 @@ class TFile;
 class Assembler : public TObject {
 
 public:
-	Assembler();
-	Assembler(TString, Option_t* options = "CREATE");
+	Assembler(TString = "", Option_t* options = "CREATE");
 	virtual ~Assembler();
 	
 	void addContribution(PhysicsContribution*);

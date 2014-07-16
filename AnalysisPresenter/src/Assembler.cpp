@@ -24,10 +24,6 @@ using namespace std;
 
 ClassImp(Assembler)
 
-Assembler::Assembler() {
-	/* no-op */
-}
-
 Assembler::Assembler(TString outfileName, Option_t* options) {
 	if(outfileName.Length()) {
 		m_outfile = new TFile(outfileName.Data(), options);
