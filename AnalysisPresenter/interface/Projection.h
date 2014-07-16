@@ -21,6 +21,7 @@ public:
 	double getBin(TString type, int i) const;
 	double getBinStat(TString type, int i) const;
 	double getBinSyst(TString type, int i) const;
+	TH1* getHistogram(TString type) const;
 	
 	bool has(TString type) const;
 	bool hasOverflowIncluded() const;

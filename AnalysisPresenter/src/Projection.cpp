@@ -56,6 +56,12 @@ double Projection::getBinSyst(TString type, int i) const {
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
 }
 
+TH1* Projection::getHistogram(TString type) const {
+	assert(has(type));
+	TObjArray* stack = m_components.find(type)->second.first->GetStack();
+	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
+}
+
 bool Projection::has(TString type) const {
 	return (m_components.find(type) != m_components.end());
 }
@@ -82,20 +88,20 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	}
 	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
-	if(sqrtError) {
-		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
-			double content = hBackground->GetBinContent(i);
-			if(content < 5) {
-				continue;
-			}
-			double error = hBackground->GetBinError(i);
-			hBackground->SetBinError(i, sqrt(error*error + content));
+	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+		double error2 = pow(hBackground->GetBinError(i), 2);
+		double content = hBackground->GetBinContent(i);
+		if(content > 5 && sqrtError) {
+			error2 += content; // content = pow(sqrt(content), 2);
 		}
+		error2 += pow(getBinSyst("background", i), 2);
+		hBackground->SetBinError(i, sqrt(error2));
 	}
 	
 	TH1* hRatio = (TH1*)hData->Clone("hRatio");
 	hData->SetMaximum(max(hData->GetMaximum(), hBackground->GetMaximum()) * (1 + 0.5));
-	hData->SetMinimum(log ? max(0.1, ((TH1*)m_components.find("background")->second.first->GetStack()->First())->Integral()) : 0);
+	//hData->SetMinimum(log ? max(0.1, 0.1 * ((TH1*)m_components.find("background")->second.first->GetStack()->First())->Integral()) : 0);
+	hData->SetMinimum(log ? 0.1 : 0);
 	hData->SetLineColor(kRed);
 	
 	hData->Draw();
@@ -168,6 +174,7 @@ void Projection::print() const {
 	//cout << "data entries: " << hData->GetEntries() << endl;
 	//cout << "data integral: " << hData->Integral() << endl;
 	//cout << "data integral w/ overflow: " << hData->Integral(0, hData->GetNbinsX() + 1) << endl;
+	cout << ((TH1*)m_components.find("data")->second.first->GetStack()->Last())->GetTitle() << endl;
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		double lo = hData->GetXaxis()->GetBinLowEdge(i);
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);
