@@ -46,6 +46,9 @@ void Assembler::addContribution(PhysicsContribution* contribution) {
 	if(contribution->isData()) {
 		m_data.push_back(contribution);
 	} else if(contribution->isBackground()) {
+		if(contribution->getFillColor() < 0) {
+			contribution->setFillColor(m_background.size() + 2);
+		}
 		m_background.push_back(contribution);
 	} else if(contribution->isSignal()) {
 		m_signal.push_back(contribution);
@@ -145,10 +148,10 @@ Projection* Assembler::project(const char* name, const bool binForOverflow) {
 	auto contributionsModel = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		if(m_hProjections.find(contribution->getType()) == m_hProjections.end()) {
-			m_hProjections.insert(make_pair(contribution->getType(), std::vector<std::pair<TH1D*, std::map<TString, TH1D*>>>()));
+			m_hProjections.insert(make_pair(contribution->getType(), std::map<TH1D*, std::map<TString, TH1D*>>()));
 		}
 		
-		m_hProjections[contribution->getType()].push_back(contribution->project(dim, binForOverflow));
+		m_hProjections[contribution->getType()].insert(contribution->project(dim, binForOverflow));
 	}
 	
 	// Prepare projection for output: Combine correlated uncertainties and assemble contributions into histogram stack
@@ -157,11 +160,8 @@ Projection* Assembler::project(const char* name, const bool binForOverflow) {
 	for(const auto &typeProjection : m_hProjections) {
 		// Prepare vector of contributions for sorting, and take care of error correlations
 		std::vector<std::pair<TH1D*, double>> vh;
-		unsigned int i = 2;
 		THStack* hsUncertainties = new THStack("hsUncertainties", m_varexp + TString(" {") + m_selection + TString("}"));
 		for(const auto &contribution : typeProjection.second) {
-			contribution.first->SetFillColor(i);
-			++i;
 			vh.push_back(make_pair(contribution.first, contribution.first->Integral()));
 			
 			for(const auto &uncertainty : contribution.second) {

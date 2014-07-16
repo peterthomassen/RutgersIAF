@@ -222,6 +222,10 @@ THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
 }
 
+Int_t PhysicsContribution::getFillColor() const {
+	return m_fillColor;
+}
+
 double PhysicsContribution::getLumi() const {
 	return m_lumi;
 }
@@ -287,6 +291,7 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 		projection->SetName(m_name);
 		projection->SetTitle(m_name);
 	}
+	
 	// Zerostat uncertainty for background and signal samples
 	if(!isData()) {
 		for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
@@ -300,6 +305,9 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 	}
 	if(binForOverflow) {
 		incorporateOverflow(projection);
+	}
+	if(m_fillColor >= 0) {
+		projection->SetFillColor(m_fillColor);
 	}
 	
 	std::map<TString, TH1D*> uncertainties;
@@ -332,6 +340,10 @@ void PhysicsContribution::setFakeRate(TString name, TString f) {
 	} else {
 		m_fakerateMap.insert(make_pair(name, f));
 	}
+}
+
+void PhysicsContribution::setFillColor(const Int_t fillColor) {
+	m_fillColor = fillColor;
 }
 
 bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {

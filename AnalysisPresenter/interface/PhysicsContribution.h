@@ -18,6 +18,7 @@ public:
 	void addWeight(TString, TString = "");
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	THnBase* getContent() const;
+	Int_t getFillColor() const;
 	double getLumi() const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
@@ -32,6 +33,7 @@ public:
 	
 	bool setDebug(bool);
 	void setFakeRate(TString, TString);
+	void setFillColor(const Int_t fillColor);
 	bool setRange(const char*, double, double, bool = true);
 	bool setRange(const char*, double);
 	bool setRange(const char*);
@@ -44,6 +46,7 @@ protected:
 private:
 	bool m_debug = false;
 	TString m_filename;
+	Int_t m_fillColor = -1;
 	double m_lumi;
 	TString m_name;
 	TString m_selection;
