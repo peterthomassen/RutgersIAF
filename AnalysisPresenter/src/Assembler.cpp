@@ -34,12 +34,12 @@ Assembler::Assembler(TString outfileName, Option_t* options) {
 }
 
 Assembler::~Assembler() {
-	cout << "Saving output file ...";
 	if(m_outfile) {
+		cout << "Saving output file ...";
 		m_outfile->Close();
 		delete m_outfile;
+		cout << " done." << endl;
 	}
-	cout << " done." << endl;
 }
 
 void Assembler::addContribution(PhysicsContribution* contribution) {
