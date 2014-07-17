@@ -99,9 +99,9 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	}
 	
 	TH1* hRatio = (TH1*)hData->Clone("hRatio");
-	hData->SetMaximum(max(hData->GetMaximum(), hBackground->GetMaximum()) * (1 + 0.5));
+	hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())) * (1 + 0.5));
 	//hData->SetMinimum(log ? max(0.1, 0.1 * ((TH1*)m_components.find("background")->second.first->GetStack()->First())->Integral()) : 0);
-	hData->SetMinimum(log ? 0.1 : 0);
+	hData->SetMinimum(log ? min(0.1, 0.5 * hBackground->GetMinimum()) : 0);
 	hData->SetLineColor(kRed);
 	
 	hData->Draw();
