@@ -12,7 +12,7 @@ void ttbar() {
 	std::string varexp = "NBJETSCSVM{0,2}:HT{0,1000,20}:MET{0,500,10}:ST{0,2000,20}:NGOODJETS{0,6}";
 	
 	// Global cuts, if desired
-	selection = "NLEPTONS == 2 && NGOODTAUS == 0 && NPOSGOODELECTRONS == NNEGGOODMUONS && NNEGGOODELECTRONS == NPOSGOODMUONS";
+	TString selection = "NLEPTONS == 2 && NGOODTAUS == 0 && NPOSGOODELECTRONS == NNEGGOODMUONS && NNEGGOODELECTRONS == NPOSGOODMUONS";
 	
 	
 	////////////////////////
