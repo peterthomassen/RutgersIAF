@@ -22,7 +22,7 @@ void ttbar() {
 	init(assembler);
 	setupData(assembler, false, true);
 	setupBackgroundMC(assembler, true);
-	setupBackgroundDD(assembler);
+	//setupBackgroundDD(assembler);
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	assembler->process(varexp, selection);

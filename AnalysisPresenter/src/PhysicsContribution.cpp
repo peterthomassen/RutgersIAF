@@ -66,10 +66,11 @@ void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
 		throw std::runtime_error("Could not find requested flat uncertainty");
 	}
 	
-	THnBase* h = (THnBase*)hIn->Clone(name);
-	if(h->GetEntries() == 0) {
+	if(hIn->GetEntries() == 0) {
 		return;
 	}
+	
+	THnBase* h = (THnBase*)hIn->Clone(name);
 	h->CalculateErrors(false);
 	for(int i = 0; i <= h->GetNbins() + 1; ++i) {
 		h->SetBinContent(i, m_flatUncertaintyMap[name] * h->GetBinContent(i));

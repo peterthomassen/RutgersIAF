@@ -71,7 +71,8 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false) {
 	PhysicsContribution* ttbar = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, 12108679. / xsec_ttbar_fullLep, "TT_FullL");
 	ttbar->addWeight("(NLEPTONS >= 3) * 1.5 + !(NLEPTONS >= 3) * 1");
 	//ttbar->addWeight("(NGOODJETS < 2) * 1.42 + (NGOODJETS == 2) * 1.18 + (NGOODJETS == 3) * 1.04 + (NGOODJETS > 3) * 1"); // Richard's numbers
-	ttbar->addWeight("(NGOODJETS < 2) * 1.57 + (NGOODJETS == 2) * 1.18 + (NGOODJETS == 3) * 1.11 + (NGOODJETS == 4) * 1.076 + (NGOODJETS > 4) * 1"); // Peter's numbers, regular bkgs + DY MC
+	ttbar->addWeight("(NGOODJETS < 2) * 1.50 + (NGOODJETS == 2) * 1.17 + (NGOODJETS == 3) * 1.11 + (NGOODJETS == 4) * 1.076 + (NGOODJETS > 4) * 1"); // Peter's numbers, regular bkgs + DY MC
+	ttbar->addWeight("nTrackFakeElectrons + nTrackFakeMuons == 0");
 //	ttbar->addFlatUncertainty("xsec", 0.3);
 	mc.push_back(ttbar);
 	
@@ -109,8 +110,8 @@ void setupFakeRates(Assembler* assembler) {
 	//assembler->setFakeRate("nTrackFakeMuons", "(NBJETSCSVM == 0) * 0.018 + (NBJETSCSVM >= 1) * 0.13");
 	
 	// Peter's numbers based on Matt's method
-	assembler->setFakeRate("nTrackFakeElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.0231 + (HT > 200) * 0.0510 ) + (NBJETSCSVM >= 1) * 0");
-	assembler->setFakeRate("nTrackFakeMuons", "(NBJETSCSVM == 0) * 0.0139 + (NBJETSCSVM >= 1) * 0");
+	assembler->setFakeRate("nTrackFakeElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.0227594 + (HT > 200) * 0.0491398 ) + (NBJETSCSVM >= 1 && ONZ) * 0.0491398");
+	assembler->setFakeRate("nTrackFakeMuons",     "(NBJETSCSVM == 0) * ( (HT < 200) * 0.0134250 + (HT > 200) * 0.0324227 ) + (NBJETSCSVM >= 1 && ONZ) * 0.0324227");
 	
 	// Turning off photon fakes for now
 	assembler->setFakeRate("nPhotonFakeElectrons", "0");
