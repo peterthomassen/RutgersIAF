@@ -184,7 +184,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scale << " --> " << minScale << endl;
 		scale = minScale;
 	}
-	cout << "scale: " << scale << endl;
+	m_scale = scale;
+	cout << "scale: " << m_scale << endl;
 	Double_t x[m_hn->GetNdimensions()];
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
@@ -208,8 +209,6 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	f.Close();
 	
 	cout << endl;
-	
-	m_hn->Scale(scale);
 	
 	for(auto &flatUncertainty : m_flatUncertaintyMap) {
 		applyRelativeUncertainty(m_hn, flatUncertainty.first);
@@ -296,16 +295,19 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 	if(!isData()) {
 		for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
 			if(projection->GetBinContent(i) == 0) {
+				double zerostat = 1;
 				if(m_type == "backgroundDD" && i > 0) {
-					cerr << "Overestimating zerostat uncertainty for " << m_name << " data-driven background in bin " << i << " -- need to multiply by fake rate" << endl;
+					zerostat = 0.051*1.25; // largest fake rate + uncertainty
+					cerr << "Estimating zerostat uncertainty for " << m_name << " data-driven background in bin " << i << " as " << zerostat << " events" << endl;
 				}
-				projection->SetBinError(i, 1);
+				projection->SetBinError(i, zerostat);
 			}
 		}
 	}
 	if(binForOverflow) {
 		incorporateOverflow(projection);
 	}
+	projection->Scale(m_scale);
 	if(m_fillColor >= 0) {
 		projection->SetFillColor(m_fillColor);
 	}
@@ -316,6 +318,7 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 		if(binForOverflow) {
 			incorporateOverflow(hUncertainty);
 		}
+		hUncertainty->Scale(m_scale);
 		uncertainties.insert(make_pair(uncertainty.first, hUncertainty));
 	}
 	

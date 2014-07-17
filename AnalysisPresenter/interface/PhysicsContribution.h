@@ -49,6 +49,7 @@ private:
 	Int_t m_fillColor = -1;
 	double m_lumi;
 	TString m_name;
+	double m_scale = 0;
 	TString m_selection;
 	TString m_type;
 	bool m_unordered;
