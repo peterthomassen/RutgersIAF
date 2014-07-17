@@ -67,6 +67,9 @@ void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
 	}
 	
 	THnBase* h = (THnBase*)hIn->Clone(name);
+	if(h->GetEntries() == 0) {
+		return;
+	}
 	h->CalculateErrors(false);
 	for(int i = 0; i <= h->GetNbins() + 1; ++i) {
 		h->SetBinContent(i, m_flatUncertaintyMap[name] * h->GetBinContent(i));
