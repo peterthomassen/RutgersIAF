@@ -1,6 +1,6 @@
 #include <vector>
 
-void lightFakeRates() {
+void fakeRatesLight() {
 	gSystem->Load("libRutgersIAF2012AnalysisPresenter.so");
 	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
 	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
