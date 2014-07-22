@@ -418,7 +418,6 @@ bool BaseHandler::isProductPresent(TString prodName)
 //-----------------------------------------
 void BaseHandler::createProducts()
 {
-
   //calculate all of the variables and cuts
   map<TString,vector<SignatureObject*> >::iterator iIter;
   for(iIter = m_products.begin(); iIter != m_products.end(); iIter++){
@@ -680,7 +679,6 @@ void BaseHandler::calcPhysicsWeight()
 //-----------------------------------------
 void BaseHandler::prepareEvent()
 {
-
   if(m_currentEntry == m_lastEntryPrepared && !(getMode("trackFakeCombination") || getMode("photonFakeCombination")))return;
   resetProducts();
   resetVariables();
@@ -1317,7 +1315,8 @@ void BaseHandler::analyzeEvent()
 	if(m_trackFakeCombinationIndex == 0) {
 		m_noCutSignature->fillHistograms();
 
-		if(m_debugMode)printDebugInfo();
+		if(m_debugMode)
+		  printDebugInfo();
 
 		for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
 		  if(m_preHandlerCutSignatures[s]->isSignature()){
@@ -1417,11 +1416,9 @@ void BaseHandler::printDebugInfo()
   for(pIter = m_products.begin(); pIter != m_products.end(); pIter++){
     cout<<"product "<<(*pIter).first<<" "<<(*pIter).second.size()<<endl;
     vector<SignatureObject*> v = (*pIter).second;
-    /*
     for(int i = 0; i < (int)v.size(); i++){
       cout<<"  "<<*v[i]<<endl;
     }
-    */
   }
 }
 //-----------------------------------------
