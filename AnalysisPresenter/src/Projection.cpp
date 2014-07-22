@@ -56,6 +56,12 @@ double Projection::getBinSyst(TString type, int i) const {
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
 }
 
+TH1* Projection::getHistogram(TString type) const {
+	assert(has(type));
+	TObjArray* stack = m_components.find(type)->second.first->GetStack();
+	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
+}
+
 bool Projection::has(TString type) const {
 	return (m_components.find(type) != m_components.end());
 }
@@ -74,18 +80,32 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	
 	// TODO Not cloning causes segfault ...
 	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	if(hasOverflowIncluded()) {
+		// Set overflow bin content to make it show up in statistics box
+		auto nEntries = hData->GetEntries();
+		hData->SetBinContent(hData->GetNbinsX() + 1, hData->GetBinContent(hData->GetNbinsX()));
+		hData->SetEntries(nEntries);
+	}
+	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
-	if(sqrtError) {
-		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
-			double content = hBackground->GetBinContent(i);
-			double error = hBackground->GetBinError(i);
-			hBackground->SetBinError(i, sqrt(error*error + content));
+	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+		double error2 = pow(hBackground->GetBinError(i), 2);
+		double content = hBackground->GetBinContent(i);
+		if(content > 5 && sqrtError) {
+			error2 += content; // content = pow(sqrt(content), 2);
 		}
+		error2 += pow(getBinSyst("background", i), 2);
+		hBackground->SetBinError(i, sqrt(error2));
 	}
 	
 	TH1* hRatio = (TH1*)hData->Clone("hRatio");
-	hData->SetMaximum(max(hData->GetMaximum(), hBackground->GetMaximum()) * (1 + 0.5));
-	hData->SetMinimum(log ? max(0.1, ((TH1*)m_components.find("background")->second.first->GetStack()->First())->Integral()) : 0);
+	hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())) * (1 + 0.5));
+	//hData->SetMinimum(log ? max(0.1, 0.1 * ((TH1*)m_components.find("background")->second.first->GetStack()->First())->Integral()) : 0);
+	hData->SetMinimum(log ? min(0.1, 0.5 * hBackground->GetMinimum(0)) : 0);
+	// Make sure the range spans at least one order of magnitude in log plots
+	if(log && hData->GetMinimum() > hData->GetMaximum() / 15) {
+		hData->SetMinimum(hData->GetMaximum() / 15);
+	}
 	hData->SetLineColor(kRed);
 	
 	hData->Draw();
@@ -99,6 +119,7 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	hBackground->Draw("E2 SAME");
 	hData->Draw("SAME");
 	hData->Draw("AXIS SAME");
+	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	
 	TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
@@ -157,6 +178,7 @@ void Projection::print() const {
 	//cout << "data entries: " << hData->GetEntries() << endl;
 	//cout << "data integral: " << hData->Integral() << endl;
 	//cout << "data integral w/ overflow: " << hData->Integral(0, hData->GetNbinsX() + 1) << endl;
+	cout << ((TH1*)m_components.find("data")->second.first->GetStack()->Last())->GetTitle() << endl;
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		double lo = hData->GetXaxis()->GetBinLowEdge(i);
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);

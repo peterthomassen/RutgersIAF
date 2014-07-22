@@ -66,6 +66,10 @@ void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
 		throw std::runtime_error("Could not find requested flat uncertainty");
 	}
 	
+	if(hIn->GetEntries() == 0) {
+		return;
+	}
+	
 	THnBase* h = (THnBase*)hIn->Clone(name);
 	h->CalculateErrors(false);
 	for(int i = 0; i <= h->GetNbins() + 1; ++i) {
@@ -184,7 +188,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scale << " --> " << minScale << endl;
 		scale = minScale;
 	}
-	cout << "scale: " << scale << endl;
+	m_scale = scale;
+	cout << "scale: " << m_scale << endl;
 	Double_t x[m_hn->GetNdimensions()];
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
@@ -209,8 +214,6 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	cout << endl;
 	
-	m_hn->Scale(scale);
-	
 	for(auto &flatUncertainty : m_flatUncertaintyMap) {
 		applyRelativeUncertainty(m_hn, flatUncertainty.first);
 	}
@@ -220,6 +223,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 
 THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
+}
+
+Int_t PhysicsContribution::getFillColor() const {
+	return m_fillColor;
 }
 
 double PhysicsContribution::getLumi() const {
@@ -284,21 +291,29 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 		}
 		projection->SetTitle(title);
 	} else {
+		projection->SetName(m_name);
 		projection->SetTitle(m_name);
 	}
+	
 	// Zerostat uncertainty for background and signal samples
 	if(!isData()) {
 		for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
 			if(projection->GetBinContent(i) == 0) {
+				double zerostat = 1;
 				if(m_type == "backgroundDD" && i > 0) {
-					cerr << "Overestimating zerostat uncertainty for " << m_name << " data-driven background in bin " << i << " -- need to multiply by fake rate" << endl;
+					zerostat = 0.051*1.25; // largest fake rate + uncertainty
+					cerr << "Estimating zerostat uncertainty for " << m_name << " data-driven background in bin " << i << " as " << zerostat << " events" << endl;
 				}
-				projection->SetBinError(i, 1);
+				projection->SetBinError(i, zerostat);
 			}
 		}
 	}
 	if(binForOverflow) {
 		incorporateOverflow(projection);
+	}
+	projection->Scale(m_scale);
+	if(m_fillColor >= 0) {
+		projection->SetFillColor(m_fillColor);
 	}
 	
 	std::map<TString, TH1D*> uncertainties;
@@ -307,6 +322,7 @@ std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const i
 		if(binForOverflow) {
 			incorporateOverflow(hUncertainty);
 		}
+		hUncertainty->Scale(m_scale);
 		uncertainties.insert(make_pair(uncertainty.first, hUncertainty));
 	}
 	
@@ -333,11 +349,15 @@ void PhysicsContribution::setFakeRate(TString name, TString f) {
 	}
 }
 
-void PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {
+void PhysicsContribution::setFillColor(const Int_t fillColor) {
+	m_fillColor = fillColor;
+}
+
+bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {
 	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
 	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
+		cerr << "setRange: Could not find axis " << name << endl;
+		return false;
 	}
 	
 	Int_t first = axis->FindFixBin(lo);
@@ -358,13 +378,15 @@ void PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	} else {
 		m_rangeStrings[name] = TString::Format("%s >= %.0f && %s < %.0f", name, lo, name, hi);
 	}
+	
+	return true;
 }
 
-void PhysicsContribution::setRange(const char* name, double lo) {
+bool PhysicsContribution::setRange(const char* name, double lo) {
 	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
 	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
+		cerr << "setRange: Could not find axis " << name << endl;
+		return false;
 	}
 	axis->SetRange();
 	Int_t first = axis->FindFixBin(lo);
@@ -375,13 +397,15 @@ void PhysicsContribution::setRange(const char* name, double lo) {
 	}
 	
 	m_rangeStrings[name] = TString::Format("%s >= %.0f", name, lo);
+	
+	return true;
 }
 
-void PhysicsContribution::setRange(const char* name) {
+bool PhysicsContribution::setRange(const char* name) {
 	TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->FindObject(name);
 	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		exit(1);
+		cerr << "setRange: Could not find axis " << name << endl;
+		return false;
 	}
 	axis->SetRange();
 	for(auto &uncertainty : m_uncertaintyMap) {
@@ -389,10 +413,17 @@ void PhysicsContribution::setRange(const char* name) {
 	}
 	
 	m_rangeStrings.erase(name);
+	
+	return true;
 }
 
-void PhysicsContribution::setRange() {
-	m_hn->GetListOfAxes()->R__FOR_EACH(TAxis,SetRange)();
+bool PhysicsContribution::setRange() {
+	m_hn->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
+	for(auto &uncertainty : m_uncertaintyMap) {
+		uncertainty.second->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
+	}
 	
 	m_rangeStrings.clear();
+	
+	return true;
 }

@@ -24,10 +24,6 @@ using namespace std;
 
 ClassImp(Assembler)
 
-Assembler::Assembler() {
-	/* no-op */
-}
-
 Assembler::Assembler(TString outfileName, Option_t* options) {
 	if(outfileName.Length()) {
 		m_outfile = new TFile(outfileName.Data(), options);
@@ -38,18 +34,21 @@ Assembler::Assembler(TString outfileName, Option_t* options) {
 }
 
 Assembler::~Assembler() {
-	cout << "Saving output file ...";
 	if(m_outfile) {
+		cout << "Saving output file ...";
 		m_outfile->Close();
 		delete m_outfile;
+		cout << " done." << endl;
 	}
-	cout << " done." << endl;
 }
 
 void Assembler::addContribution(PhysicsContribution* contribution) {
 	if(contribution->isData()) {
 		m_data.push_back(contribution);
 	} else if(contribution->isBackground()) {
+		if(contribution->getFillColor() < 0) {
+			contribution->setFillColor(m_background.size() + 2);
+		}
 		m_background.push_back(contribution);
 	} else if(contribution->isSignal()) {
 		m_signal.push_back(contribution);
@@ -149,7 +148,7 @@ Projection* Assembler::project(const char* name, const bool binForOverflow) {
 	auto contributionsModel = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		if(m_hProjections.find(contribution->getType()) == m_hProjections.end()) {
-			m_hProjections.insert(make_pair(contribution->getType(), std::map<TH1D*, std::map<TString, TH1D*> >()));
+			m_hProjections.insert(make_pair(contribution->getType(), std::map<TH1D*, std::map<TString, TH1D*>>()));
 		}
 		
 		m_hProjections[contribution->getType()].insert(contribution->project(dim, binForOverflow));
@@ -168,10 +167,10 @@ Projection* Assembler::project(const char* name, const bool binForOverflow) {
 			for(const auto &uncertainty : contribution.second) {
 				TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
 				if(hUncertainty) {
-					for(int i = 1; i <= hUncertainty->GetNbinsX(); ++i) {
-						double value = hUncertainty->GetBinContent(i);
-						value = sqrt(value*value + pow(uncertainty.second->GetBinContent(i), 2));
-						hUncertainty->SetBinContent(i, value);
+					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
+						double value = hUncertainty->GetBinContent(j);
+						value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
+						hUncertainty->SetBinContent(j, value);
 					}
 				} else {
 					hsUncertainties->Add(uncertainty.second);
@@ -185,12 +184,10 @@ Projection* Assembler::project(const char* name, const bool binForOverflow) {
 			, boost::bind(&std::pair<TH1D*, double>::second, _1) < boost::bind(&std::pair<TH1D*, double>::second, _2)
 		);
 		
+		// Prepare stack
 		THStack* hs = new THStack("hs", m_varexp + TString(" {") + m_selection + TString("}"));
-		unsigned int i = 2;
 		for(const auto &contribution : vh) {
-			contribution.first->SetFillColor(i);
 			hs->Add(contribution.first);
-			++i;
 		}
 		
 		m_projection->add(typeProjection.first, hs, hsUncertainties);

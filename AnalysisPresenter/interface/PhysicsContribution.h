@@ -18,6 +18,7 @@ public:
 	void addWeight(TString, TString = "");
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	THnBase* getContent() const;
+	Int_t getFillColor() const;
 	double getLumi() const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
@@ -32,10 +33,11 @@ public:
 	
 	bool setDebug(bool);
 	void setFakeRate(TString, TString);
-	void setRange(const char*, double, double, bool = true);
-	void setRange(const char*, double);
-	void setRange(const char*);
-	void setRange();
+	void setFillColor(const Int_t fillColor);
+	bool setRange(const char*, double, double, bool = true);
+	bool setRange(const char*, double);
+	bool setRange(const char*);
+	bool setRange();
 
 protected:
 	void applyRelativeUncertainty(THnBase*, TString);
@@ -44,8 +46,10 @@ protected:
 private:
 	bool m_debug = false;
 	TString m_filename;
+	Int_t m_fillColor = -1;
 	double m_lumi;
 	TString m_name;
+	double m_scale = 0;
 	TString m_selection;
 	TString m_type;
 	bool m_unordered;
