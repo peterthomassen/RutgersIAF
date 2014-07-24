@@ -91,7 +91,8 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
 		double error2 = pow(hBackground->GetBinError(i), 2);
 		double content = hBackground->GetBinContent(i);
-		if(content > 5 && sqrtError) {
+		// TODO Replace by Poisson error
+		if(sqrtError) {
 			error2 += content; // content = pow(sqrt(content), 2);
 		}
 		error2 += pow(getBinSyst("background", i), 2);
@@ -139,6 +140,9 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	
 	TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
 	hRatio->SetTitle("");
+	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
+		hRatio->SetBinError(i, 0);
+	}
 	hRatio->Divide(hBackground);
 	hRatio->GetXaxis()->SetLabelFont(43);
 	hRatio->GetXaxis()->SetLabelSize(16);
@@ -202,11 +206,8 @@ void Projection::print() const {
 			sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
 			sumBackgroundSyst += contentBackgroundSyst;
 			
-			if(contentBackground > 5) {
-				printf(" : %.2f ± %.2f ± %.2f ± %.2f", contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
-			} else {
-				printf(" : %.2f ± n/a ± %.2f ± %.2f", contentBackground, contentBackgroundStat, contentBackgroundSyst);
-			}
+			// TODO Replace by Poisson error
+			printf(" : %.2f ± %.2f ± %.2f ± %.2f", contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
 		}
 		
 		if(has("signal")) {
@@ -223,11 +224,8 @@ void Projection::print() const {
 	}
 	printf("Sum:		%.0f", sumData);
 	if(has("background")) {
-		if(sumBackground > 5) {
-			printf(" : %.2f ± %.2f ± %.2f ± %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
-		} else {
-			printf(" : %.2f ± n/a ± %.2f ± %.2f", sumBackground, sqrt(sumBackgroundStat2), sumBackgroundSyst);
-		}
+		// TODO Replace by Poisson error
+		printf(" : %.2f ± %.2f ± %.2f ± %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
 	}
 	if(has("signal")) {
 		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
