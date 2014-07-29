@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/AnalysisPresenter/interface/Projection.h"
+#include "RutgersIAF2012/AnalysisPresenter/interface/AssemblerProjection.h"
 
 #include "TLegend.h"
 #include "TLine.h"
@@ -14,16 +14,16 @@
 
 using namespace std;
 
-ClassImp(Projection)
+ClassImp(AssemblerProjection)
 
-Projection::Projection(TString name, bool binForOverflow) : m_binForOverflow(binForOverflow), m_name(name) {
+AssemblerProjection::AssemblerProjection(TString name, bool binForOverflow) : m_binForOverflow(binForOverflow), m_name(name) {
 }
 
-Projection::Projection() {
+AssemblerProjection::AssemblerProjection() {
 	/* no-op */
 }
 
-Projection::~Projection() {
+AssemblerProjection::~AssemblerProjection() {
 	//delete m_canvas; // TODO this causes a segfault -- probably something to do with http://root.cern.ch/phpBB3/viewtopic.php?f=14&t=11472
 	for(auto &component : m_components) {
 		delete component.second.first;
@@ -31,46 +31,46 @@ Projection::~Projection() {
 	}
 }
 
-void Projection::add(TString type, THStack* content, THStack* contentSyst) {
+void AssemblerProjection::add(TString type, THStack* content, THStack* contentSyst) {
 	if(m_components.find(type) != m_components.end()) {
 		throw std::runtime_error("overwriting projection components not supported");
 	}
 	m_components.insert(make_pair(type, make_pair(content, contentSyst)));
 }
 
-double Projection::getBin(TString type, int i) const {
+double AssemblerProjection::getBin(TString type, int i) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
 }
 
-double Projection::getBinStat(TString type, int i) const {
+double AssemblerProjection::getBinStat(TString type, int i) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinError(i) : 0;
 }
 
-double Projection::getBinSyst(TString type, int i) const {
+double AssemblerProjection::getBinSyst(TString type, int i) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.second->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
 }
 
-TH1* Projection::getHistogram(TString type) const {
+TH1* AssemblerProjection::getHistogram(TString type) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
 }
 
-bool Projection::has(TString type) const {
+bool AssemblerProjection::has(TString type) const {
 	return (m_components.find(type) != m_components.end());
 }
 
-bool Projection::hasOverflowIncluded() const {
+bool AssemblerProjection::hasOverflowIncluded() const {
 	return m_binForOverflow;
 }
 
-TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxFit) {
+TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, double xmaxFit) {
 	m_canvas = new TCanvas("c1", "c1", 700, 700);
 	
 	TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
@@ -169,7 +169,7 @@ TCanvas* Projection::plot(bool log, bool sqrtError, double xminFit, double xmaxF
 	return m_canvas;
 }
 
-void Projection::print() const {
+void AssemblerProjection::print() const {
 	double sumData = 0;
 	double sumBackground = 0;
 	double sumBackgroundStat2 = 0;

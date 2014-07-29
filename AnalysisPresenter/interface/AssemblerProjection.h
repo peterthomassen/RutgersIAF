@@ -1,5 +1,5 @@
-#ifndef Projection_h
-#define Projection_h
+#ifndef AssemblerProjection_h
+#define AssemblerProjection_h
 
 #include <map>
 #include <string>
@@ -9,12 +9,12 @@
 #include "THStack.h"
 #include "TROOT.h"
 
-class Projection : public TObject {
+class AssemblerProjection : public TObject {
 
 public:
-	Projection();
-	Projection(TString, bool);
-	virtual ~Projection();
+	AssemblerProjection();
+	AssemblerProjection(TString, bool);
+	virtual ~AssemblerProjection();
 
 	void add(TString type, THStack* content, THStack* contentSyst);
 	
@@ -36,7 +36,7 @@ private:
 	
 	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	
-	ClassDef(Projection,1);
+	ClassDef(AssemblerProjection,1);
 };
 
 #endif

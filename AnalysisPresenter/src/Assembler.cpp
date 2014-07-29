@@ -121,24 +121,13 @@ void Assembler::process(std::string varexp, TString selection) {
 	delete hs;
 }
 
-Projection* Assembler::project(const char* name, const bool binForOverflow) {
-	TAxis* axis = (TAxis*)m_data[0]->getContent()->GetListOfAxes()->FindObject(name);
-	if(!axis) {
-		cerr << "Could not find axis " << name << endl;
-		throw std::runtime_error("");
-	}
-	int dim = m_data[0]->getContent()->GetListOfAxes()->IndexOf(axis);
-	
+AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow) {
 	// Clean up from earlier projections
-	for(auto &h : m_hProjections) {
-		for(auto &h2 : h.second) {
-			delete h2.first;
-			for(auto &h3 : h2.second) {
-				delete h3.second;
-			}
-			h2.second.clear();
+	for(auto &typeProjection : m_hProjections) {
+		for(auto &projection : typeProjection.second) {
+			delete projection;
 		}
-		h.second.clear();
+		typeProjection.second.clear();
 	}
 	m_hProjections.clear();
 	
@@ -148,23 +137,23 @@ Projection* Assembler::project(const char* name, const bool binForOverflow) {
 	auto contributionsModel = boost::join(m_background, m_signal);
 	for(auto &contribution : boost::join(m_data, contributionsModel)) {
 		if(m_hProjections.find(contribution->getType()) == m_hProjections.end()) {
-			m_hProjections.insert(make_pair(contribution->getType(), std::map<TH1D*, std::map<TString, TH1D*>>()));
+			m_hProjections.insert(make_pair(contribution->getType(), std::vector<PhysicsContributionProjection*>()));
 		}
 		
-		m_hProjections[contribution->getType()].insert(contribution->project(dim, binForOverflow));
+		m_hProjections[contribution->getType()].push_back(contribution->project(name, binForOverflow));
 	}
 	
 	// Prepare projection for output: Combine correlated uncertainties and assemble contributions into histogram stack
-	m_projection = new Projection(name, binForOverflow);
+	m_projection = new AssemblerProjection(name, binForOverflow);
 	std::map<TString, std::vector<std::pair<TH1D*, double>>> vh;
 	for(const auto &typeProjection : m_hProjections) {
 		// Prepare vector of contributions for sorting, and take care of error correlations
 		std::vector<std::pair<TH1D*, double>> vh;
 		THStack* hsUncertainties = new THStack("hsUncertainties", m_varexp + TString(" {") + m_selection + TString("}"));
 		for(const auto &contribution : typeProjection.second) {
-			vh.push_back(make_pair(contribution.first, contribution.first->Integral()));
+			vh.push_back(make_pair(contribution->getHistogram(), contribution->getHistogram()->Integral()));
 			
-			for(const auto &uncertainty : contribution.second) {
+			for(const auto &uncertainty : contribution->getUncertainties()) {
 				TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
 				if(hUncertainty) {
 					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {

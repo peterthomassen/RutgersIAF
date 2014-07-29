@@ -8,8 +8,9 @@
 #include "THStack.h"
 #include "TROOT.h"
 
+#include "RutgersIAF2012/AnalysisPresenter/interface/AssemblerProjection.h"
 #include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContribution.h"
-#include "RutgersIAF2012/AnalysisPresenter/interface/Projection.h"
+#include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 class TFile;
 
@@ -25,7 +26,7 @@ public:
 	double getLumi() const;
 	
 	void process(std::string, TString);
-	Projection* project(const char*, const bool binForOverflow);
+	AssemblerProjection* project(const char*, const bool binForOverflow);
 	void save();
 	void save(const char*, const bool binForOverflow = true);
 	
@@ -43,8 +44,8 @@ private:
 	std::vector<PhysicsContribution*> m_background;
 	std::vector<PhysicsContribution*> m_signal;
 	
-	std::map<TString, std::map<TH1D*, std::map<TString, TH1D*>>> m_hProjections; // Example: m_hProjections["backgroundDD"] is a map whose keys are pointers to data-driven background histograms, including statistical uncertainties. The value is a map that contains systematic uncertainty histograms.
-	Projection* m_projection = 0;
+	std::map<TString, std::vector<PhysicsContributionProjection*>> m_hProjections; // Example: m_hProjections["backgroundDD"] is a map whose keys are pointers to data-driven background histograms, including statistical uncertainties. The value is a map that contains systematic uncertainty histograms.
+	AssemblerProjection* m_projection = 0;
 	
 	TString m_varexp;
 	TString m_selection;

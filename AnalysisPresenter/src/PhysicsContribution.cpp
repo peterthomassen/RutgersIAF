@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <exception>
+#include <iostream>
 
 #include "TAxis.h"
 #include "TFile.h"
@@ -9,7 +10,7 @@
 #include "THnBase.h"
 #include "TTree.h"
 
-#include "RutgersIAF2012/RootC/interface/debug.h"
+#include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 using namespace std;
 
@@ -249,26 +250,6 @@ TString PhysicsContribution::getType(const bool detailed) const {
 	throw std::runtime_error("should never make it here");
 }
 
-void PhysicsContribution::incorporateOverflow(TH1D* &h) {
-	// Adapted from http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=6764
-	UInt_t nx = h->GetNbinsX() + 1;
-	Double_t* xbins = new Double_t[nx + 1];
-	for (UInt_t i = 0; i < nx; ++i) {
-		xbins[i] = h->GetBinLowEdge(i+1);
-	}
-	xbins[nx] = xbins[nx - 1] + h->GetBinWidth(nx);
-	TH1D* htmp = new TH1D(h->GetName(), h->GetTitle(), nx, xbins);
-	htmp->SetXTitle(h->GetXaxis()->GetTitle());
-	htmp->SetYTitle(h->GetYaxis()->GetTitle());
-	for (UInt_t i = 0; i <= nx; ++i) {
-		htmp->SetBinContent(i, h->GetBinContent(i));
-		htmp->SetBinError(i, h->GetBinError(i));
-	}
-	htmp->SetEntries(h->GetEntries());
-	delete h;
-	h = htmp;
-}
-
 bool PhysicsContribution::isBackground() const {
 	return m_type.BeginsWith("background");
 }
@@ -281,52 +262,30 @@ bool PhysicsContribution::isSignal() const {
 	return m_type.BeginsWith("signal");
 }
 
-std::pair<TH1D*, std::map<TString, TH1D*> > PhysicsContribution::project(const int dim, const bool binForOverflow) const {
-	TH1D* projection = m_hn->Projection(dim, "E");
+PhysicsContributionProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow) const {
+	TString title;
 	if(isData()) {
-		projection->SetName(m_name);
 		TString title = m_selection;
 		for(const auto &rangeString : m_rangeStrings) {
 			title += TString(" && ") + rangeString.second;
 		}
-		projection->SetTitle(title);
 	} else {
-		projection->SetName(m_name);
-		projection->SetTitle(m_name);
+		title = m_name;
 	}
 	
-	// Zerostat uncertainty for background and signal samples
-	if(!isData()) {
-		for(int i = 0; i <= projection->GetXaxis()->GetNbins() + 1; ++i) {
-			if(projection->GetBinContent(i) == 0) {
-				double zerostat = 1;
-				if(m_type == "backgroundDD" && i > 0) {
-					zerostat = 0.051*1.25; // largest fake rate + uncertainty
-					cerr << "Estimating zerostat uncertainty for " << m_name << " data-driven background in bin " << i << " as " << zerostat << " events" << endl;
-				}
-				projection->SetBinError(i, zerostat);
-			}
-		}
-	}
-	if(binForOverflow) {
-		incorporateOverflow(projection);
-	}
-	projection->Scale(m_scale);
+	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
+	
+	PhysicsContributionProjection* projection = new PhysicsContributionProjection(m_name, title, this, varName, m_uncertaintyMap, zerostat);
 	if(m_fillColor >= 0) {
-		projection->SetFillColor(m_fillColor);
+		projection->getHistogram()->SetFillColor(m_fillColor);
 	}
 	
-	std::map<TString, TH1D*> uncertainties;
-	for(auto &uncertainty : m_uncertaintyMap) {
-		TH1D* hUncertainty = uncertainty.second->Projection(dim, "E");
-		if(binForOverflow) {
-			incorporateOverflow(hUncertainty);
-		}
-		hUncertainty->Scale(m_scale);
-		uncertainties.insert(make_pair(uncertainty.first, hUncertainty));
+	if(binForOverflow) {
+		projection->incorporateOverflow();
 	}
+	projection->scale(m_scale);
 	
-	return std::make_pair(projection, uncertainties);
+	return projection;
 }
 
 bool PhysicsContribution::setDebug(bool debug) {

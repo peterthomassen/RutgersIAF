@@ -1,9 +1,9 @@
-#include "RutgersIAF2012/AnalysisPresenter/interface/Projection.h"
+#include "RutgersIAF2012/AnalysisPresenter/interface/AssemblerProjection.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
 #pragma link off all classes;
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
-#pragma link C++ class Projection+;
+#pragma link C++ class AssemblerProjection+;
 #endif

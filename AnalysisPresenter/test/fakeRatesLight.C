@@ -91,7 +91,7 @@ void fakeRatesLight() {
 					assembler->setRange("ONZ", 1, 1);
 					assembler->setRange("NBJETSCSVM", 0, 0);
 					gROOT->ProcessLineFast(cuts[j]);
-					Projection* projection = assembler->project("ONZ", true);
+					AssemblerProjection* projection = assembler->project("ONZ", true);
 					if(i == 1) {
 						data = projection->getHistogram("data")->IntegralAndError(1, projection->getHistogram("data")->GetNbinsX(), dataErr);
 						mc = projection->getHistogram("background")->IntegralAndError(1, projection->getHistogram("data")->GetNbinsX(), mcErr);

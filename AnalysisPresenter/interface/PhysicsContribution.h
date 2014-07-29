@@ -7,6 +7,8 @@
 #include "THnBase.h"
 #include "TROOT.h"
 
+class PhysicsContributionProjection;
+
 class PhysicsContribution : public TObject {
 
 public:
@@ -23,13 +25,11 @@ public:
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
 	
-	static void incorporateOverflow(TH1D* &);
-	
 	bool isBackground() const;
 	bool isData() const;
 	bool isSignal() const;
 	
-	std::pair<TH1D*, std::map<TString, TH1D*> > project(const int dim, const bool binForOverflow = false) const;
+	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false) const;
 	
 	bool setDebug(bool);
 	void setFakeRate(TString, TString);
