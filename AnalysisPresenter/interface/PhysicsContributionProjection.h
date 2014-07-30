@@ -14,10 +14,11 @@ class PhysicsContributionProjection : public TObject {
 
 public:
 	PhysicsContributionProjection();
-	PhysicsContributionProjection(const TString name, const TString title, const PhysicsContribution*, const char* varName, const std::map<TString, THnBase*> uncertaintyMap, const double zerostat = 1.);
+	PhysicsContributionProjection(const TString name, const TString title, const PhysicsContribution*, const char* varName, const std::map<TString, THnBase*>* uncertaintyMap = 0, const double zerostat = 0.);
 	virtual ~PhysicsContributionProjection();
 	
 	TH1D* getHistogram() const;
+	const PhysicsContribution* getPhysicsContribution() const;
 	std::map<TString, TH1D*> getUncertainties() const;
 	void incorporateOverflow();
 	static void incorporateOverflow(TH1D* &);

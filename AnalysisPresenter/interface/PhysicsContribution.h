@@ -1,8 +1,8 @@
 #ifndef PhysicsContribution_h
 #define PhysicsContribution_h
 
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "THnBase.h"
 #include "TROOT.h"
@@ -20,6 +20,7 @@ public:
 	void addWeight(TString, TString = "");
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	THnBase* getContent() const;
+	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	Int_t getFillColor() const;
 	double getLumi() const;
 	TString getName() const;
@@ -29,9 +30,10 @@ public:
 	bool isData() const;
 	bool isSignal() const;
 	
-	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false) const;
+	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false, const bool plain = false) const;
 	
 	bool setDebug(bool);
+	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
 	void setFillColor(const Int_t fillColor);
 	bool setRange(const char*, double, double, bool = true);
@@ -57,6 +59,7 @@ private:
 	THnBase* m_hn = 0;
 	std::map<TString, THnBase*> m_hProjectionUncertainties;
 	
+	std::map<PhysicsContribution*, std::map<TString, TString>> m_ensembleFakeRateParams;
 	std::map<TString, TString> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
 	std::map<TString, TString> m_rangeStrings;

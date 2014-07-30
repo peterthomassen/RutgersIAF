@@ -18,7 +18,7 @@ PhysicsContributionProjection::PhysicsContributionProjection() {
 	/* no-op */
 }
 
-PhysicsContributionProjection::PhysicsContributionProjection(const TString name, const TString title, const PhysicsContribution* contribution, const char* varName, const std::map<TString, THnBase*> uncertaintyMap, const double zerostat) : m_contribution(contribution), m_name(name), m_title(title) {
+PhysicsContributionProjection::PhysicsContributionProjection(const TString name, const TString title, const PhysicsContribution* contribution, const char* varName, const std::map<TString, THnBase*>* uncertaintyMap, const double zerostat) : m_contribution(contribution), m_name(name), m_title(title) {
 	TAxis* axis = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(varName);
 	if(!axis) {
 		cerr << "Could not find axis " << varName << endl;
@@ -31,7 +31,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 	m_histogram->SetTitle(title);
 	
 	// Zerostat uncertainty for background and signal samples
-	if(!contribution->isData()) {
+	if(!contribution->isData() && zerostat >= 0) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
 			if(m_histogram->GetBinContent(i) == 0) {
 				m_histogram->SetBinError(i, zerostat);
@@ -39,13 +39,23 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 		}
 	}
 	
-	for(auto &uncertainty : uncertaintyMap) {
-		m_uncertainties.insert(make_pair(uncertainty.first, uncertainty.second->Projection(dim, "E")));
+	if(uncertaintyMap) {
+		for(auto &uncertainty : *uncertaintyMap) {
+			m_uncertainties.insert(make_pair(uncertainty.first, uncertainty.second->Projection(dim, "E")));
+		}
 	}
 }
 
 PhysicsContributionProjection::~PhysicsContributionProjection() {
-	/* no-op */
+	delete m_histogram;
+	for(auto &uncertainty : m_uncertainties) {
+		delete uncertainty.second;
+	}
+	m_uncertainties.clear();
+}
+
+const PhysicsContribution* PhysicsContributionProjection::getPhysicsContribution() const {
+	return m_contribution;
 }
 
 TH1D* PhysicsContributionProjection::getHistogram() const {

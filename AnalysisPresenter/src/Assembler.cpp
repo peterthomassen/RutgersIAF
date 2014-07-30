@@ -2,6 +2,7 @@
 
 #include "TAxis.h"
 #include "TFile.h"
+#include "TFormula.h"
 #include "TH1D.h"
 #include "THnBase.h"
 #include "THnSparse.h"
@@ -130,7 +131,6 @@ AssemblerProjection* Assembler::project(const char* name, const bool binForOverf
 		typeProjection.second.clear();
 	}
 	m_hProjections.clear();
-	
 	delete m_projection;
 	
 	// Project event counts and uncertainty histograms
@@ -141,6 +141,38 @@ AssemblerProjection* Assembler::project(const char* name, const bool binForOverf
 		}
 		
 		m_hProjections[contribution->getType()].push_back(contribution->project(name, binForOverflow));
+	}
+	
+	// Ensemble-based scaling of data-driven backgrounds
+	for(auto &projectionDD : m_hProjections["background"]) {
+		// Fetch the PhysicsContribution object from which this data-driven predition was computed
+		const PhysicsContribution* contribution = projectionDD->getPhysicsContribution();
+		if(contribution->getType(true) != "backgroundDD") {
+			continue;
+		}
+		
+		for(const auto &params : contribution->getEnsembleFakeRateParams()) {
+			// Determine which variable to use
+			// TODO Add support for looking at two different variables (à la Rdxy)
+			for(const auto &params2 : params.second) {
+				TString varName = params2.first;
+				
+				// Get counts from both contributions and compute scale factor
+				// TODO one could use the integral, momentum, ... instead
+				double x = contribution->project(varName, true, true)->getHistogram()->GetEntries();
+				double par = params.first->project(varName, true, true)->getHistogram()->GetEntries();
+				
+				TFormula* f = new TFormula("", params2.second);
+				f->SetParameter(0, par);
+				double scale = f->Eval(x);
+				if(scale < 0) {
+					throw std::runtime_error("scale turns out negative; please fix your ensemble fake rate parameterization");
+				}
+				cout << "Scaling " << contribution->getName() << " by " << scale << " based on " << params.first->getName() << " " << varName << " [" << x << "/" << par << "=" << (x/par) << "]" << endl;
+				projectionDD->scale(f->Eval(x));
+				delete f;
+			}
+		}
 	}
 	
 	// Prepare projection for output: Combine correlated uncertainties and assemble contributions into histogram stack

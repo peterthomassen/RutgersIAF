@@ -226,6 +226,10 @@ THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
 }
 
+std::map<PhysicsContribution*, std::map<TString, TString>> PhysicsContribution::getEnsembleFakeRateParams() const {
+	return m_ensembleFakeRateParams;
+}
+
 Int_t PhysicsContribution::getFillColor() const {
 	return m_fillColor;
 }
@@ -262,7 +266,9 @@ bool PhysicsContribution::isSignal() const {
 	return m_type.BeginsWith("signal");
 }
 
-PhysicsContributionProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow) const {
+PhysicsContributionProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow, const bool plain) const {
+	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
+	
 	TString title;
 	if(isData()) {
 		TString title = m_selection;
@@ -273,17 +279,19 @@ PhysicsContributionProjection* PhysicsContribution::project(const char* varName,
 		title = m_name;
 	}
 	
-	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
-	
-	PhysicsContributionProjection* projection = new PhysicsContributionProjection(m_name, title, this, varName, m_uncertaintyMap, zerostat);
-	if(m_fillColor >= 0) {
-		projection->getHistogram()->SetFillColor(m_fillColor);
-	}
+	PhysicsContributionProjection* projection = plain
+		? new PhysicsContributionProjection(m_name, title, this, varName)
+		: new PhysicsContributionProjection(m_name, title, this, varName, &m_uncertaintyMap, zerostat);
 	
 	if(binForOverflow) {
 		projection->incorporateOverflow();
 	}
+	
 	projection->scale(m_scale);
+	
+	if(m_fillColor >= 0) {
+		projection->getHistogram()->SetFillColor(m_fillColor);
+	}
 	
 	return projection;
 }
@@ -292,6 +300,21 @@ bool PhysicsContribution::setDebug(bool debug) {
 	bool oldDebug = m_debug;
 	m_debug = debug;
 	return oldDebug;
+}
+
+void PhysicsContribution::setEnsembleFakeRateParam(PhysicsContribution* contribution, TString varName, TString formula) {
+	if(getType(true) != "backgroundDD") {
+		throw std::runtime_error("ensemble fake rates are meant for data-driven backgrounds only");
+	}
+	
+	if(m_ensembleFakeRateParams.find(contribution) == m_ensembleFakeRateParams.end()) {
+		m_ensembleFakeRateParams.insert(make_pair(contribution, std::map<TString, TString>()));
+	}
+	
+	if(m_ensembleFakeRateParams[contribution].find(varName) != m_ensembleFakeRateParams[contribution].end()) {
+		cout << "Warning: Overwriting ensemble fake rate parametrization for variable " << varName << endl;
+	}
+	m_ensembleFakeRateParams[contribution].insert(make_pair(varName, formula));
 }
 
 void PhysicsContribution::setFakeRate(TString name, TString f) {
