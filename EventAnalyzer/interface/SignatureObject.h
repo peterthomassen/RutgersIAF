@@ -5,6 +5,9 @@
 #include <TString.h>
 #include <map>
 #include <iostream>
+#include <string>
+
+class SignatureObjectFlat;
 
 class SignatureObject : public TLorentzVector {
  public:
@@ -16,6 +19,7 @@ class SignatureObject : public TLorentzVector {
   bool operator<(SignatureObject &s);
 
   friend std::ostream& operator<<(std::ostream& os, const SignatureObject& so);
+  friend class SignatureObjectFlat;
 
   bool getVariable(TString,int&);
   void setVariable(TString,int);
@@ -25,6 +29,7 @@ class SignatureObject : public TLorentzVector {
   void setVariable(TString,double);
   bool getVariable(TString,TString&);
   void setVariable(TString,TString);
+  void setVariable(TString,std::string);
 
   SignatureObject* getAssociate(TString);
   void setAssociate(TString,SignatureObject*);
@@ -96,7 +101,10 @@ inline void SignatureObject::setVariable(TString name, TString val)
 {
   m_variableMapTString[name] = val;
 }
-
+inline void SignatureObject::setVariable(TString name, std::string val)
+{
+  m_variableMapTString[name] = TString(val);
+}
 inline bool SignatureObject::getVariable(TString name, TString &val)
 {
   std::map<TString,TString>::const_iterator iter = m_variableMapTString.find(name);
