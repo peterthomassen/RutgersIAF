@@ -271,7 +271,7 @@ PhysicsContributionProjection* PhysicsContribution::project(const char* varName,
 	
 	TString title;
 	if(isData()) {
-		TString title = m_selection;
+		title = m_selection;
 		for(const auto &rangeString : m_rangeStrings) {
 			title += TString(" && ") + rangeString.second;
 		}
