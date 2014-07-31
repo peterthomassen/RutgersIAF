@@ -458,7 +458,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false)
   EventVariableReversed* offZ = new EventVariableReversed("ONZ", "OFFZ");
   handler->addEventVariable("OFFZ", offZ);
 
-  EventVariableInRange<double>* NOSSFgt0 = new EventVariableInRange<int>("NOSSF", 1, 1e6, "NOSSFgt0");
+  EventVariableInRange<int>* NOSSFgt0 = new EventVariableInRange<int>("NOSSF", 1, 1e6, "NOSSFgt0");
   handler->addEventVariable("NOSSFgt0", NOSSFgt0);
 
   EventVariableCombined* trileptonOnZcut = new EventVariableCombined("TRILEPTONS", "MLEPTONSONZ", true, "TRILEPTONONZ");
