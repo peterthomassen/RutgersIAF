@@ -17,13 +17,16 @@ class EventVariableObjectVariableMax : public EventVariable{
 
   bool calculate(BaseHandler* handler){
     T max = -1e6;
+    bool any=false;
     for(int i = 0; i < (int)m_productnames.size(); i++){
       std::vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
       for(int j = 0; j < (int)v.size(); j++){
+	any=true;
 	T value;
 	if(v[j]->getVariable(m_varname,value) && value > max)max = value;
       }
     }
+    if(!any)return false;
     handler->setVariable(getName(),max);
     return true;
   }
