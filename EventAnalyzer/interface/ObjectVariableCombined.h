@@ -34,7 +34,7 @@ class ObjectVariableCombined : public ObjectVariable {
       bool isSet = sigObj->getVariable(m_cuts[i],passVal);
       if(m_and)retval = retval && passVal && isSet;
       else retval = retval || (passVal && isSet);
-      //cout<<"    "<<m_cuts[i]->getName()<<" "<<(int)passVal<<endl;
+      //cout<<"    "<<m_cuts[i]<<" "<<(int)passVal<<endl;
     }
     sigObj->setVariable(getName(),retval);
     return retval;
