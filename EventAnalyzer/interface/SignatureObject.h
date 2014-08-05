@@ -13,6 +13,7 @@ class SignatureObject : public TLorentzVector {
  public:
   SignatureObject(double x=0,double y=0, double z=0, double t=0);
   SignatureObject(TLorentzVector v);
+  SignatureObject(SignatureObjectFlat&);
   SignatureObject(SignatureObject&);
   virtual ~SignatureObject();
   bool operator>(SignatureObject &s);

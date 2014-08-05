@@ -14,6 +14,8 @@ class SignatureObjectFlat : public TObject {
   SignatureObjectFlat(SignatureObject&);
   virtual ~SignatureObjectFlat();
 
+  friend class SignatureObject;
+
   void addAssociate(std::string,SignatureObjectFlat*);
   void Print();
 
@@ -25,7 +27,7 @@ class SignatureObjectFlat : public TObject {
   Int_t nBool_;
   Int_t nAssociation_;
   Int_t iAssociation_;
-
+  /*
   std::string* m_variableMapDoubleKeys; //[nDouble_]
   std::string* m_variableMapIntKeys; //[nInt_]
   std::string* m_variableMapTStringKeys; //[nTString_]
@@ -37,8 +39,8 @@ class SignatureObjectFlat : public TObject {
   std::string* m_variableMapTStringValues; //[nTString_]
   bool* m_variableMapBoolValues; //[nBool_]
   //SignatureObjectFlat** m_associationValues; //[nAssociation_]
+  */
 
-  /*
   std::vector<std::string> m_variableMapDoubleKeys;
   std::vector<double> m_variableMapDoubleValues;
   std::vector<std::string> m_variableMapIntKeys;
@@ -47,7 +49,7 @@ class SignatureObjectFlat : public TObject {
   std::vector<std::string> m_variableMapTStringValues;
   std::vector<std::string> m_variableMapBoolKeys;
   std::vector<bool> m_variableMapBoolValues;
-  */
+
   std::vector<std::string> m_associationKeys;
   std::vector<SignatureObjectFlat*> m_associationValues;
 
@@ -67,7 +69,7 @@ inline SignatureObjectFlat::SignatureObjectFlat(double x,double y, double z, dou
   nBool_ = 0;
   nAssociation_ = 0;
   iAssociation_ = 0;
-
+  /*
   m_variableMapDoubleKeys = NULL;
   m_variableMapIntKeys = NULL;
   m_variableMapTStringKeys = NULL;
@@ -79,6 +81,7 @@ inline SignatureObjectFlat::SignatureObjectFlat(double x,double y, double z, dou
   m_variableMapTStringValues = NULL;
   m_variableMapBoolValues = NULL;
   //m_associationValues = NULL;
+  */
 }
 
 #endif

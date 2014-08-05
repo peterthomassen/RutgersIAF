@@ -27,7 +27,7 @@ SignatureObjectFlat::SignatureObjectFlat(SignatureObjectFlat &sigObj) : TObject(
 
 SignatureObjectFlat::~SignatureObjectFlat()
 {
-  /*  
+   
   m_variableMapDoubleKeys.clear();
   m_variableMapDoubleValues.clear();
   m_variableMapIntKeys.clear();
@@ -39,7 +39,7 @@ SignatureObjectFlat::~SignatureObjectFlat()
 
   m_associationKeys.clear();
   m_associationValues.clear();
-  */  
+  /*  
 
   delete[] m_variableMapDoubleKeys;
   delete[] m_variableMapIntKeys;
@@ -65,6 +65,7 @@ SignatureObjectFlat::~SignatureObjectFlat()
   m_variableMapTStringValues = NULL;
   m_variableMapBoolValues = NULL;
   //m_associationValues = NULL;
+  */
 
 }
 
@@ -81,7 +82,7 @@ SignatureObjectFlat::SignatureObjectFlat(SignatureObject& sigObj)
   nBool_ = sigObj.m_variableMapBool.size();
   nAssociation_ = sigObj.m_association_map.size();
   iAssociation_ = 0;
-
+  /*
   //cout<<" "<<nDouble_<<" "<<nInt_<<" "<<nTString_<<" "<<nBool_<<endl;
   if(nDouble_ > 0){
     m_variableMapDoubleKeys = new string[nDouble_];
@@ -151,8 +152,8 @@ SignatureObjectFlat::SignatureObjectFlat(SignatureObject& sigObj)
     m_variableMapBoolValues[i] = (*iter).second;
     i++;
   }
+  */
   
-  /*
   for(map<TString,double>::iterator iter=sigObj.m_variableMapDouble.begin(); iter != sigObj.m_variableMapDouble.end(); iter++){
     m_variableMapDoubleKeys.push_back(string((*iter).first));
     m_variableMapDoubleValues.push_back((*iter).second);
@@ -169,7 +170,7 @@ SignatureObjectFlat::SignatureObjectFlat(SignatureObject& sigObj)
     m_variableMapBoolKeys.push_back(string((*iter).first));
     m_variableMapBoolValues.push_back((*iter).second);
   }
-  */
+  
 }
 
 void SignatureObjectFlat::addAssociate(string name,SignatureObjectFlat* ptr)

@@ -1,4 +1,5 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObjectFlat.h"
 
 ClassImp(SignatureObject)
 
@@ -11,6 +12,23 @@ SignatureObject::SignatureObject(SignatureObject& sigObj) : TLorentzVector(TLore
   m_variableMapTString = sigObj.m_variableMapTString;
   m_variableMapBool = sigObj.m_variableMapBool;
   m_association_map = sigObj.m_association_map;
+}
+
+SignatureObject::SignatureObject(SignatureObjectFlat& sigObj) : TLorentzVector(sigObj.px_,sigObj.py_,sigObj.pz_,sigObj.e_){
+
+  for(int i = 0; i < sigObj.nDouble_; i++){
+    setVariable(TString(sigObj.m_variableMapDoubleKeys[i]),sigObj.m_variableMapDoubleValues[i]);
+  }
+  for(int i = 0; i < sigObj.nInt_; i++){
+    setVariable(sigObj.m_variableMapIntKeys[i],sigObj.m_variableMapIntValues[i]);
+  }
+  for(int i = 0; i < sigObj.nBool_; i++){
+    setVariable(sigObj.m_variableMapBoolKeys[i],sigObj.m_variableMapBoolValues[i]);
+  }
+  for(int i = 0; i < sigObj.nTString_; i++){
+    setVariable(sigObj.m_variableMapTStringKeys[i],sigObj.m_variableMapTStringValues[i]);
+  }
+
 }
 
 SignatureObject::~SignatureObject()
