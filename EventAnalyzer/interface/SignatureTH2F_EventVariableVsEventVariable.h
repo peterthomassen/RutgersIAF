@@ -14,6 +14,7 @@ class SignatureTH2F_EventVariableVsEventVariable : public SignatureTH2F
   SignatureTH2F_EventVariableVsEventVariable(TH2F h):SignatureTH2F(h){}
   SignatureTH2F_EventVariableVsEventVariable():SignatureTH2F(){}
 
+  using TH2F::Fill;
   Int_t Fill(BaseHandler* handler){
     T1 val1;
     T2 val2;

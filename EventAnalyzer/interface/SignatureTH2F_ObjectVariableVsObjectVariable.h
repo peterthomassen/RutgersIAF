@@ -20,6 +20,7 @@ class SignatureTH2F_ObjectVariableVsObjectVariable : public SignatureTH2F
     if(std::find(m_productnames.begin(),m_productnames.end(),pname) == m_productnames.end())m_productnames.push_back(pname);
   }
 
+  using TH2F::Fill;
   Int_t Fill(BaseHandler* handler){
     int dummy = -1;
     for(int i = 0; i < (int)m_productnames.size(); i++){
