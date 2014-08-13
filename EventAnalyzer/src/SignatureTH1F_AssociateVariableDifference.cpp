@@ -1,0 +1,7 @@
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_AssociateVariableDifference.h"
+
+ClassImp(SignatureTH1F_AssociateVariableDifference<int>)
+ClassImp(SignatureTH1F_AssociateVariableDifference<double>)
+
+template class SignatureTH1F_AssociateVariableDifference<int>;
+template class SignatureTH1F_AssociateVariableDifference<double>;
