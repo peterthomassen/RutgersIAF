@@ -125,7 +125,6 @@ void setupEfficiencyProducts(BaseHandler* handler)
   handler->addProductCut("startElectrons","PT10");
   handler->addProductCut("startElectrons","ETA2p4");
   handler->addProductCut("startElectrons","ELECTRON_NOTGAP");
-  handler->addProductCut("startElectrons","ELECTRON_dz1");
   handler->addProduct("startElectrons_matched","startElectrons");
   handler->addProductComparison("startElectrons_matched","MCELECTRONSFROMBOSON",mcMatch,false);
 
