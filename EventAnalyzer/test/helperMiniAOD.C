@@ -139,7 +139,6 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ELECTRON_ENDCAP_dxy", new ObjectVariableInRange<double>("dxy",-0.1,0.1));
   handler->addObjectVariable("ELECTRON_dz1", new ObjectVariableInRange<double>("dz",-1.0,1.0));
 
-
   /////////////////////
   ///Track variables///
   /////////////////////
