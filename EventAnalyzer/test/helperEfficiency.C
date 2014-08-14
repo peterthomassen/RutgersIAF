@@ -125,6 +125,7 @@ void setupEfficiencyProducts(BaseHandler* handler)
   handler->addProductCut("startElectrons","PT10");
   handler->addProductCut("startElectrons","ETA2p4");
   handler->addProductCut("startElectrons","ELECTRON_NOTGAP");
+  handler->addProductCut("startElectrons","ELECTRON_dz1");
   handler->addProduct("startElectrons_matched","startElectrons");
   handler->addProductComparison("startElectrons_matched","MCELECTRONSFROMBOSON",mcMatch,false);
 
@@ -152,7 +153,11 @@ void setupEfficiencyProducts(BaseHandler* handler)
     handler->addHistogram(new SignatureTH1F_AssociateVariable<double>(TString::Format("PTGEN_%s",pnameMatched.Data()),"PT",pnameMatched,"genParticle","",100,0,200));
     handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("PT_%s",pnameMatched.Data()),"PT",pnameMatched,"",100,0,200));
     handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("PT_%s",pname.Data()),"PT",pname,"",100,0,200));
-
+    if(electronCuts[i] == "ELECTRON_dxy"){
+      handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("dz_%s",pnameMatched.Data()),"dz",pnameMatched,"dz Distribution",200,-5,5));
+    }else if(electronCuts[i] == "ELECTRON_HADRONICOVEREM"){
+      handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("full5x5_sigmaIetaIeta_%s",pnameMatched.Data()),"full5x5_sigmaIetaIeta",pnameMatched,"dz Distribution",200,-5,5));
+    }
   }
 
 }

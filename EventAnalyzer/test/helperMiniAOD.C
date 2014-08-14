@@ -131,16 +131,13 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ELECTRON_ENDCAP_hadronicOverEm",new ObjectVariableInRange<double>("hadronicOverEm",0.0,0.11));
   handler->addObjectVariable("ELECTRON_BARREL_sigmaIetaIeta",new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.01));
   handler->addObjectVariable("ELECTRON_ENDCAP_sigmaIetaIeta",new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.035));
-  //handler->addObjectVariable("ELECTRON_MISSING_HITS",new ObjectVariableInRange<int>("NUMBEROFEXPECTEDINNERHITS",0,1));
-  //handler->addObjectVariable("ELECTRON_EMINUSP",new ObjectVariableInRange<double>("FMVAVAR_IOEMIOP",-0.05,0.05));
   handler->addObjectVariable("ELECTRON_1oEm1oP", new ObjectVariableInRange<double>("1oEm1oP",0,0.13));
   handler->addObjectVariable("ELECTRON_passConversionVeto",new ObjectVariableValue<bool>("passConversionVeto",true));
-  //handler->addObjectVariable("ELECTRON_dz", new ObjectVariableInRange<double>("dz",-0.2,0.2));
-  //handler->addObjectVariable("ELECTRON_dxy", new ObjectVariableInRange<double>("dxy",-0.02,0.02));
   handler->addObjectVariable("ELECTRON_BARREL_dz", new ObjectVariableInRange<double>("dz",-0.54,0.54));
   handler->addObjectVariable("ELECTRON_BARREL_dxy", new ObjectVariableInRange<double>("dxy",-0.017,0.017));
   handler->addObjectVariable("ELECTRON_ENDCAP_dz", new ObjectVariableInRange<double>("dz",-0.92,0.92));
   handler->addObjectVariable("ELECTRON_ENDCAP_dxy", new ObjectVariableInRange<double>("dxy",-0.1,0.1));
+  handler->addObjectVariable("ELECTRON_dz1", new ObjectVariableInRange<double>("dz",-1.0,1.0));
 
 
   /////////////////////
