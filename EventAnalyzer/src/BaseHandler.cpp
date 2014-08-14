@@ -220,6 +220,13 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 				
 				prepareEvent();
 				analyzeEvent();
+
+				if(applyHandlerCuts()){
+				  bool saveEvent = false;
+				  bool isSet = getVariable("WRITEEVENT",saveEvent);
+				  if(m_writer && isSet && saveEvent)m_writer->fillTree();
+
+				}
 			}
 		}
 	}//End of event loop
@@ -1363,10 +1370,6 @@ void BaseHandler::analyzeEvent()
     //Check handler level cuts//
     ////////////////////////////
     if(applyHandlerCuts()){
-
-		bool saveEvent = false;
-		bool isSet = getVariable("WRITEEVENT",saveEvent);
-		if(m_writer && isSet && saveEvent)m_writer->fillTree();
 
 		if(m_trackFakeCombinationIndex > 0) {
 			return;
