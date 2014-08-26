@@ -5,8 +5,8 @@
 #include <TString.h>
 #include <vector>
 #include <algorithm>
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 template <typename T>
 class SignatureTH1F_AssociateVariableDifference : public SignatureTH1F {

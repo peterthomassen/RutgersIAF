@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableThreshold.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

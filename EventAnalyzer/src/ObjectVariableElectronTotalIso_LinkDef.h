@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

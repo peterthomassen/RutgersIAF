@@ -3,7 +3,7 @@
 
 #include <TH1F.h>
 #include <TString.h>
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F.h"
 
 class SignatureTH1F_CountNoWeight : public SignatureTH1F {
 public:

@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMixedPairMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMixedPairMass.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

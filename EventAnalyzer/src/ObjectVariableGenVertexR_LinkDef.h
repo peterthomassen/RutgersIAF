@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableGenVertexR.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableGenVertexR.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

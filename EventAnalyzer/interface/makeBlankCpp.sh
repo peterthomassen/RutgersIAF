@@ -13,7 +13,7 @@ do
   srcfile=`echo $line | sed 's/interface/src/' | sed 's/\.h/\.cpp/'`
   lnkdef=`echo $srcfile | sed 's/\.cpp/_LinkDef\.h/'`
   headline=`echo $line | sed "s,$CMSDIR,,"`
-  classname=`echo $headline | sed 's,\.h,,' | sed 's,RutgersIAF2012/EventAnalyzer/interface/,,'`
+  classname=`echo $headline | sed 's,\.h,,' | sed 's,RutgersIAF/EventAnalyzer/interface/,,'`
   if [ ! -e $srcfile ]
       then
       echo $headline $classname

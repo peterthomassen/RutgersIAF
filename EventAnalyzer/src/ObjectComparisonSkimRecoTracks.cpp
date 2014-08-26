@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
 
 ClassImp(ObjectComparisonSkimRecoTracks)

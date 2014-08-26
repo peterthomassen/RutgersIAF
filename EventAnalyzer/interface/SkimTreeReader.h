@@ -28,7 +28,7 @@ Search for "Rutgers" to find changes.
 #include "TRandom.h"
 #include "TRandom3.h"
 
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseTreeReader.h"
 
 class BaseHandler;
 // Header file for the classes stored in the TTree if any.

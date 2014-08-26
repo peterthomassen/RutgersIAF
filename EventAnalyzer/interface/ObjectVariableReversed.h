@@ -8,8 +8,8 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariable.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 class ObjectVariableReversed : public ObjectVariable {
  public:

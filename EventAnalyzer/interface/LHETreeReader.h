@@ -10,7 +10,7 @@
 #include <TLorentzVector.h>
 #include <vector>
 
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseTreeReader.h"
 
 class BaseHandler;
 // Header file for the classes stored in the TTree if any.

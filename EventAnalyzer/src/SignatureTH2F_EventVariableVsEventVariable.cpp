@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
 
 typedef SignatureTH2F_EventVariableVsEventVariable<double,double> s2_d_d;
 ClassImp(s2_d_d)

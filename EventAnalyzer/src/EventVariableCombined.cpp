@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableCombined.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableCombined.h"
 
 ClassImp(EventVariableCombined)

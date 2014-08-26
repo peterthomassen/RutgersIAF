@@ -18,7 +18,7 @@
 #include "TClonesArray.h"
 #include "TObjArray.h"
 
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseTreeReader.h"
 
 class BaseHandler;
 

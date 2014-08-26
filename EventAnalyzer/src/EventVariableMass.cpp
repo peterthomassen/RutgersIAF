@@ -1,7 +1,7 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMass.h"
 #include <algorithm>
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 using namespace std;
 

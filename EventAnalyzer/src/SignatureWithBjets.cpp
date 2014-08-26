@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureWithBjets.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureWithBjets.h"
 
 ClassImp(SignatureWithBjets)
 

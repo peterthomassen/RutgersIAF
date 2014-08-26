@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTreeWriter.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTreeWriter.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

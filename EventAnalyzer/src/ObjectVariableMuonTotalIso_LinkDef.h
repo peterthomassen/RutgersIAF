@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

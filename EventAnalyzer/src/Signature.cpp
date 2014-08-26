@@ -1,9 +1,9 @@
 #include <TString.h>
-#include "RutgersIAF2012/EventAnalyzer/interface/Signature.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH3F.h"
+#include "RutgersIAF/EventAnalyzer/interface/Signature.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH3F.h"
 
 using namespace std;
 

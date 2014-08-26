@@ -5,7 +5,7 @@
 #include <string>
 #include <map>
 #include <iostream>
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 class SignatureObjectFlat : public TObject {
  public:

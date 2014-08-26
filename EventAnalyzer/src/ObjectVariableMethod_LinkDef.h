@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableMethod.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

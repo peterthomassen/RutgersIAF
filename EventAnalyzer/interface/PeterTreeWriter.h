@@ -1,7 +1,7 @@
 #ifndef PeterTreeWriter_h
 #define PeterTreeWriter_h
 
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeWriter.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseTreeWriter.h"
 #include <assert.h>
 #include <iostream>
 #include <map>

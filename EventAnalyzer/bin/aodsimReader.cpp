@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 
   std::string command = "cmsRun";
   std::string configurationFile = "particleTreeDrawer_cfg.py";
-  std::string filePath = std::string(std::getenv("CMSSW_BASE"))+"/src/RutgersIAF2012/EventAnalyzer/bin";
+  std::string filePath = std::string(std::getenv("CMSSW_BASE"))+"/src/RutgersIAF/EventAnalyzer/bin";
 
   // command line arguments
   for (int i = 1; i < argc; ++i) {

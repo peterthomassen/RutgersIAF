@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableReversed.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableReversed.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

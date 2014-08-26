@@ -1,6 +1,6 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
 #include <algorithm>
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 ClassImp(EventVariableObjectWeightPtTF1)
 

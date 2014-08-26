@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRelIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRelIso.h"
 
 ClassImp(ObjectVariableRelIso)

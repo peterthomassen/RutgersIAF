@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/FlatTreeReader.h"
+#include "RutgersIAF/EventAnalyzer/interface/FlatTreeReader.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

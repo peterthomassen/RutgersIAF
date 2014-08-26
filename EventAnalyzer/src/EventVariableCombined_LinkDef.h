@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableCombined.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableCombined.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

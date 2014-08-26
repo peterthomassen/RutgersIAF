@@ -1,5 +1,5 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObjectFlat.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObjectFlat.h"
 
 ClassImp(SignatureObject)
 

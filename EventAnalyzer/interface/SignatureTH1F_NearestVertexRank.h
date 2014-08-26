@@ -5,8 +5,8 @@
 #include <TString.h>
 #include <vector>
 #include <TVector3.h>
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 class SignatureTH1F_NearestVertexRank : public SignatureTH1F {
 public:
