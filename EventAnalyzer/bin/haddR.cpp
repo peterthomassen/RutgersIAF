@@ -385,7 +385,7 @@ int main( int argc, char **argv )
       }
    }
    merger.SetNotrees(noTrees);
-   merger.AddObjectNames("treeR");
+   merger.AddObjectNames(treeName_.c_str());
    Bool_t status = merger.PartialMerge(TFileMerger::kAll | TFileMerger::kRegular | TFileMerger::kSkipListed);
    if(!noTrees) {
      status &= mergeTreeR(targetname, vInputFiles, treeName_.c_str());
