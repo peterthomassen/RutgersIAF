@@ -40,8 +40,10 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableSmearMET.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRename.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F_ObjectVariableVsObjectVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_NearestVertexRank.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
-
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableGenVertexR.h"
 
 void setupProducts(BaseHandler* handler)
 {
