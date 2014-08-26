@@ -40,8 +40,10 @@
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSmearMET.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRename.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_ObjectVariableVsObjectVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_NearestVertexRank.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
-
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableGenVertexR.h"
 
 void setupProducts(BaseHandler* handler)
 {
@@ -93,7 +95,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("PT30",new ObjectVariableInRange<double>("PT",30.0,10000.0,"PT30"));
   handler->addObjectVariable("PT40",new ObjectVariableInRange<double>("PT",40.0,100000.0));
   //handler->addObjectVariable("CHARGE",new ObjectVariableRename<int>("charge","CHARGE"));
-
+  handler->addObjectVariable("genDxy", new ObjectVariableGenVertexR("genDxy"));
 
   ////////////////////
   ///Muon Variables///
@@ -103,6 +105,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("MUON_numberOfValidMuonHits", new ObjectVariableInRange<int>("numberOfValidMuonHits",1,100000));
   handler->addObjectVariable("MUON_numberOfMatchedStations",new ObjectVariableInRange<int>("numberOfMatchedStations",2,1000000));
   handler->addObjectVariable("MUON_dxy", new ObjectVariableInRange<double>("dxy",-0.02,0.02));
+  handler->addObjectVariable("MUON_nonprompt", new ObjectVariableReversed("MUON_dxy","MUON_nonprompt"));
   handler->addObjectVariable("MUON_dz", new ObjectVariableInRange<double>("dz",-0.5,0.5));
   handler->addObjectVariable("MUON_numberOfValidPixelHits", new ObjectVariableInRange<int>("numberOfValidPixelHits",1,1000000));
   handler->addObjectVariable("MUON_trackerLayersWithMeasurement", new ObjectVariableInRange<int>("trackerLayersWithMeasurement",6,1000000));
@@ -137,7 +140,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ELECTRON_BARREL_dxy", new ObjectVariableInRange<double>("dxy",-0.017,0.017));
   handler->addObjectVariable("ELECTRON_ENDCAP_dz", new ObjectVariableInRange<double>("dz",-0.92,0.92));
   handler->addObjectVariable("ELECTRON_ENDCAP_dxy", new ObjectVariableInRange<double>("dxy",-0.1,0.1));
-  handler->addObjectVariable("ELECTRON_dz1", new ObjectVariableInRange<double>("dz",-1.0,1.0));
+  handler->addObjectVariable("ELECTRON_dz5", new ObjectVariableInRange<double>("dz",-5.0,5.0));
 
   /////////////////////
   ///Track variables///
@@ -242,6 +245,16 @@ void setupProducts(BaseHandler* handler)
   motherBoson->addValue(25);
   handler->addObjectVariable("MOTHERBOSON",motherBoson);
 
+  ObjectVariableValueInList<int>* isBoson = new ObjectVariableValueInList<int>("pdgId",23);
+  isBoson->addValue(24);
+  isBoson->addValue(-24);
+  isBoson->addValue(25);
+  handler->addObjectVariable("isBOSON",isBoson);
+
+
+  handler->addProduct("BOSONS","ALLMC");
+  handler->addProductCut("BOSONS","isBOSON");
+
   handler->addProduct("MCELECTRONS","ALLMC");
   handler->addProductCut("MCELECTRONS","ELECTRONPDGID");
   handler->addProduct("MCMUONS","ALLMC");
@@ -270,10 +283,25 @@ void setupProducts(BaseHandler* handler)
 
   handler->addProduct("promptTracks","basicTracks");
   handler->addProductCut("promptTracks","MUON_dxy");
+  handler->addProduct("nonPromptTracks","basicTracks");
+  handler->addProductCut("nonPromptTracks","MUON_nonPrompt");
 
   handler->addProduct("goodTracks","promptTracks");
-  handler->addProductCut("goodTracks","IREL0p23");
+  handler->addProductCut("goodTracks","IREL0p24");
 
+  //////////////
+  //Setup Jets//
+  //////////////
+  handler->addObjectVariable("JET_NEUTRALHADRONFRACTION", new ObjectVariableInRange<double>("neutralHadronEnergyFraction",0,0.99));
+  handler->addObjectVariable("JET_NEUTRALEMFRACTION", new ObjectVariableInRange<double>("neutralEmEnergyCraction", 0,0.99));
+  handler->addObjectVariable("JET_NUMBEROFCONSTITUENTS", new ObjectVariableInRange<int>("numberOfConstituents",1,100000));
+
+  handler->addProduct("goodJets","ALLJETS");
+  handler->addProductCut("goodJets","PT30");
+  handler->addProductCut("goodJets","ETA2p4");
+  handler->addProductCut("goodJets","JET_NEUTRALHADRONFRACTION");
+  handler->addProductCut("goodJets","JET_NEUTRALEMFRACTION");
+  handler->addProductCut("goodJets","JET_NUMBEROFCONSTITUENTS");
 
 
   ////////////////////////
@@ -281,6 +309,9 @@ void setupProducts(BaseHandler* handler)
   ////////////////////////
   handler->addProduct("goodElectronsMatched","goodElectrons");
   handler->addProduct("goodMuonsMatched","goodMuons");
+
+  handler->addProduct("goodElectronsNotMatched","goodElectrons");
+  handler->addProduct("goodMuonsNotMatched","goodMuons");
 
   /////////////////
   ///Separations///
@@ -301,8 +332,14 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("basicTracks","goodMuons",deltaR0p3);
   handler->addProductComparison("basicTracks","goodElectrons",deltaR0p3);
 
+  handler->addProductComparison("goodJets","goodMuons",deltaR0p3);
+  handler->addProductComparison("goodJets","goodElectrons",deltaR0p3);
+
   handler->addProductComparison("goodElectronsMatched","MCELECTRONSFROMBOSON",mcMatch,false);
   handler->addProductComparison("goodMuonsMatched","MCMUONSFROMBOSON",mcMatch,false);
+
+  handler->addProductComparison("goodElectronsNotMatched","goodElectronsMatched",deltaR0p1);
+  handler->addProductComparison("goodMuonsNotMatched","goodMuonsMatched",deltaR0p1);
 
   //////////////////////
   ///Derived Products////
@@ -347,15 +384,31 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("twoMcMuonsFromZ", new EventVariableValue<int>("N_McMuonsFromZ",2));
   handler->addEventVariable("twoMcElectronsFromZ", new EventVariableValue<int>("N_McElectronsFromZ",2));
 
+  handler->addEventVariable("N_bosons", new EventVariableN("N_bosons","BOSONS"));
+  handler->addEventVariable("WRITEEVENT", new EventVariableInRange<int>("N_bosons",0,10000));
+
   handler->addEventVariable("N_promptTracks",new EventVariableN("N_promptTracks","promptTracks"));
+  handler->addEventVariable("N_nonPromptTracks",new EventVariableN("N_nonPromptTracks","nonPromptTracks"));
   handler->addEventVariable("N_goodTracks", new EventVariableN("N_goodTracks","goodTracks"));
 
-  handler->addEventVariable("WRITEEVENT", new EventVariableCombined("twoMcElectronsFromZ","twoMcMuonsFromZ"));
+  //handler->addEventVariable("WRITEEVENT", new EventVariableCombined("twoMcElectronsFromZ","twoMcMuonsFromZ"));
+
+  handler->addEventVariable("N_fakeElectrons", new EventVariableN("N_fakeElectrons","goodElectronsNotMatched"));
+  handler->addEventVariable("N_fakeMuons", new EventVariableN("N_fakeElectrons","goodMuonsNotMatched"));
+
+  handler->addEventVariable("N_goodJets", new EventVariableN("N_goodJets","goodJets"));
+
+  handler->addEventVariable("HT", new EventVariableSumPT("HT","goodJets"));
+  handler->addEventVariable("SumPromptTrackPt", new EventVariableSumPT("SumPromptTrackPt","promptTracks"));
+  handler->addEventVariable("SumNonPromptTrackPt", new EventVariableSumPT("SumNonPromptTrackPt","nonPromptTracks"));
+  handler->addEventVariable("SumBasicTrackPt", new EventVariableSumPT("SumBasicTrackPt","basicTracks"));
 
   EventVariablePairMass* mumcmass = new EventVariablePairMass("MUMCMASS","MCMUONSFROMZ","MUMC_",91,15);
   handler->addEventVariable("MUMCMASS",mumcmass);
   EventVariablePairMass* elmcmass = new EventVariablePairMass("ELMCMASS","MCELECTRONSFROMZ","ELMC_",91,15);
   handler->addEventVariable("ELMCMASS",elmcmass);
+
+  handler->addEventVariable("MAXGENDXY",new EventVariableObjectVariableMax<double>("genDxy","ALLMC"));
 
   EventVariableMixedPairMass* mumassProbePlus = new EventVariableMixedPairMass("MUPLUSMASS","goodMuonsNEG","MUPLUS_",91,15);
   mumassProbePlus->addProduct("probeMuonsPOS");
@@ -445,4 +498,7 @@ void addHistograms(BaseHandler* handler)
   handler->addHistogram(new SignatureTH1F_AssociateVariable<double>("PTGEN_GOODELECTRONSMATCHED","PT","goodElectronsMatched","genParticle","",100,0,200));
   handler->addHistogram(new SignatureTH1F_ObjectVariable<double>("PTGEN_MCELECTRONSFROMBOSON","PT","MCELECTRONSFROMBOSON", "PT", 100,0,200));
 
+  handler->addHistogram(new SignatureTH1F_NearestVertexRank("nearestVertexRank","BOSONS"));
+
+  handler->addHistogram(new SignatureTH1F_EventVariable<double>("MAXGENDXY","MAXGENDXY","",1000,0,10));
 }
