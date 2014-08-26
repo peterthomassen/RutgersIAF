@@ -87,6 +87,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL","endcapEta"));
   handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<int>("charge",0,10,"CHARGEPOS"));
   handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<int>("charge",-10,0,"CHARGENEG"));
+  handler->addObjectVariable("PT6",new ObjectVariableInRange<double>("PT",6.0,10000.0,"PT6"));
   handler->addObjectVariable("PT7",new ObjectVariableInRange<double>("PT",7.0,10000.0,"PT7"));
   handler->addObjectVariable("PT20",new ObjectVariableInRange<double>("PT",20.0,10000.0,"PT20"));
   handler->addObjectVariable("PT30",new ObjectVariableInRange<double>("PT",30.0,10000.0,"PT30"));
@@ -272,26 +273,27 @@ void setupProducts(BaseHandler* handler)
   ///Tracks///
   ////////////
   handler->addProduct("basicTracks","ALLTRACKS");
-  handler->addProductCut("basicTracks","PT7");
+  handler->addProductCut("basicTracks","PT6");
   handler->addProductCut("basicTracks","ETA2p4");
-  handler->addProductCut("basicTracks","TRACK_fromPV");
   handler->addProductCut("basicTracks","trackHighPurity");
   handler->addProductCut("basicTracks","MUON_dz");
 
   handler->addProduct("promptTracks","basicTracks");
   handler->addProductCut("promptTracks","MUON_dxy");
+  handler->addProductCut("promptTracks","TRACK_fromPV");
   handler->addProduct("nonPromptTracks","basicTracks");
   handler->addProductCut("nonPromptTracks","MUON_nonPrompt");
 
   handler->addProduct("goodTracks","promptTracks");
   handler->addProductCut("goodTracks","IREL0p24");
+  handler->addProductCut("goodTracks","PT10");
 
   //////////////
   //Setup Jets//
   //////////////
   handler->addObjectVariable("JET_NEUTRALHADRONFRACTION", new ObjectVariableInRange<double>("neutralHadronEnergyFraction",0,0.99));
-  handler->addObjectVariable("JET_NEUTRALEMFRACTION", new ObjectVariableInRange<double>("neutralEmEnergyCraction", 0,0.99));
-  handler->addObjectVariable("JET_NUMBEROFCONSTITUENTS", new ObjectVariableInRange<int>("numberOfConstituents",1,100000));
+  handler->addObjectVariable("JET_NEUTRALEMFRACTION", new ObjectVariableInRange<double>("neutralEmEnergyFraction", 0,0.99));
+  handler->addObjectVariable("JET_NUMBEROFCONSTITUENTS", new ObjectVariableInRange<int>("chargedMultiplicity",1,100000));
 
   handler->addProduct("goodJets","ALLJETS");
   handler->addProductCut("goodJets","PT30");
