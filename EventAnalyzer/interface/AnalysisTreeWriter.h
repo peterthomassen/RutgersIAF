@@ -1,5 +1,5 @@
-#ifndef PeterTreeWriter_h
-#define PeterTreeWriter_h
+#ifndef AnalysisTreeWriter_h
+#define AnalysisTreeWriter_h
 
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeWriter.h"
 #include <assert.h>
@@ -13,10 +13,10 @@ class TFile;
 class TString;
 class TTree;
 
-class PeterTreeWriter : public BaseTreeWriter{
+class AnalysisTreeWriter : public BaseTreeWriter{
 public:
-	PeterTreeWriter(BaseHandler*,TString);
-	virtual ~PeterTreeWriter();
+	AnalysisTreeWriter(BaseHandler*,TString = "treeR");
+	virtual ~AnalysisTreeWriter();
 	
 	virtual void finish();
 	virtual void fillTree();
@@ -33,11 +33,11 @@ private:
 	template<typename T>
 	void processVariable(std::map<TString, T>, TString);
 	
-	ClassDef(PeterTreeWriter,1);
+	ClassDef(AnalysisTreeWriter,1);
 };
 
 template<typename T>
-void PeterTreeWriter::processVariable(std::map<TString, T> varMap, TString type) {
+void AnalysisTreeWriter::processVariable(std::map<TString, T> varMap, TString type) {
 	if(type == "O") {
 		m_bits.clear();
 		for(typename std::map<TString, T>::iterator it = varMap.begin(); it != varMap.end(); ++it) {

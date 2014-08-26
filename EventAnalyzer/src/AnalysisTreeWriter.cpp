@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/PeterTreeWriter.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/AnalysisTreeWriter.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
 #include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
@@ -7,22 +7,22 @@
 
 using namespace std;
 
-ClassImp(PeterTreeWriter)
+ClassImp(AnalysisTreeWriter)
 
-PeterTreeWriter::PeterTreeWriter(BaseHandler* handler,TString treename)
+AnalysisTreeWriter::AnalysisTreeWriter(BaseHandler* handler,TString treename)
 : BaseTreeWriter(handler,treename) {
 	m_tree->Branch("bits", &m_bits);
 	m_tree->SetAlias("I", "Iteration$ == 0");
 }
 
-PeterTreeWriter::~PeterTreeWriter() { }
+AnalysisTreeWriter::~AnalysisTreeWriter() { }
 
-void PeterTreeWriter::finish() {
+void AnalysisTreeWriter::finish() {
 	m_handler->getOutFile()->cd();
 	m_tree->Write();
 }
 
-void PeterTreeWriter::fillTree() {
+void AnalysisTreeWriter::fillTree() {
 	// Prepare branches for non-bool event variables
 	processVariable(m_handler->m_variable_map_int, "I");
 	processVariable(m_handler->m_variable_map_double, "D");
