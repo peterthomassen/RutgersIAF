@@ -240,6 +240,7 @@ int main( int argc, char **argv )
    Bool_t noTrees = kFALSE;
    Int_t maxopenedfiles = 0;
    Int_t verbosity = 99;
+   string treeName_ = "treeR";
 
    int outputPlace = 0;
    int ffirst = 2;
@@ -284,6 +285,15 @@ int main( int argc, char **argv )
             } else {
                cerr << "Error: could not parse the verbosity level passed after -v: " << argv[a+1] << ". We will use the default value (99).\n";
             }
+         }
+         ++ffirst;
+      } else if ( strcmp(argv[a],"-t") == 0 ) {
+         if (a+1 >= argc) {
+            cerr << "Error: no tree name was provided after -t.\n";
+         } else {
+            treeName_ = argv[a+1];
+	    ++a;
+	    ++ffirst;
          }
          ++ffirst;
       } else if ( argv[a][0] == '-' ) {
@@ -378,7 +388,7 @@ int main( int argc, char **argv )
    merger.AddObjectNames("treeR");
    Bool_t status = merger.PartialMerge(TFileMerger::kAll | TFileMerger::kRegular | TFileMerger::kSkipListed);
    if(!noTrees) {
-      status &= mergeTreeR(targetname, vInputFiles, "treeR");
+     status &= mergeTreeR(targetname, vInputFiles, treeName_.c_str());
    }
 
    if (status) {
