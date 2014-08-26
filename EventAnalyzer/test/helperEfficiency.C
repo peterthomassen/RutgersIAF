@@ -1,3 +1,43 @@
+#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableCombined.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMass.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableN.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMT.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOS.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableOSSF.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariablePairMass.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableMixedPairMass.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableReversed.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSumPT.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTH1.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableTriggerWeight.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableValue.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableCombined.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMethod.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRelIso.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableReversed.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_EventVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_AssociateVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonElectron.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_N.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValueInList.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableInRange.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonMatchDeltaRCharge.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRename.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_ObjectVariableVsObjectVariable.h"
+#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
+
 void setupEfficiencyProducts(BaseHandler* handler)
 {
   ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
@@ -156,7 +196,8 @@ void setupEfficiencyProducts(BaseHandler* handler)
     if(electronCuts[i] == "ELECTRON_dxy"){
       handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("dz_%s",pnameMatched.Data()),"dz",pnameMatched,"dz Distribution",200,-5,5));
     }else if(electronCuts[i] == "ELECTRON_HADRONICOVEREM"){
-      handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("full5x5_sigmaIetaIeta_%s",pnameMatched.Data()),"full5x5_sigmaIetaIeta",pnameMatched,"dz Distribution",200,-5,5));
+      handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("full5x5_sigmaIetaIeta_%s",pnameMatched.Data()),"full5x5_sigmaIetaIeta",pnameMatched,"full5x5_sigmaIetaIeta Distribution",200,0,0.1));
+      handler->addHistogram(new SignatureTH2F_ObjectVariableVsObjectVariable<double,double>("PT","full5x5_sigmaIetaIeta",pnameMatched,TString::Format("full5x5_sigmaIetaIeta_vs_PT_%s",pnameMatched.Data()),"",100,0,200,200,0,0.1));
     }
   }
 
