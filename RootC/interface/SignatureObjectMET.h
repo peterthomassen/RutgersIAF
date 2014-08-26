@@ -1,7 +1,7 @@
 #ifndef SignatureObjectMET_h
 #define SignatureObjectMET_h
 
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
 
 class SignatureObjectMET : public SignatureObject {
  public:

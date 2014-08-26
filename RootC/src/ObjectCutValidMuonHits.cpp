@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutValidMuonHits.h"
+#include "RutgersIAF/RootC/interface/ObjectCutValidMuonHits.h"
 
 ClassImp(ObjectCutValidMuonHits)

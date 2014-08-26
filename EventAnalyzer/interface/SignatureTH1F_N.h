@@ -5,7 +5,7 @@
 #include <TString.h>
 #include <vector>
 #include <algorithm>
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F.h"
 
 class SignatureTH1F_N : public SignatureTH1F {
 public:

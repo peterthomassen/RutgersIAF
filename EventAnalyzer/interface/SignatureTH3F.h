@@ -2,7 +2,7 @@
 #define SignatureTH3F_H
 
 #include <TH3F.h>
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 
 class SignatureTH3F : public TH3F  {
    public:

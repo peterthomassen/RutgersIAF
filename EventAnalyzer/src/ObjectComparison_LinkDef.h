@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparison.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparison.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <TH1.h>
-#include "RutgersIAF2012/AnalysisPresenter/interface/Assembler.h"
-#include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContribution.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
 void init(Assembler* assembler) {
 	assembler = assembler; // Avoid compiler message about unused variable

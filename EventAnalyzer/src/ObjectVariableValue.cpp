@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableValue.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableValue.h"
 
 ClassImp(ObjectVariableValue<int>)
 ClassImp(ObjectVariableValue<double>)

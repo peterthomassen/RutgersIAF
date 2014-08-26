@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureObjectPhoton.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectPhoton.h"
 
 ClassImp(SignatureObjectPhoton)

@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_CountNoWeight.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_CountNoWeight.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

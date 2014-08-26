@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutMll.h"
+#include "RutgersIAF/RootC/interface/SignatureCutMll.h"
 
 ClassImp(SignatureCutMll)

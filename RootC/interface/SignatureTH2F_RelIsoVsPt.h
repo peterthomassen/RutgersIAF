@@ -6,8 +6,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F.h"
-#include "RutgersIAF2012/RootC/interface/SignatureRecoVertex.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F.h"
+#include "RutgersIAF/RootC/interface/SignatureRecoVertex.h"
 
 class SignatureTH2F_RelIsoVsPt : public SignatureTH2F {
  public:

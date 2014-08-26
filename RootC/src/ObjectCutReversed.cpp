@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutReversed.h"
+#include "RutgersIAF/RootC/interface/ObjectCutReversed.h"
 
 ClassImp(ObjectCutReversed)

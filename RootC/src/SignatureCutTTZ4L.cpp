@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutTTZ4L.h"
+#include "RutgersIAF/RootC/interface/SignatureCutTTZ4L.h"
 #include <algorithm>
 
 using namespace std;

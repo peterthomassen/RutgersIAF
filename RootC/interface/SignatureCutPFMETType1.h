@@ -9,8 +9,8 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/SignatureCut.h"
-#include "RutgersIAF2012/RootC/interface/SignatureHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureCut.h"
+#include "RutgersIAF/RootC/interface/SignatureHandler.h"
 
 class SignatureCutPFMETType1 : public SignatureCut {
  public:

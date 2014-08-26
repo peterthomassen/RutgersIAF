@@ -1,5 +1,5 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SkimTreeReader.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/SkimTreeReader.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 ClassImp(SkimTreeReader)
 

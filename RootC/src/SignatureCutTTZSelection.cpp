@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutTTZSelection.h"
+#include "RutgersIAF/RootC/interface/SignatureCutTTZSelection.h"
 
 ClassImp(SignatureCutTTZSelection)
 

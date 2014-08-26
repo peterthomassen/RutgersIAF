@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutEvent.h"
+#include "RutgersIAF/RootC/interface/SignatureCutEvent.h"
 
 ClassImp(SignatureCutEvent)

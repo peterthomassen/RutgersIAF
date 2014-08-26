@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutIrelTau.h"
+#include "RutgersIAF/RootC/interface/ObjectCutIrelTau.h"
 
 ClassImp(ObjectCutIrelTau)

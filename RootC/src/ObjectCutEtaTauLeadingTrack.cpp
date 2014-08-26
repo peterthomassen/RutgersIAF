@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutEtaTauLeadingTrack.h"
+#include "RutgersIAF/RootC/interface/ObjectCutEtaTauLeadingTrack.h"
 
 ClassImp(ObjectCutEtaTauLeadingTrack)

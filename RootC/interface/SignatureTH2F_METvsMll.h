@@ -6,7 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F.h"
 
 class SignatureTH2F_METvsMll : public SignatureTH2F {
  public:

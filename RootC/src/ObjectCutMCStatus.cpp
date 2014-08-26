@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutMCStatus.h"
+#include "RutgersIAF/RootC/interface/ObjectCutMCStatus.h"
 
 ClassImp(ObjectCutMCStatus)

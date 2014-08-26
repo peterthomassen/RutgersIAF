@@ -1,5 +1,5 @@
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_TopTagChi2.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_TopTagChi2.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
 
 using namespace std;
 

@@ -3,7 +3,7 @@ void fakeRateMacro(const char* ifname="/cms/data26/srarora/Cluster/"
 	, Int_t mode=0
 	, const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
 ) {
-  gSystem->Load("libRutgersIAF2012RootC.so");
+  gSystem->Load("libRutgersIAFRootC.so");
   gROOT->ProcessLine(".L ../helperIAF.C");
   gROOT->ProcessLine(".L helperFakeRate.C");
   //TFile infile(ifname);

@@ -2,7 +2,7 @@
 #define SignatureObjectWithIso_h
 
 #include <algorithm>
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
 
 class SignatureObjectWithIso : public SignatureObject {
  public:

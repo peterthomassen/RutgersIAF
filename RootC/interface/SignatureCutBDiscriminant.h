@@ -9,10 +9,10 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/SignatureCut.h"
-#include "RutgersIAF2012/RootC/interface/BaseHandler.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectJet.h"
+#include "RutgersIAF/RootC/interface/SignatureCut.h"
+#include "RutgersIAF/RootC/interface/BaseHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectJet.h"
 
 class SignatureCutBDiscriminant : public SignatureCut {
  public:

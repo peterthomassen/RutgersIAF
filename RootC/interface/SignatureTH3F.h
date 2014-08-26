@@ -2,7 +2,7 @@
 #define SignatureTH3F_H
 
 #include <TH3F.h>
-#include "RutgersIAF2012/RootC/interface/BaseHandler.h"
+#include "RutgersIAF/RootC/interface/BaseHandler.h"
 
 class SignatureTH3F : public TH3F  {
    public:

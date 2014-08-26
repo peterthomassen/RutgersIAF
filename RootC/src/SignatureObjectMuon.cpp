@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureObjectMuon.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectMuon.h"
 
 ClassImp(SignatureObjectMuon)

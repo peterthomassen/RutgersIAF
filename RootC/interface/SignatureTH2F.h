@@ -2,8 +2,8 @@
 #define SignatureTH2F_H
 
 #include <TH2F.h>
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
-#include "RutgersIAF2012/RootC/interface/BaseHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/BaseHandler.h"
 
 class SignatureTH2F : public TH2F  {
    public:

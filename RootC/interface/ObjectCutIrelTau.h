@@ -10,9 +10,9 @@
 #include <algorithm>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/ObjectCutIrel.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectWithIso.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectTau.h"
+#include "RutgersIAF/RootC/interface/ObjectCutIrel.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectWithIso.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectTau.h"
 
 class ObjectCutIrelTau : public ObjectCutIrel {
  public:

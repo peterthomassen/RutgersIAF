@@ -9,8 +9,8 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/ObjectCut.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectPhoton.h"
+#include "RutgersIAF/RootC/interface/ObjectCut.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectPhoton.h"
 
 class ObjectCutPhotonIsTight : public ObjectCut {
  public:

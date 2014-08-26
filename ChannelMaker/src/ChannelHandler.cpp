@@ -1,9 +1,9 @@
-#include "RutgersIAF2012/ChannelMaker/interface/ChannelHandler.h"
+#include "RutgersIAF/ChannelMaker/interface/ChannelHandler.h"
 #include <fstream>
 #include "Math/DistFunc.h"
 #include <assert.h>
 
-#include "RutgersIAF2012/RootC/interface/debug.h"
+#include "RutgersIAF/RootC/interface/debug.h"
 
 using namespace std;
 

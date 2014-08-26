@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

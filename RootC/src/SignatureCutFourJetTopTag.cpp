@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutFourJetTopTag.h"
+#include "RutgersIAF/RootC/interface/SignatureCutFourJetTopTag.h"
 
 ClassImp(SignatureCutFourJetTopTag)
 

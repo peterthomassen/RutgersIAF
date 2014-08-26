@@ -1,9 +1,9 @@
 #ifndef SignatureTH2F_ObjectVariableVsObjectVariable_h
 #define SignatureTH2F_ObjectVariableVsObjectVariable_h
 
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 #include <TString.h>
 #include <algorithm>
 

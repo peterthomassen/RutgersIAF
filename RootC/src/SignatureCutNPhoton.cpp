@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutNPhoton.h"
+#include "RutgersIAF/RootC/interface/SignatureCutNPhoton.h"
 
 ClassImp(SignatureCutNPhoton)

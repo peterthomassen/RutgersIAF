@@ -1,6 +1,6 @@
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_PT.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
-#include "RutgersIAF2012/RootC/interface/SignatureRecoVertex.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_PT.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureRecoVertex.h"
 
 using namespace std;
 

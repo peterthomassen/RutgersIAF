@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureBeamSpot.h"
+#include "RutgersIAF/RootC/interface/SignatureBeamSpot.h"
 
 ClassImp(SignatureBeamSpot)

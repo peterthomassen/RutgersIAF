@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutIrelPhoton.h"
+#include "RutgersIAF/RootC/interface/ObjectCutIrelPhoton.h"
 
 ClassImp(ObjectCutIrelPhoton)

@@ -1,8 +1,8 @@
 #ifndef EventVariableCombined_h
 #define EventVariableCombined_h
 
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 #include <vector>
 #include <algorithm>
 

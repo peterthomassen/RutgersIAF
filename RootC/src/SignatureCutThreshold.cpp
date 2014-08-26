@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutThreshold.h"
+#include "RutgersIAF/RootC/interface/SignatureCutThreshold.h"
 
 ClassImp(SignatureCutThreshold)

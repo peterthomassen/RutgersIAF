@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutNVertex.h"
+#include "RutgersIAF/RootC/interface/SignatureCutNVertex.h"
 
 ClassImp(SignatureCutNVertex)

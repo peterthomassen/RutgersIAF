@@ -1,7 +1,7 @@
 #ifndef SignatureWithBjets_h
 #define SignatureWithBjets_h
 
-#include "RutgersIAF2012/RootC/interface/Signature.h"
+#include "RutgersIAF/RootC/interface/Signature.h"
 
 class SignatureWithBjets : public Signature {
 

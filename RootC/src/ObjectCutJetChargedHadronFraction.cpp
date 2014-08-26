@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetChargedHadronFraction.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetChargedHadronFraction.h"
 
 ClassImp(ObjectCutJetChargedHadronFraction)

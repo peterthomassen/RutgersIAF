@@ -9,10 +9,10 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/SignatureCut.h"
-#include "RutgersIAF2012/RootC/interface/BaseHandler.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectMuon.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectElectron.h"
+#include "RutgersIAF/RootC/interface/SignatureCut.h"
+#include "RutgersIAF/RootC/interface/BaseHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectMuon.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectElectron.h"
 
 class SignatureCutSameSignMuEl : public SignatureCut {
  public:

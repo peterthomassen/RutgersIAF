@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonElectron.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonElectron.h"
 
 ClassImp(ObjectComparisonElectron)

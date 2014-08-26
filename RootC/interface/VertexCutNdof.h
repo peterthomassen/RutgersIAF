@@ -9,8 +9,8 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/VertexCut.h"
-#include "RutgersIAF2012/RootC/interface/SignatureRecoVertex.h"
+#include "RutgersIAF/RootC/interface/VertexCut.h"
+#include "RutgersIAF/RootC/interface/SignatureRecoVertex.h"
 
 class VertexCutNdof : public VertexCut {
  public:

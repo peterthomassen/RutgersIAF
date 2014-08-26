@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutNMuon.h"
+#include "RutgersIAF/RootC/interface/SignatureCutNMuon.h"
 
 ClassImp(SignatureCutNMuon)

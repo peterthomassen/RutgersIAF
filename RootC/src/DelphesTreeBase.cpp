@@ -1,5 +1,5 @@
 #define DelphesTreeBase_cxx
-#include "RutgersIAF2012/RootC/interface/DelphesTreeBase.h"
+#include "RutgersIAF/RootC/interface/DelphesTreeBase.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>

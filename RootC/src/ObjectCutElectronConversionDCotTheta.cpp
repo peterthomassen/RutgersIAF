@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutElectronConversionDCotTheta.h"
+#include "RutgersIAF/RootC/interface/ObjectCutElectronConversionDCotTheta.h"
 
 ClassImp(ObjectCutElectronConversionDCotTheta)

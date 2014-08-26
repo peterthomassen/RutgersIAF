@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutBDiscriminant.h"
+#include "RutgersIAF/RootC/interface/SignatureCutBDiscriminant.h"
 
 ClassImp(SignatureCutBDiscriminant)

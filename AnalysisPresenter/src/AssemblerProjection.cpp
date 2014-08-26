@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/AnalysisPresenter/interface/AssemblerProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
 
 #include "TLegend.h"
 #include "TLine.h"
@@ -10,7 +10,7 @@
 #include <cmath>
 #include <exception>
 
-#include "RutgersIAF2012/RootC/interface/debug.h"
+#include "RutgersIAF/RootC/interface/debug.h"
 
 using namespace std;
 

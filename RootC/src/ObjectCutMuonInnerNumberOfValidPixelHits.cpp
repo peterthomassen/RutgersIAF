@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutMuonInnerNumberOfValidPixelHits.h"
+#include "RutgersIAF/RootC/interface/ObjectCutMuonInnerNumberOfValidPixelHits.h"
 
 ClassImp(ObjectCutMuonInnerNumberOfValidPixelHits)

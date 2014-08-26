@@ -1,6 +1,6 @@
 void exampleMacro(const char* ifname="/cms/data26/srarora/Cluster/",const char* ofname="example.root",Int_t mode=0)
 {
-  gSystem->Load("libRutgersIAF2012RootC.so");
+  gSystem->Load("libRutgersIAFRootC.so");
   gROOT->ProcessLine(".L helperIAF.C");
   gROOT->ProcessLine(".L ewkinoHelperIAF.C");
 

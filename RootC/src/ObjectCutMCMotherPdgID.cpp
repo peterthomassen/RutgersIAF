@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutMCMotherPdgID.h"
+#include "RutgersIAF/RootC/interface/ObjectCutMCMotherPdgID.h"
 
 ClassImp(ObjectCutMCMotherPdgID)

@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutIrelEcalOffset.h"
+#include "RutgersIAF/RootC/interface/ObjectCutIrelEcalOffset.h"
 
 ClassImp(ObjectCutIrelEcalOffset)

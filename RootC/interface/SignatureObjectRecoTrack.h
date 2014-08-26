@@ -2,8 +2,8 @@
 #define SignatureObjectRecoTrack_h
 
 #include <vector>
-#include "RutgersIAF2012/RootC/interface/SignatureObjectWithIso.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectWithIso.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectRecoTrack : public SignatureObjectWithIso {
  public:

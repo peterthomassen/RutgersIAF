@@ -12,11 +12,11 @@
 #include <TH2.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/BaseHandler.h"
-#include "RutgersIAF2012/RootC/interface/SignatureCut.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH3F.h"
+#include "RutgersIAF/RootC/interface/BaseHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureCut.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F.h"
+#include "RutgersIAF/RootC/interface/SignatureTH3F.h"
 
 class SignatureCut;
 class BaseHandler;

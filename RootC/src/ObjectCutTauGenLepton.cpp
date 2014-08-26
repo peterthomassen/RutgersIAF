@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutTauGenLepton.h"
+#include "RutgersIAF/RootC/interface/ObjectCutTauGenLepton.h"
 
 ClassImp(ObjectCutTauGenLepton)

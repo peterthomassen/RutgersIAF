@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutTauZ.h"
+#include "RutgersIAF/RootC/interface/SignatureCutTauZ.h"
 
 ClassImp(SignatureCutTauZ)
 

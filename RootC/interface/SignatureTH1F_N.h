@@ -3,7 +3,7 @@
 
 #include <TH1F.h>
 #include <TString.h>
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F.h"
 
 class SignatureTH1F_N : public SignatureTH1F {
 

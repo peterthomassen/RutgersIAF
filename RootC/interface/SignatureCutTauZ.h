@@ -10,12 +10,12 @@
 #include <vector>
 #include <algorithm>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectTau.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectElectron.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectMuon.h"
-#include "RutgersIAF2012/RootC/interface/SignatureCut.h"
-#include "RutgersIAF2012/RootC/interface/BaseHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectTau.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectElectron.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectMuon.h"
+#include "RutgersIAF/RootC/interface/SignatureCut.h"
+#include "RutgersIAF/RootC/interface/BaseHandler.h"
 
 class SignatureCutTauZ : public SignatureCut {
  public:

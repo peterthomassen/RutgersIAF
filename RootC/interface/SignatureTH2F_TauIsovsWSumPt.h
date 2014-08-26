@@ -2,9 +2,9 @@
 #define SignatureTH2F_TauIsovsWSumPt_H
 
 #include <TH2F.h>
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectTau.h"
-#include "RutgersIAF2012/RootC/interface/SignatureRecoVertex.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectTau.h"
+#include "RutgersIAF/RootC/interface/SignatureRecoVertex.h"
 
 class SignatureTH2F_TauIsovsWSumPt : public SignatureTH2F {
  public:

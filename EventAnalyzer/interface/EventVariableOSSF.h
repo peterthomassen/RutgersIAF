@@ -2,7 +2,7 @@
 #define EventVariableOSSF_h
 
 #include <vector>
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariable.h"
 
 class EventVariableOSSF : public EventVariable{
  public:

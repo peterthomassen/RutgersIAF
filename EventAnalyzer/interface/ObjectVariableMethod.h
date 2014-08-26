@@ -1,7 +1,7 @@
 #ifndef ObjectVariableMethod_h
 #define ObjectVariableMethod_h
 
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariable.h"
 
 class SignatureObject;
 

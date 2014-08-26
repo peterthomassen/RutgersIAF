@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetChargedEMFraction.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetChargedEMFraction.h"
 
 ClassImp(ObjectCutJetChargedEMFraction)

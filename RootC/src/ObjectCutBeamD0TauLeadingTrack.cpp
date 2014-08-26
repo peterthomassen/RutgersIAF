@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutBeamD0TauLeadingTrack.h"
+#include "RutgersIAF/RootC/interface/ObjectCutBeamD0TauLeadingTrack.h"
 
 ClassImp(ObjectCutBeamD0TauLeadingTrack)

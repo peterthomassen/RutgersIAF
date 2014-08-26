@@ -6,8 +6,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include "RutgersIAF2012/RootC/interface/SignatureTH3F.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureTH3F.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
 
 class SignatureTH3F_LJJDalitz : public SignatureTH3F {
  public:

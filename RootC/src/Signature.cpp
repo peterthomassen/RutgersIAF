@@ -1,13 +1,13 @@
-#include "RutgersIAF2012/RootC/interface/Signature.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_HT.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_LJMET.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_LT.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_N.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_PFMET.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_PT.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_ST.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F_TCMET.h"
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F_LeadPtVsM.h"
+#include "RutgersIAF/RootC/interface/Signature.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_HT.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_LJMET.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_LT.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_N.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_PFMET.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_PT.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_ST.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F_TCMET.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F_LeadPtVsM.h"
 
 using namespace std;
 

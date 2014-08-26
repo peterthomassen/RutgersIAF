@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutMuonInnerVertDxy.h"
+#include "RutgersIAF/RootC/interface/ObjectCutMuonInnerVertDxy.h"
 
 ClassImp(ObjectCutMuonInnerVertDxy)

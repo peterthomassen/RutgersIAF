@@ -1,5 +1,5 @@
-#include "RutgersIAF2012/RootC/interface/DelphesHandler.h"
-#include "RutgersIAF2012/RootC/interface/SignatureWithBjets.h"
+#include "RutgersIAF/RootC/interface/DelphesHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureWithBjets.h"
 
 using namespace std;
 void DelphesHandler::calcPhysicsWeightWithBjets()

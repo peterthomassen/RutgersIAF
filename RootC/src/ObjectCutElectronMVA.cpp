@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutElectronMVA.h"
+#include "RutgersIAF/RootC/interface/ObjectCutElectronMVA.h"
 
 ClassImp(ObjectCutElectronMVA)
 

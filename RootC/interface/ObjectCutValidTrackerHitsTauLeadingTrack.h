@@ -9,8 +9,8 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/ObjectCut.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectTau.h"
+#include "RutgersIAF/RootC/interface/ObjectCut.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectTau.h"
 
 class ObjectCutValidTrackerHitsTauLeadingTrack : public ObjectCut {
  public:

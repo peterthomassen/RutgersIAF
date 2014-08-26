@@ -21,10 +21,10 @@
 #include <TChain.h>
 #include <TLorentzVector.h>
 
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeReader.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/TheoryTreeWriter.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseTreeReader.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/TheoryTreeWriter.h"
 
 using namespace std;
 

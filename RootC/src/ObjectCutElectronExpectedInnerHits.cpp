@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutElectronExpectedInnerHits.h"
+#include "RutgersIAF/RootC/interface/ObjectCutElectronExpectedInnerHits.h"
 
 ClassImp(ObjectCutElectronExpectedInnerHits)

@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
 
 ClassImp(EventVariableObjectVariableMax<int>)
 ClassImp(EventVariableObjectVariableMax<double>)

@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutIsPF.h"
+#include "RutgersIAF/RootC/interface/ObjectCutIsPF.h"
 
 ClassImp(ObjectCutIsPF)

@@ -1,7 +1,7 @@
 #ifndef SignatureTH1F_h
 #define SignatureTH1F_h
 #include <TH1F.h>
-#include "RutgersIAF2012/RootC/interface/BaseHandler.h"
+#include "RutgersIAF/RootC/interface/BaseHandler.h"
 
 class SignatureTH1F : public TH1F  {
  public:

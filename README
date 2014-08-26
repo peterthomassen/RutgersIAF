@@ -2,4 +2,4 @@ To use:
 - Get a GitLab account (www.gitlab.com), and upload your hexcms SSH key
 - Send your username to Matt or Peter so they can give you permission
 - Once you have permission, go to a CMSSW/src area and do:
-    git clone git@gitlab.com:Thomassen/RutgersIAF.git RutgersIAF2012
+    git clone git@gitlab.com:Thomassen/RutgersIAF.git

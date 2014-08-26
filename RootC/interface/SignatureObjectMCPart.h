@@ -1,7 +1,7 @@
 #ifndef SignatureObjectMCPart_h
 #define SignatureObjectMCPart_h
 
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
 
 class SignatureObjectMCPart : public SignatureObject {
  public:

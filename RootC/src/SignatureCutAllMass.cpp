@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutAllMass.h"
+#include "RutgersIAF/RootC/interface/SignatureCutAllMass.h"
 
 using namespace std;
 

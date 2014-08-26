@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutElectronDeltaEta.h"
+#include "RutgersIAF/RootC/interface/ObjectCutElectronDeltaEta.h"
 
 ClassImp(ObjectCutElectronDeltaEta)

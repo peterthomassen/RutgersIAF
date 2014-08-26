@@ -1,5 +1,5 @@
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F_RelIsoVsPt.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectWithIso.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F_RelIsoVsPt.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectWithIso.h"
 
 using namespace std;
 

@@ -8,7 +8,7 @@
 #include "TH2F.h"
 #include "TLegend.h"
 
-#include "/cms/thomassen/2013/RdxyReproduction/CMSSW_5_2_2/src/RutgersIAF2012/RootC/interface/debug.h"
+#include "/cms/thomassen/2013/RdxyReproduction/CMSSW_5_2_2/src/RutgersIAF/RootC/interface/debug.h"
 
 Double_t rangeIntegral(TH1* hist, double x1, double x2, Option_t* option = "") {
 	int binx1 = hist->GetXaxis()->FindFixBin(x1);

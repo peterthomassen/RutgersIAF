@@ -1,7 +1,7 @@
 void inclusiveTable2012()
 {
-  gSystem->Load("libRutgersIAF2012ChannelMaker.so");
-  gSystem->Load("libRutgersIAF2012RootC.so");
+  gSystem->Load("libRutgersIAFChannelMaker.so");
+  gSystem->Load("libRutgersIAFRootC.so");
   gROOT->ProcessLine(".include ../../CMSSW_5_2_2/src");
   gROOT->ProcessLine(".L helperChannelHandler.C+");
   gROOT->ProcessLine(".L helperTable2012.C+");

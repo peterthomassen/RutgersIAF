@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableTauTotalIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableTauTotalIso.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableInRange.h"
 
 ClassImp(EventVariableInRange<int>)
 ClassImp(EventVariableInRange<double>)

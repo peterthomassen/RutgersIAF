@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutNdof.h"
+#include "RutgersIAF/RootC/interface/ObjectCutNdof.h"
 
 ClassImp(ObjectCutNdof)

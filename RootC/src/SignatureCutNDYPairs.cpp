@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutNDYPairs.h"
+#include "RutgersIAF/RootC/interface/SignatureCutNDYPairs.h"
 
 using namespace std;
 

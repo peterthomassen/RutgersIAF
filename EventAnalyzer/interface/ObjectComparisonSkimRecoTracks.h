@@ -4,8 +4,8 @@
 #include <TROOT.h>
 #include <TObject.h>
 #include <TString.h>
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparison.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparison.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
 class ObjectComparisonSkimRecoTracks : public ObjectComparison {
  public:

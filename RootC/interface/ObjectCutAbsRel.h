@@ -10,8 +10,8 @@
 #include <vector>
 #include <map>
 #include <algorithm>
-#include "RutgersIAF2012/RootC/interface/ObjectCut.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectWithIso.h"
+#include "RutgersIAF/RootC/interface/ObjectCut.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectWithIso.h"
 
 class ObjectCutAbsRel : public ObjectCut {
  public:

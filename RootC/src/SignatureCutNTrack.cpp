@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutNTrack.h"
+#include "RutgersIAF/RootC/interface/SignatureCutNTrack.h"
 
 ClassImp(SignatureCutNTrack)

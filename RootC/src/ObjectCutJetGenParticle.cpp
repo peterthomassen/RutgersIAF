@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetGenParticle.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetGenParticle.h"
 
 ClassImp(ObjectCutJetGenParticle)

@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRename.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRename.h"
 
 ClassImp(ObjectVariableRename<int>)
 ClassImp(ObjectVariableRename<double>)

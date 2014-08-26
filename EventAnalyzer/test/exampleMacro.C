@@ -4,7 +4,7 @@ void exampleMacro(const char* ifname="/cms/rcg/rcgray/2012/DataLinks2012/DoubleE
 		  , const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
 )
 {
-  gSystem->Load("libRutgersIAF2012EventAnalyzer.so");
+  gSystem->Load("libRutgersIAFEventAnalyzer.so");
   gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
   gROOT->ProcessLine(".L helperEventAnalyzer.C+");
   gROOT->ProcessLine(".L helperTriggers.C");

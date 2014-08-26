@@ -1,5 +1,5 @@
 void exampleMacro(TString ofname = "test.root") {
-	gSystem->Load("libRutgersIAF2012AnalysisPresenter.so");
+	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
 	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
 	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
 	

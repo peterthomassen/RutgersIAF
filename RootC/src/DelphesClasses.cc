@@ -13,9 +13,9 @@
  *
  */
 
-#include "RutgersIAF2012/RootC/interface/DelphesClasses.h"
+#include "RutgersIAF/RootC/interface/DelphesClasses.h"
 
-#include "RutgersIAF2012/RootC/interface/SortableObject.h"
+#include "RutgersIAF/RootC/interface/SortableObject.h"
 
 CompBase *GenParticle::fgCompare = 0;
 CompBase *Photon::fgCompare = CompPT<Photon>::Instance();

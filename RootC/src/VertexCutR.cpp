@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/VertexCutR.h"
+#include "RutgersIAF/RootC/interface/VertexCutR.h"
 
 ClassImp(VertexCutR)

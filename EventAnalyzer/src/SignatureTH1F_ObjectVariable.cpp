@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
 
 ClassImp(SignatureTH1F_ObjectVariable<int>)
 ClassImp(SignatureTH1F_ObjectVariable<double>)

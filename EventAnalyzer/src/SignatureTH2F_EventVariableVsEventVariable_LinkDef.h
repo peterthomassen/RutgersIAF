@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

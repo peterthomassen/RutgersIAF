@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetNeutralHadronFraction.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetNeutralHadronFraction.h"
 
 ClassImp(ObjectCutJetNeutralHadronFraction)

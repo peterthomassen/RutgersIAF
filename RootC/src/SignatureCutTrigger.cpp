@@ -1,6 +1,6 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutTrigger.h"
+#include "RutgersIAF/RootC/interface/SignatureCutTrigger.h"
 
-#include "RutgersIAF2012/RootC/interface/debug.h"
+#include "RutgersIAF/RootC/interface/debug.h"
 
 using namespace std;
 

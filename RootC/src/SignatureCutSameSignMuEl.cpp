@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutSameSignMuEl.h"
+#include "RutgersIAF/RootC/interface/SignatureCutSameSignMuEl.h"
 
 ClassImp(SignatureCutSameSignMuEl)

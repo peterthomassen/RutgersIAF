@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/AnalysisTreeWriter.h"
+#include "RutgersIAF/EventAnalyzer/interface/AnalysisTreeWriter.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

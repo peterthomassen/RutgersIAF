@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutTauChargeMatch.h"
+#include "RutgersIAF/RootC/interface/ObjectCutTauChargeMatch.h"
 
 ClassImp(ObjectCutTauChargeMatch)

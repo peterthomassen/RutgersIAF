@@ -1,8 +1,8 @@
 #ifndef SignatureObjectJet_h
 #define SignatureObjectJet_h
 
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectMCPart.h"
 
 class SignatureObjectJet : public SignatureObject {
  public:

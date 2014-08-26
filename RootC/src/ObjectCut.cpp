@@ -1,6 +1,6 @@
 #ifndef ObjectCut_cpp
 #define ObjectCut_cpp
-#include "RutgersIAF2012/RootC/interface/ObjectCut.h"
+#include "RutgersIAF/RootC/interface/ObjectCut.h"
 
 ClassImp(ObjectCut)
 

@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutElectronSuperClusterEta.h"
+#include "RutgersIAF/RootC/interface/ObjectCutElectronSuperClusterEta.h"
 
 ClassImp(ObjectCutElectronSuperClusterEta)

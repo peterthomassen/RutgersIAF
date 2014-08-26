@@ -8,13 +8,13 @@
 
 
 #define SignatureHandler_cxx
-#include "RutgersIAF2012/RootC/interface/SignatureHandler.h"
-#include "RutgersIAF2012/RootC/interface/SignatureWithBjets.h"
+#include "RutgersIAF/RootC/interface/SignatureHandler.h"
+#include "RutgersIAF/RootC/interface/SignatureWithBjets.h"
 #include "TPRegexp.h"
 #include "TRandom3.h"
 #include <assert.h>
 
-#include "RutgersIAF2012/RootC/interface/debug.h"
+#include "RutgersIAF/RootC/interface/debug.h"
 
 using namespace std;
 

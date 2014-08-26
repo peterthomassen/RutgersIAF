@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureWithBjets.h"
+#include "RutgersIAF/RootC/interface/SignatureWithBjets.h"
 
 ClassImp(SignatureWithBjets)
 

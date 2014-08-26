@@ -9,8 +9,8 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/ObjectCut.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectWithIso.h"
+#include "RutgersIAF/RootC/interface/ObjectCut.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectWithIso.h"
 
 class ObjectCutIrelNeutralHadron : public ObjectCut {
  public:

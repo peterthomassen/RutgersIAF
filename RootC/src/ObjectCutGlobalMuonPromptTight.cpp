@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutGlobalMuonPromptTight.h"
+#include "RutgersIAF/RootC/interface/ObjectCutGlobalMuonPromptTight.h"
 
 ClassImp(ObjectCutGlobalMuonPromptTight)

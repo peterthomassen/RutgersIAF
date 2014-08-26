@@ -1,5 +1,5 @@
-#include "RutgersIAF2012/ChannelMaker/interface/ChannelHandler.h"
-#include "RutgersIAF2012/ChannelMaker/interface/Channel.h"
+#include "RutgersIAF/ChannelMaker/interface/ChannelHandler.h"
+#include "RutgersIAF/ChannelMaker/interface/Channel.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

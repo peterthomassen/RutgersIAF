@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutPairMass.h"
+#include "RutgersIAF/RootC/interface/SignatureCutPairMass.h"
 
 ClassImp(SignatureCutPairMass)
 

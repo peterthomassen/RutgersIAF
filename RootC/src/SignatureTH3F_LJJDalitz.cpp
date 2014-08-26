@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureTH3F_LJJDalitz.h"
+#include "RutgersIAF/RootC/interface/SignatureTH3F_LJJDalitz.h"
 
 ClassImp(SignatureTH3F_LJJDalitz)
 

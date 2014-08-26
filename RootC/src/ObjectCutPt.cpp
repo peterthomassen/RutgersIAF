@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutPt.h"
+#include "RutgersIAF/RootC/interface/ObjectCutPt.h"
 
 ClassImp(ObjectCutPt)

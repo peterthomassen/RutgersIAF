@@ -2,7 +2,7 @@
 #define SignatureTH1F_PFMET_h
 #include <TH1F.h>
 #include <string.h>
-#include "RutgersIAF2012/RootC/interface/SignatureTH1F.h"
+#include "RutgersIAF/RootC/interface/SignatureTH1F.h"
 
 class SignatureTH1F_PFMET : public SignatureTH1F {
 

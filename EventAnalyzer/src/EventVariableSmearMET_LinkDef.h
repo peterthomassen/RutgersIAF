@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableSmearMET.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableSmearMET.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

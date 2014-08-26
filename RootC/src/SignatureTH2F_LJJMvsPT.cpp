@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F_LJJMvsPT.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F_LJJMvsPT.h"
 
 ClassImp(SignatureTH2F_LJJMvsPT)
 

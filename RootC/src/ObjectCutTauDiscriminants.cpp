@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutTauDiscriminants.h"
+#include "RutgersIAF/RootC/interface/ObjectCutTauDiscriminants.h"
 
 ClassImp(ObjectCutTauDiscriminants)

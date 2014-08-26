@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutVertDz.h"
+#include "RutgersIAF/RootC/interface/ObjectCutVertDz.h"
 
 ClassImp(ObjectCutVertDz)

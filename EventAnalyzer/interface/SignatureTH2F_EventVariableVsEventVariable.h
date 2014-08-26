@@ -1,8 +1,8 @@
 #ifndef SignatureTH2F_EventVariableVsEventVariable_h
 #define SignatureTH2F_EventVariableVsEventVariable_h
 
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureTH2F.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 #include <TString.h>
 
 template <typename T1, typename T2>

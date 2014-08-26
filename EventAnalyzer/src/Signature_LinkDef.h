@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/Signature.h"
+#include "RutgersIAF/EventAnalyzer/interface/Signature.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

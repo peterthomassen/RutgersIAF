@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableReversed.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableReversed.h"
 
 ClassImp(ObjectVariableReversed)

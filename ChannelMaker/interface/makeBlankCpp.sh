@@ -2,7 +2,7 @@
 
 basedir=`pwd`
 srcdir=`echo $basedir | sed 's/interface/src/'`
-CMSDIR=`echo $basedir | awk '{split($1,array,"RutgersIAF2012"); print array[1]}'`
+CMSDIR=`echo $basedir | awk '{split($1,array,"RutgersIAF"); print array[1]}'`
 echo $basedir $srcdir $CMSDIR
 tmpfile=tmp.tmp
 ls -l $basedir/*.h | awk '{print $9}' > $tmpfile
@@ -14,7 +14,7 @@ do
   if [ ! -e $srcfile ]
   then
       headline=`echo $line | sed "s,$CMSDIR,,"`
-      classname=`echo $headline | sed 's,\.h,,' | sed 's,RutgersIAF2012/ChannelMaker/interface/,,'`
+      classname=`echo $headline | sed 's,\.h,,' | sed 's,RutgersIAF/ChannelMaker/interface/,,'`
       echo $headline $classname
       touch $srcfile
       echo "#include \"$headline\"" >> $srcfile

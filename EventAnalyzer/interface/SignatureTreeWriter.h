@@ -2,7 +2,7 @@
 #define SignatureTreeWriter_h
 
 #include <TROOT.h>
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseTreeWriter.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseTreeWriter.h"
 #include <map>
 
 class TTree;

@@ -22,7 +22,7 @@
 #include "TRefArray.h"
 #include "TLorentzVector.h"
 
-#include "RutgersIAF2012/RootC/interface/SortableObject.h"
+#include "RutgersIAF/RootC/interface/SortableObject.h"
 
 class DelphesFactory;
 

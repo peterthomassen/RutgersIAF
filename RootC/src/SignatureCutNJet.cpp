@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutNJet.h"
+#include "RutgersIAF/RootC/interface/SignatureCutNJet.h"
 
 ClassImp(SignatureCutNJet)

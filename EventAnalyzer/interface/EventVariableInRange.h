@@ -1,8 +1,8 @@
 #ifndef EventVariableInRange_h
 #define EventVariableInRange_h
 
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 
 template <typename T>
 class EventVariableInRange : public EventVariable

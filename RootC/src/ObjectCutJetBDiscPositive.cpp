@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetBDiscPositive.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetBDiscPositive.h"
 
 ClassImp(ObjectCutJetBDiscPositive)

@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetBeta.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetBeta.h"
 
 ClassImp(ObjectCutJetBeta)

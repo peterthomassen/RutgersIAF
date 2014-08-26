@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContribution.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

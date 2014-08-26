@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutPhotonIsTight.h"
+#include "RutgersIAF/RootC/interface/ObjectCutPhotonIsTight.h"
 
 ClassImp(ObjectCutPhotonIsTight)

@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutElectronSigmaIetaIeta.h"
+#include "RutgersIAF/RootC/interface/ObjectCutElectronSigmaIetaIeta.h"
 
 ClassImp(ObjectCutElectronSigmaIetaIeta)

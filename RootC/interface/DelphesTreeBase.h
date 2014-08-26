@@ -31,7 +31,7 @@ Search for "Rutgers" to find changes.
 #include <map>
 #include "TRandom.h"
 #include "TRandom3.h"
-#include "RutgersIAF2012/RootC/interface/DelphesClasses.h"
+#include "RutgersIAF/RootC/interface/DelphesClasses.h"
 #include <TClonesArray.h>
 
 // Header file for the classes stored in the TTree if any.

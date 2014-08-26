@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureTrigger.h"
+#include "RutgersIAF/RootC/interface/SignatureTrigger.h"
 
 ClassImp(SignatureTrigger)

@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/ChannelMaker/interface/Channel.h"
+#include "RutgersIAF/ChannelMaker/interface/Channel.h"
 
 using namespace std;
 

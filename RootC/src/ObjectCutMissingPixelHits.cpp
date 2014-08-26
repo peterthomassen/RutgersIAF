@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutMissingPixelHits.h"
+#include "RutgersIAF/RootC/interface/ObjectCutMissingPixelHits.h"
 
 ClassImp(ObjectCutMissingPixelHits)

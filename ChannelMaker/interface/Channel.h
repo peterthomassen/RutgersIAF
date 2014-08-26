@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <utility>
 #include <cmath>
-#include "RutgersIAF2012/ChannelMaker/interface/ChannelHandler.h"
+#include "RutgersIAF/ChannelMaker/interface/ChannelHandler.h"
 
 class ChannelHandler;
 

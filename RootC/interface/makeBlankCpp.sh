@@ -14,7 +14,7 @@ do
   if [ ! -e $srcfile ]
   then
       headline=`echo $line | sed "s,$CMSDIR,,"`
-      classname=`echo $headline | sed 's,\.h,,' | sed 's,RutgersIAF2012/RootC/interface/,,'`
+      classname=`echo $headline | sed 's,\.h,,' | sed 's,RutgersIAF/RootC/interface/,,'`
       echo $headline $classname
       touch $srcfile
       echo "#include \"$headline\"" >> $srcfile

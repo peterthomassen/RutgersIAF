@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
 
 ClassImp(ObjectComparisonDeltaR)

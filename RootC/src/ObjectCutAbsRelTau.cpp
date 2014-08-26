@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutAbsRelTau.h"
+#include "RutgersIAF/RootC/interface/ObjectCutAbsRelTau.h"
 
 ClassImp(ObjectCutAbsRelTau)
 

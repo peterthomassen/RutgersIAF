@@ -2,8 +2,8 @@
 #define EventVariableTriggerWeight_h
 
 #include <vector>
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariable.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 
 class EventVariableTriggerWeight : public EventVariable{
  public:

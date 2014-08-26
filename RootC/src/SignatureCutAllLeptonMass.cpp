@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutAllLeptonMass.h"
+#include "RutgersIAF/RootC/interface/SignatureCutAllLeptonMass.h"
 using namespace std;
 ClassImp(SignatureCutAllLeptonMass)
 

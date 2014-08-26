@@ -8,9 +8,9 @@
 #include "THStack.h"
 #include "TROOT.h"
 
-#include "RutgersIAF2012/AnalysisPresenter/interface/AssemblerProjection.h"
-#include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContribution.h"
-#include "RutgersIAF2012/AnalysisPresenter/interface/PhysicsContributionProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 class TFile;
 

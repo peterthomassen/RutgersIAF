@@ -9,9 +9,9 @@
 #include <TFile.h>
 #include <vector>
 #include <map>
-#include "RutgersIAF2012/RootC/interface/ObjectCutIrel010to030.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectRecoTrack.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectTau.h"
+#include "RutgersIAF/RootC/interface/ObjectCutIrel010to030.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectRecoTrack.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectTau.h"
 
 class ObjectCutIrel010to030Tau : public ObjectCutIrel010to030 {
  public:

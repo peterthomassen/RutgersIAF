@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/RootC/interface/SignatureObject.h"
+#include "RutgersIAF/RootC/interface/SignatureObject.h"
 
 ClassImp(SignatureObject)
 

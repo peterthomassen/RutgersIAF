@@ -1,6 +1,6 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/EventVariableThreshold.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/SignatureObject.h"
-#include "RutgersIAF2012/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableThreshold.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 #include <algorithm>
 
 ClassImp(EventVariableThreshold)

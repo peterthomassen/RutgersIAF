@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureObjectMCPart.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectMCPart.h"
 
 ClassImp(SignatureObjectMCPart)

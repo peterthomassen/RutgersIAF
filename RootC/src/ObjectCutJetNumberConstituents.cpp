@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetNumberConstituents.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetNumberConstituents.h"
 
 ClassImp(ObjectCutJetNumberConstituents)

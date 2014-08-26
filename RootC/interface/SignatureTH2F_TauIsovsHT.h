@@ -2,8 +2,8 @@
 #define SignatureTH2F_TauIsovsHT_H
 
 #include <TH2F.h>
-#include "RutgersIAF2012/RootC/interface/SignatureTH2F.h"
-#include "RutgersIAF2012/RootC/interface/SignatureObjectTau.h"
+#include "RutgersIAF/RootC/interface/SignatureTH2F.h"
+#include "RutgersIAF/RootC/interface/SignatureObjectTau.h"
 
 class SignatureTH2F_TauIsovsHT : public SignatureTH2F {
  public:

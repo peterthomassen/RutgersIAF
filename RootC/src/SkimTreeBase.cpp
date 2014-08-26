@@ -1,5 +1,5 @@
 #define SkimTreeBase_cxx
-#include "RutgersIAF2012/RootC/interface/SkimTreeBase.h"
+#include "RutgersIAF/RootC/interface/SkimTreeBase.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>

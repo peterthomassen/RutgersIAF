@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectComparisonElectron.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonElectron.h"
 
 #ifdef __CINT__
 #pragma link off all globals;

@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutEcalIso.h"
+#include "RutgersIAF/RootC/interface/ObjectCutEcalIso.h"
 
 ClassImp(ObjectCutEcalIso)

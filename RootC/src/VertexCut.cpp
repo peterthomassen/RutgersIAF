@@ -1,6 +1,6 @@
 #ifndef ObjectCut_cpp
 #define ObjectCut_cpp
-#include "RutgersIAF2012/RootC/interface/VertexCut.h"
+#include "RutgersIAF/RootC/interface/VertexCut.h"
 
 ClassImp(VertexCut)
 

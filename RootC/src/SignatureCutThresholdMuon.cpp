@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/SignatureCutThresholdMuon.h"
+#include "RutgersIAF/RootC/interface/SignatureCutThresholdMuon.h"
 
 ClassImp(SignatureCutThresholdMuon)

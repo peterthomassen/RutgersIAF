@@ -15,7 +15,7 @@
 #include <map>
 #include <algorithm>
 #include <cmath>
-#include "RutgersIAF2012/ChannelMaker/interface/Channel.h"
+#include "RutgersIAF/ChannelMaker/interface/Channel.h"
 
 class Channel;
 

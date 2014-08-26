@@ -1,3 +1,3 @@
-#include "RutgersIAF2012/RootC/interface/ObjectCutJetChargedMultiplicity.h"
+#include "RutgersIAF/RootC/interface/ObjectCutJetChargedMultiplicity.h"
 
 ClassImp(ObjectCutJetChargedMultiplicity)

@@ -1,7 +1,7 @@
 void exampleMacro(const char* ofname="exampleOutput.root")
 {
 
-  gSystem->Load("libRutgersIAF2012RootC.so");
+  gSystem->Load("libRutgersIAFRootC.so");
   gROOT->ProcessLine(".L helperChannelHandler.C");
 
   ChannelHandler* handler = new ChannelHandler(ofname);

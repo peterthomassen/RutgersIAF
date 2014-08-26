@@ -1,4 +1,4 @@
-#include "RutgersIAF2012/EventAnalyzer/interface/ObjectVariableRename.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRename.h"
 
 #ifdef __CINT__
 #pragma link off all globals;
