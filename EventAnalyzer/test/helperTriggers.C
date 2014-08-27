@@ -1,4 +1,5 @@
 #include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableConst.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableInRange.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableThreshold.h"
@@ -423,6 +424,7 @@ void setupTriggers(BaseHandler* handler,int mode)
   handler->addEventVariable("N_SIEL_TRIGGERS",new EventVariableN("NSIELTRIGGERS","SiElTriggers"));
   handler->addEventVariable("N_SIMU_TRIGGERS",new EventVariableN("NSIMUTRIGGERS","SiMuTriggers"));
 
+  handler->addEventVariable("TRIGGERMODE",new EventVariableConst<int>(mode, "TRIGGERMODE"));
 
   switch(mode){
     case 1:
