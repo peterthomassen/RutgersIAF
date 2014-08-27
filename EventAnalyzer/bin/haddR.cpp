@@ -45,12 +45,16 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 	std::vector<std::string> outAliases;
 	std::vector<unsigned char> outBits;
 	
+	double n = 0;
+	
 	for(size_t i = 0; i < inputFiles.size(); ++i) {
 		cout << ((i % 10 == 9) ? '|' : '.') << flush;
 		
 		TFile* f = new TFile(inputFiles[i]);
 		TTree* curTree = (TTree*)(f->Get(treeName));
 		outfile->cd();
+		
+		n += 1./curTree->GetWeight();
 		
 		if(i == 0) {
 			outTree->SetTitle(curTree->GetTitle());
@@ -201,8 +205,10 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		outTree->SetAlias(outAlias.c_str(), TString::Format("(bits[%d] & (1 << %d)) > 0", idx, off));
 	}
 	
+	outTree->SetWeight(1./n);
+	
 	outTree->Write();
-	cout << " (" << outTree->GetEntries() << " entries)" << endl;
+	cout << " (" << outTree->GetEntries() << " entries, 1./weight = " << (1./outTree->GetWeight()) << " [PRECUT_EVENT_COUNT])" << endl;
 	outfile->Close();
 	
 	delete outfile;
@@ -215,7 +221,7 @@ int main( int argc, char **argv )
 
    if ( argc < 3 || "-h" == string(argv[1]) || "--help" == string(argv[1]) ) {
       cout << "This is a modified version of ROOT hadd that implements special treatment for trees with name treeR." << endl;
-      cout << "Usage: " << argv[0] << " [-f[0-9]] [-k] [-T] [-O] [-n maxopenedfiles] [-v verbosity] targetfile source1 [source2 source3 ...]" << endl;
+      cout << "Usage: " << argv[0] << " [-f[0-9]] [-k] [-T] [-O] [-n maxopenedfiles] [-t treeName] [-v verbosity] targetfile source1 [source2 source3 ...]" << endl;
       cout << "This program will add histograms from a list of root files and write them" << endl;
       cout << "to a target root file. The target file is newly created and must not " << endl;
       cout << "exist, or if -f (\"force\") is given, must not be one of the source files." << endl;
@@ -225,7 +231,8 @@ int main( int argc, char **argv )
       cout << "If the option -O is used, when merging TTree, the basket size is re-optimized" <<endl;
       cout << "If the option -v is used, explicitly set the verbosity level; 0 request no output, 99 is the default" <<endl;
       cout << "[unsupported] If the option -n is used, hadd will open at most 'maxopenedfiles' at once, use 0 to request to use the system maximum." << endl;
-      cout << "When -the -f option is specified, one can also specify the compression" <<endl;
+      cout << "If the option -t is used, the specified tree is used for the Rutgers AnalysisTree treatment (default: treeR)" << endl;
+      cout << "When the -f option is specified, one can also specify the compression" <<endl;
       cout << "level of the target file. By default the compression level is 1, but" <<endl;
       cout << "if \"-f0\" is specified, the target file will not be compressed." <<endl;
       cout << "if \"-f6\" is specified, the compression level 6 will be used." <<endl;

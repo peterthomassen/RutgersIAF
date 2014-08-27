@@ -165,6 +165,9 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 	if(nEntryHigh == 0 || nEntryHigh > nevents) {
 		nEntryHigh = nevents;
 	}
+	if(m_writer) {
+		m_writer->setNumberOfInputEvents(nEntryHigh - nEntryLow);
+	}
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 		m_trackFakeCombination = 0;
 		m_photonFakeCombination = 0;

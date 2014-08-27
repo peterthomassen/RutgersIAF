@@ -18,6 +18,9 @@ AnalysisTreeWriter::AnalysisTreeWriter(BaseHandler* handler,TString treename)
 AnalysisTreeWriter::~AnalysisTreeWriter() { }
 
 void AnalysisTreeWriter::finish() {
+	if(m_n > 0) {
+		m_tree->SetWeight(1./m_n);
+	}
 	m_handler->getOutFile()->cd();
 	m_tree->Write();
 }
@@ -44,4 +47,8 @@ void AnalysisTreeWriter::fillTree() {
 	}
 	
 	m_tree->Fill();
+}
+
+void AnalysisTreeWriter::setNumberOfInputEvents(int n) {
+	m_n = n;
 }

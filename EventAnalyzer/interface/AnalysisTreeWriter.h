@@ -20,12 +20,15 @@ public:
 	
 	virtual void finish();
 	virtual void fillTree();
+	virtual void setNumberOfInputEvents(int n);
 
 private:
 	std::map<TString, TBranch*> m_branchesD;
 	std::map<TString, TBranch*> m_branchesI;
 	std::map<TString, TBranch*> m_branchesL;
 	std::map<TString, TBranch*> m_branchesTString;
+	
+	int m_n = 0;
 	
 	std::map<TString, UInt_t> m_boolIndex;
 	std::vector<unsigned char> m_bits; // 8 bits per element

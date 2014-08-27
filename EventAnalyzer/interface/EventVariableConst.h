@@ -18,7 +18,6 @@ class EventVariableConst : public EventVariable
   }
 
  private:
-  TString m_variable;
   T m_value;
 
  ClassDef(EventVariableConst,1);
