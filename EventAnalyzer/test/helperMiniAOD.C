@@ -285,7 +285,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("promptTracks","MUON_dxy");
   handler->addProductCut("promptTracks","TRACK_fromPV");
   handler->addProduct("nonPromptTracks","basicTracks");
-  handler->addProductCut("nonPromptTracks","MUON_nonPrompt");
+  handler->addProductCut("nonPromptTracks","MUON_nonprompt");
 
   handler->addProduct("goodTracks","promptTracks");
   handler->addProductCut("goodTracks","IREL0p24");
@@ -396,7 +396,13 @@ void setupVariables(BaseHandler* handler)
   //handler->addEventVariable("WRITEEVENT", new EventVariableCombined("twoMcElectronsFromZ","twoMcMuonsFromZ"));
 
   handler->addEventVariable("N_fakeElectrons", new EventVariableN("N_fakeElectrons","goodElectronsNotMatched"));
-  handler->addEventVariable("N_fakeMuons", new EventVariableN("N_fakeElectrons","goodMuonsNotMatched"));
+  handler->addEventVariable("N_fakeMuons", new EventVariableN("N_fakeMuons","goodMuonsNotMatched"));
+
+  handler->addEventVariable("N_matchedElectrons", new EventVariableN("N_matchedElectrons","goodElectronsMatched"));
+  handler->addEventVariable("N_matchedMuons", new EventVariableN("N_matchedMuons","goodMuonsMatched"));
+
+  handler->addEventVariable("N_electrons", new EventVariableN("N_electrons","goodElectrons"));
+  handler->addEventVariable("N_muons", new EventVariableN("N_muons","goodMuons"));
 
   handler->addEventVariable("N_goodJets", new EventVariableN("N_goodJets","goodJets"));
 
