@@ -1,3 +1,0 @@
-#include "RutgersIAF/RootC/interface/ObjectCutValidTrackerHitsTauLeadingTrack.h"
-
-ClassImp(ObjectCutValidTrackerHitsTauLeadingTrack)
