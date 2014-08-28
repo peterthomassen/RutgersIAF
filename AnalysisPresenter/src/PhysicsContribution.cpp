@@ -20,10 +20,38 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumi, TString name, bool unordered) : m_filename(filename), m_lumi(lumi), m_name(name), m_type(type), m_unordered(unordered) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, bool unordered) : m_filename(filename), m_name(name), m_type(type), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
+	
+	TFile f(m_filename);
+	if(f.IsZombie()) {
+		cout << "was processing " << m_filename << endl;
+		throw std::runtime_error("could not open contribution root file");
+	}
+	TTree* treeR = (TTree*)f.Get("treeR");
+	if(!treeR) {
+		cout << "was processing " << m_filename << endl;
+		throw std::runtime_error("contribution root file does not contain treeR");
+	}
+	m_MC = treeR->GetBranch("WEIGHT");
+	m_weight = treeR->GetWeight();
+	delete treeR;
+	f.Close();
+	
+	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
+		cout << "was processing " << m_filename << endl;
+		throw std::runtime_error("data files should not have a WEIGHT branch");
+	}
+	if(!m_MC && (m_type == "signal" || m_type == "backgroundMC")) {
+		cout << "was processing " << m_filename << endl;
+		throw std::runtime_error("MC files should have a WEIGHT branch");
+	}
+	
+	m_lumi = isMC()
+		? (1. / lumiOrXsec / m_weight)
+		: lumiOrXsec;
 }
 
 PhysicsContribution::~PhysicsContribution() {
@@ -111,6 +139,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	if(!treeR) {
 		return 0;
 	}
+	treeR->SetWeight(1);
 	
 	if(selection == "") {
 		selection = "1";
@@ -254,12 +283,20 @@ TString PhysicsContribution::getType(const bool detailed) const {
 	throw std::runtime_error("should never make it here");
 }
 
+double PhysicsContribution::getWeight() {
+	return m_weight;
+}
+
 bool PhysicsContribution::isBackground() const {
 	return m_type.BeginsWith("background");
 }
 
 bool PhysicsContribution::isData() const {
 	return m_type.BeginsWith("data");
+}
+
+bool PhysicsContribution::isMC() const {
+	return m_MC;
 }
 
 bool PhysicsContribution::isSignal() const {

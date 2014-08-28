@@ -25,9 +25,11 @@ public:
 	double getLumi() const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
+	double getWeight();
 	
 	bool isBackground() const;
 	bool isData() const;
+	bool isMC() const;
 	bool isSignal() const;
 	
 	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false, const bool plain = false) const;
@@ -50,11 +52,13 @@ private:
 	TString m_filename;
 	Int_t m_fillColor = -1;
 	double m_lumi;
+	bool m_MC = false;
 	TString m_name;
 	double m_scale = 0;
 	TString m_selection;
 	TString m_type;
 	bool m_unordered;
+	double m_weight = 0;
 	
 	THnBase* m_hn = 0;
 	std::map<TString, THnBase*> m_hProjectionUncertainties;

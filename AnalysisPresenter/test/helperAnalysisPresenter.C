@@ -49,26 +49,26 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false) {
 	
 	std::vector<PhysicsContribution*> mc;
 	
-	//PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, 2016678. / 1.2030, "WZ");
-	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, 2016678. / xsec_wz, "WZ");
+	//PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, 1.2030, "WZ");
+	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, xsec_wz, "WZ");
 	//wz->addWeight("(NGOODJETS < 2) * 0.897051 + (NGOODJETS >= 2) * 2.0084"); // Richard's numbers
 	wz->addWeight("(NGOODJETS == 0) * 1.10596 + (NGOODJETS == 1) * 0.78 + (NGOODJETS > 1) * 1");
 	
-	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZJetsTo4L" + infix + suffix, 4804781. / xsec_zz, "ZZ");
+	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZJetsTo4L" + infix + suffix, xsec_zz, "ZZ");
 	zz->addWeight("(NGOODJETS == 0) * 1.067 + (NGOODJETS == 1) * 0.83 + (NGOODJETS == 2) * 0.333 + (NGOODJETS > 2) * 1");
 	
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 217213. / 0.002037, "TTWW"));
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWJets" + infix + suffix, 195555. / xsec_ttw, "TTW"));
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTZJets" + infix + suffix, 209677. / xsec_ttz, "TTZ"));
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 220170. / 0.08217, "WWW"));
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZJets" + infix + suffix, 221805. / 0.0633, "WWZ"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWJets" + infix + suffix, xsec_ttw, "TTW"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTZJets" + infix + suffix, xsec_ttz, "TTZ"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 0.08217, "WWW"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZJets" + infix + suffix, 0.0633, "WWZ"));
 	mc.push_back(wz);
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 219428. / 0.019, "WZZ"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 0.019, "WZZ"));
 	mc.push_back(zz);
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 224572. / 0.004587, "ZZZ"));
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, 25365231. / xsec_ttbar_semiLep, "TT_SemiL"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, xsec_ttbar_semiLep, "TT_SemiL"));
 	
-	PhysicsContribution* ttbar = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, 12108679. / xsec_ttbar_fullLep, "TT_FullL");
+	PhysicsContribution* ttbar = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullL");
 	ttbar->addWeight("(NLEPTONS >= 3) * 1.5 + !(NLEPTONS >= 3) * 1");
 	//ttbar->addWeight("(NGOODJETS < 2) * 1.42 + (NGOODJETS == 2) * 1.18 + (NGOODJETS == 3) * 1.04 + (NGOODJETS > 3) * 1"); // Richard's numbers
 	ttbar->addWeight("(NGOODJETS < 2) * 1.50 + (NGOODJETS == 2) * 1.17 + (NGOODJETS == 3) * 1.11 + (NGOODJETS == 4) * 1.076 + (NGOODJETS > 4) * 1"); // Peter's numbers, regular bkgs + DY MC
@@ -77,8 +77,8 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false) {
 	mc.push_back(ttbar);
 	
 	if(dilep) {
-		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 7131530. / 762.45, "DY10to50"));
-		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 25095812. / 2950.0, "DYgt50"));
+		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
+		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 2950.0, "DYgt50"));
 	}
 	
 	for(auto &contribution : mc) {
