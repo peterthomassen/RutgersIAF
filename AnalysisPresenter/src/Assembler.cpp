@@ -19,7 +19,7 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
-#include "RutgersIAF/RootC/interface/debug.h"
+#include "RutgersIAF/debug.h"
 
 using namespace std;
 

@@ -10,7 +10,7 @@
 #include <cmath>
 #include <exception>
 
-#include "RutgersIAF/RootC/interface/debug.h"
+#include "RutgersIAF/debug.h"
 
 using namespace std;
 

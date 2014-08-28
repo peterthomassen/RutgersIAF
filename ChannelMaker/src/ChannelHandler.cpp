@@ -3,7 +3,7 @@
 #include "Math/DistFunc.h"
 #include <assert.h>
 
-#include "RutgersIAF/RootC/interface/debug.h"
+#include "RutgersIAF/debug.h"
 
 using namespace std;
 
