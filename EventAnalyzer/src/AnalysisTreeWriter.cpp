@@ -48,7 +48,3 @@ void AnalysisTreeWriter::fillTree() {
 	
 	m_tree->Fill();
 }
-
-void AnalysisTreeWriter::setNumberOfInputEvents(int n) {
-	m_n = n;
-}

@@ -20,11 +20,13 @@ class BaseTreeWriter : public TObject{
   TTree* getTree() {return m_tree;}
   virtual void finish() = 0;
   virtual void fillTree() = 0;
-  virtual void setNumberOfInputEvents(int n) = 0;
+  virtual void setNumberOfInputEvents(int n);
 
  protected:
   BaseHandler* m_handler;
   TTree* m_tree;
+
+  int m_n = 0;
   
   ClassDef(BaseTreeWriter,1);
 
