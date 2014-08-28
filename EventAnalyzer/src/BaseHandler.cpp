@@ -702,6 +702,9 @@ void BaseHandler::calcPhysicsWeight()
 	if(getMode("debugPhysicsWeights")) {
 		cout << "Weights:";
 	}
+	if(m_weight_variables.size() == 0) {
+		return;
+	}
 	for(int i = 0; i < (int)m_weight_variables.size(); i++){
 		TString weightname = m_weight_variables[i];
 		double weight;

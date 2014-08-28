@@ -18,7 +18,7 @@ AnalysisTreeWriter::AnalysisTreeWriter(BaseHandler* handler,TString treename)
 AnalysisTreeWriter::~AnalysisTreeWriter() { }
 
 void AnalysisTreeWriter::finish() {
-	if(m_n > 0) {
+	if(m_n > 0 && m_tree->GetBranch("WEIGHT")) {
 		m_tree->SetWeight(1./m_n);
 	}
 	m_handler->getOutFile()->cd();

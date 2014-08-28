@@ -46,6 +46,8 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 	std::vector<unsigned char> outBits;
 	
 	double n = 0;
+	bool success = true;
+	bool weights = false;
 	
 	for(size_t i = 0; i < inputFiles.size(); ++i) {
 		cout << ((i % 10 == 9) ? '|' : '.') << flush;
@@ -54,10 +56,19 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		TTree* curTree = (TTree*)(f->Get(treeName));
 		outfile->cd();
 		
-		n += 1./curTree->GetWeight();
-		
 		if(i == 0) {
 			outTree->SetTitle(curTree->GetTitle());
+			weights = curTree->GetBranch("WEIGHT");
+		}
+		
+		if(weights != (bool)(curTree->GetBranch("WEIGHT"))) {
+			cerr << endl << "Can't add events with weights and events without, aborting" << endl;
+			success = false;
+			break;
+		}
+		
+		if(weights) {
+			n += 1./curTree->GetWeight();
 		}
 		
 		std::vector<UInt_t> boolPositionMap;
@@ -198,21 +209,29 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		delete f;
 	}
 	
-	for(const auto &outAlias : outAliases) {
-		auto aliasIt = boolIndex.find(outAlias);
-		int idx = aliasIt->second / (sizeof(unsigned char) * 8);
-		int off = aliasIt->second % (sizeof(unsigned char) * 8);
-		outTree->SetAlias(outAlias.c_str(), TString::Format("(bits[%d] & (1 << %d)) > 0", idx, off));
+	if(success) {
+		for(const auto &outAlias : outAliases) {
+			auto aliasIt = boolIndex.find(outAlias);
+			int idx = aliasIt->second / (sizeof(unsigned char) * 8);
+			int off = aliasIt->second % (sizeof(unsigned char) * 8);
+			outTree->SetAlias(outAlias.c_str(), TString::Format("(bits[%d] & (1 << %d)) > 0", idx, off));
+		}
+		
+		if(weights) {
+			outTree->SetWeight(1./n);
+		}
 	}
 	
-	outTree->SetWeight(1./n);
-	
 	outTree->Write();
-	cout << " (" << outTree->GetEntries() << " entries, 1./weight = " << (1./outTree->GetWeight()) << " [PRECUT_EVENT_COUNT])" << endl;
+	cout << " (" << outTree->GetEntries() << " entries";
+	if(success && weights) {
+		cout << ", 1./weight = " << (1./outTree->GetWeight()) << " [PRECUT_EVENT_COUNT]";
+	}
+	cout << ")" << endl;
 	outfile->Close();
 	
 	delete outfile;
-	return true;
+	return success;
 }
 
 //___________________________________________________________________________
