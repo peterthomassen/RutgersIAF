@@ -16,6 +16,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectComparison.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_CountWeight.h"
+#include "RutgersIAF/EventAnalyzer/interface/PrintModule.h"
 
 #include <assert.h>
 
@@ -1438,32 +1439,16 @@ void BaseHandler::analyzeEvent()
 //-----------------------------------------
 void BaseHandler::printDebugInfo()
 {
-  for(map<TString,double>::iterator iter = m_variable_map_double.begin(); iter != m_variable_map_double.end();iter++){
-    cout<<(*iter).first<<" "<<(*iter).second<<endl;
-  }
-  for(map<TString,int>::iterator iter = m_variable_map_int.begin(); iter != m_variable_map_int.end();iter++){
-    cout<<(*iter).first<<" "<<(*iter).second<<endl;
-  }
-  for(map<TString,long>::iterator iter = m_variable_map_long.begin(); iter != m_variable_map_long.end();iter++){
-    cout<<(*iter).first<<" "<<(*iter).second<<endl;
-  }
-  for(map<TString,TString>::iterator iter = m_variable_map_TString.begin(); iter != m_variable_map_TString.end();iter++){
-    cout<<(*iter).first<<" "<<(*iter).second<<endl;
-  }
-  for(map<TString,bool>::iterator iter = m_variable_map_bool.begin(); iter != m_variable_map_bool.end();iter++){
-    cout<<(*iter).first<<" "<<(*iter).second<<endl;
-  }
-  std::map<TString,std::vector<SignatureObject*> >::iterator pIter;
-  for(pIter = m_products.begin(); pIter != m_products.end(); pIter++){
-    cout<<"product "<<(*pIter).first<<" "<<(*pIter).second.size()<<endl;
-    vector<SignatureObject*> v = (*pIter).second;
-    for(int i = 0; i < (int)v.size(); i++){
-      cout<<"  "<<*v[i]<<endl;
-    }
+  for(int i = 0; i < (int)m_print_modules.size(); i++){
+    m_print_modules[i]->print(this);
   }
 }
 //-----------------------------------------
 //-----------------------------------------
+void BaseHandler::addPrintModule(PrintModule* pm)
+{
+  if(find(m_print_modules.begin(),m_print_modules.end(),pm) == m_print_modules.end())m_print_modules.push_back(pm);
+}
 //-----------------------------------------
 //-----------------------------------------
 //-----------------------------------------

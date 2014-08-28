@@ -27,6 +27,8 @@ class ObjectComparison;
 class EventVariable;
 class TH2F;
 class ObjectVariable;
+class PrintModule;
+class PrintModuleEverything;
 
 class BaseHandler : virtual public TObject {
  public:
@@ -37,6 +39,7 @@ class BaseHandler : virtual public TObject {
 
   friend class AnalysisTreeWriter;
   friend class SignatureTreeWriter;
+  friend class PrintModuleEverything;
 
   ////////////////    
   //Manage Event//
@@ -75,6 +78,8 @@ class BaseHandler : virtual public TObject {
   virtual void setDebugMode(bool c=true){m_debugMode = c;}
   virtual void dumpEventInfo();
   virtual void printDebugInfo();
+
+  virtual void addPrintModule(PrintModule*);
 
   virtual void addEventVariable(TString,EventVariable*,bool rename=true);
   EventVariable* getEventVariable(TString);
@@ -194,6 +199,7 @@ class BaseHandler : virtual public TObject {
   std::map<TString,long> m_variable_map_long;
   std::map<TString,TString> m_variable_map_TString;
   std::map<TString,bool> m_variable_map_bool;
+  std::vector<PrintModule*> m_print_modules;
 
   double m_btagWeights[3];
   int m_bTagged;
