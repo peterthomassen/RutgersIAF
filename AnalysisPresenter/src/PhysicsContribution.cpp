@@ -400,12 +400,13 @@ bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
+	const char* title = axis->GetTitle();
 	if(lo == hi) {
-		m_rangeStrings[name] = TString::Format("%s == %.0f", name, lo);
+		m_rangeStrings[title] = TString::Format("%s == %.0f", title, lo);
 	} else if(includeLast) {
-		m_rangeStrings[name] = TString::Format("%s >= %.0f && %s <= %.0f", name, lo, name, hi);
+		m_rangeStrings[title] = TString::Format("%s >= %.0f && %s <= %.0f", title, lo, title, hi);
 	} else {
-		m_rangeStrings[name] = TString::Format("%s >= %.0f && %s < %.0f", name, lo, name, hi);
+		m_rangeStrings[title] = TString::Format("%s >= %.0f && %s < %.0f", title, lo, title, hi);
 	}
 	
 	return true;
@@ -425,7 +426,8 @@ bool PhysicsContribution::setRange(const char* name, double lo) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
-	m_rangeStrings[name] = TString::Format("%s >= %.0f", name, lo);
+	const char* title = axis->GetTitle();
+	m_rangeStrings[title] = TString::Format("%s >= %.0f", title, lo);
 	
 	return true;
 }

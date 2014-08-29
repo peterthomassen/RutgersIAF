@@ -48,6 +48,7 @@ private:
 	AssemblerProjection* m_projection = 0;
 	
 	TString m_varexp;
+	std::map<TString, TString> m_vars;
 	TString m_selection;
 	
 	ClassDef(Assembler,1);

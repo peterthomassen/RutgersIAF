@@ -16,7 +16,7 @@ using namespace std;
 
 ClassImp(AssemblerProjection)
 
-AssemblerProjection::AssemblerProjection(TString name, bool binForOverflow) : m_binForOverflow(binForOverflow), m_name(name) {
+AssemblerProjection::AssemblerProjection(TString name, TString title, bool binForOverflow) : m_binForOverflow(binForOverflow), m_name(name), m_title(title) {
 }
 
 AssemblerProjection::AssemblerProjection() {
@@ -78,6 +78,10 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	pad1->Draw();
 	pad1->cd();
 	
+	TString title = (m_title != m_name)
+		? TString::Format("%s (%s)", m_title.Data(), m_name.Data())
+		: m_title;
+	
 	// TODO Not cloning causes segfault ...
 	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
 	if(hasOverflowIncluded()) {
@@ -107,6 +111,7 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	if(log && hData->GetMinimum() > hData->GetMaximum() / 15) {
 		hData->SetMinimum(hData->GetMaximum() / 15);
 	}
+	hData->GetXaxis()->SetTitle(title);
 	hData->SetLineColor(kRed);
 	
 	hData->Draw();
@@ -139,6 +144,7 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	pad2->cd();
 	
 	TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
+	hRatio->GetXaxis()->SetTitle(title);
 	hRatio->SetTitle("");
 	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
 		hRatio->SetBinError(i, 0);

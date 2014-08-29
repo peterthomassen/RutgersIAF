@@ -73,15 +73,17 @@ double Assembler::getLumi() const {
 }
 
 void Assembler::process(std::string varexp, TString selection) {
-	std::vector<TString> varNames;
+	std::vector<TString> variables;
+	std::vector<TString> names;
 	std::vector<double> rangeMin, rangeMax;
 	std::vector<int> nbins;
 	
 	cout << varexp << endl;
+	m_vars.clear();
 	boost::char_separator<char> sep(":");
 	boost::tokenizer<boost::char_separator<char> > tokens(varexp, sep);
 	BOOST_FOREACH(const string& t, tokens) {
-		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *([0-9]+(\\.[0-9]+)?) *, *([0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)?\\}").MatchS(t.c_str());
+		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *([0-9]+(\\.[0-9]+)?) *, *([0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)? *(, *\"([^\"]+)\" *)?\\}").MatchS(t.c_str());
 		if(matches->GetLast() < 0) {
 			cerr << "Invalid variable specification: " << t << endl;
 			return;
@@ -89,29 +91,39 @@ void Assembler::process(std::string varexp, TString selection) {
 		TString var = ((TObjString*)matches->At(1))->GetString();
 		Double_t min = ((TObjString*)matches->At(2))->GetString().Atof();
 		Double_t max = ((TObjString*)matches->At(4))->GetString().Atof();
-		Int_t bins = (matches->GetLast() == 7)
-			? ((TObjString *)matches->At(7))->GetString().Atoi()
+		Int_t bins = (matches->GetLast() >= 7 && ((TObjString*)matches->At(7))->GetString().Length() > 0)
+			? ((TObjString*)matches->At(7))->GetString().Atoi()
 			: (max - min);
-		varNames.push_back(var);
+		TString name = (matches->GetLast() >= 9)
+			? ((TObjString*)matches->At(9))->GetString()
+			: var;
+		if(m_vars.find(name) == m_vars.end()) {
+			m_vars.insert(make_pair(name, var));
+		} else {
+			cout << "was processing " << t << endl;
+			throw std::runtime_error("duplicate variable name");
+		}
+		variables.push_back(var);
+		names.push_back(name);
 		rangeMin.push_back(min);
 		rangeMax.push_back(max);
 		nbins.push_back(bins);
 		delete matches;
 	}
-	varexp = varNames[0];
-	for(size_t i = 1; i < varNames.size(); ++i) {
-		varexp += ":" + varNames[i];
+	varexp = variables[0];
+	for(size_t i = 1; i < variables.size(); ++i) {
+		varexp += ":" + variables[i];
 	}
 	cout << varexp << endl;
 	
 	m_varexp = varexp;
 	m_selection = selection;
 	
-	THnSparse* hs = new THnSparseD("hSparse", varexp.c_str(), varNames.size(), &nbins[0], &rangeMin[0], &rangeMax[0]);
+	THnSparse* hs = new THnSparseD("hSparse", varexp.c_str(), variables.size(), &nbins[0], &rangeMin[0], &rangeMax[0]);
 	hs->Sumw2();
-	for(size_t i = 0; i < varNames.size(); ++i) {
-		hs->GetAxis(i)->SetName(varNames[i]);
-		hs->GetAxis(i)->SetTitle(varNames[i]);
+	for(size_t i = 0; i < variables.size(); ++i) {
+		hs->GetAxis(i)->SetName(names[i]);
+		hs->GetAxis(i)->SetTitle(variables[i]);
 	}
 	
 	auto contributionsModel = boost::join(m_background, m_signal);
@@ -176,7 +188,7 @@ AssemblerProjection* Assembler::project(const char* name, const bool binForOverf
 	}
 	
 	// Prepare projection for output: Combine correlated uncertainties and assemble contributions into histogram stack
-	m_projection = new AssemblerProjection(name, binForOverflow);
+	m_projection = new AssemblerProjection(name, m_vars[name], binForOverflow);
 	std::map<TString, std::vector<std::pair<TH1D*, double>>> vh;
 	for(const auto &typeProjection : m_hProjections) {
 		// Prepare vector of contributions for sorting, and take care of error correlations

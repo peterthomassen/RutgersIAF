@@ -13,7 +13,7 @@ class AssemblerProjection : public TObject {
 
 public:
 	AssemblerProjection();
-	AssemblerProjection(TString, bool);
+	AssemblerProjection(TString name, TString title, bool binForOverflow);
 	virtual ~AssemblerProjection();
 
 	void add(TString type, THStack* content, THStack* contentSyst);
@@ -33,6 +33,7 @@ private:
 	bool m_binForOverflow;
 	TCanvas* m_canvas = 0;
 	TString m_name;
+	TString m_title;
 	
 	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	
