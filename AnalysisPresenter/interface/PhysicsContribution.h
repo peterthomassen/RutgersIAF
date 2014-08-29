@@ -19,6 +19,7 @@ public:
 	void addFlatUncertainty(TString, double);
 	void addWeight(TString, TString = "");
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
+	int findBinFromLowEdge(TAxis* axis, double x);
 	THnBase* getContent() const;
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	Int_t getFillColor() const;

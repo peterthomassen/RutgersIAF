@@ -251,6 +251,16 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	return m_hn;
 }
 
+int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
+	int bin = axis->FindFixBin(x);
+	double width = axis->GetBinWidth(bin);
+	double low = axis->GetBinLowEdge(bin);
+	if(x > low + width / 100) {
+		cerr << "Warning: " << x << " is not a bin boundary for " << axis->GetName() << " axis" << endl;
+	}
+	return bin;
+}
+
 THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
 }
@@ -379,8 +389,8 @@ bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 		return false;
 	}
 	
-	Int_t first = axis->FindFixBin(lo);
-	Int_t last  = axis->FindFixBin(hi);
+	Int_t first = findBinFromLowEdge(axis, lo);
+	Int_t last  = findBinFromLowEdge(axis, hi);
 	if(!includeLast) {
 		--last;
 	}
@@ -408,7 +418,7 @@ bool PhysicsContribution::setRange(const char* name, double lo) {
 		return false;
 	}
 	axis->SetRange();
-	Int_t first = axis->FindFixBin(lo);
+	Int_t first = findBinFromLowEdge(axis, lo);
 	Int_t last  = axis->GetLast() + 1;
 	axis->SetRange(first, last);
 	for(auto &uncertainty : m_uncertaintyMap) {
