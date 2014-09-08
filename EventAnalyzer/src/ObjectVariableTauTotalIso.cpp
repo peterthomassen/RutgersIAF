@@ -13,12 +13,13 @@ bool ObjectVariableTauTotalIso::calculate(SignatureObject* sigObj)
 	  return false;
   }
 
-  int tauIsoDisc = 0;
-  if(!sigObj->getVariable("DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR",tauIsoDisc))
+  double tauIsoDisc = 0;
+  if(!sigObj->getVariable("DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR",tauIsoDisc)) {
     return false;
+  }
 
   if(tauIsoDisc){
-    sigObj->setVariable(getName(),0);
+    sigObj->setVariable(getName(),0.0);
     return true;
   }else{
     double photonIso = 0;
