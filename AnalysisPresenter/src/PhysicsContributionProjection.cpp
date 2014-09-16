@@ -30,10 +30,15 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 	m_histogram->SetName(name);
 	m_histogram->SetTitle(title);
 	
-	// Zerostat uncertainty for background and signal samples
-	if(!contribution->isData() && zerostat >= 0) {
+	if(!contribution->isData()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
-			if(m_histogram->GetBinContent(i) == 0) {
+			// Set negative bins to 0 (this can happen due to fake subtraction etc.)
+			if(m_histogram->GetBinContent(i) < 0) {
+				m_histogram->SetBinContent(i, 0);
+			}
+			
+			// Zerostat uncertainty for background and signal samples
+			if(zerostat >= 0 && m_histogram->GetBinContent(i) == 0) {
 				m_histogram->SetBinError(i, zerostat);
 			}
 		}
