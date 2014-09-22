@@ -27,6 +27,9 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 	int dim = contribution->getContent()->GetListOfAxes()->IndexOf(axis);
 	
 	m_histogram = m_contribution->getContent()->Projection(dim, "E");
+	if(contribution->isData()) {
+		m_histogram->SetBinErrorOption(TH1::kPoisson);
+	}
 	m_histogram->SetName(name);
 	m_histogram->SetTitle(title);
 	
