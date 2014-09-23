@@ -31,8 +31,15 @@ void AnalysisTreeWriter::fillTree() {
 	processVariable(m_handler->m_variable_map_double, "D");
 	processVariable(m_handler->m_variable_map_long, "L");
 	processVariable(m_handler->m_variable_map_TString, "TString");
-	// Prepares m_boolIndex
-	processVariable(m_handler->m_variable_map_bool, "O");
+	
+	// Prepare bits branch
+	m_bits.clear();
+	for(typename std::map<TString, bool>::iterator it = m_handler->m_variable_map_bool.begin(); it != m_handler->m_variable_map_bool.end(); ++it) {
+		if(m_boolIndex.find(it->first) == m_boolIndex.end()) {
+			std::cout << "Adding new branch " << it->first << "[O]" << '\n';
+			m_boolIndex.insert(std::make_pair(it->first, m_boolIndex.size()));
+		}
+	}
 	
 	size_t nBits = m_boolIndex.size();
 	m_bits.resize((nBits + sizeof(unsigned char)*8 - 1) / (sizeof(unsigned char)*8));
@@ -46,5 +53,6 @@ void AnalysisTreeWriter::fillTree() {
 		}
 	}
 	
+	// Fill entry
 	m_tree->Fill();
 }

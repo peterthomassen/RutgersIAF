@@ -44,10 +44,10 @@ class BaseTreeReader : public TObject{
   void clearProducts();
   virtual void makeProducts() = 0;
 
-  std::map<TString,int> m_variable_mapint;
-  std::map<TString,long> m_variable_maplong;
-  std::map<TString,double> m_variable_mapdouble;
-  std::map<TString,TString> m_variable_mapTString;
+  std::map<TString,std::vector<int>> m_variable_mapint;
+  std::map<TString,std::vector<long>> m_variable_maplong;
+  std::map<TString,std::vector<double>> m_variable_mapdouble;
+  std::map<TString,std::vector<TString>> m_variable_mapTString;
   std::map<TString,bool> m_variable_mapbool;
 
   ClassDef(BaseTreeReader,1);

@@ -31,24 +31,13 @@ private:
 	std::vector<unsigned char> m_bits; // 8 bits per element
 	
 	template<typename T>
-	void processVariable(std::map<TString, T>, TString);
+	void processVariable(std::map<TString, std::vector<T>>, TString);
 	
 	ClassDef(AnalysisTreeWriter,1);
 };
 
 template<typename T>
-void AnalysisTreeWriter::processVariable(std::map<TString, T> varMap, TString type) {
-	if(type == "O") {
-		m_bits.clear();
-		for(typename std::map<TString, T>::iterator it = varMap.begin(); it != varMap.end(); ++it) {
-			if(m_boolIndex.find(it->first) == m_boolIndex.end()) {
-				std::cout << "Adding new branch " << it->first << "[" << type << "]" << '\n';
-				m_boolIndex.insert(std::make_pair(it->first, m_boolIndex.size()));
-			}
-		}
-		return;
-	}
-	
+void AnalysisTreeWriter::processVariable(std::map<TString, std::vector<T>> varMap, TString type) {
 	std::map<TString, TBranch*>* branches = 0;
 	if(type == "D") {
 		branches = &m_branchesD;
@@ -66,7 +55,7 @@ void AnalysisTreeWriter::processVariable(std::map<TString, T> varMap, TString ty
 		reinterpret_cast<std::vector<T>*>(((TBranchElement*)(it->second))->GetObject())->clear();
 	}
 	
-	for(typename std::map<TString, T>::iterator it = varMap.begin(); it != varMap.end(); ++it) {
+	for(auto it = varMap.begin(); it != varMap.end(); ++it) {
 		typename std::map<TString, TBranch*>::iterator branchIt = branches->find(it->first);
 		if(branchIt == branches->end()) {
 			std::cout << "Adding new branch " << it->first << "[" << type << "]" << '\n';
@@ -81,7 +70,10 @@ void AnalysisTreeWriter::processVariable(std::map<TString, T> varMap, TString ty
 			branchIt = insPair.first;
 		}
 		
-		reinterpret_cast<std::vector<T>*>(((TBranchElement*)(branchIt->second))->GetObject())->push_back(it->second);
+		//reinterpret_cast<std::vector<T>*>(((TBranchElement*)(branchIt->second))->GetObject())->push_back(it->second);
+		for(T value : it->second) {
+			reinterpret_cast<std::vector<T>*>(((TBranchElement*)(branchIt->second))->GetObject())->push_back(value);
+		}
 	}
 }
 

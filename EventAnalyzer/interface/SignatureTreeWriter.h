@@ -21,10 +21,10 @@ class SignatureTreeWriter : public BaseTreeWriter{
 
  private:
   TClonesArray* m_clonesarray;
-  std::map<TString,double> m_variable_map_double;
-  std::map<TString,int> m_variable_map_int;
-  std::map<TString,long> m_variable_map_long;
-  std::map<TString,TString> m_variable_map_TString;
+  std::map<TString,std::vector<double>> m_variable_map_double;
+  std::map<TString,std::vector<int>> m_variable_map_int;
+  std::map<TString,std::vector<long>> m_variable_map_long;
+  std::map<TString,std::vector<TString>> m_variable_map_TString;
   std::map<TString,bool> m_variable_map_bool;
 
   ClassDef(SignatureTreeWriter,1);

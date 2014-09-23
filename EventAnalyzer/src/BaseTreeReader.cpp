@@ -58,35 +58,35 @@ void BaseTreeReader::clearProducts()
 
 bool BaseTreeReader::getVariable(TString name,int &value)
 {
-  map<TString,int>::iterator iter = m_variable_mapint.find(name);
+  auto iter = m_variable_mapint.find(name);
   if(iter == m_variable_mapint.end())return false;
-  value = (*iter).second;
+  value = (*iter).second[0];
   return true;
 }
 bool BaseTreeReader::getVariable(TString name,long &value)
 {
-  map<TString,long>::iterator iter = m_variable_maplong.find(name);
+  auto iter = m_variable_maplong.find(name);
   if(iter == m_variable_maplong.end())return false;
-  value = (*iter).second;
+  value = (*iter).second[0];
   return true;
 }
 bool BaseTreeReader::getVariable(TString name,double &value)
 {
-  map<TString,double>::iterator iter = m_variable_mapdouble.find(name);
+  auto iter = m_variable_mapdouble.find(name);
   if(iter == m_variable_mapdouble.end())return false;
-  value = (*iter).second;
+  value = (*iter).second[0];
   return true;
 }
 bool BaseTreeReader::getVariable(TString name,TString &value)
 {
-  map<TString,TString>::iterator iter = m_variable_mapTString.find(name);
+  auto iter = m_variable_mapTString.find(name);
   if(iter == m_variable_mapTString.end())return false;
-  value = (*iter).second;
+  value = (*iter).second[0];
   return true;
 }
 bool BaseTreeReader::getVariable(TString name,bool &value)
 {
-  map<TString,bool>::iterator iter = m_variable_mapbool.find(name);
+  auto iter = m_variable_mapbool.find(name);
   if(iter == m_variable_mapbool.end())return false;
   value = (*iter).second;
   return true;
@@ -107,22 +107,22 @@ vector<SignatureObject*> BaseTreeReader::getProduct(TString productName)
 
 void BaseTreeReader::setVariable(TString varname, int val)
 {
-  m_variable_mapint[varname] = val;
+  m_variable_mapint[varname] = std::vector<int>(1, val);
 }
 
 void BaseTreeReader::setVariable(TString varname, long val)
 {
-  m_variable_maplong[varname] = val;
+  m_variable_maplong[varname] = std::vector<long>(1, val);
 }
 
 void BaseTreeReader::setVariable(TString varname, double val)
 {
-  m_variable_mapdouble[varname] = val;
+  m_variable_mapdouble[varname] = std::vector<double>(1, val);
 }
 
 void BaseTreeReader::setVariable(TString varname, TString val)
 {
-  m_variable_mapTString[varname] = val;
+  m_variable_mapTString[varname] = std::vector<TString>(1, val);
 }
 
 void BaseTreeReader::setVariable(TString varname, bool val)

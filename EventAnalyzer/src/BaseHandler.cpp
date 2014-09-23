@@ -1213,41 +1213,49 @@ void BaseHandler::addWeightVariable(TString varname)
 //-----------------------------------------
 void BaseHandler::setVariable(TString varname, double c)
 {
-  map<TString,double>::iterator iter = m_variable_map_double.find(varname);
+  auto iter = m_variable_map_double.find(varname);
   if(iter != m_variable_map_double.end()){
-    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second<<" to "<<c<<endl;
+    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second[0]<<" to "<<c<<endl;
+  } else {
+    m_variable_map_double[varname] = std::vector<double>(1);
   }
-  m_variable_map_double[varname] = c;
+  m_variable_map_double[varname][0] = c;
 }
 //-----------------------------------------
 //-----------------------------------------
 void BaseHandler::setVariable(TString varname, int c)
 {
-  map<TString,int>::iterator iter = m_variable_map_int.find(varname);
+  auto iter = m_variable_map_int.find(varname);
   if(iter != m_variable_map_int.end()){
-    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second<<" to "<<c<<endl;
+    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second[0]<<" to "<<c<<endl;
+  } else {
+    m_variable_map_int[varname] = std::vector<int>(1);
   }
-  m_variable_map_int[varname] = c;
+  m_variable_map_int[varname][0] = c;
 }
 //-----------------------------------------
 //-----------------------------------------
 void BaseHandler::setVariable(TString varname, long c)
 {
-  map<TString,long>::iterator iter = m_variable_map_long.find(varname);
+  auto iter = m_variable_map_long.find(varname);
   if(iter != m_variable_map_long.end()){
-    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second<<" to "<<c<<endl;
+    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second[0]<<" to "<<c<<endl;
+  } else {
+    m_variable_map_long[varname] = std::vector<long>(1);
   }
-  m_variable_map_long[varname] = c;
+  m_variable_map_long[varname][0] = c;
 }
 //-----------------------------------------
 //-----------------------------------------
 void BaseHandler::setVariable(TString varname, TString c)
 {
-  map<TString,TString>::iterator iter = m_variable_map_TString.find(varname);
+  auto iter = m_variable_map_TString.find(varname);
   if(iter != m_variable_map_TString.end()){
-    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second<<" to "<<c<<endl;
+    cerr << "WARNING: resetting variable with name: "<<varname<<" from "<<(*iter).second[0]<<" to "<<c<<endl;
+  } else {
+    m_variable_map_TString[varname] = std::vector<TString>(1);
   }
-  m_variable_map_TString[varname] = c;
+  m_variable_map_TString[varname][0] = c;
 }
 //-----------------------------------------
 //-----------------------------------------
@@ -1263,12 +1271,12 @@ void BaseHandler::setVariable(TString varname, bool c)
 //-----------------------------------------
 bool BaseHandler::getVariable(TString varname, double& c)
 {
-  map<TString,double>::iterator iter = m_variable_map_double.find(varname);
+  auto iter = m_variable_map_double.find(varname);
   if(iter == m_variable_map_double.end()){
     c = 0;
     return false;
   }else{
-    c = (*iter).second;
+    c = (*iter).second[0];
     return true;
   }
 }
@@ -1276,12 +1284,12 @@ bool BaseHandler::getVariable(TString varname, double& c)
 //-----------------------------------------
 bool BaseHandler::getVariable(TString varname, int& c)
 {
-  map<TString,int>::iterator iter = m_variable_map_int.find(varname);
+  auto iter = m_variable_map_int.find(varname);
   if(iter == m_variable_map_int.end()){
     c = 0;
     return false;
   }else{
-    c = (*iter).second;
+    c = (*iter).second[0];
     return true;
   }
 }
@@ -1289,12 +1297,12 @@ bool BaseHandler::getVariable(TString varname, int& c)
 //-----------------------------------------
 bool BaseHandler::getVariable(TString varname, long& c)
 {
-  map<TString,long>::iterator iter = m_variable_map_long.find(varname);
+  auto iter = m_variable_map_long.find(varname);
   if(iter == m_variable_map_long.end()){
     c = 0;
     return false;
   }else{
-    c = (*iter).second;
+    c = (*iter).second[0];
     return true;
   }
 }
@@ -1302,12 +1310,12 @@ bool BaseHandler::getVariable(TString varname, long& c)
 //-----------------------------------------
 bool BaseHandler::getVariable(TString varname, TString& c)
 {
-  map<TString,TString>::iterator iter = m_variable_map_TString.find(varname);
+  auto iter = m_variable_map_TString.find(varname);
   if(iter == m_variable_map_TString.end()){
     c = "";
     return false;
   }else{
-    c = (*iter).second;
+    c = (*iter).second[0];
     return true;
   }
 }
