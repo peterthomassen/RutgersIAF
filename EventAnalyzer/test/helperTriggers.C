@@ -378,7 +378,7 @@ vector<int> getHTTriggers()
 }
 //--------------------------------
 //--------------------------------
-void setupTriggers(BaseHandler* handler,int mode)
+void setupTriggers(BaseHandler* handler,int mode, bool inclusiveSingleLeptonTrigger = false)
 {
   ObjectVariableValueInList<int>* dieltriggers = new ObjectVariableValueInList<int>("ID",-1,"DIELTRIGGERS");
   addAcceptTriggers(dieltriggers,getDoubleElectronTriggers());
@@ -454,13 +454,13 @@ void setupTriggers(BaseHandler* handler,int mode)
       handler->addHandlerCut("GEONESIMU_TRIGGERS");
 
       handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
-      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
+      if(!inclusiveSingleLeptonTrigger) handler->addHandlerCut("ZEROMUEG_TRIGGERS");
 
       handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
-      handler->addHandlerCut("ZERODIMU_TRIGGERS");
+      if(!inclusiveSingleLeptonTrigger) handler->addHandlerCut("ZERODIMU_TRIGGERS");
 
       handler->addEventVariable("ZERODIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",0,0,"ZERODIEL_TRIGGERS"));
-      handler->addHandlerCut("ZERODIEL_TRIGGERS");
+      if(!inclusiveSingleLeptonTrigger) handler->addHandlerCut("ZERODIEL_TRIGGERS");
 
       break;
     case 5:
@@ -468,13 +468,13 @@ void setupTriggers(BaseHandler* handler,int mode)
       handler->addHandlerCut("GEONESIEL_TRIGGERS");
 
       handler->addEventVariable("ZEROMUEG_TRIGGERS",new EventVariableInRange<int>("N_MUEG_TRIGGERS",0,0,"ZEROMUEG_TRIGGERS"));
-      handler->addHandlerCut("ZEROMUEG_TRIGGERS");
+      if(!inclusiveSingleLeptonTrigger) handler->addHandlerCut("ZEROMUEG_TRIGGERS");
 
       handler->addEventVariable("ZERODIMU_TRIGGERS",new EventVariableInRange<int>("N_DIMU_TRIGGERS",0,0,"ZERODIMU_TRIGGERS"));
-      handler->addHandlerCut("ZERODIMU_TRIGGERS");
+      if(!inclusiveSingleLeptonTrigger) handler->addHandlerCut("ZERODIMU_TRIGGERS");
 
       handler->addEventVariable("ZERODIEL_TRIGGERS",new EventVariableInRange<int>("N_DIEL_TRIGGERS",0,0,"ZERODIEL_TRIGGERS"));
-      handler->addHandlerCut("ZERODIEL_TRIGGERS");
+      if(!inclusiveSingleLeptonTrigger) handler->addHandlerCut("ZERODIEL_TRIGGERS");
 
       handler->addEventVariable("ZEROSIMU_TRIGGERS",new EventVariableInRange<int>("N_SIMU_TRIGGERS",0,0,"ZEROSIMU_TRIGGERS"));
       handler->addHandlerCut("ZEROSIMU_TRIGGERS");
