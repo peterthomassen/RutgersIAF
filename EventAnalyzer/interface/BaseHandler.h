@@ -92,12 +92,20 @@ class BaseHandler : virtual public TObject {
   virtual void setVariable(TString,long);
   virtual void setVariable(TString,TString);
   virtual void setVariable(TString,bool);
+  virtual void setVector(TString,std::vector<double>);
+  virtual void setVector(TString,std::vector<int>);
+  virtual void setVector(TString,std::vector<long>);
+  virtual void setVector(TString,std::vector<TString>);
 
   virtual bool getVariable(TString,double&);
   virtual bool getVariable(TString,int&);
   virtual bool getVariable(TString,long&);
   virtual bool getVariable(TString,TString&);
   virtual bool getVariable(TString,bool&);
+  virtual bool getVector(TString,std::vector<double>&);
+  virtual bool getVector(TString,std::vector<int>&);
+  virtual bool getVector(TString,std::vector<long>&);
+  virtual bool getVector(TString,std::vector<TString>&);
 
   virtual void addWeightVariable(TString);
 

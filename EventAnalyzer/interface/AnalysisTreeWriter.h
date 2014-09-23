@@ -70,7 +70,6 @@ void AnalysisTreeWriter::processVariable(std::map<TString, std::vector<T>> varMa
 			branchIt = insPair.first;
 		}
 		
-		//reinterpret_cast<std::vector<T>*>(((TBranchElement*)(branchIt->second))->GetObject())->push_back(it->second);
 		for(T value : it->second) {
 			reinterpret_cast<std::vector<T>*>(((TBranchElement*)(branchIt->second))->GetObject())->push_back(value);
 		}
