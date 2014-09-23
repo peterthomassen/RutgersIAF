@@ -618,12 +618,12 @@ void BaseHandler::createProducts()
 					case 0:
 						break;
 					case 1:
-						*m_products[pname][index] *= 0.8;
+/*						*m_products[pname][index] *= 0.9;
 						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 							TString varname = m_object_variable_list[k];
 							m_object_variables[varname]->calculate(m_products[pname][index]);
 						}
-						m_products[pname][index]->setVariable("CHARGE", +1.0);
+*/						m_products[pname][index]->setVariable("CHARGE", +1.0);
 						m_products["goodElectrons"].push_back(m_products[pname][index]);
 						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
 						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
@@ -632,12 +632,12 @@ void BaseHandler::createProducts()
 						++nPhotonFakePosElectrons;
 						break;
 					case 2:
-						*m_products[pname][index] *= 0.8;
+/*						*m_products[pname][index] *= 0.9;
 						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 							TString varname = m_object_variable_list[k];
 							m_object_variables[varname]->calculate(m_products[pname][index]);
 						}
-						m_products[pname][index]->setVariable("CHARGE", -1.0);
+*/						m_products[pname][index]->setVariable("CHARGE", -1.0);
 						m_products["goodElectrons"].push_back(m_products[pname][index]);
 						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
 						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
