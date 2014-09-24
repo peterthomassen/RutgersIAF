@@ -234,7 +234,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		if(k + step > n) {
 			step = n - k;
 		}
-		treeR->Draw(varexp.c_str(), selection.Data(), "goff candle", step, k);
+		long nSelected = treeR->Draw(varexp.c_str(), selection.Data(), "goff candle", step, k);
+		if(nSelected < 0) {
+			throw std::runtime_error("error selecting events");
+		}
 		for(int i = 0; i < treeR->GetSelectedRows(); ++i) {
 			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
 				x[j] = treeR->GetVal(j)[i];
