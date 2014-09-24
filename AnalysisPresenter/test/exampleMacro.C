@@ -1,3 +1,6 @@
+#include <sys/stat.h>
+#include <unistd.h>
+
 void exampleMacro(TString ofname = "test.root") {
 	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
 	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
@@ -9,18 +12,23 @@ void exampleMacro(TString ofname = "test.root") {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For inclusive table
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,4}:MLEPTONS{76,106}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,20}:LT{0,500,10}:MLEPTONS{81,101}";
+	varexp += ":OSSFMAXMLL{11,131,36}:OSSFMINMLL{11,131,36}";
 	
 	// Global cuts, if desired
-	TString selection = "NOTTRILEPTONONZ";
+	// Get rid of photon conversions
+	TString selection = "(NOSSF != 1 || NOTTRILEPTONONZ)";
+	// Cut down charge flips
+	// commented out because NPOSGOODMUONS etc. is not available in tcH ntuple
+	//selection += " && (NLEPTONS != 3 || (NGOODMUONS == 3 || NGOODELECTRONS == 3 || abs(NPOSGOODMUONS+NPOSGOODELECTRONS-NNEGGOODMUONS-NNEGGOODELECTRONS) != 3))";
 	
 	
 	///////////////////////
 	// Signal definition //
 	///////////////////////
-	PhysicsContribution* signal = new PhysicsContribution("signal", "/cms/data25/maritader/sim/SeesawTo3Lminus_M-140_Complete.root", 126612. / 0.0669, "SeesawTo3Lminus_SyncedMC");
+	PhysicsContribution* signal = new PhysicsContribution("signal", "/users/h2/heindl/simulation/histograms/tcH_zz.simulation.root", (0.01 * 245.8) * 0.0289, "SeesawTo3Lminus_SyncedMC");
 	signal->addWeight("WEIGHT");
-	signal->addFlatUncertainty("dummy", 0.2);
+	//signal->addFlatUncertainty("dummy", 0.2);
 	
 	
 	////////////////////////
@@ -29,9 +37,9 @@ void exampleMacro(TString ofname = "test.root") {
 	Assembler* assembler = new Assembler(ofname, "RECREATE");
 	init(assembler);
 	setupData(assembler);
-	setupBackgroundMC(assembler);
+	setupBackgroundMC(assembler, false, false);
 	setupBackgroundDD(assembler);
-	//assembler->addContribution(signal); // It is important to add the signal before setting up the rake rates
+	assembler->addContribution(signal); // It is important to add the signal before setting up the rake rates
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	assembler->process(varexp, selection);
@@ -40,346 +48,22 @@ void exampleMacro(TString ofname = "test.root") {
 	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
 	
+	mkdir("exampleMacro", 0755);
+	chdir("exampleMacro");
+	
 	// Inclusive plots: 3L
 	assembler->setRange("NLEPTONS", 3, 3);
 	assembler->setRange("NGOODTAUS", 0, 0);
 	
-	assembler->setRange("NOSSF", 0, 0);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DY0B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DY0B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DY0B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DY0B1HTgt200_MET.pdf");
-	
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYz1B0HT0to200_MET.pdf");
 	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYz1B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYz1B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYz1B1HTgt200_MET.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
-	assembler->setRange("MOSSF", 0, 76, false);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYl1B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYl1B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYl1B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYl1B1HTgt200_MET.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
-	assembler->setRange("MOSSF", 106);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYh1B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYh1B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYh1B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYh1B1HTgt200_MET.pdf");
+	assembler->setRange("MET", 0, 30, false);
+	assembler->project("LT", true)->plot(true, true)->SaveAs("L3DYz1B0HTgt200MET0to30_LT.pdf");
+	assembler->project("LT", true)->print();
 	
 	assembler->setRange();
-	
-	// Inclusive plots: 4L
-	assembler->setRange("NLEPTONS", 4);
-	assembler->setRange("NGOODTAUS", 0, 0);
-	
-	assembler->setRange("NOSSF", 0, 0);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DY0B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DY0B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DY0B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DY0B1HTgt200_MET.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1, 1);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz1B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz1B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz1B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz1B1HTgt200_MET.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 0, 0);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn1B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn1B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn1B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn1B1HTgt200_MET.pdf");
-	
-	assembler->setRange("NOSSF", 2, 2);
-	assembler->setRange("ONZ", 1, 1);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz2B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz2B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz2B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYz2B1HTgt200_MET.pdf");
-	
-	assembler->setRange("NOSSF", 2, 2);
-	assembler->setRange("ONZ", 0, 0);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn2B0HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn2B0HTgt200_MET.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn2B1HT0to200_MET.pdf");
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L4DYn2B1HTgt200_MET.pdf");
-	
-	assembler->setRange();
-	
-	
-/*	// Some aggregate 3L inclusive plots
-	assembler->setRange("NLEPTONS", 3, 3);
-	assembler->setRange("NGOODTAUS", 0, 0);
-	
-	assembler->setRange("NOSSF", 0, 0);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DY0B0_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DY0B0_HT.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DY0B1_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DY0B1_HT.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1, 1);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYz1B0_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYz1B0_HT.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYz1B1_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYz1B1_HT.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
-	assembler->setRange("MOSSF", 0, 76, false);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYl1B0_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYl1B0_HT.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYl1B1_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYl1B1_HT.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
-	assembler->setRange("MOSSF", 106);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYh1B0_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYh1B0_HT.pdf");
-	assembler->setRange("NBJETSCSVM", 1);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYh1B1_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYh1B1_HT.pdf");
-	
-	assembler->setRange();
-*/	
-/*	// Some even coarser 3L inclusive plots
-	assembler->setRange("NLEPTONS", 3, 3);
-	assembler->setRange("NGOODTAUS", 0, 0);
-	
-	assembler->setRange("NOSSF", 0, 0);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DY0_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DY0_HT.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1, 1);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYz1_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYz1_HT.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
-	assembler->setRange("MOSSF", 0, 76, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYl1_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYl1_HT.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
-	assembler->setRange("MOSSF", 106);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3DYh1_MET.pdf");
-	assembler->project("HT", true)->plot(true, true)->SaveAs("L3DYh1_HT.pdf");
-	
-	assembler->setRange();
-	assembler->setRange("NLEPTONS", 3, 3);
-	assembler->setRange("NGOODTAUS", 0, 0);
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1, 1);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3Tau0DYz1B0HT0to200_MET.pdf");
-	
-	assembler->setRange("HT", 200);
-	assembler->project("MET", true)->plot(true, true)->SaveAs("L3Tau0DYz1B0HTgt200_MET.pdf");
-*/
-	
-	/////////////////
-	// Make tables //
-	/////////////////
-	
-	// Reset all cuts
-	assembler->setRange();
-	
-	// So far, no taus
-	assembler->setRange("NGOODTAUS", 0, 0);
-	
-	cout << endl;
-	cout << "3L DYz1 with trileptons on Z" << endl;
-	assembler->setRange("NLEPTONS", 3, 3);
-	assembler->setRange("MLEPTONS", 76, 106, false);
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1, 1);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
-	assembler->project("MET", true)->print();
-	//assembler->project("MET", true)->plot()->SaveAs("test.pdf");
-	assembler->setRange("MLEPTONS");
-	
-	// nLeptons loop
-	for(int nLeptons = 3; nLeptons <= 4; nLeptons += 1) {
-		if(nLeptons == 3) {
-			assembler->setRange("NLEPTONS", 3, 3);
-			cout << "\n==== 3L" << endl;
-		} else {
-			assembler->setRange("NLEPTONS", 4);
-			cout << "\n==== >=4L" << endl;
-		}
-		
-		// HT loop
-		for(int i = 0; i <= 200; i += 200) {
-			if(i == 0) {
-				assembler->setRange("HT", 0, 200, false);
-				cout << "\n==== HT 0-200" << endl;
-			} else {
-				assembler->setRange("HT", 200);
-				cout << "\n==== HT 200-inf" << endl;
-			}
-			
-			// b-tag loop
-			for(int j = 0; j <= 1; ++j) {
-				if(j == 0) {
-					assembler->setRange("NBJETSCSVM", 0, 0);
-					cout << "\n==== 0b" << endl;
-				} else {
-					//delete assembler;
-					//return;
-					assembler->setRange("NBJETSCSVM", 1);
-					cout << "\n==== >=1b" << endl;
-				}
-				
-				// Reset any OSSF mass cuts from previous loop iteration
-				assembler->setRange("MOSSF");
-				
-				if(nLeptons == 3) {
-					// DY0, no requirements on ONZ
-					cout << "DY0" << endl;
-					assembler->setRange("NOSSF", 0, 0);
-					assembler->setRange("ONZ");
-					assembler->project("MET", true)->print();
-					
-					// DYz1
-					cout << endl;
-					cout << "DYz1" << endl;
-					assembler->setRange("NOSSF", 1, 1);
-					assembler->setRange("ONZ", 1, 1);
-					assembler->project("MET", true)->print();
-					assembler->save("MET");
-					//assembler->save("MET", "L3Tau0DYz1B0HT0to200");
-					
-					// DYl1
-					cout << endl;
-					cout << "DYl1" << endl;
-					assembler->setRange("NOSSF", 1, 1);
-					assembler->setRange("ONZ", 0, 0);
-					assembler->setRange("MOSSF", 0, 76, false);
-					assembler->project("MET", true)->print();
-					
-					// DYh1
-					cout << endl;
-					cout << "DYh1" << endl;
-					assembler->setRange("NOSSF", 1, 1);
-					assembler->setRange("ONZ", 0, 0);
-					assembler->setRange("MOSSF", 106);
-					assembler->project("MET", true)->print();
-				}
-				
-				if(nLeptons == 4) {
-					// DY0, no requirements on ONZ
-					cout << "DY0" << endl;
-					assembler->setRange("NOSSF", 0, 0);
-					assembler->setRange("ONZ");
-					assembler->project("MET", true)->print();
-					
-					// DYz1
-					cout << endl;
-					cout << "DYz1" << endl;
-					assembler->setRange("NOSSF", 1, 1);
-					assembler->setRange("ONZ", 1, 1);
-					assembler->project("MET", true)->print();
-					
-					// DYn1
-					cout << endl;
-					cout << "DYn1" << endl;
-					assembler->setRange("NOSSF", 1, 1);
-					assembler->setRange("ONZ", 0, 0);
-					assembler->project("MET", true)->print();
-					
-					// DYz2
-					cout << endl;
-					cout << "DYz2" << endl;
-					assembler->setRange("NOSSF", 2, 2);
-					assembler->setRange("ONZ", 1, 1);
-					assembler->project("MET", true)->print();
-					
-					// DYn2
-					cout << endl;
-					cout << "DYn2" << endl;
-					assembler->setRange("NOSSF", 2, 2);
-					assembler->setRange("ONZ", 0, 0);
-					assembler->project("MET", true)->print();
-				}
-			}
-		}
-	}
 	
 	delete assembler;
 }

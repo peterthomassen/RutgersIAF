@@ -1,3 +1,6 @@
+#include <sys/stat.h>
+#include <unistd.h>
+
 void ZZ() {
 	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
 	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
@@ -30,17 +33,36 @@ void ZZ() {
 	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
 	
+	mkdir("ZZ", 0755);
+	chdir("ZZ");
+	
 	// ZZ control plot
 	assembler->setRange("NLEPTONS", 4, 4);
-	assembler->setRange("NGOODTAUS", 0, 0);
-	assembler->setRange("NOSSF", 2, 2);
 	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->setRange("MET", 0, 50, false);
+	
+	
+	assembler->setRange("NGOODTAUS", 0, 0);
+	assembler->setRange("NOSSF", 2, 2);
 	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS.pdf");
 	assembler->project("NGOODJETS", true)->plot(false, true)->SaveAs("ZZ_NGOODJETS.pdf");
+	
 	assembler->project("MLEPTONS", true)->print();
+	
+	assembler->setRange("NOSSF", 1, 2);
+	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF12-0Taus.pdf");
+	
+	assembler->setRange("NOSSF", 1, 1);
+	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF1-0Taus.pdf");
+	
+	assembler->setRange("NGOODTAUS", 1);
+	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF1-1orMoreTaus.pdf");
+	
+	assembler->setRange("NGOODTAUS");
+	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF1-0orMoreTaus.pdf");
+	
 	assembler->setRange();
 	
 	delete assembler;
