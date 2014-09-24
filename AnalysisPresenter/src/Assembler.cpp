@@ -85,8 +85,8 @@ void Assembler::process(std::string varexp, TString selection) {
 	BOOST_FOREACH(const string& t, tokens) {
 		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *([0-9]+(\\.[0-9]+)?) *, *([0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)? *(, *\"([^\"]+)\" *)?\\}").MatchS(t.c_str());
 		if(matches->GetLast() < 0) {
-			cerr << "Invalid variable specification: " << t << endl;
-			return;
+			cerr << "was processing " << t << endl;
+			throw std::runtime_error("invalid variable specification");
 		}
 		TString var = ((TObjString*)matches->At(1))->GetString();
 		Double_t min = ((TObjString*)matches->At(2))->GetString().Atof();
