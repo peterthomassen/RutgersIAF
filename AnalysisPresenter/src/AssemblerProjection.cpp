@@ -99,14 +99,14 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 		if(sqrtError) {
 			error2 += content; // content = pow(sqrt(content), 2);
 		}
-		error2 += pow(getBinSyst("signal", i), 2);
+		error2 += pow(getBinSyst("background", i), 2);
 		hBackground->SetBinError(i, sqrt(error2));
 	}
 	
 	TH1* hSignal = 0;
-	if(m_components.find("signal") != m_components.end()) {
+	if(has("signal")) {
 		hSignal = (TH1*)m_components.find("signal")->second.first->GetStack()->Last()->Clone();
-		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+		for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
 			double error2 = pow(hSignal->GetBinError(i), 2);
 			double content = hSignal->GetBinContent(i);
 			// TODO Replace by Poisson error
