@@ -144,8 +144,8 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	hBackground->SetFillStyle(3001);
 	hBackground->Draw("E2 SAME");
 	if(hSignal) {
-		hSignal->SetFillColor(kGreen);
-		hSignal->SetFillStyle(3001);
+		hSignal->SetFillColor(kPink);
+		hSignal->SetFillStyle(3008);
 		hSignal->Draw("SAME E2");
 	}
 	hData->Draw("SAME");
