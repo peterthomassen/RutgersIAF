@@ -99,12 +99,32 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 		if(sqrtError) {
 			error2 += content; // content = pow(sqrt(content), 2);
 		}
-		error2 += pow(getBinSyst("background", i), 2);
+		error2 += pow(getBinSyst("signal", i), 2);
 		hBackground->SetBinError(i, sqrt(error2));
 	}
 	
+	TH1* hSignal = 0;
+	if(m_components.find("signal") != m_components.end()) {
+		hSignal = (TH1*)m_components.find("signal")->second.first->GetStack()->Last()->Clone();
+		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+			double error2 = pow(hSignal->GetBinError(i), 2);
+			double content = hSignal->GetBinContent(i);
+			// TODO Replace by Poisson error
+			if(sqrtError) {
+				error2 += content; // content = pow(sqrt(content), 2);
+			}
+			error2 += pow(getBinSyst("signal", i), 2);
+			hSignal->SetBinError(i, sqrt(error2));
+		}
+	}
+	
 	TH1* hRatio = (TH1*)hData->Clone("hRatio");
-	hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())) * (1 + 0.5));
+	if(hSignal) {
+		hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
+	} else {
+		hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())));
+	}
+	hData->SetMaximum(1.5 * hData->GetMaximum());
 	//hData->SetMinimum(log ? max(0.1, 0.1 * ((TH1*)m_components.find("background")->second.first->GetStack()->First())->Integral()) : 0);
 	hData->SetMinimum(log ? min(0.1, 0.5 * hBackground->GetMinimum(0)) : 0);
 	// Make sure the range spans at least one order of magnitude in log plots
@@ -123,6 +143,11 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	hBackground->SetFillColor(kBlack);
 	hBackground->SetFillStyle(3001);
 	hBackground->Draw("E2 SAME");
+	if(hSignal) {
+		hSignal->SetFillColor(kGreen);
+		hSignal->SetFillStyle(3001);
+		hSignal->Draw("SAME E2");
+	}
 	hData->Draw("SAME");
 	hData->Draw("AXIS SAME");
 	gStyle->SetOptStat(111111);
