@@ -33,6 +33,10 @@ BaseHandler::BaseHandler(TString ofname, BaseTreeReader* reader)
   m_isRunLumiGood = true;
   m_trackFakeCombination = 0;
   m_trackFakeCombinationIndex = 0;
+  m_tauFakeCombination = 0;
+  m_tauFakeCombinationIndex = 0;
+  m_photonFakeCombination  = 0;
+  m_photonFakeCombinationIndex = 0;
   m_debugMode = false;
 
   m_isMC = false;
@@ -684,6 +688,39 @@ void BaseHandler::createProducts()
 		setVariable("nPhotonFakeMuons", nPhotonFakeMuons);
 		setVariable("nPhotonFakePosMuons", nPhotonFakePosMuons);
 		setVariable("nPhotonFakeNegMuons", nPhotonFakeNegMuons);
+	}
+    //////////////////////////////////
+    ///add fake leptons from tracks///
+    //////////////////////////////////
+    
+	if(pname == "sidebandTaus" && getMode("tauFakeCombination")) {
+		int nSidebandFakeTaus = 0;
+		if(m_tauFakeCombinationIndex == 0) {
+			// Number of ways the taus can be treated as a) sideband taus, b) taus
+			// Start counting at 0
+			m_tauFakeCombination = power(2, m_products[pname].size()) - 1;
+		} else {
+			assert(m_products[pname].size() > 0);
+			unsigned comboIndex = m_tauFakeCombinationIndex;
+			size_t index = m_products[pname].size() - 1;
+			while(comboIndex > 0) {
+				int role = comboIndex % 2;
+				switch(role) {
+					case 0:
+						break;
+					case 1:
+						m_products["goodTaus"].push_back(m_products[pname][index]);
+						sort(m_products["goodTaus"].begin(),m_products["goodTaus"].end(),SignatureObjectComparison);
+						reverse(m_products["goodTaus"].begin(),m_products["goodTaus"].end());
+						m_products[pname].erase(m_products[pname].begin() + index);
+						++nSidebandFakeTaus;
+						break;
+				}
+				comboIndex /= 2;
+				--index;
+			}
+		}
+		setVariable("nSidebandFakeTaus", nSidebandFakeTaus);
 	}
 
   }

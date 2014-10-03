@@ -171,6 +171,8 @@ class BaseHandler : virtual public TObject {
   unsigned m_trackFakeCombinationIndex;
   unsigned m_photonFakeCombination;
   unsigned m_photonFakeCombinationIndex;
+  unsigned m_tauFakeCombination;
+  unsigned m_tauFakeCombinationIndex;
   bool m_isRunLumiGood;
   bool checkRunLumi(int r, int l);
   bool checkRunLumiFromJSON(int RunNumber, int LumiNumber, bool debug = false);
