@@ -40,7 +40,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableSmearMET.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRename.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
-#include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableExtreme.h"
 
 
 void setupProducts(BaseHandler* handler)
@@ -380,20 +380,20 @@ void setupVariables(BaseHandler* handler)
   EventVariablePairMass* elmassGood = new EventVariablePairMass("ELGOODMASS","goodElectrons","GOODEL_",91,15);
   handler->addEventVariable("ELGOODMASS",elmassGood);
 
-  handler->addEventVariable("PROBEMUPLUSPT",new  EventVariableObjectVariableMax<double>("PT","probeMuonsPOS"));
-  handler->addEventVariable("PROBEMUMINUSPT",new  EventVariableObjectVariableMax<double>("PT","probeMuonsNEG"));
-  handler->addEventVariable("PROBEELPLUSPT",new  EventVariableObjectVariableMax<double>("PT","probeElectronsPOS"));
-  handler->addEventVariable("PROBEELMINUSPT",new  EventVariableObjectVariableMax<double>("PT","probeElectronsNEG"));
+  handler->addEventVariable("PROBEMUPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeMuonsPOS"));
+  handler->addEventVariable("PROBEMUMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeMuonsNEG"));
+  handler->addEventVariable("PROBEELPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeElectronsPOS"));
+  handler->addEventVariable("PROBEELMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeElectronsNEG"));
 
-  handler->addEventVariable("GOODMUPLUSPT",new  EventVariableObjectVariableMax<double>("PT","goodMuonsPOS"));
-  handler->addEventVariable("GOODMUMINUSPT",new  EventVariableObjectVariableMax<double>("PT","goodMuonsNEG"));
-  handler->addEventVariable("GOODELPLUSPT",new  EventVariableObjectVariableMax<double>("PT","goodElectronsPOS"));
-  handler->addEventVariable("GOODELMINUSPT",new  EventVariableObjectVariableMax<double>("PT","goodElectronsNEG"));
+  handler->addEventVariable("GOODMUPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodMuonsPOS"));
+  handler->addEventVariable("GOODMUMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodMuonsNEG"));
+  handler->addEventVariable("GOODELPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodElectronsPOS"));
+  handler->addEventVariable("GOODELMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodElectronsNEG"));
 
-  handler->addEventVariable("MCMUPLUSPT",new  EventVariableObjectVariableMax<double>("PT","MCMUONSFROMZPOS"));
-  handler->addEventVariable("MCMUMINUSPT",new  EventVariableObjectVariableMax<double>("PT","MCMUONSFROMZNEG"));
-  handler->addEventVariable("MCELPLUSPT",new  EventVariableObjectVariableMax<double>("PT","MCELECTRONSFROMZPOS"));
-  handler->addEventVariable("MCELMINUSPT",new  EventVariableObjectVariableMax<double>("PT","MCELECTRONSFROMZNEG"));
+  handler->addEventVariable("MCMUPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCMUONSFROMZPOS"));
+  handler->addEventVariable("MCMUMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCMUONSFROMZNEG"));
+  handler->addEventVariable("MCELPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCELECTRONSFROMZPOS"));
+  handler->addEventVariable("MCELMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCELECTRONSFROMZNEG"));
 
 
 
