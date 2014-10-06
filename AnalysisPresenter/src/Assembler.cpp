@@ -120,6 +120,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	m_selection = selection;
 	
 	THnSparse* hs = new THnSparseD("hSparse", varexp.c_str(), variables.size(), &nbins[0], &rangeMin[0], &rangeMax[0]);
+	hs->Sumw2();
 	for(size_t i = 0; i < variables.size(); ++i) {
 		hs->GetAxis(i)->SetName(names[i]);
 		hs->GetAxis(i)->SetTitle(variables[i]);

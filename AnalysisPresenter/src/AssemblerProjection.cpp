@@ -1,5 +1,6 @@
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
 
+#include "Math/QuantFuncMathCore.h"
 #include "TLegend.h"
 #include "TLine.h"
 #include "TPad.h"
@@ -77,6 +78,7 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	pad1->SetBottomMargin(0.025);
 	pad1->Draw();
 	pad1->cd();
+	pad1->SetTicks(1, 1);
 	
 	TString title = (m_title != m_name)
 		? TString::Format("%s (%s)", m_title.Data(), m_name.Data())
@@ -90,6 +92,10 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 		hData->SetBinContent(hData->GetNbinsX() + 1, hData->GetBinContent(hData->GetNbinsX()));
 		hData->SetEntries(nEntries);
 	}
+	for(int i = 0; i < hData->GetNbinsX() + 1; ++i) {
+		hData->SetBinError(i, 1e-3);
+	}
+	hData->SetMarkerStyle(7);
 	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
 	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
@@ -101,6 +107,22 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 		}
 		error2 += pow(getBinSyst("background", i), 2);
 		hBackground->SetBinError(i, sqrt(error2));
+	}
+	
+	TH1* hBackgroundErr = (TH1*)hBackground->Clone();
+	hBackgroundErr->Reset();
+	const double alpha = 1 - 0.6827;
+	for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
+		double n = hBackground->GetBinContent(i);
+		double lo = (n == 0) ? 0 : ROOT::Math::gamma_quantile(alpha/2, n, 1.);
+		double hi = ROOT::Math::gamma_quantile_c(alpha/2, n+1, 1);
+		lo = sqrt(pow(n - lo, 2) + pow(hBackground->GetBinError(i), 2));
+		hi = sqrt(pow(hi - n, 2) + pow(hBackground->GetBinError(i), 2));
+		lo = n - lo;
+		hi = n + hi;
+		n = (lo + hi) / 2;
+		hBackgroundErr->SetBinContent(i, n);
+		hBackgroundErr->SetBinError(i, (hi - lo) / 2);
 	}
 	
 	TH1* hSignal = 0;
@@ -134,22 +156,25 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	hData->GetXaxis()->SetTitle(title);
 	hData->SetLineColor(kRed);
 	
-	hData->Draw();
+	hData->Draw("EP");
 	hData->GetXaxis()->SetLabelFont(43);
 	hData->GetXaxis()->SetLabelSize(0);
 	hData->GetYaxis()->SetLabelFont(43);
 	hData->GetYaxis()->SetLabelSize(16);
 	((TH1*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
-	hBackground->SetFillColor(kBlack);
+	hBackground->SetFillColor(kRed);
 	hBackground->SetFillStyle(3001);
 	hBackground->Draw("E2 SAME");
+	hBackgroundErr->SetFillColor(kBlack);
+	hBackgroundErr->SetFillStyle(3002);
+	hBackgroundErr->Draw("SAME E2");
 	if(hSignal) {
 		hSignal->SetFillColor(kPink);
 		hSignal->SetFillStyle(3008);
 		hSignal->Draw("SAME E2");
 	}
-	hData->Draw("SAME");
-	hData->Draw("AXIS SAME");
+	hData->Draw("EP SAME");
+	hData->Draw("EP AXIS SAME");
 	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	

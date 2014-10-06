@@ -130,10 +130,6 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	m_hn = (THnBase*)hn->Clone();
 	
-	if(!isData()) {
-		m_hn->Sumw2();
-	}
-	
 	cout << "Running " << m_filename << " (" << m_type << ", lumi=" << m_lumi << "/pb) ";
 	TFile f(m_filename);
 	if(f.IsZombie()) {
