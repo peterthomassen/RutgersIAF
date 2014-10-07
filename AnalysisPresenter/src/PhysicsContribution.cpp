@@ -446,7 +446,8 @@ bool PhysicsContribution::setRange(const char* name) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
 	
-	m_rangeStrings.erase(name);
+	const char* title = axis->GetTitle();
+	m_rangeStrings.erase(title);
 	
 	return true;
 }
