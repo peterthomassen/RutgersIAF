@@ -151,7 +151,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			if(!treeR->GetListOfBranches()->FindObject(fakerate.first)) {
 				continue;
 			}
-			selection += TString::Format(" && %s == 0", fakerate.first.Data());
+			selection += TString::Format(" && %s[0] == 0", fakerate.first.Data());
 		}
 	}
 	
@@ -176,12 +176,12 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 				}
 				
 				if(sum.Length() == 0) {
-					sum = fakerate.first;
+					sum = fakerate.first + TString("[0]");
 				} else {
-					sum += TString(" + ") + fakerate.first;
+					sum += TString(" + ") + fakerate.first + TString("[0]");
 				}
 				
-				selection += TString::Format(" * pow(%s, %s)", fakerate.second.Data(), fakerate.first.Data());
+				selection += TString::Format(" * pow(%s, %s[0])", fakerate.second.Data(), fakerate.first.Data());
 			}
 			
 			// Prune MC
@@ -214,9 +214,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	// Limit reading of MC such that the scale factor is no less than minScale (default: 0.01) if the sample is randomly distributed (as given by m_unordered).
 	// This means that we are skipping MC events beyond 100 times the data luminosity.
 	if(!isData() && m_unordered && scale < minScale) {
+		int nOld = n;
+		double scaleOld = scale;
 		n /= minScale / scale;
-		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scale << " --> " << minScale << endl;
-		scale = minScale;
+		scale *= (float)nOld / n;
+		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scaleOld << " --> " << scale << " (target scale: " << minScale << ")" << endl;
 	}
 	m_scale = scale;
 	cout << "scale: " << m_scale << endl;
@@ -230,6 +232,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		if(k + step > n) {
 			step = n - k;
 		}
+		// PT 20141009: I checked that step refers to TTree entries, not entry instances. So we're good even when looping over collections, and always get full events counted properly.
 		long nSelected = treeR->Draw(varexp.c_str(), selection.Data(), "goff candle", step, k);
 		if(nSelected < 0) {
 			throw std::runtime_error("error selecting events");
