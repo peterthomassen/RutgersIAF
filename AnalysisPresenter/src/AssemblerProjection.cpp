@@ -169,9 +169,11 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	hBackgroundErr->SetFillStyle(3002);
 	hBackgroundErr->Draw("SAME E2");
 	if(hSignal) {
+		hSignal->SetMarkerColor(kWhite);
+		hSignal->SetMarkerStyle(21);
 		hSignal->SetFillColor(kPink);
 		hSignal->SetFillStyle(3008);
-		hSignal->Draw("SAME E2");
+		hSignal->Draw("SAME E2 P");
 	}
 	hData->Draw("EP SAME");
 	hData->Draw("EP AXIS SAME");
