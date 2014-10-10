@@ -158,6 +158,8 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	hBackground->Draw("E2 SAME");
 	hBackgroundErr->SetFillColor(kBlack);
 	hBackgroundErr->SetFillStyle(3002);
+	hBackgroundErr->SetMarkerStyle(20);
+	hBackgroundErr->SetMarkerSize(0);
 	hBackgroundErr->Draw("SAME E2");
 	if(hSignal) {
 		hSignal->SetMarkerColor(kWhite);
