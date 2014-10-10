@@ -71,7 +71,7 @@ bool AssemblerProjection::hasOverflowIncluded() const {
 	return m_binForOverflow;
 }
 
-TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, double xmaxFit) {
+TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	m_canvas = new TCanvas("c1", "c1", 700, 700);
 	
 	TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
@@ -99,13 +99,7 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
 	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
-		double error2 = pow(hBackground->GetBinError(i), 2);
-		double content = hBackground->GetBinContent(i);
-		// TODO Replace by Poisson error
-		if(sqrtError) {
-			error2 += content; // content = pow(sqrt(content), 2);
-		}
-		error2 += pow(getBinSyst("background", i), 2);
+		double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
 		hBackground->SetBinError(i, sqrt(error2));
 	}
 	
@@ -129,13 +123,7 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	if(has("signal")) {
 		hSignal = (TH1*)m_components.find("signal")->second.first->GetStack()->Last()->Clone();
 		for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
-			double error2 = pow(hSignal->GetBinError(i), 2);
-			double content = hSignal->GetBinContent(i);
-			// TODO Replace by Poisson error
-			if(sqrtError) {
-				error2 += content; // content = pow(sqrt(content), 2);
-			}
-			error2 += pow(getBinSyst("signal", i), 2);
+			double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
 			hSignal->SetBinError(i, sqrt(error2));
 		}
 	}

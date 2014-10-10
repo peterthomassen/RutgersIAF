@@ -46,22 +46,22 @@ void ZZ() {
 	
 	assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 2, 2);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS.pdf");
-	assembler->project("NGOODJETS", true)->plot(false, true)->SaveAs("ZZ_NGOODJETS.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS.pdf");
+	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ZZ_NGOODJETS.pdf");
 	
 	assembler->project("MLEPTONS", true)->print();
 	
 	assembler->setRange("NOSSF", 1, 2);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF12-0Taus.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF12-0Taus.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF1-0Taus.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-0Taus.pdf");
 	
 	assembler->setRange("NGOODTAUS", 1);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF1-1orMoreTaus.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-1orMoreTaus.pdf");
 	
 	assembler->setRange("NGOODTAUS");
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("ZZ_MLEPTONS_NOSSF1-0orMoreTaus.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-0orMoreTaus.pdf");
 	
 	assembler->setRange();
 	

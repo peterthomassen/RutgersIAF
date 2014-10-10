@@ -50,66 +50,66 @@ void AIC() {
 	assembler->setRange("HT", 0, 200, false);
 	assembler->setRange("MET", 0, 50, false);
 	
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("AIC_MLEPTONS.pdf");
-	assembler->project("MT", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_MT-OFFZ.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_fine.pdf");
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS-OFFZ.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS.pdf");
+	assembler->project("MT", true)->plot(false)->SaveAs("AIC_MLEPTONS_MT-OFFZ.pdf");
+	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_fine.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS-ONZ.pdf");
-	assembler->project("MT", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_MT-ONZ.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS-ONZ.pdf");
+	assembler->project("MT", true)->plot(false)->SaveAs("AIC_MLEPTONS_MT-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	
 	assembler->setRange("NGOODMUONS", 3, 3);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_3mu.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_3mu_fine.pdf");
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3mu-OFFZ.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_3mu.pdf");
+	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_3mu_fine.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3mu-ONZ.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3mu-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("NGOODMUONS");
 	
 	assembler->setRange("NGOODMUONS", 1, 1);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_2el1mu.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_2el1mu_fine.pdf");
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_2el1mu-OFFZ.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_2el1mu.pdf");
+	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_2el1mu_fine.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_2el1mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_2el1mu-ONZ.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_2el1mu-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("NGOODMUONS");
 	
 	assembler->setRange("NGOODELECTRONS", 3, 3);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_3el.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_3el_fine.pdf");
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3el-OFFZ.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_3el.pdf");
+	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_3el_fine.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3el-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3el-ONZ.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3el-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("NGOODELECTRONS");
 	
 	assembler->setRange("NGOODELECTRONS", 1, 1);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_1el2mu.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_1el2mu_fine.pdf");
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_1el2mu-OFFZ.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_1el2mu.pdf");
+	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_1el2mu_fine.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_1el2mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_1el2mu-ONZ.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_1el2mu-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("NGOODELECTRONS");
 	
 	assembler->setRange("(NGOODELECTRONS%2)", 1, 1);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_elFake.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_elFake_fine.pdf");
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_elFake-OFFZ.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_elFake.pdf");
+	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_elFake_fine.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_elFake-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_elFake-ONZ.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_elFake-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("(NGOODELECTRONS%2)");
 	
 	assembler->setRange("(NGOODELECTRONS%2)", 0, 0);
-	assembler->project("MLEPTONS", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_muFake.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false, true)->SaveAs("AIC_MLEPTONS_muFake_fine.pdf");
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_muFake-OFFZ.pdf");
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_muFake.pdf");
+	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_muFake_fine.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_muFake-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false, true)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_muFake-ONZ.pdf");
+	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_muFake-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("(NGOODELECTRONS%2)");
 	

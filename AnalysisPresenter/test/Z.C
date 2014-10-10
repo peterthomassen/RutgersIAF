@@ -50,8 +50,8 @@ void Z() {
 	assembler->setRange("HT", 0, 200, false);
 	assembler->setRange("MET", 0, 50, false);
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("MINMUONPT", true)->plot(false, true)->SaveAs("Zloose_MINMUONPT.pdf");
-	assembler->project("MINELECTRONPT", true)->plot(false, true)->SaveAs("Zloose_MINELECTRONPT.pdf");
+	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("Zloose_MINMUONPT.pdf");
+	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("Zloose_MINELECTRONPT.pdf");
 	assembler->setRange("ONZ");
 	
 	assembler->setRange("HT", 0, 100, false);
@@ -60,41 +60,41 @@ void Z() {
 	
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, true, 81, 101)->SaveAs("Z_MOSSF.pdf");
-	assembler->project("ONZ", true)->plot(false, true)->SaveAs("Z_ONZ.pdf");
+	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_ONZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("MINMUONPT", true)->plot(false, true)->SaveAs("Z_MINMUONPT.pdf");
-	assembler->project("MINELECTRONPT", true)->plot(false, true)->SaveAs("Z_MINELECTRONPT.pdf");
+	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("Z_MINMUONPT.pdf");
+	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("Z_MINELECTRONPT.pdf");
 	assembler->setRange("ONZ");
 	
 	assembler->setRange("elFake", 1, 1);
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, true, 81, 101)->SaveAs("Z_elFake_MOSSF.pdf");
-	assembler->project("ONZ", true)->plot(false, true)->SaveAs("Z_elFake_ONZ.pdf");
+	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_elFake_ONZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("MINELECTRONPT", true)->plot(false, true)->SaveAs("Z_elFake_MINELECTRONPT.pdf");
+	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("Z_elFake_MINELECTRONPT.pdf");
 	assembler->setRange("ONZ");
 	assembler->setRange("NGOODELECTRONS", 1, 1);
 	assembler->project("MOSSF", true)->plot(false, true, 81, 101)->SaveAs("Z_1el2mu_MOSSF.pdf");
-	assembler->project("ONZ", true)->plot(false, true)->SaveAs("Z_1el2mu_ONZ.pdf");
+	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_1el2mu_ONZ.pdf");
 	assembler->setRange("NGOODELECTRONS", 3, 3);
 	assembler->project("MOSSF", true)->plot(false, true, 81, 101)->SaveAs("Z_3el_MOSSF.pdf");
-	assembler->project("ONZ", true)->plot(false, true)->SaveAs("Z_3el_ONZ.pdf");
+	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_3el_ONZ.pdf");
 	assembler->setRange("NGOODELECTRONS");
 	assembler->setRange("elFake");
 	
 	assembler->setRange("muFake", 1, 1);
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, true, 81, 101)->SaveAs("Z_muFake_MOSSF.pdf");
-	assembler->project("ONZ", true)->plot(false, true)->SaveAs("Z_muFake_ONZ.pdf");
+	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_muFake_ONZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
-	assembler->project("MINMUONPT", true)->plot(false, true)->SaveAs("Z_muFake_MINMUONPT.pdf");
+	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("Z_muFake_MINMUONPT.pdf");
 	assembler->setRange("ONZ");
 	assembler->setRange("NGOODMUONS", 1, 1);
 	assembler->project("MOSSF", true)->plot(false, true, 81, 101)->SaveAs("Z_2el1mu_MOSSF.pdf");
-	assembler->project("ONZ", true)->plot(false, true)->SaveAs("Z_2el1mu_ONZ.pdf");
+	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_2el1mu_ONZ.pdf");
 	assembler->setRange("NGOODMUONS", 3, 3);
 	assembler->project("MOSSF", true)->plot(false, true, 81, 101)->SaveAs("Z_3mu_MOSSF.pdf");
-	assembler->project("ONZ", true)->plot(false, true)->SaveAs("Z_3mu_ONZ.pdf");
+	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_3mu_ONZ.pdf");
 	assembler->setRange("NGOODMUONS");
 	assembler->setRange("muFake");
 	
