@@ -194,10 +194,10 @@ AssemblerProjection* Assembler::project(const char* name, const bool binForOverf
 		// Prepare vector of contributions for sorting, and take care of error correlations
 		std::vector<std::pair<TH1D*, double>> vh;
 		THStack* hsUncertainties = new THStack("hsUncertainties", m_varexp + TString(" {") + m_selection + TString("}"));
-		for(const auto &contribution : typeProjection.second) {
-			vh.push_back(make_pair(contribution->getHistogram(), contribution->getHistogram()->Integral()));
+		for(const auto &contributionProjection : typeProjection.second) {
+			vh.push_back(make_pair(contributionProjection->getHistogram(), contributionProjection->getHistogram()->Integral()));
 			
-			for(const auto &uncertainty : contribution->getUncertainties()) {
+			for(const auto &uncertainty : contributionProjection->getUncertainties()) {
 				TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
 				if(hUncertainty) {
 					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {

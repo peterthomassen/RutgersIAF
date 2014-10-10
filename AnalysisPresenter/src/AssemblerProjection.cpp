@@ -99,6 +99,8 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
 	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+		// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
+		// Those are together to "comprehensive systematic uncertainty"
 		double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
 		hBackground->SetBinError(i, sqrt(error2));
 	}
@@ -110,6 +112,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 		double n = hBackground->GetBinContent(i);
 		double lo = (n == 0) ? 0 : ROOT::Math::gamma_quantile(alpha/2, n, 1.);
 		double hi = ROOT::Math::gamma_quantile_c(alpha/2, n+1, 1);
+		// Now, combine Poisson fluctuation range with "comprehensive systematic uncertainty" from above
 		lo = sqrt(pow(n - lo, 2) + pow(hBackground->GetBinError(i), 2));
 		hi = sqrt(pow(hi - n, 2) + pow(hBackground->GetBinError(i), 2));
 		lo = n - lo;
