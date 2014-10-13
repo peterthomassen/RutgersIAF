@@ -176,64 +176,67 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 		m_trackFakeCombination = 0;
 		m_photonFakeCombination = 0;
+		m_tauFakeCombination = 0;
 		if(done) break;
 		for(m_trackFakeCombinationIndex = 0; m_trackFakeCombinationIndex <= m_trackFakeCombination; ++m_trackFakeCombinationIndex) {
 			for(m_photonFakeCombinationIndex = 0; m_photonFakeCombinationIndex <= m_photonFakeCombination; ++m_photonFakeCombinationIndex) {
-				m_reader->GetEntry(m_currentEntry);
-				if (m_currentEntry % 100000 == 0) {
-					cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
-				}
-				
-				int run = 0, lumiBlock = 0;
-				long event = 0;
-				bool hasRun = m_reader->getVariable("RUN",run);
-				bool hasLumi = m_reader->getVariable("LUMI",lumiBlock);
-				bool hasEvent = m_reader->getVariable("EVENT",event);
-				
-				if(!hasRun || !hasLumi || !hasEvent)continue;
-				
-				if(onlyRun >= 0) {
-					if(run != onlyRun || event != onlyEvent) {
-						continue;
+				for(m_tauFakeCombinationIndex = 0; m_tauFakeCombinationIndex <= m_tauFakeCombination; ++m_tauFakeCombinationIndex) {
+					m_reader->GetEntry(m_currentEntry);
+					if (m_currentEntry % 100000 == 0) {
+						cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
 					}
-					cout << "This is entry " << m_currentEntry << endl;
-					done = true;
-				}
-				
-				if(onlyRun >= 0 && m_trackFakeCombinationIndex + m_photonFakeCombinationIndex == 0 && getDebugMode()) {
-					m_reader->dumpEventInfo();
-				}
-				
-				if(getMode("trackFakeCombination")) cout << "E=" << event << " trackIt=" << m_trackFakeCombinationIndex << " photonIt=" << m_photonFakeCombinationIndex << '\n';
-				
-				if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end()) {
-					dumpEventInfo();
-				}
-				if(m_doRunLumiCheck || m_doRunLumiCheckFromJSON){
-					if(run != m_checkedRun || lumiBlock != m_checkedLumi){
-						m_isRunLumiGood = ((m_doRunLumiCheck && checkRunLumi(run,lumiBlock)) || (m_doRunLumiCheckFromJSON && checkRunLumiFromJSON(run,lumiBlock)));
-						m_checkedRun = run;
-						m_checkedLumi = lumiBlock;
+					
+					int run = 0, lumiBlock = 0;
+					long event = 0;
+					bool hasRun = m_reader->getVariable("RUN",run);
+					bool hasLumi = m_reader->getVariable("LUMI",lumiBlock);
+					bool hasEvent = m_reader->getVariable("EVENT",event);
+					
+					if(!hasRun || !hasLumi || !hasEvent)continue;
+					
+					if(onlyRun >= 0) {
+						if(run != onlyRun || event != onlyEvent) {
+							continue;
+						}
+						cout << "This is entry " << m_currentEntry << endl;
+						done = true;
+					}
+					
+					if(onlyRun >= 0 && m_trackFakeCombinationIndex + m_photonFakeCombinationIndex + m_tauFakeCombinationIndex == 0 && getDebugMode()) {
+						m_reader->dumpEventInfo();
+					}
+					
+					if(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination")) cout << "E=" << event << " trackIt=" << m_trackFakeCombinationIndex << " photonIt=" << m_photonFakeCombinationIndex << " tauIt=" << m_tauFakeCombinationIndex << '\n';
+					
+					if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end()) {
+						dumpEventInfo();
+					}
+					if(m_doRunLumiCheck || m_doRunLumiCheckFromJSON){
+						if(run != m_checkedRun || lumiBlock != m_checkedLumi){
+							m_isRunLumiGood = ((m_doRunLumiCheck && checkRunLumi(run,lumiBlock)) || (m_doRunLumiCheckFromJSON && checkRunLumiFromJSON(run,lumiBlock)));
+							m_checkedRun = run;
+							m_checkedLumi = lumiBlock;
 
+							if(!m_isRunLumiGood) {
+								if(getDebugMode()) std::cout << "JSON: Decided against running over run " << run << ", ls " << lumiBlock << std::endl;
+							} else {
+								if(getDebugMode()) std::cout << "JSON: Will run over run " << run << ", ls " << lumiBlock << std::endl;
+							}
+						}
 						if(!m_isRunLumiGood) {
-							if(getDebugMode()) std::cout << "JSON: Decided against running over run " << run << ", ls " << lumiBlock << std::endl;
-						} else {
-							if(getDebugMode()) std::cout << "JSON: Will run over run " << run << ", ls " << lumiBlock << std::endl;
+							continue;
 						}
 					}
-					if(!m_isRunLumiGood) {
-						continue;
+					
+					prepareEvent();
+					analyzeEvent();
+
+					if(applyHandlerCuts()){
+					  bool saveEvent = false;
+					  bool isSet = getVariable("WRITEEVENT",saveEvent);
+					  if(m_writer && isSet && saveEvent)m_writer->fillTree();
+
 					}
-				}
-				
-				prepareEvent();
-				analyzeEvent();
-
-				if(applyHandlerCuts()){
-				  bool saveEvent = false;
-				  bool isSet = getVariable("WRITEEVENT",saveEvent);
-				  if(m_writer && isSet && saveEvent)m_writer->fillTree();
-
 				}
 			}
 		}
@@ -689,11 +692,12 @@ void BaseHandler::createProducts()
 		setVariable("nPhotonFakePosMuons", nPhotonFakePosMuons);
 		setVariable("nPhotonFakeNegMuons", nPhotonFakeNegMuons);
 	}
+	
     //////////////////////////////////
     ///add fake leptons from tracks///
     //////////////////////////////////
     
-	if(pname == "sidebandTaus" && getMode("tauFakeCombination")) {
+    if(pname == "sidebandTaus" && getMode("tauFakeCombination")) {
 		int nSidebandFakeTaus = 0;
 		if(m_tauFakeCombinationIndex == 0) {
 			// Number of ways the taus can be treated as a) sideband taus, b) taus
@@ -762,7 +766,7 @@ void BaseHandler::calcPhysicsWeight()
 //-----------------------------------------
 void BaseHandler::prepareEvent()
 {
-  if(m_currentEntry == m_lastEntryPrepared && !(getMode("trackFakeCombination") || getMode("photonFakeCombination")))return;
+  if(m_currentEntry == m_lastEntryPrepared && !(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination")))return;
   resetProducts();
   resetVariables();
 
