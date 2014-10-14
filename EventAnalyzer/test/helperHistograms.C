@@ -106,10 +106,8 @@ void setupSignatures(BaseHandler* handler)
 {
   TString products[6] = {"posGoodMuons","negGoodMuons","posGoodElectrons","negGoodElectrons","posGoodTracks","negGoodTracks"};
   for(int i = 0; i < 6; i++){
-    //products[i].ToUpper();
     TString varname = TString::Format("N%s",products[i].Data());
     varname.ToUpper();
-    handler->addEventVariable(varname,new EventVariableN(varname,products[i]));
     for(int j = 0; j < 4; j++){
       TString varname1 = TString::Format("N%sEQ%i",products[i].Data(),j);
       varname1.ToUpper();

@@ -472,6 +472,13 @@ void setupVariables(BaseHandler* handler,bool isMC = false)
   const double mZ = 91;
   const double mW = 80.385;
   
+  TString products[6] = {"posGoodMuons","negGoodMuons","posGoodElectrons","negGoodElectrons","posGoodTracks","negGoodTracks"};
+  for(int i = 0; i < 6; i++){
+    TString varname = TString::Format("N%s",products[i].Data());
+    varname.ToUpper();
+    handler->addEventVariable(varname,new EventVariableN(varname,products[i]));
+  }
+  
   handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
   handler->addEventVariable("QGOODELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","goodElectrons"));
   handler->addEventVariable("PTGOODELECTRONS", new EventVariableObjectVariableVector<double>("PT","goodElectrons"));
