@@ -107,6 +107,8 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	
 	TH1* hBackgroundErr = (TH1*)hBackground->Clone();
 	hBackgroundErr->Reset();
+	TH1* hBackgroundFullError = (TH1*)hBackground->Clone();
+	hBackgroundFullError->Reset();
 	const double alpha = 1 - 0.6827;
 	for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
 		double n = hBackground->GetBinContent(i);
@@ -115,6 +117,8 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 		// Now, combine Poisson fluctuation range with "comprehensive systematic uncertainty" from above
 		lo = sqrt(pow(n - lo, 2) + pow(hBackground->GetBinError(i), 2));
 		hi = sqrt(pow(hi - n, 2) + pow(hBackground->GetBinError(i), 2));
+		hBackgroundFullError->SetBinContent(i, hBackground->GetBinContent(i));
+		hBackgroundFullError->SetBinError(i, lo);
 		lo = n - lo;
 		hi = n + hi;
 		n = (lo + hi) / 2;
@@ -194,7 +198,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
 		hRatio->SetBinError(i, 0);
 	}
-	hRatio->Divide(hBackground);
+	hRatio->Divide(hBackgroundFullError);
 	hRatio->GetXaxis()->SetLabelFont(43);
 	hRatio->GetXaxis()->SetLabelSize(16);
 	hRatio->GetYaxis()->SetLabelFont(43);
@@ -216,6 +220,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	gStyle->SetOptFit(1111);
 	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
 	hRatio->Fit("pol0", "", "SAME", xminFit, xmaxFit);
+	//hRatio->Fit("pol1", "", "SAME", xminFit, xmaxFit);
 	
 	return m_canvas;
 }
