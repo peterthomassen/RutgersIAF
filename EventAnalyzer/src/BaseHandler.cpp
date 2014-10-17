@@ -174,18 +174,18 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 		m_writer->setNumberOfInputEvents(nEntryHigh - nEntryLow);
 	}
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
+		if(done) break;
+		if (m_currentEntry % 100000 == 0) {
+			cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
+		}
+		
 		m_trackFakeCombination = 0;
 		m_photonFakeCombination = 0;
 		m_tauFakeCombination = 0;
-		if(done) break;
 		for(m_trackFakeCombinationIndex = 0; m_trackFakeCombinationIndex <= m_trackFakeCombination; ++m_trackFakeCombinationIndex) {
 			for(m_photonFakeCombinationIndex = 0; m_photonFakeCombinationIndex <= m_photonFakeCombination; ++m_photonFakeCombinationIndex) {
 				for(m_tauFakeCombinationIndex = 0; m_tauFakeCombinationIndex <= m_tauFakeCombination; ++m_tauFakeCombinationIndex) {
 					m_reader->GetEntry(m_currentEntry);
-					if (m_currentEntry % 100000 == 0) {
-						cout<<"Processing event "<<m_currentEntry<<" of "<<nevents<<endl;
-					}
-					
 					int run = 0, lumiBlock = 0;
 					long event = 0;
 					bool hasRun = m_reader->getVariable("RUN",run);
@@ -198,7 +198,9 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						if(run != onlyRun || event != onlyEvent) {
 							continue;
 						}
-						cout << "This is entry " << m_currentEntry << endl;
+						if(m_trackFakeCombinationIndex + m_photonFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
+							cout << "This is entry " << m_currentEntry << endl;
+						}
 						done = true;
 					}
 					
@@ -206,7 +208,17 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						m_reader->dumpEventInfo();
 					}
 					
-					if(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination")) cout << "E=" << event << " trackIt=" << m_trackFakeCombinationIndex << " photonIt=" << m_photonFakeCombinationIndex << " tauIt=" << m_tauFakeCombinationIndex << '\n';
+					if(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination")) {
+						cout << "E=" << event;
+						if(getMode("trackFakeCombination")) cout << " trackIt=" << m_trackFakeCombinationIndex;
+						if(getMode("photonFakeCombination")) cout << " photonIt=" << m_photonFakeCombinationIndex;
+						if(getMode("tauFakeCombination")) cout << " tauIt=" << m_tauFakeCombinationIndex;
+						if((bool)m_trackFakeCombinationIndex + (bool)m_photonFakeCombinationIndex + (bool)m_tauFakeCombinationIndex > 1) {
+							cout << ", skipping (multiple)" << '\n';
+							continue;
+						}
+						cout << '\n';
+					}
 					
 					if(m_dumpList.find(run) != m_dumpList.end() && m_dumpList[run].find(lumiBlock) != m_dumpList[run].end() && find(m_dumpList[run][lumiBlock].begin(),m_dumpList[run][lumiBlock].end(),event) != m_dumpList[run][lumiBlock].end()) {
 						dumpEventInfo();
@@ -541,7 +553,7 @@ void BaseHandler::createProducts()
     ///add fake leptons from tracks///
     //////////////////////////////////
     
-	if(pname == "goodTracks" && getMode("trackFakeCombination")) {
+	if(pname == "goodTracks" && getMode("trackFakeCombination") && m_photonFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
 		int nTrackFakeElectrons = 0;
 		int nTrackFakePosElectrons = 0;
 		int nTrackFakeNegElectrons = 0;
@@ -604,7 +616,7 @@ void BaseHandler::createProducts()
     ///add fake leptons from photons///
     //////////////////////////////////
     
-	if(pname == "goodPhotons" && getMode("photonFakeCombination")) {
+	if(pname == "goodPhotons" && getMode("photonFakeCombination") && m_trackFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
 		int nPhotonFakeElectrons = 0;
 		int nPhotonFakePosElectrons = 0;
 		int nPhotonFakeNegElectrons = 0;
@@ -697,7 +709,7 @@ void BaseHandler::createProducts()
     ///add fake leptons from tracks///
     //////////////////////////////////
     
-    if(pname == "sidebandTaus" && getMode("tauFakeCombination")) {
+    if(pname == "sidebandTaus" && getMode("tauFakeCombination") && m_trackFakeCombinationIndex + m_photonFakeCombinationIndex == 0) {
 		int nSidebandFakeTaus = 0;
 		if(m_tauFakeCombinationIndex == 0) {
 			// Number of ways the taus can be treated as a) sideband taus, b) taus
