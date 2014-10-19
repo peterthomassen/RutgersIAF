@@ -2,3 +2,4 @@
 <bin name="haddR" file="haddR.cpp"/>
 <bin name="lheReader" file="lheReader.cpp"/>
 <bin name="aodsimReader" file="aodsimReader.cpp"/>
+<bin name="kfactorReader" file="kfactorReader.cpp"/>
