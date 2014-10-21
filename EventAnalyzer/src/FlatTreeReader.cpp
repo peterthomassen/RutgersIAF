@@ -27,6 +27,7 @@ FlatTreeReader::FlatTreeReader(TTree* tree) : BaseTreeReader(tree)
 
 FlatTreeReader::~FlatTreeReader()
 {
+  clonesarray_->Delete();
    if (!m_inTree) return;
    delete m_inTree->GetCurrentFile();
 
@@ -68,6 +69,7 @@ void FlatTreeReader::makeProducts()
     v.push_back(so);
   }
   m_productmap["ALL"] = v;
+  clonesarray_->Delete();
 
 }
 void FlatTreeReader::createVariables()
