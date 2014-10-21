@@ -7,6 +7,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableInRange.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMass.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableN.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableTF1.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOS.h"
@@ -504,7 +505,7 @@ void setupProducts(BaseHandler* handler)
 
   handler->addProduct("goodPhotons","ALLPHOTONS");
   handler->addProductCut("goodPhotons","PT15");
-  handler->addProductCut("goddPhotons","ETA2p4");
+  handler->addProductCut("goodPhotons","ETA2p4");
   handler->addProductCut("goodPhotons","PHOTON_COMBINED");
 
   //////////////
