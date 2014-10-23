@@ -553,55 +553,57 @@ void BaseHandler::createProducts()
     ///add fake leptons from tracks///
     //////////////////////////////////
     
-	if(pname == "goodTracks" && getMode("trackFakeCombination") && m_photonFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
+	if(pname == "goodTracks" && getMode("trackFakeCombination")) {
 		int nTrackFakeElectrons = 0;
 		int nTrackFakePosElectrons = 0;
 		int nTrackFakeNegElectrons = 0;
 		int nTrackFakeMuons = 0;
 		int nTrackFakePosMuons = 0;
 		int nTrackFakeNegMuons = 0;
-		if(m_trackFakeCombinationIndex == 0) {
-			// Number of ways the tracks can be treated as a) tracks, b) electrons, c) muons
-			// Start counting at 0
-			m_trackFakeCombination = power(3, m_products[pname].size()) - 1;
-		} else {
-			assert(m_products[pname].size() > 0);
-			unsigned comboIndex = m_trackFakeCombinationIndex;
-			size_t index = m_products[pname].size() - 1;
-			while(comboIndex > 0) {
-				double charge = 0;
-				assert(m_products[pname][index]->getVariable("CHARGE", charge));
-				int role = comboIndex % 3;
-				switch(role) {
-					case 0:
-						break;
-					case 1:
-						m_products["goodElectrons"].push_back(m_products[pname][index]);
-						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
-						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
-						m_products[pname].erase(m_products[pname].begin() + index);
-						++nTrackFakeElectrons;
-						if(charge > 0) {
-							++nTrackFakePosElectrons;
-						} else {
-							++nTrackFakeNegElectrons;
-						}
-						break;
-					case 2:
-						m_products["goodMuons"].push_back(m_products[pname][index]);
-						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
-						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
-						m_products[pname].erase(m_products[pname].begin() + index);
-						++nTrackFakeMuons;
-						if(charge > 0) {
-							++nTrackFakePosMuons;
-						} else {
-							++nTrackFakeNegMuons;
-						}
-						break;
+		if(m_photonFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
+			if(m_trackFakeCombinationIndex == 0) {
+				// Number of ways the tracks can be treated as a) tracks, b) electrons, c) muons
+				// Start counting at 0
+				m_trackFakeCombination = power(3, m_products[pname].size()) - 1;
+			} else {
+				assert(m_products[pname].size() > 0);
+				unsigned comboIndex = m_trackFakeCombinationIndex;
+				size_t index = m_products[pname].size() - 1;
+				while(comboIndex > 0) {
+					double charge = 0;
+					assert(m_products[pname][index]->getVariable("CHARGE", charge));
+					int role = comboIndex % 3;
+					switch(role) {
+						case 0:
+							break;
+						case 1:
+							m_products["goodElectrons"].push_back(m_products[pname][index]);
+							sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
+							reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
+							m_products[pname].erase(m_products[pname].begin() + index);
+							++nTrackFakeElectrons;
+							if(charge > 0) {
+								++nTrackFakePosElectrons;
+							} else {
+								++nTrackFakeNegElectrons;
+							}
+							break;
+						case 2:
+							m_products["goodMuons"].push_back(m_products[pname][index]);
+							sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
+							reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
+							m_products[pname].erase(m_products[pname].begin() + index);
+							++nTrackFakeMuons;
+							if(charge > 0) {
+								++nTrackFakePosMuons;
+							} else {
+								++nTrackFakeNegMuons;
+							}
+							break;
+					}
+					comboIndex /= 3;
+					--index;
 				}
-				comboIndex /= 3;
-				--index;
 			}
 		}
 		setVariable("nTrackFakeElectrons", nTrackFakeElectrons);
@@ -616,85 +618,87 @@ void BaseHandler::createProducts()
     ///add fake leptons from photons///
     //////////////////////////////////
     
-	if(pname == "goodPhotons" && getMode("photonFakeCombination") && m_trackFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
+	if(pname == "goodPhotons" && getMode("photonFakeCombination")) {
 		int nPhotonFakeElectrons = 0;
 		int nPhotonFakePosElectrons = 0;
 		int nPhotonFakeNegElectrons = 0;
 		int nPhotonFakeMuons = 0;
 		int nPhotonFakePosMuons = 0;
 		int nPhotonFakeNegMuons = 0;
-		if(m_photonFakeCombinationIndex == 0) {
-			// Number of ways the photons can be treated as a) photons, b) el+, c) el-, d) mu+, e) mu-
-			// Start counting at 0
-			m_photonFakeCombination = power(5, m_products[pname].size()) - 1;
-		} else {
-			assert(m_products[pname].size() > 0);
-			unsigned comboIndex = m_photonFakeCombinationIndex;
-			size_t index = m_products[pname].size() - 1;
-			while(comboIndex > 0) {
-				int role = comboIndex % 5;
-				switch(role) {
-					case 0:
-						break;
-					case 1:
-/*						*m_products[pname][index] *= 0.9;
-						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
-							TString varname = m_object_variable_list[k];
-							m_object_variables[varname]->calculate(m_products[pname][index]);
-						}
-*/						m_products[pname][index]->setVariable("CHARGE", +1.0);
-						m_products["goodElectrons"].push_back(m_products[pname][index]);
-						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
-						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
-						m_products[pname].erase(m_products[pname].begin() + index);
-						++nPhotonFakeElectrons;
-						++nPhotonFakePosElectrons;
-						break;
-					case 2:
-/*						*m_products[pname][index] *= 0.9;
-						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
-							TString varname = m_object_variable_list[k];
-							m_object_variables[varname]->calculate(m_products[pname][index]);
-						}
-*/						m_products[pname][index]->setVariable("CHARGE", -1.0);
-						m_products["goodElectrons"].push_back(m_products[pname][index]);
-						sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
-						reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
-						m_products[pname].erase(m_products[pname].begin() + index);
-						++nPhotonFakeElectrons;
-						++nPhotonFakeNegElectrons;
-						break;
-					case 3:
-						*m_products[pname][index] *= 0.8;
-						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
-							TString varname = m_object_variable_list[k];
-							m_object_variables[varname]->calculate(m_products[pname][index]);
-						}
-						m_products[pname][index]->setVariable("CHARGE", +1.0);
-						m_products["goodMuons"].push_back(m_products[pname][index]);
-						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
-						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
-						m_products[pname].erase(m_products[pname].begin() + index);
-						++nPhotonFakeMuons;
-						++nPhotonFakePosMuons;
-						break;
-					case 4:
-						*m_products[pname][index] *= 0.8;
-						for(int k = 0; k < (int)m_object_variable_list.size(); k++){
-							TString varname = m_object_variable_list[k];
-							m_object_variables[varname]->calculate(m_products[pname][index]);
-						}
-						m_products[pname][index]->setVariable("CHARGE", -1.0);
-						m_products["goodMuons"].push_back(m_products[pname][index]);
-						sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
-						reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
-						m_products[pname].erase(m_products[pname].begin() + index);
-						++nPhotonFakeMuons;
-						++nPhotonFakeNegMuons;
-						break;
+		if(m_trackFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
+			if(m_photonFakeCombinationIndex == 0) {
+				// Number of ways the photons can be treated as a) photons, b) el+, c) el-, d) mu+, e) mu-
+				// Start counting at 0
+				m_photonFakeCombination = power(5, m_products[pname].size()) - 1;
+			} else {
+				assert(m_products[pname].size() > 0);
+				unsigned comboIndex = m_photonFakeCombinationIndex;
+				size_t index = m_products[pname].size() - 1;
+				while(comboIndex > 0) {
+					int role = comboIndex % 5;
+					switch(role) {
+						case 0:
+							break;
+						case 1:
+/*							*m_products[pname][index] *= 0.9;
+							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+								TString varname = m_object_variable_list[k];
+								m_object_variables[varname]->calculate(m_products[pname][index]);
+							}
+*/							m_products[pname][index]->setVariable("CHARGE", +1.0);
+							m_products["goodElectrons"].push_back(m_products[pname][index]);
+							sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
+							reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
+							m_products[pname].erase(m_products[pname].begin() + index);
+							++nPhotonFakeElectrons;
+							++nPhotonFakePosElectrons;
+							break;
+						case 2:
+/*							*m_products[pname][index] *= 0.9;
+							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+								TString varname = m_object_variable_list[k];
+								m_object_variables[varname]->calculate(m_products[pname][index]);
+							}
+*/							m_products[pname][index]->setVariable("CHARGE", -1.0);
+							m_products["goodElectrons"].push_back(m_products[pname][index]);
+							sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
+							reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
+							m_products[pname].erase(m_products[pname].begin() + index);
+							++nPhotonFakeElectrons;
+							++nPhotonFakeNegElectrons;
+							break;
+						case 3:
+							*m_products[pname][index] *= 0.8;
+							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+								TString varname = m_object_variable_list[k];
+								m_object_variables[varname]->calculate(m_products[pname][index]);
+							}
+							m_products[pname][index]->setVariable("CHARGE", +1.0);
+							m_products["goodMuons"].push_back(m_products[pname][index]);
+							sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
+							reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
+							m_products[pname].erase(m_products[pname].begin() + index);
+							++nPhotonFakeMuons;
+							++nPhotonFakePosMuons;
+							break;
+						case 4:
+							*m_products[pname][index] *= 0.8;
+							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
+								TString varname = m_object_variable_list[k];
+								m_object_variables[varname]->calculate(m_products[pname][index]);
+							}
+							m_products[pname][index]->setVariable("CHARGE", -1.0);
+							m_products["goodMuons"].push_back(m_products[pname][index]);
+							sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
+							reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
+							m_products[pname].erase(m_products[pname].begin() + index);
+							++nPhotonFakeMuons;
+							++nPhotonFakeNegMuons;
+							break;
+					}
+					comboIndex /= 5;
+					--index;
 				}
-				comboIndex /= 5;
-				--index;
 			}
 		}
 		setVariable("nPhotonFakeElectrons", nPhotonFakeElectrons);
@@ -709,31 +713,33 @@ void BaseHandler::createProducts()
     ///add fake leptons from tracks///
     //////////////////////////////////
     
-    if(pname == "sidebandTaus" && getMode("tauFakeCombination") && m_trackFakeCombinationIndex + m_photonFakeCombinationIndex == 0) {
+    if(pname == "sidebandTaus" && getMode("tauFakeCombination")) {
 		int nSidebandFakeTaus = 0;
-		if(m_tauFakeCombinationIndex == 0) {
-			// Number of ways the taus can be treated as a) sideband taus, b) taus
-			// Start counting at 0
-			m_tauFakeCombination = power(2, m_products[pname].size()) - 1;
-		} else {
-			assert(m_products[pname].size() > 0);
-			unsigned comboIndex = m_tauFakeCombinationIndex;
-			size_t index = m_products[pname].size() - 1;
-			while(comboIndex > 0) {
-				int role = comboIndex % 2;
-				switch(role) {
-					case 0:
-						break;
-					case 1:
-						m_products["goodTaus"].push_back(m_products[pname][index]);
-						sort(m_products["goodTaus"].begin(),m_products["goodTaus"].end(),SignatureObjectComparison);
-						reverse(m_products["goodTaus"].begin(),m_products["goodTaus"].end());
-						m_products[pname].erase(m_products[pname].begin() + index);
-						++nSidebandFakeTaus;
-						break;
+		if(m_trackFakeCombinationIndex + m_photonFakeCombinationIndex == 0) {
+			if(m_tauFakeCombinationIndex == 0) {
+				// Number of ways the taus can be treated as a) sideband taus, b) taus
+				// Start counting at 0
+				m_tauFakeCombination = power(2, m_products[pname].size()) - 1;
+			} else {
+				assert(m_products[pname].size() > 0);
+				unsigned comboIndex = m_tauFakeCombinationIndex;
+				size_t index = m_products[pname].size() - 1;
+				while(comboIndex > 0) {
+					int role = comboIndex % 2;
+					switch(role) {
+						case 0:
+							break;
+						case 1:
+							m_products["goodTaus"].push_back(m_products[pname][index]);
+							sort(m_products["goodTaus"].begin(),m_products["goodTaus"].end(),SignatureObjectComparison);
+							reverse(m_products["goodTaus"].begin(),m_products["goodTaus"].end());
+							m_products[pname].erase(m_products[pname].begin() + index);
+							++nSidebandFakeTaus;
+							break;
+					}
+					comboIndex /= 2;
+					--index;
 				}
-				comboIndex /= 2;
-				--index;
 			}
 		}
 		setVariable("nSidebandFakeTaus", nSidebandFakeTaus);
