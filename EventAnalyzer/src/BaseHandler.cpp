@@ -573,6 +573,7 @@ void BaseHandler::createProducts()
 					double charge = 0;
 					assert(m_products[pname][index]->getVariable("CHARGE", charge));
 					int role = comboIndex % 3;
+					m_products[pname][index]->setVariable("fakeRole", role);
 					switch(role) {
 						case 0:
 							break;
@@ -636,6 +637,7 @@ void BaseHandler::createProducts()
 				size_t index = m_products[pname].size() - 1;
 				while(comboIndex > 0) {
 					int role = comboIndex % 5;
+					m_products[pname][index]->setVariable("fakeRole", role);
 					switch(role) {
 						case 0:
 							break;
@@ -726,6 +728,7 @@ void BaseHandler::createProducts()
 				size_t index = m_products[pname].size() - 1;
 				while(comboIndex > 0) {
 					int role = comboIndex % 2;
+					m_products[pname][index]->setVariable("fakeRole", role);
 					switch(role) {
 						case 0:
 							break;
