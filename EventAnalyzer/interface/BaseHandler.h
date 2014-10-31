@@ -57,19 +57,19 @@ class BaseHandler : virtual public TObject {
   virtual void addHistogram(SignatureTH1F*);
   virtual void addHistogram(SignatureTH2F*);
   virtual void addHistogram(SignatureTH3F*);
-  void addHistogram(SignatureTH1F*, TString signatureRegExp);
-  void addHistogram(SignatureTH2F*, TString signatureRegExp);
-  void addHistogram(SignatureTH3F*, TString signatureRegExp);
+  virtual void addHistogram(SignatureTH1F*, TString signatureRegExp);
+  virtual void addHistogram(SignatureTH2F*, TString signatureRegExp);
+  virtual void addHistogram(SignatureTH3F*, TString signatureRegExp);
 
   virtual double getPhysicsWeight(){return m_physicsWeight;}
   virtual Signature* addSignature(const char* name, const char* option="");
-  void addSignature(Signature* sig) {m_Signatures.push_back(sig);}
-  void addPreCutSignature(const char*, const char*);
-  void addPreCutSignature(Signature* sig){m_preHandlerCutSignatures.push_back(sig);}
+  virtual void addSignature(Signature* sig) {m_Signatures.push_back(sig);}
+  virtual void addPreCutSignature(const char*, const char*);
+  virtual void addPreCutSignature(Signature* sig){m_preHandlerCutSignatures.push_back(sig);}
 
   virtual bool passCut(TString);
 
-  void addHandlerCut(TString);
+  virtual void addHandlerCut(TString);
 
   /////////////////////////////
   //Access physics quantities//
@@ -127,11 +127,11 @@ class BaseHandler : virtual public TObject {
   //////////////////////
   virtual std::vector<SignatureObject*> getProduct(TString);
   virtual bool isProductPresent(TString);
-  void addProduct(TString,TString);
-  void addProductCut(TString,TString);
+  virtual void addProduct(TString,TString);
+  virtual void addProductCut(TString,TString);
 
-  void addProductComparison(TString,TString,ObjectComparison*,bool doAnd=true);
-  void addProductSelfComparison(TString,ObjectComparison*,bool doAnd=true);
+  virtual void addProductComparison(TString,TString,ObjectComparison*,bool doAnd=true);
+  virtual void addProductSelfComparison(TString,ObjectComparison*,bool doAnd=true);
 
  protected:
   virtual void createProducts();
@@ -140,7 +140,7 @@ class BaseHandler : virtual public TObject {
   virtual void calculateVariables();
   virtual void resetVariables();
   virtual void calcPhysicsWeight();
-  bool applyHandlerCuts();
+  virtual bool applyHandlerCuts();
   virtual void analyzeEvent();
 
   virtual void printSignature(Signature*);
