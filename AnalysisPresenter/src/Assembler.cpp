@@ -83,7 +83,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	boost::char_separator<char> sep(":");
 	boost::tokenizer<boost::char_separator<char> > tokens(varexp, sep);
 	BOOST_FOREACH(const string& t, tokens) {
-		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *([0-9]+(\\.[0-9]+)?) *, *([0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)? *(, *\"([^\"]+)\" *)?\\}").MatchS(t.c_str());
+		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *(-?[0-9]+(\\.[0-9]+)?) *, *(-?[0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)? *(, *\"([^\"]+)\" *)?\\}").MatchS(t.c_str());
 		if(matches->GetLast() < 0) {
 			cerr << "was processing " << t << endl;
 			throw std::runtime_error("invalid variable specification");
