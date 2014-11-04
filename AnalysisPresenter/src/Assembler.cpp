@@ -48,7 +48,7 @@ void Assembler::addContribution(PhysicsContribution* contribution) {
 		m_data.push_back(contribution);
 	} else if(contribution->isBackground()) {
 		if(contribution->getFillColor() < 0) {
-			contribution->setFillColor(kAzure+m_background.size());
+			contribution->setFillColor(2 + m_background.size());
 		}
 		m_background.push_back(contribution);
 	} else if(contribution->isSignal()) {
