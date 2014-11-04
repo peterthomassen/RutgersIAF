@@ -46,26 +46,26 @@ void WZ() {
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->setRange("MET", 50, 100, false);
-	assembler->project("MT", true)->plot(false, true)->SaveAs("WZ_MET50to100_MT.pdf");
+	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_MT.pdf");
 	assembler->project("MT", true)->print();
-	assembler->project("NGOODJETS", true)->plot(false, true)->SaveAs("WZ_MET50to100_NGOODJETS.pdf");
+	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("WZ_MET50to100_NGOODJETS.pdf");
 	
 	assembler->setRange("HT");
 	assembler->setRange("NGOODJETS", 0, 0);
-	assembler->project("HT", true)->plot(false, true)->SaveAs("WZ_NGOODJETS0_HT.pdf");
+	assembler->project("HT", true)->plot(false)->SaveAs("WZ_NGOODJETS0_HT.pdf");
 	assembler->setRange("NGOODJETS", 1, 1);
-	assembler->project("HT", true)->plot(false, true)->SaveAs("WZ_NGOODJETS1_HT.pdf");
+	assembler->project("HT", true)->plot(false)->SaveAs("WZ_NGOODJETS1_HT.pdf");
 	assembler->setRange("NGOODJETS", 2, 2);
-	assembler->project("HT", true)->plot(false, true)->SaveAs("WZ_NGOODJETS2_HT.pdf");
+	assembler->project("HT", true)->plot(false)->SaveAs("WZ_NGOODJETS2_HT.pdf");
 	assembler->setRange("NGOODJETS", 3, 3);
-	assembler->project("HT", true)->plot(false, true)->SaveAs("WZ_NGOODJETS3_HT.pdf");
+	assembler->project("HT", true)->plot(false)->SaveAs("WZ_NGOODJETS3_HT.pdf");
 	assembler->setRange("NGOODJETS");
 	assembler->setRange("HT", 0, 200, false);
 	
 	assembler->setRange("MET");
 	assembler->setRange("MT", 50, 100, false);
-	assembler->project("MET", true)->plot(false, true)->SaveAs("WZ_MT50to100_MET.pdf");
-	assembler->project("NGOODJETS", true)->plot(false, true)->SaveAs("WZ_MT50to100_NGOODJETS.pdf");
+	assembler->project("MET", true)->plot(false)->SaveAs("WZ_MT50to100_MET.pdf");
+	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("WZ_MT50to100_NGOODJETS.pdf");
 	//assembler->project("NGOODJETS", true)->print();
 	assembler->setRange();
 	
@@ -78,26 +78,26 @@ void WZ() {
 	
 /*	cout << "min" << endl;
 	assembler->project("MINJETPT", true)->print();
-	assembler->project("MINJETPT", true)->plot(false, false)->SaveAs("WZ_MET50to100_MINJETPT.pdf");
+	assembler->project("MINJETPT", true)->plot(false)->SaveAs("WZ_MET50to100_MINJETPT.pdf");
 	cout << "max" << endl;
 	assembler->project("MAXJETPT", true)->print();
-	assembler->project("MAXJETPT", true)->plot(false, false)->SaveAs("WZ_MET50to100_MAXJETPT.pdf");
+	assembler->project("MAXJETPT", true)->plot(false)->SaveAs("WZ_MET50to100_MAXJETPT.pdf");
 	
 	assembler->setRange("HT", 0, 200, false);
 	cout << "low HT min" << endl;
 	assembler->project("MINJETPT", true)->print();
-	assembler->project("MINJETPT", true)->plot(false, false)->SaveAs("WZ_HT0to200MET50to100_MINJETPT.pdf");
+	assembler->project("MINJETPT", true)->plot(false)->SaveAs("WZ_HT0to200MET50to100_MINJETPT.pdf");
 	cout << "low HT max" << endl;
 	assembler->project("MAXJETPT", true)->print();
-	assembler->project("MAXJETPT", true)->plot(false, false)->SaveAs("WZ_HT0to200MET50to100_MAXJETPT.pdf");
+	assembler->project("MAXJETPT", true)->plot(false)->SaveAs("WZ_HT0to200MET50to100_MAXJETPT.pdf");
 	
 	assembler->setRange("HT", 200);
 	cout << "high HT min" << endl;
 	assembler->project("MINJETPT", true)->print();
-	assembler->project("MINJETPT", true)->plot(false, false)->SaveAs("WZ_HTgt200MET50to100_MINJETPT.pdf");
+	assembler->project("MINJETPT", true)->plot(false)->SaveAs("WZ_HTgt200MET50to100_MINJETPT.pdf");
 	cout << "high HT max" << endl;
 	assembler->project("MAXJETPT", true)->print();
-	assembler->project("MAXJETPT", true)->plot(false, false)->SaveAs("WZ_HTgt200MET50to100_MAXJETPT.pdf");
+	assembler->project("MAXJETPT", true)->plot(false)->SaveAs("WZ_HTgt200MET50to100_MAXJETPT.pdf");
 */	
 	delete assembler;
 }

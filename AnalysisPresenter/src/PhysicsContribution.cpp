@@ -20,10 +20,12 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, bool unordered) : m_filename(filename), m_name(name), m_type(type), m_unordered(unordered) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, Int_t fillColor, bool unordered, bool forceData) : m_filename(filename), m_name(name), m_type(type), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
+
+	setFillColor(fillColor);
 	
 	TFile f(m_filename);
 	if(f.IsZombie()) {
@@ -42,7 +44,12 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 	
 	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
 		cout << "was processing " << m_filename << endl;
-		throw std::runtime_error("data files should not have a WEIGHT branch");
+		if(forceData) {
+			m_MC = false;
+			cout << "WARNING: forcing use of MC file as data. This is not well-tested." << endl;
+		} else {
+			throw std::runtime_error("data files should not have a WEIGHT branch");
+		}
 	}
 	if(!m_MC && (m_type == "signal" || m_type == "backgroundMC")) {
 		cout << "was processing " << m_filename << endl;
@@ -130,10 +137,6 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	m_hn = (THnBase*)hn->Clone();
 	
-	if(!isData()) {
-		m_hn->Sumw2();
-	}
-	
 	cout << "Running " << m_filename << " (" << m_type << ", lumi=" << m_lumi << "/pb) ";
 	TFile f(m_filename);
 	if(f.IsZombie()) {
@@ -155,7 +158,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			if(!treeR->GetListOfBranches()->FindObject(fakerate.first)) {
 				continue;
 			}
-			selection += TString::Format(" && %s == 0", fakerate.first.Data());
+			selection += TString::Format(" && %s[0] == 0", fakerate.first.Data());
 		}
 	}
 	
@@ -180,12 +183,12 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 				}
 				
 				if(sum.Length() == 0) {
-					sum = fakerate.first;
+					sum = fakerate.first + TString("[0]");
 				} else {
-					sum += TString(" + ") + fakerate.first;
+					sum += TString(" + ") + fakerate.first + TString("[0]");
 				}
 				
-				selection += TString::Format(" * pow(%s, %s)", fakerate.second.Data(), fakerate.first.Data());
+				selection += TString::Format(" * pow(%s, %s[0])", fakerate.second.Data(), fakerate.first.Data());
 			}
 			
 			// Prune MC
@@ -218,9 +221,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	// Limit reading of MC such that the scale factor is no less than minScale (default: 0.01) if the sample is randomly distributed (as given by m_unordered).
 	// This means that we are skipping MC events beyond 100 times the data luminosity.
 	if(!isData() && m_unordered && scale < minScale) {
+		int nOld = n;
+		double scaleOld = scale;
 		n /= minScale / scale;
-		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scale << " --> " << minScale << endl;
-		scale = minScale;
+		scale *= (float)nOld / n;
+		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scaleOld << " --> " << scale << " (target scale: " << minScale << ")" << endl;
 	}
 	m_scale = scale;
 	cout << "scale: " << m_scale << endl;
@@ -234,6 +239,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		if(k + step > n) {
 			step = n - k;
 		}
+		// PT 20141009: I checked that step refers to TTree entries, not entry instances. So we're good even when looping over collections, and always get full events counted properly.
 		long nSelected = treeR->Draw(varexp.c_str(), selection.Data(), "goff candle", step, k);
 		if(nSelected < 0) {
 			throw std::runtime_error("error selecting events");
@@ -450,7 +456,8 @@ bool PhysicsContribution::setRange(const char* name) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
 	
-	m_rangeStrings.erase(name);
+	const char* title = axis->GetTitle();
+	m_rangeStrings.erase(title);
 	
 	return true;
 }

@@ -60,7 +60,7 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 200);
 	assembler->setRange("MET", 0, 30, false);
-	assembler->project("LT", true)->plot(true, true)->SaveAs("L3DYz1B0HTgt200MET0to30_LT.pdf");
+	assembler->project("LT", true)->plot(true)->SaveAs("L3DYz1B0HTgt200MET0to30_LT.pdf");
 	assembler->project("LT", true)->print();
 	
 	assembler->setRange();

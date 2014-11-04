@@ -13,7 +13,7 @@ class PhysicsContribution : public TObject {
 
 public:
 	PhysicsContribution();
-	PhysicsContribution(TString type, TString filename, double lumi, TString name, bool unordered = true);
+	PhysicsContribution(TString type, TString filename, double lumi, TString name, Int_t fillColor = kAzure, bool unordered = true, bool forceData = false);
 	virtual ~PhysicsContribution();
 	
 	void addFlatUncertainty(TString, double);

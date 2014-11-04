@@ -1,5 +1,6 @@
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
 
+#include "Math/QuantFuncMathCore.h"
 #include "TLegend.h"
 #include "TLine.h"
 #include "TPad.h"
@@ -70,13 +71,14 @@ bool AssemblerProjection::hasOverflowIncluded() const {
 	return m_binForOverflow;
 }
 
-TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, double xmaxFit) {
+TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	m_canvas = new TCanvas("c1", "c1", 700, 700);
 	
 	TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
 	pad1->SetBottomMargin(0.025);
 	pad1->Draw();
 	pad1->cd();
+	pad1->SetTicks(1, 1);
 	
 	TString title = (m_title != m_name)
 		? TString::Format("%s (%s)", m_title.Data(), m_name.Data())
@@ -90,30 +92,45 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 		hData->SetBinContent(hData->GetNbinsX() + 1, hData->GetBinContent(hData->GetNbinsX()));
 		hData->SetEntries(nEntries);
 	}
+	for(int i = 0; i < hData->GetNbinsX() + 1; ++i) {
+		hData->SetBinError(i, 1e-3);
+	}
+	hData->SetMarkerStyle(7);
 	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
 	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
-		double error2 = pow(hBackground->GetBinError(i), 2);
-		double content = hBackground->GetBinContent(i);
-		// TODO Replace by Poisson error
-		if(sqrtError) {
-			error2 += content; // content = pow(sqrt(content), 2);
-		}
-		error2 += pow(getBinSyst("background", i), 2);
+		// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
+		// Those are together to "comprehensive systematic uncertainty"
+		double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
 		hBackground->SetBinError(i, sqrt(error2));
+	}
+	
+	TH1* hBackgroundErr = (TH1*)hBackground->Clone();
+	hBackgroundErr->Reset();
+	TH1* hBackgroundFullError = (TH1*)hBackground->Clone();
+	hBackgroundFullError->Reset();
+	const double alpha = 1 - 0.6827;
+	for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
+		double n = hBackground->GetBinContent(i);
+		double lo = (n == 0) ? 0 : ROOT::Math::gamma_quantile(alpha/2, n, 1.);
+		double hi = ROOT::Math::gamma_quantile_c(alpha/2, n+1, 1);
+		// Now, combine Poisson fluctuation range with "comprehensive systematic uncertainty" from above
+		lo = sqrt(pow(n - lo, 2) + pow(hBackground->GetBinError(i), 2));
+		hi = sqrt(pow(hi - n, 2) + pow(hBackground->GetBinError(i), 2));
+		hBackgroundFullError->SetBinContent(i, hBackground->GetBinContent(i));
+		hBackgroundFullError->SetBinError(i, lo);
+		lo = n - lo;
+		hi = n + hi;
+		n = (lo + hi) / 2;
+		hBackgroundErr->SetBinContent(i, n);
+		hBackgroundErr->SetBinError(i, (hi - lo) / 2);
 	}
 	
 	TH1* hSignal = 0;
 	if(has("signal")) {
 		hSignal = (TH1*)m_components.find("signal")->second.first->GetStack()->Last()->Clone();
 		for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
-			double error2 = pow(hSignal->GetBinError(i), 2);
-			double content = hSignal->GetBinContent(i);
-			// TODO Replace by Poisson error
-			if(sqrtError) {
-				error2 += content; // content = pow(sqrt(content), 2);
-			}
-			error2 += pow(getBinSyst("signal", i), 2);
+			double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
 			hSignal->SetBinError(i, sqrt(error2));
 		}
 	}
@@ -134,22 +151,29 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	hData->GetXaxis()->SetTitle(title);
 	hData->SetLineColor(kRed);
 	
-	hData->Draw();
+	hData->Draw("EP");
 	hData->GetXaxis()->SetLabelFont(43);
 	hData->GetXaxis()->SetLabelSize(0);
 	hData->GetYaxis()->SetLabelFont(43);
 	hData->GetYaxis()->SetLabelSize(16);
 	((TH1*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
-	hBackground->SetFillColor(kBlack);
+	hBackground->SetFillColor(kRed);
 	hBackground->SetFillStyle(3001);
 	hBackground->Draw("E2 SAME");
+	hBackgroundErr->SetFillColor(kBlack);
+	hBackgroundErr->SetFillStyle(3002);
+	hBackgroundErr->SetMarkerStyle(20);
+	hBackgroundErr->SetMarkerSize(0);
+	hBackgroundErr->Draw("SAME E2");
 	if(hSignal) {
+		hSignal->SetMarkerColor(kWhite);
+		hSignal->SetMarkerStyle(21);
 		hSignal->SetFillColor(kPink);
 		hSignal->SetFillStyle(3008);
-		hSignal->Draw("SAME E2");
+		hSignal->Draw("SAME E2 P");
 	}
-	hData->Draw("SAME");
-	hData->Draw("AXIS SAME");
+	hData->Draw("EP SAME");
+	hData->Draw("EP AXIS SAME");
 	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	
@@ -174,7 +198,7 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
 		hRatio->SetBinError(i, 0);
 	}
-	hRatio->Divide(hBackground);
+	hRatio->Divide(hBackgroundFullError);
 	hRatio->GetXaxis()->SetLabelFont(43);
 	hRatio->GetXaxis()->SetLabelSize(16);
 	hRatio->GetYaxis()->SetLabelFont(43);
@@ -196,6 +220,7 @@ TCanvas* AssemblerProjection::plot(bool log, bool sqrtError, double xminFit, dou
 	gStyle->SetOptFit(1111);
 	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
 	hRatio->Fit("pol0", "", "SAME", xminFit, xmaxFit);
+	//hRatio->Fit("pol1", "", "SAME", xminFit, xmaxFit);
 	
 	return m_canvas;
 }

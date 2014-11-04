@@ -4,6 +4,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 #include <TTree.h>
 #include <TFile.h>
+#include <TObject.h>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ void AnalysisTreeWriter::finish() {
 		m_tree->SetWeight(1./m_n);
 	}
 	m_handler->getOutFile()->cd();
-	m_tree->Write();
+	m_tree->Write(0, TObject::kOverwrite);
 }
 
 void AnalysisTreeWriter::fillTree() {

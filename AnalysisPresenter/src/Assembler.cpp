@@ -48,7 +48,7 @@ void Assembler::addContribution(PhysicsContribution* contribution) {
 		m_data.push_back(contribution);
 	} else if(contribution->isBackground()) {
 		if(contribution->getFillColor() < 0) {
-			contribution->setFillColor(m_background.size() + 2);
+			contribution->setFillColor(kAzure+m_background.size());
 		}
 		m_background.push_back(contribution);
 	} else if(contribution->isSignal()) {
@@ -83,7 +83,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	boost::char_separator<char> sep(":");
 	boost::tokenizer<boost::char_separator<char> > tokens(varexp, sep);
 	BOOST_FOREACH(const string& t, tokens) {
-		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *([0-9]+(\\.[0-9]+)?) *, *([0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)? *(, *\"([^\"]+)\" *)?\\}").MatchS(t.c_str());
+		TObjArray* matches = TPRegexp("^([^{}]+)\\{ *(-?[0-9]+(\\.[0-9]+)?) *, *(-?[0-9]+(\\.[0-9]+)?) *(, *([0-9]+) *)? *(, *\"([^\"]+)\" *)?\\}").MatchS(t.c_str());
 		if(matches->GetLast() < 0) {
 			cerr << "was processing " << t << endl;
 			throw std::runtime_error("invalid variable specification");
@@ -120,6 +120,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	m_selection = selection;
 	
 	THnSparse* hs = new THnSparseD("hSparse", varexp.c_str(), variables.size(), &nbins[0], &rangeMin[0], &rangeMax[0]);
+	hs->Sumw2();
 	for(size_t i = 0; i < variables.size(); ++i) {
 		hs->GetAxis(i)->SetName(names[i]);
 		hs->GetAxis(i)->SetTitle(variables[i]);
@@ -193,10 +194,10 @@ AssemblerProjection* Assembler::project(const char* name, const bool binForOverf
 		// Prepare vector of contributions for sorting, and take care of error correlations
 		std::vector<std::pair<TH1D*, double>> vh;
 		THStack* hsUncertainties = new THStack("hsUncertainties", m_varexp + TString(" {") + m_selection + TString("}"));
-		for(const auto &contribution : typeProjection.second) {
-			vh.push_back(make_pair(contribution->getHistogram(), contribution->getHistogram()->Integral()));
+		for(const auto &contributionProjection : typeProjection.second) {
+			vh.push_back(make_pair(contributionProjection->getHistogram(), contributionProjection->getHistogram()->Integral()));
 			
-			for(const auto &uncertainty : contribution->getUncertainties()) {
+			for(const auto &uncertainty : contributionProjection->getUncertainties()) {
 				TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
 				if(hUncertainty) {
 					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
