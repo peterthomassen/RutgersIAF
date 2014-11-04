@@ -204,8 +204,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ELECTRON_ISOLATED",electron_isolated);
   handler->addObjectVariable("ELECTORN_NOTISOLATED",new ObjectVariableReversed("ELECTRON_ISOLATED"));
 
-  ObjectVariableCombined* electron_barrel_prompt = new ObjectVariableCombined("BARREL","ELECTRON_BARREL_DXY",true,"electron_barrel_prompt");
-  ObjectVariableCombined* electron_endcap_prompt = new ObjectVariableCombined("ENDCAP","ELECTRON_ENDCAP_DXY",true,"electron_endcap_prompt");
+  ObjectVariableCombined* electron_barrel_prompt = new ObjectVariableCombined("BARREL","ELECTRON_BARREL_dxy",true,"electron_barrel_prompt");
+  ObjectVariableCombined* electron_endcap_prompt = new ObjectVariableCombined("ENDCAP","ELECTRON_ENDCAP_dxy",true,"electron_endcap_prompt");
   ObjectVariableCombined* electron_prompt = new ObjectVariableCombined("ELECTRON_BARREL_PROMPT","ELECTRON_ENDCAP_PROMPT",false,"ELECTRON_PROMPT");
   handler->addObjectVariable("ELECTRON_BARREL_PROMPT",electron_barrel_prompt);
   handler->addObjectVariable("ELECTRON_ENDCAP_PROMPT",electron_endcap_prompt);
