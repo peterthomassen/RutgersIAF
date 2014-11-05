@@ -23,14 +23,14 @@ class SignatureObject : public TLorentzVector {
   friend class SignatureObjectFlat;
 
   bool getVariable(TString,int&);
-  void setVariable(TString,int);
+  void setVariable(TString, int, bool overwrite = true);
   bool getVariable(TString,bool&);
-  void setVariable(TString,bool);
+  void setVariable(TString, bool, bool overwrite = true);
   bool getVariable(TString,double&);
-  void setVariable(TString,double);
+  void setVariable(TString, double, bool overwrite = true);
   bool getVariable(TString,TString&);
-  void setVariable(TString,TString);
-  void setVariable(TString,std::string);
+  void setVariable(TString, TString, bool overwrite = true);
+  void setVariable(TString, std::string, bool overwrite = true);
 
   SignatureObject* getAssociate(TString);
   void setAssociate(TString,SignatureObject*);
@@ -84,9 +84,11 @@ inline double SignatureObject::Eta() const {
   return -log(tan(Vect().Theta()/2));
 }
 
-inline void SignatureObject::setVariable(TString name, int val)
-{
-  m_variableMapInt[name] = val;
+inline void SignatureObject::setVariable(TString name, int val, bool overwrite) {
+	if(!overwrite && m_variableMapInt.find(name) != m_variableMapInt.end()) {
+		return;
+	}
+	m_variableMapInt[name] = val;
 }
 
 inline bool SignatureObject::getVariable(TString name, int &val)
@@ -98,13 +100,14 @@ inline bool SignatureObject::getVariable(TString name, int &val)
   }
   return false;
 }
-inline void SignatureObject::setVariable(TString name, TString val)
-{
-  m_variableMapTString[name] = val;
+inline void SignatureObject::setVariable(TString name, TString val, bool overwrite) {
+	if(!overwrite && m_variableMapTString.find(name) != m_variableMapTString.end()) {
+		return;
+	}
+	m_variableMapTString[name] = val;
 }
-inline void SignatureObject::setVariable(TString name, std::string val)
-{
-  m_variableMapTString[name] = TString(val);
+inline void SignatureObject::setVariable(TString name, std::string val, bool overwrite) {
+	setVariable(name, TString(val), overwrite);
 }
 inline bool SignatureObject::getVariable(TString name, TString &val)
 {
@@ -115,9 +118,11 @@ inline bool SignatureObject::getVariable(TString name, TString &val)
   }
   return false;
 }
-inline void SignatureObject::setVariable(TString name, bool val)
-{
-  m_variableMapBool[name] = val;
+inline void SignatureObject::setVariable(TString name, bool val, bool overwrite) {
+	if(!overwrite && m_variableMapBool.find(name) != m_variableMapBool.end()) {
+		return;
+	}
+	m_variableMapBool[name] = val;
 }
 
 inline bool SignatureObject::getVariable(TString name, bool &val)
@@ -129,9 +134,11 @@ inline bool SignatureObject::getVariable(TString name, bool &val)
   }
   return false;
 }
-inline void SignatureObject::setVariable(TString name, double val)
-{
-  m_variableMapDouble[name] = val;
+inline void SignatureObject::setVariable(TString name, double val, bool overwrite) {
+	if(!overwrite && m_variableMapDouble.find(name) != m_variableMapDouble.end()) {
+		return;
+	}
+	m_variableMapDouble[name] = val;
 }
 
 inline bool SignatureObject::getVariable(TString name, double &val)
