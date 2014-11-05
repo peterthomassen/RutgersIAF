@@ -578,6 +578,9 @@ void BaseHandler::createProducts()
 						case 0:
 							break;
 						case 1:
+							for(size_t k = 0; k < m_products["goodElectrons"].size(); ++k){
+								m_products["goodElectrons"][k]->setVariable("fakeRole", 0, false);
+							}
 							m_products["goodElectrons"].push_back(m_products[pname][index]);
 							sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
 							reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
@@ -590,6 +593,9 @@ void BaseHandler::createProducts()
 							}
 							break;
 						case 2:
+							for(size_t k = 0; k < m_products["goodMuons"].size(); ++k){
+								m_products["goodMuons"][k]->setVariable("fakeRole", 0, false);
+							}
 							m_products["goodMuons"].push_back(m_products[pname][index]);
 							sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
 							reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
@@ -648,6 +654,9 @@ void BaseHandler::createProducts()
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
 */							m_products[pname][index]->setVariable("CHARGE", +1.0);
+							for(size_t k = 0; k < m_products["goodElectrons"].size(); ++k){
+								m_products["goodElectrons"][k]->setVariable("fakeRole", 0, false);
+							}
 							m_products["goodElectrons"].push_back(m_products[pname][index]);
 							sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
 							reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
@@ -662,6 +671,9 @@ void BaseHandler::createProducts()
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
 */							m_products[pname][index]->setVariable("CHARGE", -1.0);
+							for(size_t k = 0; k < m_products["goodElectrons"].size(); ++k){
+								m_products["goodElectrons"][k]->setVariable("fakeRole", 0, false);
+							}
 							m_products["goodElectrons"].push_back(m_products[pname][index]);
 							sort(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end(),SignatureObjectComparison);
 							reverse(m_products["goodElectrons"].begin(),m_products["goodElectrons"].end());
@@ -671,11 +683,17 @@ void BaseHandler::createProducts()
 							break;
 						case 3:
 							*m_products[pname][index] *= 0.8;
+							if(m_products[pname][index]->Pt() < 10) {
+								break;
+							}
 							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
 							m_products[pname][index]->setVariable("CHARGE", +1.0);
+							for(size_t k = 0; k < m_products["goodMuons"].size(); ++k){
+								m_products["goodMuons"][k]->setVariable("fakeRole", 0, false);
+							}
 							m_products["goodMuons"].push_back(m_products[pname][index]);
 							sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
 							reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
@@ -685,11 +703,17 @@ void BaseHandler::createProducts()
 							break;
 						case 4:
 							*m_products[pname][index] *= 0.8;
+							if(m_products[pname][index]->Pt() < 10) {
+								break;
+							}
 							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
 							m_products[pname][index]->setVariable("CHARGE", -1.0);
+							for(size_t k = 0; k < m_products["goodMuons"].size(); ++k){
+								m_products["goodMuons"][k]->setVariable("fakeRole", 0, false);
+							}
 							m_products["goodMuons"].push_back(m_products[pname][index]);
 							sort(m_products["goodMuons"].begin(),m_products["goodMuons"].end(),SignatureObjectComparison);
 							reverse(m_products["goodMuons"].begin(),m_products["goodMuons"].end());
@@ -733,6 +757,9 @@ void BaseHandler::createProducts()
 						case 0:
 							break;
 						case 1:
+							for(size_t k = 0; k < m_products["goodTaus"].size(); ++k){
+								m_products["goodTaus"][k]->setVariable("fakeRole", 0, false);
+							}
 							m_products["goodTaus"].push_back(m_products[pname][index]);
 							sort(m_products["goodTaus"].begin(),m_products["goodTaus"].end(),SignatureObjectComparison);
 							reverse(m_products["goodTaus"].begin(),m_products["goodTaus"].end());
