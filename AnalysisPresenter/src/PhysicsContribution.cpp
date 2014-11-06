@@ -24,7 +24,7 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
-
+	
 	TFile f(m_filename);
 	if(f.IsZombie()) {
 		cout << "was processing " << m_filename << endl;
@@ -268,6 +268,7 @@ int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
 	double low = axis->GetBinLowEdge(bin);
 	if(x > low + width / 100) {
 		cerr << "Warning: " << x << " is not a bin boundary for " << axis->GetName() << " axis" << endl;
+		throw std::runtime_error("binning error");
 	}
 	return bin;
 }
