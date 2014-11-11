@@ -155,3 +155,74 @@ void setupFakeRates(Assembler* assembler) {
 	assembler->setFakeRate("nPhotonFakeMuons", "(NOSSF > 0 && !ONZ) * 0.0034 / (1 + (MLEPTONS < 75 || MLEPTONS > 100))");
 	assembler->setFakeRate("nPhotonFakeElectrons", "(NOSSF > 0 && !ONZ) * 0.0119 / (1 + (MLEPTONS < 75 || MLEPTONS > 100))");
 }
+
+TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
+{
+  gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);
+
+  c->cd();
+  c->SetTopMargin(0.001);
+  c->SetRightMargin(0.001);
+  c->SetBottomMargin(0.001);
+  c->SetLeftMargin(0.001);
+
+  TPad* pad1 = (TPad*)c->GetPrimitive("pad1");
+  pad1->SetTopMargin(0.05);
+  pad1->SetBottomMargin(0.01);
+  TPad* pad2 = (TPad*)c->GetPrimitive("pad2");
+  pad2->SetBottomMargin(0.15);
+  pad2->SetTopMargin(0.01);
+
+  //pad1->RedrawAxis();
+  pad2->RedrawAxis();
+
+
+  TList* list = pad1->GetListOfPrimitives();
+  cout<<"make nice plot "<<list->GetEntries()<<endl;
+  for(int i = 0; i < list->GetEntries(); i++){
+    TObject* obj = list->At(i);
+    TString cname(obj->ClassName());
+    if(cname.Contains("TH1")){
+      ((TH1*)obj)->SetStats(false);
+    }else if(cname == "TLegend"){
+      ((TLegend*)obj)->SetFillColor(kWhite);
+    }
+  }
+
+  TList* list2 = pad2->GetListOfPrimitives();
+  for(int i = 0; i < list2->GetEntries(); i++){
+    TObject* obj = list2->At(i);
+    TString cname(obj->ClassName());
+    if(cname.Contains("TH1")){
+      float offset = ((TH1*)obj)->GetXaxis()->GetTitleOffset();
+      float fontsize = ((TH1*)obj)->GetXaxis()->GetTitleSize();
+      ((TH1*)obj)->GetXaxis()->SetTitleOffset(1.1*offset);
+      ((TH1*)obj)->GetXaxis()->SetTitleFont(42);
+      ((TH1*)obj)->GetXaxis()->SetTitleSize(1.1*fontsize);
+      if(TString(axistitle) != "" && TString(((TH1*)obj)->GetXaxis()->GetTitle()) != ""){
+        ((TH1*)obj)->GetXaxis()->SetTitle(axistitle);
+      }
+    }
+  }
+
+  c->cd();
+
+  TLatex* latex = new TLatex;
+  latex->SetNDC();
+  latex->SetTextFont(61);
+  latex->SetTextSize(0.04);
+  latex->DrawLatex(0.16,0.915,"CMS Simulation");
+
+  latex->SetTextSize(0.03);
+  latex->SetTextFont(42);
+  latex->DrawLatex(0.75,0.97,"20 fb^{-1} (13 TeV)");
+
+  c->Update();
+  pad1->Update();
+  pad2->Update();
+
+  return c;
+
+}
+
