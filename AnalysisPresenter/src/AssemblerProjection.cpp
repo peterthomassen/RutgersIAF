@@ -12,6 +12,14 @@
 #include <cmath>
 #include <exception>
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdio.h> 
+#include <unistd.h>
+#include <iomanip>
+#include <stdlib.h>
+
 #include "RutgersIAF/debug.h"
 
 using namespace std;
