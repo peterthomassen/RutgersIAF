@@ -322,3 +322,132 @@ void AssemblerProjection::print() const {
 	}
 	cout << endl;
 }
+
+void AssemblerProjection::datacard(TString datacardName) {
+	
+	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	int bins = hData->GetNbinsX();
+
+	//Create datacard
+	ofstream datacard;
+	TString basicName = "/datacard_tcH_";
+	TString endName = ".txt";
+	TString completeName = "";
+	TString directory = "";
+	char buffer[1024]; 
+    if(getcwd(buffer, 1024) == NULL ) 
+		perror("***Directory Error***");  
+    directory = buffer;
+	
+	completeName = directory + basicName + m_name + "_" + datacardName + endName;
+	datacard.open(completeName);	
+	datacard << std::fixed << std::setprecision(2);
+	datacard << "#Datacard for t->cH with H->tautau/WW/ZZ" << '\n' << "#m_H=126.0 GeV" << '\n' << "#Version Nov. 2014" << '\n' << '\n';
+	datacard << "imax " << bins << " number of channels" << '\n' << "jmax 1 number of background" << '\n' << "kmax 2 number nuisance parameters" << '\n';
+	datacard << "---------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << "Observation";
+	
+	//Calculate values for datacard
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		double contentData = getBin("data", i);
+		datacard << '\t' << '\t' << contentData;
+	}
+	datacard << '\n';
+	datacard << "---------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << "bin" << '\t';
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		datacard << '\t' << m_name << i << '\t' << m_name << i;
+	}
+	datacard << '\n';
+	datacard << "process";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		datacard << '\t' << "signal" << '\t' << "bckgrnd";
+	}
+	datacard << '\n';
+	datacard << "process";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		datacard << '\t' << "0" << '\t' << '\t' << "1" << '\t';
+	}
+	datacard << '\n';
+	datacard << "rate";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+	
+		if(has("signal")) {
+			double contentSignal = getBin("signal", i);	
+			datacard << '\t' << contentSignal;
+		}
+		else {
+			datacard << '\t' << "0.00";
+		}
+		
+		if(has("background")) {
+			double contentBackground = getBin("background", i);
+			datacard << '\t' << contentBackground;
+		}
+		else {
+			datacard << '\t' << "0.00";
+		}
+	}
+	datacard << '\n';
+	datacard << "---------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << "1   lnN";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+	
+		if(has("signal")) {
+			double contentSignalStat = getBinStat("signal", i);		
+			double contentSignal = getBin("signal", i);	
+			double ratio = contentSignalStat/contentSignal;
+			if (contentSignal == 0) {ratio = 0.1;}
+			datacard << '\t' << 1 + ratio;
+		}
+		else {
+			datacard << '\t' << "1.00";
+		}
+		
+		if(has("background")) {
+			double contentBackgroundStat = getBinStat("background", i);		
+			double contentBackground = getBin("background", i);	
+			double ratio = contentBackgroundStat/contentBackground;
+			if (contentBackground == 0) {ratio = 0.1;}
+			datacard << '\t' << 1 + ratio;
+		}
+		else {
+			datacard << '\t' << "1.00";
+		}
+		
+	}
+	datacard << '\t' << "Stat" << '\n';
+	datacard << "2   lnN";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+	
+		if(has("signal")) {
+			double contentSignalSyst = getBinSyst("signal", i);		
+			double contentSignal = getBin("signal", i);	
+			double ratio = contentSignalSyst/contentSignal;
+			if (contentSignal == 0) {ratio = 0.1;}
+			datacard << '\t' << 1 + ratio;
+		}
+		else {
+			datacard << '\t' << "1.00";
+		}
+		
+		if(has("background")) {
+			double contentBackgroundStat = getBinStat("background", i);		
+			double contentBackground = getBin("background", i);	
+			double ratio = contentBackgroundStat/contentBackground;
+			if (contentBackground == 0) {ratio = 0.1;}
+			datacard << '\t' << 1 + ratio;
+		}
+		else {
+			datacard << '\t' << "1.00";
+		}
+	}
+	datacard << '\t' << "Syst" << '\n';
+	
+	datacard.close();
+}
+
