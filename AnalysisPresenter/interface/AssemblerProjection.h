@@ -31,6 +31,8 @@ public:
 	
 	TCanvas* plot(bool log = true, double xminFit = 0, double xmaxFit = 0);
 	void print() const;
+	
+	void datacard(TString datacardName);
 
 private:
 	bool m_binForOverflow;
