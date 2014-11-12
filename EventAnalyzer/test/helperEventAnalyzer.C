@@ -46,6 +46,7 @@ void setupProducts(BaseHandler* handler)
   //////////////////
   handler->addObjectVariable("PT",new ObjectVariableMethod("PT", &SignatureObject::Pt));
   handler->addObjectVariable("ETA",new ObjectVariableMethod("ETA", &SignatureObject::Eta));
+  handler->addObjectVariable("M",new ObjectVariableMethod("M", &SignatureObject::M));
   ObjectVariableInRange<double>* leptonPtCut = new ObjectVariableInRange<double>("PT",10.0,10000.0,"leptonPtCut");
   ObjectVariableInRange<double>* leptonEtaCut = new ObjectVariableInRange<double>("ETA",-2.4,2.4,"leptonEtaCut");
   ObjectVariableInRange<double>* PT40 = new ObjectVariableInRange<double>("PT",40.0,10000.0,"PT40");
@@ -110,6 +111,9 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("isoNonPromptMuons","basicMuons");
   handler->addProductCut("isoNonPromptMuons","IREL0p15");
   handler->addProductCut("isoNonPromptMuons","MUON_NONPROMPT");
+  
+  handler->addProduct("nonPromptMuons","basicMuons");
+  handler->addProductCut("nonPromptMuons","MUON_NONPROMPT");
   
   handler->addProduct("promptNonIsoMuons","basicMuons");
   handler->addProductCut("promptNonIsoMuons","NOTIREL0p15");
@@ -361,7 +365,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL", "PHOTON_ENDCAP", false, "PHOTON_COMBINED"));
   
   handler->addProduct("goodPhotons", "ALLPHOTONS");
-  handler->addProductCut("goodPhotons", "PT15");
+  handler->addProductCut("goodPhotons", "PT10");
   handler->addProductCut("goodPhotons", "ETA2p4");
   handler->addProductCut("goodPhotons", "PHOTON_COMBINED");
   
@@ -483,18 +487,27 @@ void setupVariables(BaseHandler* handler,bool isMC = false)
   handler->addEventVariable("QGOODELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","goodElectrons"));
   handler->addEventVariable("PTGOODELECTRONS", new EventVariableObjectVariableVector<double>("PT","goodElectrons"));
   handler->addEventVariable("ETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("ETA","goodElectrons"));
+  handler->addEventVariable("fakeRoleGOODELECTRONS", new EventVariableObjectVariableVector<int>("fakeRole","goodElectrons"));
   
   handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
   handler->addEventVariable("QGOODMUONS", new EventVariableObjectVariableVector<double>("CHARGE","goodMuons"));
   handler->addEventVariable("PTGOODMUONS", new EventVariableObjectVariableVector<double>("PT","goodMuons"));
   handler->addEventVariable("ETAGOODMUONS", new EventVariableObjectVariableVector<double>("ETA","goodMuons"));
+  handler->addEventVariable("fakeRoleGOODMUONS", new EventVariableObjectVariableVector<int>("fakeRole","goodMuons"));
+
+  handler->addEventVariable("PTNONPROMPTMUONS", new EventVariableObjectVariableVector<double>("PT","nonPromptMuons"));
+  handler->addEventVariable("ETANONPROMPTMUONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptMuons"));
+  handler->addEventVariable("RELISONONPROMPTMUONS", new EventVariableObjectVariableVector<double>("RELISO","nonPromptMuons"));
   
   handler->addEventVariable("NBASICTAUS", new EventVariableN("NBASICTAUS","basicTaus"));
+  handler->addEventVariable("RELISOBASICTAUS", new EventVariableObjectVariableVector<double>("RELISO","basicTaus"));
+  handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));
   
   handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
   handler->addEventVariable("QGOODTAUS", new EventVariableObjectVariableVector<double>("CHARGE","goodTaus"));
   handler->addEventVariable("PTGOODTAUS", new EventVariableObjectVariableVector<double>("PT","goodTaus"));
   handler->addEventVariable("ETAGOODTAUS", new EventVariableObjectVariableVector<double>("ETA","goodTaus"));
+  handler->addEventVariable("fakeRoleGOODTAUS", new EventVariableObjectVariableVector<int>("fakeRole","goodTaus"));
   
   handler->addEventVariable("NSIDEBANDTAUS", new EventVariableN("NSIDEBANDTAUS","sidebandTaus"));
   handler->addEventVariable("NOTHERTAUS", new EventVariableN("NOTHERTAUS","otherTaus"));
@@ -697,7 +710,7 @@ void setupFilterCuts(BaseHandler* handler)
 
 }
 
-void setupMC1(BaseHandler* handler, TString pufile, bool doMatching = true)
+void setupMC1(BaseHandler* handler, TString pufile, bool doMatching = true, bool wzKinematics = false)
 {
 
   ////Additional products
@@ -750,6 +763,41 @@ void setupMC1(BaseHandler* handler, TString pufile, bool doMatching = true)
   
   handler->addProductSelfComparison("MCmuonsFake",deltaR0p1);
   handler->addProductSelfComparison("MCelectronsFake",deltaR0p1);
+
+  if(wzKinematics) {
+	  ObjectVariableValueInList<int>* pdgid6 = new ObjectVariableValueInList<int>("PDGID",6);
+	  pdgid6->addValue(-6);
+	  ObjectVariableValueInList<int>* pdgid23 = new ObjectVariableValueInList<int>("PDGID",23);
+	  ObjectVariableValueInList<int>* pdgid24 = new ObjectVariableValueInList<int>("PDGID",24);
+	  pdgid24->addValue(-24);
+	  ObjectVariableValueInList<int>* status3 = new ObjectVariableValueInList<int>("STATUS", 3);
+	  handler->addObjectVariable("STATUS3", status3);
+	  handler->addObjectVariable("PDGID6",pdgid6);
+	  handler->addObjectVariable("PDGID23",pdgid23);
+	  handler->addObjectVariable("PDGID24",pdgid24);
+
+	  handler->addProduct("MCZ","ALLMCPARTICLES");
+	  handler->addProductCut("MCZ", "PDGID23");
+	  handler->addProductCut("MCZ", "STATUS3");
+
+	  handler->addProduct("MCW","ALLMCPARTICLES");
+	  handler->addProductCut("MCW", "PDGID24");
+	  handler->addProductCut("MCW", "STATUS3");
+
+	  handler->addProduct("MCt","ALLMCPARTICLES");
+	  handler->addProductCut("MCt", "PDGID6");
+	  handler->addProductCut("MCt", "STATUS3");
+
+	  handler->addEventVariable("NMCZ", new EventVariableN("NMCZ","MCZ"));
+	  handler->addEventVariable("PTMCZ", new EventVariableObjectVariableVector<double>("PT","MCZ"));
+	  handler->addEventVariable("MMCZ", new EventVariableObjectVariableVector<double>("M","MCZ"));
+
+	  handler->addEventVariable("NMCW", new EventVariableN("NMCW","MCW"));
+	  handler->addEventVariable("PTMCW", new EventVariableObjectVariableVector<double>("PT","MCW"));
+	  handler->addEventVariable("MMCW", new EventVariableObjectVariableVector<double>("M","MCW"));
+
+	  handler->addEventVariable("NMCt", new EventVariableN("NMCt","MCt"));
+  }
 }
 
 void setupMC2(BaseHandler* handler, TString pufile, bool doMatching = true) {
