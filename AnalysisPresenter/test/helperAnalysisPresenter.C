@@ -1,5 +1,8 @@
 #include <iostream>
 #include <TH1.h>
+#include <TLatex.h>
+#include <TLegend.h>
+#include "TStyle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
