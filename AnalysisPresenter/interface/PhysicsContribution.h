@@ -21,6 +21,7 @@ public:
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	int findBinFromLowEdge(TAxis* axis, double x);
 	THnBase* getContent() const;
+	TString getCorrelationClass() const;
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	Int_t getFillColor() const;
 	double getLumi() const;
@@ -36,6 +37,7 @@ public:
 	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false, const bool plain = false) const;
 	
 	bool setDebug(bool);
+	void setCorrelationClass(TString correlationClass);
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
 	void setFillColor(const Int_t fillColor);
@@ -49,6 +51,7 @@ protected:
 	void applyUncertainty(TString, THnBase*);
 
 private:
+	TString m_correlationClass = "";
 	bool m_debug = false;
 	TString m_filename;
 	Int_t m_fillColor = -1;

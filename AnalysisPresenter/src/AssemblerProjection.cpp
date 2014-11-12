@@ -8,6 +8,7 @@
 #include "TStyle.h"
 
 #include <assert.h>
+#include <boost/bind.hpp>
 #include <cmath>
 #include <exception>
 
@@ -32,11 +33,44 @@ AssemblerProjection::~AssemblerProjection() {
 	}
 }
 
-void AssemblerProjection::add(TString type, THStack* content, THStack* contentSyst) {
-	if(m_components.find(type) != m_components.end()) {
+void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection) {
+	// Combine correlated uncertainties and assemble contributions into sorted histogram stack
+	std::vector<std::pair<TH1D*, double>> vh;
+	// Stack for systematic uncertainties (statistical ones are taken care of in the content stack below
+	THStack* hsUncertainties = new THStack("hsUncertainties", varexp + TString(" {") + selection + TString("}"));
+	for(const auto &contributionProjection : typeProjection.second) {
+		vh.push_back(make_pair(contributionProjection->getHistogram(), contributionProjection->getHistogram()->Integral()));
+		
+		for(const auto &uncertainty : contributionProjection->getUncertainties()) {
+			TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
+			if(hUncertainty) {
+				for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
+					double value = hUncertainty->GetBinContent(j);
+					value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
+					hUncertainty->SetBinContent(j, value);
+				}
+			} else {
+				hsUncertainties->Add(uncertainty.second);
+			}
+		}
+	}
+	
+	// Sort by amount of contribution
+	std::sort(vh.begin()
+		, vh.end()
+		, boost::bind(&std::pair<TH1D*, double>::second, _1) < boost::bind(&std::pair<TH1D*, double>::second, _2)
+	);
+	
+	// Prepare content stack
+	THStack* hs = new THStack("hs", varexp + TString(" {") + selection + TString("}"));
+	for(const auto &contribution : vh) {
+		hs->Add(contribution.first);
+	}
+	
+	if(m_components.find(typeProjection.first) != m_components.end()) {
 		throw std::runtime_error("overwriting projection components not supported");
 	}
-	m_components.insert(make_pair(type, make_pair(content, contentSyst)));
+	m_components.insert(make_pair(typeProjection.first, make_pair(hs, hsUncertainties)));
 }
 
 double AssemblerProjection::getBin(TString type, int i) const {

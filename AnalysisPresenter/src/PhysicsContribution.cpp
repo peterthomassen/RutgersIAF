@@ -277,6 +277,10 @@ THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
 }
 
+TString PhysicsContribution::getCorrelationClass() const {
+	return m_correlationClass;
+}
+
 std::map<PhysicsContribution*, std::map<TString, TString>> PhysicsContribution::getEnsembleFakeRateParams() const {
 	return m_ensembleFakeRateParams;
 }
@@ -353,6 +357,10 @@ PhysicsContributionProjection* PhysicsContribution::project(const char* varName,
 	}
 	
 	return projection;
+}
+
+void PhysicsContribution::setCorrelationClass(TString correlationClass) {
+	m_correlationClass = correlationClass;
 }
 
 bool PhysicsContribution::setDebug(bool debug) {

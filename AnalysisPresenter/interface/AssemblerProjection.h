@@ -9,6 +9,9 @@
 #include "THStack.h"
 #include "TROOT.h"
 
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
+
 class AssemblerProjection : public TObject {
 
 public:
@@ -16,7 +19,7 @@ public:
 	AssemblerProjection(TString name, TString title, bool binForOverflow);
 	virtual ~AssemblerProjection();
 
-	void add(TString type, THStack* content, THStack* contentSyst);
+	void add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection);
 	
 	double getBin(TString type, int i) const;
 	double getBinStat(TString type, int i) const;

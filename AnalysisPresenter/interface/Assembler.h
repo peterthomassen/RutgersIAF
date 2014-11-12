@@ -2,10 +2,10 @@
 #define Assembler_h
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
-#include "THStack.h"
 #include "TROOT.h"
 
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"

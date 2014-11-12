@@ -10,7 +10,6 @@
 #include "TObjString.h"
 #include "TPRegexp.h"
 
-#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <boost/range/join.hpp>
 #include <boost/tokenizer.hpp>
@@ -187,43 +186,10 @@ AssemblerProjection* Assembler::project(const char* name, const bool binForOverf
 		}
 	}
 	
-	// Prepare projection for output: Combine correlated uncertainties and assemble contributions into histogram stack
+	// Prepare projection for output: Put projections together
 	m_projection = new AssemblerProjection(name, m_vars[name], binForOverflow);
-	std::map<TString, std::vector<std::pair<TH1D*, double>>> vh;
 	for(const auto &typeProjection : m_hProjections) {
-		// Prepare vector of contributions for sorting, and take care of error correlations
-		std::vector<std::pair<TH1D*, double>> vh;
-		THStack* hsUncertainties = new THStack("hsUncertainties", m_varexp + TString(" {") + m_selection + TString("}"));
-		for(const auto &contributionProjection : typeProjection.second) {
-			vh.push_back(make_pair(contributionProjection->getHistogram(), contributionProjection->getHistogram()->Integral()));
-			
-			for(const auto &uncertainty : contributionProjection->getUncertainties()) {
-				TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
-				if(hUncertainty) {
-					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
-						double value = hUncertainty->GetBinContent(j);
-						value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
-						hUncertainty->SetBinContent(j, value);
-					}
-				} else {
-					hsUncertainties->Add(uncertainty.second);
-				}
-			}
-		}
-		
-		// Sort by amount of contribution
-		std::sort(vh.begin()
-			, vh.end()
-			, boost::bind(&std::pair<TH1D*, double>::second, _1) < boost::bind(&std::pair<TH1D*, double>::second, _2)
-		);
-		
-		// Prepare stack
-		THStack* hs = new THStack("hs", m_varexp + TString(" {") + m_selection + TString("}"));
-		for(const auto &contribution : vh) {
-			hs->Add(contribution.first);
-		}
-		
-		m_projection->add(typeProjection.first, hs, hsUncertainties);
+		m_projection->add(typeProjection, m_varexp, m_selection);
 	}
 	
 	return m_projection;
