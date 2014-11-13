@@ -43,14 +43,29 @@ AssemblerProjection::~AssemblerProjection() {
 
 void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection) {
 	// Combine correlated uncertainties and assemble contributions into sorted histogram stack
+
+	// Intermediate structure for main histogram, and stack for systematic uncertainties (statistical ones are taken care of in main histogram
 	std::vector<std::pair<TH1D*, double>> vh;
-	// Stack for systematic uncertainties (statistical ones are taken care of in the content stack below
-	THStack* hsUncertainties = new THStack("hsUncertainties", varexp + TString(" {") + selection + TString("}"));
+	THStack* hsSyst = new THStack("hsSyst", varexp + TString(" {") + selection + TString("}"));
+	
+	// Also, break things down by correlation class (for datacards and such)
+	std::vector<TString> correlationClasses;
+	std::map<TString, std::pair<THStack*, THStack*>> hsByCorrelationClass;
 	for(const auto &contributionProjection : typeProjection.second) {
+		TString correlationClass = contributionProjection->getPhysicsContribution()->getCorrelationClass();
+		if(std::find(correlationClasses.begin(), correlationClasses.end(), correlationClass) == correlationClasses.end()) {
+			correlationClasses.push_back(correlationClass);
+			THStack* hs2 = new THStack((TString("hs_") + correlationClass).Data(), varexp + TString(" {") + selection + TString("}"));
+			THStack* hsSyst2 = new THStack((TString("hsSyst_") + correlationClass).Data(), varexp + TString(" {") + selection + TString("}"));
+			hsByCorrelationClass.insert(make_pair(correlationClass, make_pair(hs2, hsSyst2)));
+		}
+		
 		vh.push_back(make_pair(contributionProjection->getHistogram(), contributionProjection->getHistogram()->Integral()));
+		hsByCorrelationClass[correlationClass].first->Add((TH1*)contributionProjection->getHistogram()->Clone());
 		
 		for(const auto &uncertainty : contributionProjection->getUncertainties()) {
-			TH1D* hUncertainty = (TH1D*)hsUncertainties->FindObject(uncertainty.first);
+			// Combine uncertainties into main histograms
+			TH1D* hUncertainty = (TH1D*)hsSyst->FindObject(uncertainty.first);
 			if(hUncertainty) {
 				for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
 					double value = hUncertainty->GetBinContent(j);
@@ -58,7 +73,19 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 					hUncertainty->SetBinContent(j, value);
 				}
 			} else {
-				hsUncertainties->Add(uncertainty.second);
+				hsSyst->Add(uncertainty.second);
+			}
+			
+			// Combine uncertainties into correlation class histograms
+			hUncertainty = (TH1D*)hsByCorrelationClass[correlationClass].second->FindObject(uncertainty.first);
+			if(hUncertainty) {
+				for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
+					double value = hUncertainty->GetBinContent(j);
+					value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
+					hUncertainty->SetBinContent(j, value);
+				}
+			} else {
+				hsByCorrelationClass[correlationClass].second->Add((TH1*)uncertainty.second->Clone());
 			}
 		}
 	}
@@ -78,12 +105,19 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 	if(m_components.find(typeProjection.first) != m_components.end()) {
 		throw std::runtime_error("overwriting projection components not supported");
 	}
-	m_components.insert(make_pair(typeProjection.first, make_pair(hs, hsUncertainties)));
+	m_components.insert(make_pair(typeProjection.first, make_pair(hs, hsSyst)));
+	m_componentsByCorrelationClass.insert(make_pair(typeProjection.first, hsByCorrelationClass));
 }
 
 double AssemblerProjection::getBin(TString type, int i) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
+	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
+}
+
+double AssemblerProjection::getBin(TString type, int i, TString correlationClass) const {
+	assert(has(type, correlationClass));
+	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
 }
 
@@ -93,10 +127,31 @@ double AssemblerProjection::getBinStat(TString type, int i) const {
 	return stack ? ((TH1*)stack->Last())->GetBinError(i) : 0;
 }
 
+double AssemblerProjection::getBinStat(TString type, int i, TString correlationClass) const {
+	assert(has(type, correlationClass));
+	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
+	return stack ? ((TH1*)stack->Last())->GetBinError(i) : 0;
+}
+
 double AssemblerProjection::getBinSyst(TString type, int i) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.second->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
+}
+
+double AssemblerProjection::getBinSyst(TString type, int i, TString correlationClass) const {
+	assert(has(type, correlationClass));
+	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.second->GetStack();
+	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
+}
+
+std::vector<TString> AssemblerProjection::getCorrelationClasses(TString type) {
+	assert(has(type));
+	std::vector<TString> correlationClasses;
+	for(auto &componentByCorrelationClass: m_componentsByCorrelationClass.find(type)->second) {
+		correlationClasses.push_back(componentByCorrelationClass.first);
+	}
+	return correlationClasses;
 }
 
 TH1* AssemblerProjection::getHistogram(TString type) const {
@@ -105,8 +160,21 @@ TH1* AssemblerProjection::getHistogram(TString type) const {
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
 }
 
+TH1* AssemblerProjection::getHistogram(TString type, TString correlationClass) const {
+	assert(has(type, correlationClass));
+	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
+	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
+}
+
 bool AssemblerProjection::has(TString type) const {
 	return (m_components.find(type) != m_components.end());
+}
+
+bool AssemblerProjection::has(TString type, TString correlationClass) const {
+	return (
+		m_componentsByCorrelationClass.find(type) != m_componentsByCorrelationClass.end()
+		&& m_componentsByCorrelationClass.find(type)->second.find(correlationClass) != m_componentsByCorrelationClass.find(type)->second.end()
+	);
 }
 
 bool AssemblerProjection::hasOverflowIncluded() const {
