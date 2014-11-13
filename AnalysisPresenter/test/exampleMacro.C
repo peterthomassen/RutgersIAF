@@ -62,6 +62,7 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->setRange("MET", 0, 30, false);
 	assembler->project("LT", true)->plot(true)->SaveAs("L3DYz1B0HTgt200MET0to30_LT.pdf");
 	assembler->project("LT", true)->print();
+	assembler->project("LT", true)->datacard("L3DYz1B0HTgt200MET0to30_LT");
 	
 	assembler->setRange();
 	
