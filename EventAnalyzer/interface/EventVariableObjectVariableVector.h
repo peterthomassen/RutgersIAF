@@ -9,16 +9,25 @@
 template <typename T>
 class EventVariableObjectVariableVector : public EventVariable{
  public:
-  EventVariableObjectVariableVector(TString varname, TString productname, TString name="evobjectvariablevector") : EventVariable(name),m_varname(varname),m_productname(productname) {
+  EventVariableObjectVariableVector(TString varname, TString productname, bool doSort = false, TString name="evobjectvariablevector") : EventVariable(name),m_varname(varname),m_doSort(doSort){ m_productnames.push_back(productname);}
+
+  void addProduct(TString name){
+    if(find(m_productnames.begin(),m_productnames.end(),name) == m_productnames.end())m_productnames.push_back(name);
   }
 
   bool calculate(BaseHandler* handler){
     std::vector<T> vector;
     T value;
-    for(SignatureObject* object : handler->getProduct(m_productname)) {
-      if(object->getVariable(m_varname, value)) {
-        vector.push_back(value);
+    for( TString m_productname : m_productnames){
+      for(SignatureObject* object : handler->getProduct(m_productname)) {
+	if(object->getVariable(m_varname, value)) {
+	  vector.push_back(value);
+	}
       }
+    }
+    if(m_doSort){
+      std::sort(vector.begin(),vector.end());
+      std::reverse(vector.begin(),vector.end());
     }
     handler->setVector(getName(), vector);
     return vector.size();
@@ -28,7 +37,8 @@ class EventVariableObjectVariableVector : public EventVariable{
 
  private:
   TString m_varname;
-  TString m_productname;
+  bool m_doSort;
+  std::vector<TString> m_productnames;
 
 
 };
