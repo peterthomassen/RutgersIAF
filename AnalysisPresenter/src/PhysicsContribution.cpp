@@ -20,12 +20,10 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, Int_t fillColor, bool unordered, bool forceData) : m_filename(filename), m_name(name), m_type(type), m_unordered(unordered) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, Int_t fillColor, bool unordered, bool forceData) : m_filename(filename), m_fillColor(fillColor), m_name(name), m_type(type), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
-
-	setFillColor(fillColor);
 	
 	TFile f(m_filename);
 	if(f.IsZombie()) {
@@ -270,6 +268,7 @@ int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
 	double low = axis->GetBinLowEdge(bin);
 	if(x > low + width / 100) {
 		cerr << "Warning: " << x << " is not a bin boundary for " << axis->GetName() << " axis" << endl;
+		throw std::runtime_error("binning error");
 	}
 	return bin;
 }
