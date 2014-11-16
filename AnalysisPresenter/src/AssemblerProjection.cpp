@@ -181,7 +181,7 @@ bool AssemblerProjection::hasOverflowIncluded() const {
 	return m_binForOverflow;
 }
 
-TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
+TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, const char* fitFormula) {
 	m_canvas = new TCanvas("c1", "c1", 700, 700);
 	
 	TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
@@ -329,8 +329,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit) {
 	hRatio2->Draw("E SAME");
 	gStyle->SetOptFit(1111);
 	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
-	hRatio->Fit("pol0", "", "SAME", xminFit, xmaxFit);
-	//hRatio->Fit("pol1", "", "SAME", xminFit, xmaxFit);
+	hRatio->Fit(fitFormula, "", "SAME", xminFit, xmaxFit);
 	
 	return m_canvas;
 }

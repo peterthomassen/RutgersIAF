@@ -35,7 +35,7 @@ public:
 	bool has(TString type, TString correlationClass) const;
 	bool hasOverflowIncluded() const;
 	
-	TCanvas* plot(bool log = true, double xminFit = 0, double xmaxFit = 0);
+	TCanvas* plot(bool log = true, double xminFit = 0, double xmaxFit = 0, const char* fitFormula = "pol0");
 	void print() const;
 	
 	void datacard(TString datacardName);
