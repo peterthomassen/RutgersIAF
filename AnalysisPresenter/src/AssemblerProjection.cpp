@@ -205,7 +205,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	for(int i = 0; i < hData->GetNbinsX() + 1; ++i) {
 		hData->SetBinError(i, 1e-3);
 	}
-	hData->SetMarkerStyle(7);
+	hData->SetMarkerStyle(9);
 	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
 	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
