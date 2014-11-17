@@ -471,7 +471,7 @@ void setupProducts(BaseHandler* handler)
 }
 
 
-void setupVariables(BaseHandler* handler,bool isMC = false)
+void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSample = false)
 {
   const double mZ = 91;
   const double mW = 80.385;
@@ -689,12 +689,29 @@ void setupVariables(BaseHandler* handler,bool isMC = false)
   EventVariableReversed* notTrileptonOnZcut = new EventVariableReversed("TRILEPTONONZ", "NOTTRILEPTONONZ");
   handler->addEventVariable("NOTTRILEPTONONZ", notTrileptonOnZcut);
   
-  EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e6, "MLOWDYCUT");
+  EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e7, "MLOWDYCUT");
   handler->addEventVariable("MLOWDYCUT", mLowDYcut);
-  
-  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
-//  writeEvent->addVariable("NOTTRILEPTONONZ");
-  handler->addEventVariable("WRITEEVENT", writeEvent);
+
+  if(singleLeptonSample) {
+	  EventVariableInRange<int>* singlelepton = new EventVariableInRange<int>("NLEPTONS", 1, 1e6, "SINGLELEPTON");
+	  handler->addEventVariable("SINGLELEPTON", singlelepton);
+	  
+	  EventVariableInRange<int>* btagged = new EventVariableInRange<int>("NBJETSCSVM", 1, 1e6, "BTAGGED");
+	  handler->addEventVariable("BTAGGED", btagged);
+	  
+	  EventVariableCombined* btagged1L = new EventVariableCombined("BTAGGED", "SINGLELEPTON", true, "BTAGGED1L");
+	  handler->addEventVariable("BTAGGED1L", btagged1L);
+	  
+	  EventVariableCombined* dileptonNotBelow12 = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "DILEPTONNOTBELOW12");
+	  handler->addEventVariable("DILEPTONNOTBELOW12", dileptonNotBelow12);
+
+	  EventVariableCombined* writeEvent = new EventVariableCombined("BTAGGED1L", "DILEPTONNOTBELOW12", false, "WRITEEVENT");
+	  handler->addEventVariable("WRITEEVENT", writeEvent);
+  } else {
+	  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
+	//  writeEvent->addVariable("NOTTRILEPTONONZ");
+	  handler->addEventVariable("WRITEEVENT", writeEvent);
+  }
 }
 
 void setupFilterCuts(BaseHandler* handler)
