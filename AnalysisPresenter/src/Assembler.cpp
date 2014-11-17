@@ -57,12 +57,6 @@ void Assembler::addContribution(PhysicsContribution* contribution) {
 	}
 }
 
-void Assembler::addWeight(TString varexp, TString type) {
-	for(auto &contribution : boost::join(m_background, m_signal)) {
-		contribution->addWeight(varexp, type);
-	}
-}
-
 double Assembler::getLumi() const {
 	double lumi = 0;
 	for(const auto &contribution : m_data) {

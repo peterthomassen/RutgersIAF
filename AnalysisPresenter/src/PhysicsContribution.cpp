@@ -76,19 +76,19 @@ void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
 	}
 }
 
-void PhysicsContribution::addWeight(TString varexp, TString type) {
-	if(type != "" && m_type != type) {
-		return;
+void PhysicsContribution::addWeight(TString weight, double normalization) {
+	if(normalization != 1.0) {
+		weight = TString::Format("(%s) * %f", weight.Data(), normalization);
 	}
 	
 	if(isData()) {
 		cerr << "Warning: Applying " << m_weights.size() << " weight(s) to data" << endl;
 	}
 	
-	if(std::find(m_weights.begin(), m_weights.end(), varexp) != m_weights.end()) {
-		cout << "Warning: Adding weight " << varexp << " repeatedly" << endl;
+	if(std::find(m_weights.begin(), m_weights.end(), weight) != m_weights.end()) {
+		cout << "Warning: Adding weight " << weight << " repeatedly" << endl;
 	}
-	m_weights.push_back(varexp);
+	m_weights.push_back(weight);
 }
 
 void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {

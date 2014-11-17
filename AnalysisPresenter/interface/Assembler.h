@@ -21,7 +21,6 @@ public:
 	virtual ~Assembler();
 	
 	void addContribution(PhysicsContribution*);
-	void addWeight(TString, TString = "");
 	
 	double getLumi() const;
 	

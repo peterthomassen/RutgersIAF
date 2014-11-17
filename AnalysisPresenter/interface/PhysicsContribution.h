@@ -17,7 +17,7 @@ public:
 	virtual ~PhysicsContribution();
 	
 	void addFlatUncertainty(TString, double);
-	void addWeight(TString, TString = "");
+	void addWeight(TString weight, double normalization = 1.0);
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	int findBinFromLowEdge(TAxis* axis, double x);
 	THnBase* getContent() const;
