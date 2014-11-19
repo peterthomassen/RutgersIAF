@@ -398,14 +398,14 @@ void AssemblerProjection::print() const {
 	cout << endl;
 }
 
-void AssemblerProjection::datacard(TString datacardName) {
+void AssemblerProjection::datacardSum(TString datacardName) {
 	
 	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
 	int bins = hData->GetNbinsX();
 
 	//Create datacard
 	ofstream datacard;
-	TString basicName = "/datacard_tcH_";
+	TString basicName = "/datacard_Sum_tcH_";
 	TString endName = ".txt";
 	TString completeName = "";
 	TString directory = "";
@@ -417,7 +417,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(2);
-	datacard << "#Datacard for t->cH with H->tautau/WW/ZZ" << '\n' << "#m_H=126.0 GeV" << '\n' << "#Version Nov. 2014" << '\n' << '\n';
+	datacard << "#Datacard for t->cH with H->tautau/WW/ZZ" << '\n' << "#m_H=126.0 GeV" << '\n' << '\n';
 	datacard << "imax " << bins << " number of channels" << '\n' << "jmax 1 number of background" << '\n' << "kmax 2 number nuisance parameters" << '\n';
 	datacard << "---------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
@@ -456,16 +456,11 @@ void AssemblerProjection::datacard(TString datacardName) {
 			datacard << '\t' << contentSignal;
 		}
 		else {
-			datacard << '\t' << "0.00";
+			perror("***Error: No Signal***");
 		}
 		
-		if(has("background")) {
-			double contentBackground = getBin("background", i);
-			datacard << '\t' << contentBackground;
-		}
-		else {
-			datacard << '\t' << "0.00";
-		}
+		double contentBackground = getBin("background", i);
+		datacard << '\t' << contentBackground;
 	}
 	datacard << '\n';
 	datacard << "---------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
@@ -480,19 +475,14 @@ void AssemblerProjection::datacard(TString datacardName) {
 			datacard << '\t' << 1 + ratio;
 		}
 		else {
-			datacard << '\t' << "1.00";
+			perror("***Error: No Signal -> No variance***");
 		}
 		
-		if(has("background")) {
-			double contentBackgroundStat = getBinStat("background", i);		
-			double contentBackground = getBin("background", i);	
-			double ratio = contentBackgroundStat/contentBackground;
-			if (contentBackground == 0) {ratio = 0.1;}
-			datacard << '\t' << 1 + ratio;
-		}
-		else {
-			datacard << '\t' << "1.00";
-		}
+		double contentBackgroundStat = getBinStat("background", i);		
+		double contentBackground = getBin("background", i);	
+		double ratio = contentBackgroundStat/contentBackground;
+		if (contentBackground == 0) {ratio = 0.1;}
+		datacard << '\t' << 1 + ratio;
 		
 	}
 	datacard << '\t' << "Stat" << '\n';
@@ -507,22 +497,186 @@ void AssemblerProjection::datacard(TString datacardName) {
 			datacard << '\t' << 1 + ratio;
 		}
 		else {
-			datacard << '\t' << "1.00";
+			perror("***Error: No Signal -> No variance***");
 		}
 		
-		if(has("background")) {
-			double contentBackgroundStat = getBinStat("background", i);		
-			double contentBackground = getBin("background", i);	
-			double ratio = contentBackgroundStat/contentBackground;
-			if (contentBackground == 0) {ratio = 0.1;}
-			datacard << '\t' << 1 + ratio;
-		}
-		else {
-			datacard << '\t' << "1.00";
-		}
+		double contentBackgroundStat = getBinStat("background", i);		
+		double contentBackground = getBin("background", i);	
+		double ratio = contentBackgroundStat/contentBackground;
+		if (contentBackground == 0) {ratio = 0.1;}
+		datacard << '\t' << 1 + ratio;
 	}
 	datacard << '\t' << "Syst" << '\n';
 	
 	datacard.close();
 }
 
+void AssemblerProjection::datacard(TString datacardName) {
+	
+	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	int bins = hData->GetNbinsX();
+	std::vector<TString> correlationClassesSignal;
+	correlationClassesSignal = getCorrelationClasses("signal");
+	int NumberCorClassesSignal = correlationClassesSignal.size();
+	std::vector<TString> correlationClassesBckgrd;
+	correlationClassesBckgrd = getCorrelationClasses("background");
+	int NumberCorClassesBackgrd = correlationClassesBckgrd.size();
+
+	
+	//Create datacard
+	ofstream datacard;
+	TString basicName = "/datacard_tcH_";
+	TString endName = ".txt";
+	TString completeName = "";
+	TString directory = "";
+	char buffer[1024]; 
+    if(getcwd(buffer, 1024) == NULL ) 
+		perror("***Directory Error***");  
+    directory = buffer;
+	completeName = directory + basicName + m_name + "_" + datacardName + endName;
+	datacard.open(completeName);	
+	datacard << std::fixed << std::setprecision(2);
+	datacard << "#Datacard for t->cH with H->tautau/WW/ZZ" << '\n' << "#m_H=126.0 GeV" << '\n' << '\n';
+	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberCorClassesBackgrd+NumberCorClassesSignal - 1 << " number of background" << '\n' << "kmax 2 number nuisance parameters" << '\n';
+	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << "Observation";
+	
+	//Calculate values for datacard
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		double contentData = getBin("data", i);
+		datacard << '\t' << '\t' << contentData;
+	}
+	datacard << '\n';
+	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << "bin" << '\t';
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		for (int j = 0; j < (NumberCorClassesSignal + NumberCorClassesBackgrd); j++) {
+		
+			datacard << '\t' << m_name << i << '\t' << '\t';
+		}
+	}
+	datacard << '\n';
+	datacard << "process";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		for (int j = 0; j < NumberCorClassesSignal; j++) {
+		
+			if(correlationClassesSignal[j]=="") {
+				datacard << '\t' << "remain signal";
+			}
+			else {
+				datacard << '\t' << "signal " << correlationClassesSignal[j];
+			}
+		}
+		
+		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		
+			if(correlationClassesBckgrd[j]=="") {
+				datacard << '\t' << "remain bckgrd";
+			}
+			else {
+				datacard << '\t' << "bckgrd " << correlationClassesBckgrd[j];
+			}
+		}
+			
+	}
+	datacard << '\n';
+	datacard << "process";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+		for (int j = 0; j < NumberCorClassesSignal; j++) {
+		
+			datacard << '\t' << (NumberCorClassesSignal - j)*(-1)+1 << '\t' << '\t' << '\t';
+		}
+		
+		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		
+			datacard << '\t' << j + 1 << '\t' << '\t' << '\t';
+		}
+		
+	}
+	datacard << '\n';
+	datacard << "rate";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+	
+		if(has("signal")) {
+		
+			for (int j = 0; j < NumberCorClassesSignal; j++) {
+			
+				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+				datacard << '\t' << contentSignal << '\t' << '\t';
+			}
+		}
+		else {
+			perror("***Error: No Signal***");
+		}
+		
+		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		
+			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);
+			datacard << '\t' << contentBackground << '\t' << '\t';
+		}
+	}
+	datacard << '\n';
+	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << "1   lnN";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+	
+		if(has("signal")) {
+		
+			for (int j = 0; j < NumberCorClassesSignal; j++) {
+			
+				double contentSignalStat = getBinStat("signal", i, correlationClassesSignal[j]);		
+				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+				double ratio = contentSignalStat/contentSignal;
+				if (contentSignal == 0) {ratio = 0.1;}
+				datacard << '\t' << 1 + ratio << '\t' << '\t';
+			}
+		}
+		else {
+			perror("***Error: No Signal -> No variance***");
+		}
+
+		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		
+			double contentBackgroundStat = getBinStat("background", i, correlationClassesBckgrd[j]);		
+			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
+			double ratio = contentBackgroundStat/contentBackground;
+			if (contentBackground == 0) {ratio = 0.1;}
+			datacard << '\t' << 1 + ratio << '\t' << '\t';
+		}
+	}
+	datacard << '\t' << "Stat" << '\n';
+	datacard << "2   lnN";
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+	
+		if(has("signal")) {
+		
+			for (int j = 0; j < NumberCorClassesSignal; j++) {
+			
+				double contentSignalSyst = getBinSyst("signal", i, correlationClassesSignal[j]);		
+				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+				double ratio = contentSignalSyst/contentSignal;
+				if (contentSignal == 0) {ratio = 0.1;}
+				datacard << '\t' << 1 + ratio << '\t' << '\t';
+			}
+		}
+		else {
+			perror("***Error: No Signal -> No variance***");
+		}
+
+		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		
+			double contentBackgroundSyst = getBinSyst("background", i, correlationClassesBckgrd[j]);		
+			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
+			double ratio = contentBackgroundSyst/contentBackground;
+			if (contentBackground == 0) {ratio = 0.1;}
+			datacard << '\t' << 1 + ratio << '\t' << '\t';
+		}
+	}
+	datacard << '\t' << "Syst" << '\n';
+	
+	datacard.close();
+}
