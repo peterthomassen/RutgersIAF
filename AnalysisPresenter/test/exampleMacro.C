@@ -28,7 +28,7 @@ void exampleMacro(TString ofname = "test.root") {
 	///////////////////////
 	PhysicsContribution* signal = new PhysicsContribution("signal", "/users/h2/heindl/simulation/histograms/tcH_zz.simulation.root", (0.01 * 245.8) * 0.0289, "SeesawTo3Lminus_SyncedMC");
 	signal->addWeight("WEIGHT");
-	signal->setCorrelationClass("H->WW"); //Set CorrelationClass for datacard bins
+	signal->setCorrelationClass("WW"); //Set CorrelationClass for datacard bins
 	//signal->addFlatUncertainty("dummy", 0.2);
 	
 	
