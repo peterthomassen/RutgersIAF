@@ -39,6 +39,7 @@ public:
 	void print() const;
 	
 	void datacard(TString datacardName);
+	void datacardSum(TString datacardName);
 
 private:
 	bool m_binForOverflow;
