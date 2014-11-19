@@ -28,6 +28,7 @@ void exampleMacro(TString ofname = "test.root") {
 	///////////////////////
 	PhysicsContribution* signal = new PhysicsContribution("signal", "/users/h2/heindl/simulation/histograms/tcH_zz.simulation.root", (0.01 * 245.8) * 0.0289, "SeesawTo3Lminus_SyncedMC");
 	signal->addWeight("WEIGHT");
+	signal->setCorrelationClass("H->WW"); //Set CorrelationClass for datacard bins
 	//signal->addFlatUncertainty("dummy", 0.2);
 	
 	
@@ -62,7 +63,8 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->setRange("MET", 0, 30, false);
 	assembler->project("LT", true)->plot(true)->SaveAs("L3DYz1B0HTgt200MET0to30_LT.pdf");
 	assembler->project("LT", true)->print();
-	assembler->project("LT", true)->datacard("L3DYz1B0HTgt200MET0to30_LT");
+	assembler->project("LT", true)->datacardSum("L3DYz1B0HTgt200MET0to30_LT"); //creates datacard with one bin of the complete signal and one bin of the complete background
+	assembler->project("LT", true)->datacard("L3DYz1B0HTgt200MET0to30_LT"); //creates datacard with the CorrelationClasses
 	
 	assembler->setRange();
 	
