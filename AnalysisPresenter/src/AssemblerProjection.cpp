@@ -353,9 +353,9 @@ void AssemblerProjection::print() const {
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);
 		
 		if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
-			cout << m_name << " " << (int)lo << "-" << (int)hi;
+			cout << m_name << " " << lo << "-" << hi;
 		} else {
-			cout << m_name << " " << (int)lo << "-" << "inf";
+			cout << m_name << " " << lo << "-" << "inf";
 		}
 		
 		double contentData = getBin("data", i);
