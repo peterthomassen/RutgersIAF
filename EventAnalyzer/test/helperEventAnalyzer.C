@@ -179,6 +179,9 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("isoNonPromptElectrons","IREL0p15");
   handler->addProductCut("isoNonPromptElectrons","ELECTRON_NONPROMPT");
   
+  handler->addProduct("nonPromptElectrons","basicElectrons");
+  handler->addProductCut("nonPromptElectrons","ELECTRON_NONPROMPT");
+    
   handler->addProduct("promptNonIsoElectrons","basicElectrons");
   handler->addProductCut("promptNonIsoElectrons","NOTIREL0p15");
   handler->addProductCut("promptNonIsoElectrons","ELECTRON_PROMPT");
@@ -495,6 +498,12 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("ETAGOODMUONS", new EventVariableObjectVariableVector<double>("ETA","goodMuons"));
   handler->addEventVariable("fakeRoleGOODMUONS", new EventVariableObjectVariableVector<int>("fakeRole","goodMuons"));
 
+  handler->addEventVariable("QNONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","nonPromptElectrons"));
+  handler->addEventVariable("PTNONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("PT","nonPromptElectrons"));
+  handler->addEventVariable("ETANONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptElectrons"));
+  handler->addEventVariable("RELISONONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("RELISO","nonPromptElectrons"));
+  
+  handler->addEventVariable("QNONPROMPTMUONS", new EventVariableObjectVariableVector<double>("CHARGE","nonPromptMuons"));
   handler->addEventVariable("PTNONPROMPTMUONS", new EventVariableObjectVariableVector<double>("PT","nonPromptMuons"));
   handler->addEventVariable("ETANONPROMPTMUONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptMuons"));
   handler->addEventVariable("RELISONONPROMPTMUONS", new EventVariableObjectVariableVector<double>("RELISO","nonPromptMuons"));
