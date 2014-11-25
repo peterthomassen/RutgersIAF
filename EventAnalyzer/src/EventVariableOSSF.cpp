@@ -18,6 +18,7 @@ bool EventVariableOSSF::calculate(BaseHandler* handler)
   double maxMass = 0;
   int nOSSF = 0;
   double bestMass = 1e6;
+  double bestMassLow = 1e6;
   for(int i = 0; i < (int)m_productnames.size(); i++){
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     int nPlus = 0;
@@ -36,14 +37,20 @@ bool EventVariableOSSF::calculate(BaseHandler* handler)
 	  if(mass < minMass)minMass = mass;
 	  if(mass > maxMass)maxMass = mass;
 	  if(fabs(m_zmass - mass) < fabs(m_zmass - bestMass)) bestMass = mass;
+	  if(mass < m_zmass && fabs(m_zmass - mass) < fabs(m_zmass - bestMassLow)) bestMassLow = mass;
 	}
       }
     }
     nOSSF += min(nPlus,nMinus);
   }
   bool onZ = (fabs(bestMass - m_zmass) < m_zwidth);
-
+  double closeMass = bestMass;
+  if(!onZ && bestMassLow < bestMass) {
+	  bestMass = bestMassLow;
+  }
+  
   handler->setVariable(TString::Format("%sOSSFMINMLL",m_prefix.Data()),minMass);
+  handler->setVariable(TString::Format("%sOSSFCLOSEMLL",m_prefix.Data()),closeMass);
   handler->setVariable(TString::Format("%sOSSFMAXMLL",m_prefix.Data()),maxMass);
   handler->setVariable(TString::Format("%sMOSSF",m_prefix.Data()),bestMass);
   handler->setVariable(TString::Format("%sNOSSF",m_prefix.Data()),nOSSF);
