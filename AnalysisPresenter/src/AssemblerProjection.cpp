@@ -288,10 +288,11 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	pad1->SetLogy(log);
 	
 	TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
+	legend->SetHeader(TString::Format("Background [%.1f]", hBackgroundFullError->Integral()).Data());
 	TList* hists = m_components.find("background")->second.first->GetHists();
 	TIterator* iter = new TListIter(hists, false);
 	while(TH1* obj = (TH1*)iter->Next()) {
-		legend->AddEntry(obj);
+		legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
 	}
 	delete iter;
 	legend->Draw();
