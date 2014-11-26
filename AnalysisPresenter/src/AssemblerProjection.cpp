@@ -99,6 +99,7 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 	// Prepare content stack
 	THStack* hs = new THStack("hs", varexp + TString(" {") + selection + TString("}"));
 	for(const auto &contribution : vh) {
+		contribution.first->SetLineWidth(0);
 		hs->Add(contribution.first);
 	}
 	
