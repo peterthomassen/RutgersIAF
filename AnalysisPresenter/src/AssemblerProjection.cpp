@@ -426,7 +426,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(2);
-	datacard << "#Datacard for t->cH with H->tautau/WW/ZZ" << '\n' << "#m_H=126.0 GeV" << '\n' << '\n';
+	datacard << "#Datacard for t->cH with H->tautau/WW/ZZ" << '\n' << "#m_H=126.0 GeV" << '\n' << "#Version 0.1    Nov. 2014" << '\n' << '\n';
 	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberCorClassesBackgrd+NumberCorClassesSignal - 1 << " number of background" << '\n' << "kmax 2 number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
@@ -439,16 +439,25 @@ void AssemblerProjection::datacard(TString datacardName) {
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "bin" << '\t';
+	datacard << "bin" << '\t' << '\t' << '\t';
+	datacard << std::fixed << std::setprecision(0);
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < (NumberCorClassesSignal + NumberCorClassesBackgrd); j++) {
 		
-			datacard << '\t' << m_name << i << '\t' << '\t';
+			double lo = hData->GetXaxis()->GetBinLowEdge(i);
+			double hi = hData->GetXaxis()->GetBinUpEdge(i);
+		
+			if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
+				datacard << m_name << lo << "-" << hi << " " << '\t' << '\t';
+			} else {
+				datacard << m_name << lo << "-" << "inf" << '\t' << '\t';
+			}
 		}
 	}
+	datacard << std::fixed << std::setprecision(2);
 	datacard << '\n';
-	datacard << "process";
+	datacard << "process" << '\t';
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberCorClassesSignal; j++) {
@@ -457,7 +466,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 				datacard << '\t' << "remain signal";
 			}
 			else {
-				datacard << '\t' << "signal " << correlationClassesSignal[j];
+				datacard << '\t' << "signal" << correlationClassesSignal[j];
 			}
 		}
 		
@@ -467,13 +476,13 @@ void AssemblerProjection::datacard(TString datacardName) {
 				datacard << '\t' << "remain bckgrd";
 			}
 			else {
-				datacard << '\t' << "bckgrd " << correlationClassesBckgrd[j];
+				datacard << '\t' << "bckgrd" << correlationClassesBckgrd[j];
 			}
 		}
 			
 	}
 	datacard << '\n';
-	datacard << "process";
+	datacard << "process" << '\t';
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberCorClassesSignal; j++) {
@@ -488,7 +497,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 		
 	}
 	datacard << '\n';
-	datacard << "rate";
+	datacard << "rate" << '\t';
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
 		if(has("signal")) {
@@ -511,7 +520,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "Stat lnN";
+	datacard << "Stat  lnN";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
 		if(has("signal")) {
@@ -539,7 +548,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 		}
 	}
 	datacard << '\n';
-	datacard << "Syst lnN";
+	datacard << "Syst  lnN";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
 		if(has("signal")) {
