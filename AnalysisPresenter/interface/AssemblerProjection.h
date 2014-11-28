@@ -49,6 +49,8 @@ private:
 	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	std::map<TString, std::map<TString, std::pair<THStack*, THStack*>>> m_componentsByCorrelationClass; // like m_components["background"][""], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	
+	double extractStackBinInQuadrature(THStack* stack, int i) const;
+	
 	ClassDef(AssemblerProjection,1);
 };
 

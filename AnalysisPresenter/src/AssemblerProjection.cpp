@@ -110,6 +110,17 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 	m_componentsByCorrelationClass.insert(make_pair(typeProjection.first, hsByCorrelationClass));
 }
 
+double AssemblerProjection::extractStackBinInQuadrature(THStack* stack, int i) const {
+	TList* hists = stack->GetHists();
+	assert(hists);
+	double val2 = 0;
+	TIterator* iter = new TListIter(hists);
+	while(TH1* obj = (TH1*)iter->Next()) {
+		val2 += pow(obj->GetBinContent(i), 2);
+	}
+	return sqrt(val2);
+}
+
 double AssemblerProjection::getBin(TString type, int i) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
@@ -136,14 +147,12 @@ double AssemblerProjection::getBinStat(TString type, int i, TString correlationC
 
 double AssemblerProjection::getBinSyst(TString type, int i) const {
 	assert(has(type));
-	TObjArray* stack = m_components.find(type)->second.second->GetStack();
-	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
+	return extractStackBinInQuadrature(m_components.find(type)->second.second, i);
 }
 
 double AssemblerProjection::getBinSyst(TString type, int i, TString correlationClass) const {
 	assert(has(type, correlationClass));
-	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.second->GetStack();
-	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
+	return extractStackBinInQuadrature(m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.second, i);
 }
 
 std::vector<TString> AssemblerProjection::getCorrelationClasses(TString type) {
