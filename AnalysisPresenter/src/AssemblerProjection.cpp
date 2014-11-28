@@ -1,4 +1,5 @@
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
 #include "Math/QuantFuncMathCore.h"
 #include "TLegend.h"
@@ -88,6 +89,8 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 				hsByCorrelationClass[correlationClass].second->Add((TH1*)uncertainty.second->Clone());
 			}
 		}
+		
+		m_projections.insert(contributionProjection);
 	}
 	
 	// Sort by amount of contribution
@@ -110,7 +113,7 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 	m_componentsByCorrelationClass.insert(make_pair(typeProjection.first, hsByCorrelationClass));
 }
 
-double AssemblerProjection::extractStackBinInQuadrature(THStack* stack, int i) const {
+double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const {
 	TList* hists = stack->GetHists();
 	assert(hists);
 	double val2 = 0;
@@ -119,6 +122,11 @@ double AssemblerProjection::extractStackBinInQuadrature(THStack* stack, int i) c
 		val2 += pow(obj->GetBinContent(i), 2);
 	}
 	return sqrt(val2);
+}
+
+double AssemblerProjection::extractStackBin(THStack* stack, int i, TString name) const {
+	TH1D* hUncertainty = (TH1D*)stack->FindObject(name);
+	return hUncertainty ? hUncertainty->GetBinContent(i) : 0;
 }
 
 double AssemblerProjection::getBin(TString type, int i) const {
@@ -147,12 +155,17 @@ double AssemblerProjection::getBinStat(TString type, int i, TString correlationC
 
 double AssemblerProjection::getBinSyst(TString type, int i) const {
 	assert(has(type));
-	return extractStackBinInQuadrature(m_components.find(type)->second.second, i);
+	return addStackBinInQuadrature(m_components.find(type)->second.second, i);
 }
 
-double AssemblerProjection::getBinSyst(TString type, int i, TString correlationClass) const {
-	assert(has(type, correlationClass));
-	return extractStackBinInQuadrature(m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.second, i);
+double AssemblerProjection::getBinSyst(TString type, int i, TString name) const {
+	assert(has(type));
+	return extractStackBin(m_components.find(type)->second.second, i, name);
+}
+
+double AssemblerProjection::getBinSyst(TString type, int i, TString name, TString correlationClass) const {
+	assert(has(type));
+	return extractStackBin(m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.second, i, name);
 }
 
 std::vector<TString> AssemblerProjection::getCorrelationClasses(TString type) {
@@ -174,6 +187,16 @@ TH1* AssemblerProjection::getHistogram(TString type, TString correlationClass) c
 	assert(has(type, correlationClass));
 	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
+}
+
+std::set<TString> AssemblerProjection::getUncertainties() const {
+	std::set<TString> uncertainties;
+	for(auto &projection : m_projections) {
+		for(auto &projectionUncertainties : projection->getUncertainties()) {
+			uncertainties.insert(projectionUncertainties.first);
+		}
+	}
+	return uncertainties;
 }
 
 bool AssemblerProjection::has(TString type) const {

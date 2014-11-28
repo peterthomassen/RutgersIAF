@@ -2,6 +2,7 @@
 #define AssemblerProjection_h
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -9,7 +10,6 @@
 #include "THStack.h"
 #include "TROOT.h"
 
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 class AssemblerProjection : public TObject {
@@ -26,10 +26,12 @@ public:
 	double getBinStat(TString type, int i) const;
 	double getBinStat(TString type, int i, TString correlationClass) const;
 	double getBinSyst(TString type, int i) const;
-	double getBinSyst(TString type, int i, TString correlationClass) const;
+	double getBinSyst(TString type, int i, TString name) const;
+	double getBinSyst(TString type, int i, TString name, TString correlationClass) const;
 	std::vector<TString> getCorrelationClasses(TString type);
 	TH1* getHistogram(TString type) const;
 	TH1* getHistogram(TString type, TString correlationClass) const;
+	std::set<TString> getUncertainties() const;
 	
 	bool has(TString type) const;
 	bool has(TString type, TString correlationClass) const;
@@ -40,16 +42,22 @@ public:
 	
 	void datacard(TString datacardName);
 
-private:
+protected:
 	bool m_binForOverflow;
-	TCanvas* m_canvas = 0;
 	TString m_name;
 	TString m_title;
+	
+	std::set<PhysicsContributionProjection*> m_projections;
+	
+	double extractStackBin(THStack* stack, int i, TString name) const;
+	double addStackBinInQuadrature(THStack* stack, int i) const;
+
+private:
+	TCanvas* m_canvas = 0;
 	
 	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	std::map<TString, std::map<TString, std::pair<THStack*, THStack*>>> m_componentsByCorrelationClass; // like m_components["background"][""], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	
-	double extractStackBinInQuadrature(THStack* stack, int i) const;
 	
 	ClassDef(AssemblerProjection,1);
 };

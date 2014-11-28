@@ -21,16 +21,17 @@ public:
 	const PhysicsContribution* getPhysicsContribution() const;
 	std::map<TString, TH1D*> getUncertainties() const;
 	void incorporateOverflow();
-	static void incorporateOverflow(TH1D* &);
 	void scale(const double scale);
 
 protected:
-
-private:
 	const PhysicsContribution* m_contribution = 0;
 	TH1D* m_histogram = 0;
 	TString m_name;
 	TString m_title;
+	
+	static void incorporateOverflow(TH1D* &);
+
+private:
 	std::map<TString, TH1D*> m_uncertainties;
 	
 	ClassDef(PhysicsContributionProjection,1);
