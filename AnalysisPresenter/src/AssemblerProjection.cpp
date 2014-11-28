@@ -115,9 +115,9 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 
 double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const {
 	TList* hists = stack->GetHists();
-	assert(hists);
 	double val2 = 0;
 	TIterator* iter = new TListIter(hists);
+	// If hists was 0, Next() returns 0, so we're fine. This happens if the stack is empty (common use case: stack for systematic uncertainties).
 	while(TH1* obj = (TH1*)iter->Next()) {
 		val2 += pow(obj->GetBinContent(i), 2);
 	}
