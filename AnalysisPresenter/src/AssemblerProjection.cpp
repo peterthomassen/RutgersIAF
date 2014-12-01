@@ -279,6 +279,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	}
 	
 	TH1* hRatio = (TH1*)hData->Clone("hRatio");
+	TH1* hRatioMC = (TH1*)hBackgroundErr->Clone("hRatio");
 	if(hSignal) {
 		hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
 	} else {
@@ -321,7 +322,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	pad1->SetLogy(log);
 	
 	TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
-	legend->SetHeader(TString::Format("Background [%.1f]", hBackgroundFullError->Integral()).Data());
+	legend->SetHeader(TString::Format("Background [%.1f]", hBackground->Integral()).Data());
 	TList* hists = m_components.find("background")->second.first->GetHists();
 	TIterator* iter = new TListIter(hists, false);
 	while(TH1* obj = (TH1*)iter->Next()) {
@@ -343,6 +344,15 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 		hRatio->SetBinError(i, 0);
 	}
 	hRatio->Divide(hBackgroundFullError);
+	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
+		double yield = hBackground->GetBinContent(i);
+		hRatioMC->SetBinContent(i, hRatioMC->GetBinContent(i) / yield);
+		hRatioMC->SetBinError(i, hRatioMC->GetBinError(i) / yield);
+	}
+	hRatioMC->SetFillColor(kBlack);
+	hRatioMC->SetFillStyle(3002);
+	hRatioMC->SetMarkerStyle(20);
+	hRatioMC->SetMarkerSize(0);
 	hRatio->GetXaxis()->SetLabelFont(43);
 	hRatio->GetXaxis()->SetLabelSize(16);
 	hRatio->GetYaxis()->SetLabelFont(43);
@@ -355,15 +365,14 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	}
 	hRatio->Draw("AXIS");
 	line1->Draw();
-	hRatio->Draw("E2 SAME");
-	TH1* hRatio2 = (TH1*)hRatio->Clone("hRatio2");
-	for(int j = 1; j < hRatio2->GetXaxis()->GetNbins(); ++j) {
-		hRatio2->SetBinError(j, 1E-6);
-	}
-	hRatio2->Draw("E SAME");
+	hRatioMC->Draw("E2 SAME");
 	gStyle->SetOptFit(1111);
 	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
-	hRatio->Fit(fitFormula, "", "SAME", xminFit, xmaxFit);
+	hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
+	for(int j = 1; j < hRatio->GetXaxis()->GetNbins(); ++j) {
+		hRatio->SetBinError(j, 1E-6);
+	}
+	hRatio->Draw("SAME");
 	
 	return m_canvas;
 }
