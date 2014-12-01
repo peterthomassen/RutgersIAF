@@ -238,6 +238,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	for(int i = 0; i < hData->GetNbinsX() + 1; ++i) {
 		hData->SetBinError(i, 1e-3);
 	}
+	hData->SetLineWidth(1);
 	hData->SetMarkerStyle(9);
 	
 	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
@@ -346,6 +347,9 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	hRatio->Divide(hBackgroundFullError);
 	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
 		double yield = hBackground->GetBinContent(i);
+		if(yield == 0) {
+			continue;
+		}
 		hRatioMC->SetBinContent(i, hRatioMC->GetBinContent(i) / yield);
 		hRatioMC->SetBinError(i, hRatioMC->GetBinError(i) / yield);
 	}
@@ -360,9 +364,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	hRatio->SetFillColor(kBlack);
 	hRatio->SetFillStyle(3001);
 	hRatio->SetMinimum(0);
-	if(hRatio->GetMaximum() > 3) {
-		hRatio->SetMaximum(3);
-	}
+	hRatio->SetMaximum(3);
 	hRatio->Draw("AXIS");
 	line1->Draw();
 	hRatioMC->Draw("E2 SAME");
