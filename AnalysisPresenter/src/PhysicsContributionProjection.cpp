@@ -46,7 +46,9 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 	
 	if(uncertaintyMap) {
 		for(auto &uncertainty : *uncertaintyMap) {
-			m_uncertainties.insert(make_pair(uncertainty.first, uncertainty.second->Projection(dim, "E")));
+			TH1D* hProjection = uncertainty.second->Projection(dim, "E");
+			hProjection->SetName(uncertainty.second->GetName());
+			m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
 		}
 	}
 }

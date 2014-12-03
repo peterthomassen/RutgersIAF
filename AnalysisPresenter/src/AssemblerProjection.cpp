@@ -44,7 +44,7 @@ AssemblerProjection::~AssemblerProjection() {
 
 void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection) {
 	// Combine correlated uncertainties and assemble contributions into sorted histogram stack
-
+	
 	// Intermediate structure for main histogram, and stack for systematic uncertainties (statistical ones are taken care of in main histogram
 	std::vector<std::pair<TH1D*, double>> vh;
 	THStack* hsSyst = new THStack("hsSyst", varexp + TString(" {") + selection + TString("}"));
@@ -125,7 +125,10 @@ double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const
 }
 
 double AssemblerProjection::extractStackBin(THStack* stack, int i, TString name) const {
-	TH1D* hUncertainty = (TH1D*)stack->FindObject(name);
+	if(!stack->GetHists()) {
+		return 0;
+	}
+	TH1D* hUncertainty = (TH1D*)stack->GetHists()->FindObject(name);
 	return hUncertainty ? hUncertainty->GetBinContent(i) : 0;
 }
 
@@ -164,7 +167,7 @@ double AssemblerProjection::getBinSyst(TString type, int i, TString name) const 
 }
 
 double AssemblerProjection::getBinSyst(TString type, int i, TString name, TString correlationClass) const {
-	assert(has(type));
+	assert(has(type, correlationClass));
 	return extractStackBin(m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.second, i, name);
 }
 
@@ -341,11 +344,11 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
 	hRatio->GetXaxis()->SetTitle(title);
 	hRatio->SetTitle("");
-	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
+	for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
 		hRatio->SetBinError(i, 0);
 	}
 	hRatio->Divide(hBackgroundFullError);
-	for(int i = 0; i <= hRatio->GetXaxis()->GetNbins() + 1; ++i) {
+	for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
 		double yield = hBackground->GetBinContent(i);
 		if(yield == 0) {
 			continue;
@@ -371,9 +374,9 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	gStyle->SetOptFit(1111);
 	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
 	hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
-	for(int j = 1; j < hRatio->GetXaxis()->GetNbins(); ++j) {
+/*	for(int j = 1; j < hRatio->GetXaxis()->GetNbins() + 1; ++j) {
 		hRatio->SetBinError(j, 1E-6);
-	}
+	}*/
 	hRatio->Draw("SAME");
 	
 	return m_canvas;
