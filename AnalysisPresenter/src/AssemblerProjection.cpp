@@ -448,6 +448,8 @@ void AssemblerProjection::print() const {
 
 
 void AssemblerProjection::datacard(TString datacardName) {
+
+	std::cout << "Creating datacard..." << std::endl;
 	
 	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
 	int bins = hData->GetNbinsX();
@@ -461,19 +463,19 @@ void AssemblerProjection::datacard(TString datacardName) {
 	
 	//Create datacard
 	ofstream datacard;
-	TString basicName = "/datacard_tcH_";
+	TString basicName = "/datacard_";
 	TString endName = ".txt";
 	TString completeName = "";
 	TString directory = "";
 	char buffer[1024]; 
-    if(getcwd(buffer, 1024) == NULL ) 
+	if(getcwd(buffer, 1024) == NULL ) 
 		perror("***Directory Error***");  
-    directory = buffer;
+	directory = buffer;
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
-	datacard << std::fixed << std::setprecision(2);
-	datacard << "#Datacard for t->cH with H->tautau/WW/ZZ" << '\n' << "#m_H=126.0 GeV" << '\n' << "#Version 0.1    Nov. 2014" << '\n' << '\n';
-	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberCorClassesBackgrd+NumberCorClassesSignal - 1 << " number of background" << '\n' << "kmax 2 number nuisance parameters" << '\n';
+	datacard << std::fixed << std::setprecision(3);
+	datacard << "#Datacard Version 0.1" << '\n' << "#Dec. 2014" << '\n' << '\n';
+	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberCorClassesBackgrd+NumberCorClassesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertainties().size() + hData->GetNbinsX()*(NumberCorClassesBackgrd+NumberCorClassesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
 	
@@ -481,11 +483,11 @@ void AssemblerProjection::datacard(TString datacardName) {
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		double contentData = getBin("data", i);
-		datacard << '\t' << '\t' << contentData;
+		datacard << '\t' << contentData;
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "bin" << '\t' << '\t' << '\t';
+	datacard << "bin";
 	datacard << std::fixed << std::setprecision(0);
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
@@ -495,55 +497,55 @@ void AssemblerProjection::datacard(TString datacardName) {
 			double hi = hData->GetXaxis()->GetBinUpEdge(i);
 		
 			if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
-				datacard << m_name << lo << "-" << hi << " " << '\t' << '\t';
+				datacard << '\t' << m_name << lo << "-" << hi;
 			} else {
-				datacard << m_name << lo << "-" << "inf" << '\t' << '\t';
+				datacard << '\t' << m_name << lo << "-" << "inf";
 			}
 		}
 	}
-	datacard << std::fixed << std::setprecision(2);
+	datacard << std::fixed << std::setprecision(3);
 	datacard << '\n';
-	datacard << "process" << '\t';
+	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberCorClassesSignal; j++) {
 		
 			if(correlationClassesSignal[j]=="") {
-				datacard << '\t' << "remain signal";
+				datacard << '\t' << "remain_signal";
 			}
 			else {
-				datacard << '\t' << "signal" << correlationClassesSignal[j];
+				datacard << '\t' << "signal_" << correlationClassesSignal[j];
 			}
 		}
 		
 		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
 		
 			if(correlationClassesBckgrd[j]=="") {
-				datacard << '\t' << "remain bckgrd";
+				datacard << '\t' << "remain_bckgrd";
 			}
 			else {
-				datacard << '\t' << "bckgrd" << correlationClassesBckgrd[j];
+				datacard << '\t' << "bckgrd_" << correlationClassesBckgrd[j];
 			}
 		}
 			
 	}
 	datacard << '\n';
-	datacard << "process" << '\t';
+	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberCorClassesSignal; j++) {
 		
-			datacard << '\t' << (NumberCorClassesSignal - j)*(-1)+1 << '\t' << '\t' << '\t';
+			datacard << '\t' << (NumberCorClassesSignal - j)*(-1)+1;
 		}
 		
 		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
 		
-			datacard << '\t' << j + 1 << '\t' << '\t' << '\t';
+			datacard << '\t' << j + 1;
 		}
 		
 	}
 	datacard << '\n';
-	datacard << "rate" << '\t';
+	datacard << "rate";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
 		if(has("signal")) {
@@ -551,7 +553,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 			for (int j = 0; j < NumberCorClassesSignal; j++) {
 			
 				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
-				datacard << '\t' << contentSignal << '\t' << '\t';
+				datacard << '\t' << contentSignal;
 			}
 		}
 		else {
@@ -561,12 +563,58 @@ void AssemblerProjection::datacard(TString datacardName) {
 		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
 		
 			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);
-			datacard << '\t' << contentBackground << '\t' << '\t';
+			datacard << '\t' << contentBackground;
 		}
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "Stat  lnN";
+	
+	for (auto &uncertainty : getUncertainties()) {
+	
+		datacard << uncertainty << "  lnN";
+		
+		for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+		
+			if(has("signal")) {
+			
+				for (int j = 0; j < NumberCorClassesSignal; j++) {
+				
+					double contentSignalSyst = getBinSyst("signal", i, uncertainty, correlationClassesSignal[j]);		
+					double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+					double ratio = contentSignalSyst/contentSignal;
+					if (contentSignal == 0) {ratio = 0.1;}
+					datacard << '\t' << 1 + ratio;
+				}
+			}
+			else {
+				perror("***Error: No Signal -> No variance***");
+			}
+
+			for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+			
+				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, correlationClassesBckgrd[j]);		
+				double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
+				double ratio = contentBackgroundSyst/contentBackground;
+				if (contentBackground == 0) {ratio = 0.1;}
+				datacard << '\t' << 1 + ratio;
+			}
+		}
+		datacard << '\n';
+	}
+		
+	int NumberBins = (NumberCorClassesBackgrd + NumberCorClassesSignal)*(hData->GetNbinsX());
+	double StatUncertainty[NumberBins][NumberBins];
+	
+	for (int n = 0; n < NumberBins; n++) {
+	
+		for (int m = 0; m < NumberBins; m++) {
+		
+			StatUncertainty[n][m] = 0;
+		}
+	}
+	
+	int LoopIndex = 0;
+	
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
 		if(has("signal")) {
@@ -577,51 +625,35 @@ void AssemblerProjection::datacard(TString datacardName) {
 				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
 				double ratio = contentSignalStat/contentSignal;
 				if (contentSignal == 0) {ratio = 0.1;}
-				datacard << '\t' << 1 + ratio << '\t' << '\t';
+				StatUncertainty[LoopIndex][LoopIndex] = 1 + ratio;
+				LoopIndex++;
 			}
 		}
 		else {
 			perror("***Error: No Signal -> No variance***");
 		}
-
 		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
 		
 			double contentBackgroundStat = getBinStat("background", i, correlationClassesBckgrd[j]);		
 			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
 			double ratio = contentBackgroundStat/contentBackground;
 			if (contentBackground == 0) {ratio = 0.1;}
-			datacard << '\t' << 1 + ratio << '\t' << '\t';
+			StatUncertainty[LoopIndex][LoopIndex] = 1 + ratio;
+			LoopIndex++;
 		}
 	}
-	datacard << '\n';
-	datacard << "Syst  lnN";
-	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
-		if(has("signal")) {
+	for (int n = 0; n < NumberBins; n++) {
+	
+		datacard << "Stat" << n + 1 << "  lnN";
+	
+		for (int m = 0; m < NumberBins; m++) {
 		
-			for (int j = 0; j < NumberCorClassesSignal; j++) {
-			
-				double contentSignalSyst = getBinSyst("signal", i, correlationClassesSignal[j]);		
-				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
-				double ratio = contentSignalSyst/contentSignal;
-				if (contentSignal == 0) {ratio = 0.1;}
-				datacard << '\t' << 1 + ratio << '\t' << '\t';
-			}
+			datacard << '\t' << StatUncertainty[n][m];
 		}
-		else {
-			perror("***Error: No Signal -> No variance***");
-		}
-
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
 		
-			double contentBackgroundSyst = getBinSyst("background", i, correlationClassesBckgrd[j]);		
-			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
-			double ratio = contentBackgroundSyst/contentBackground;
-			if (contentBackground == 0) {ratio = 0.1;}
-			datacard << '\t' << 1 + ratio << '\t' << '\t';
-		}
+		datacard << '\n';
 	}
-	datacard << '\n';
 	
 	datacard.close();
 }
