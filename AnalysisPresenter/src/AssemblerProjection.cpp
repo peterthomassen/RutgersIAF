@@ -473,7 +473,7 @@ void AssemblerProjection::datacard(TString datacardName) {
 	directory = buffer;
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
-	datacard << std::fixed << std::setprecision(3);
+	datacard << std::fixed << std::setprecision(0);
 	datacard << "#Datacard Version 0.1" << '\n' << "#Dec. 2014" << '\n' << '\n';
 	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberCorClassesBackgrd+NumberCorClassesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertainties().size() + hData->GetNbinsX()*(NumberCorClassesBackgrd+NumberCorClassesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
@@ -488,7 +488,6 @@ void AssemblerProjection::datacard(TString datacardName) {
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "bin";
-	datacard << std::fixed << std::setprecision(0);
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < (NumberCorClassesSignal + NumberCorClassesBackgrd); j++) {
