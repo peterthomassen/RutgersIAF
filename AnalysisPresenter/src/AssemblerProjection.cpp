@@ -342,6 +342,10 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	pad2->cd();
 	
 	TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
+	double ratio = hData->Integral() / hBackground->Integral();
+	TLine* line2 = new TLine(hData->GetBinLowEdge(1), ratio, hData->GetBinLowEdge(hData->GetNbinsX()+1), ratio);
+	line2->SetLineColor(kRed);
+	line2->SetLineWidth(2);
 	hRatio->GetXaxis()->SetTitle(title);
 	hRatio->SetTitle("");
 	for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
@@ -364,16 +368,18 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	hRatio->GetXaxis()->SetLabelSize(16);
 	hRatio->GetYaxis()->SetLabelFont(43);
 	hRatio->GetYaxis()->SetLabelSize(16);
+	hRatio->GetYaxis()->SetTitle("data/background");
 	hRatio->SetFillColor(kBlack);
 	hRatio->SetFillStyle(3001);
 	hRatio->SetMinimum(0);
 	hRatio->SetMaximum(3);
 	hRatio->Draw("AXIS");
 	line1->Draw();
+	line2->Draw();
 	hRatioMC->Draw("E2 SAME");
 	gStyle->SetOptFit(1111);
 	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
-	hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
+//	hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
 /*	for(int j = 1; j < hRatio->GetXaxis()->GetNbins() + 1; ++j) {
 		hRatio->SetBinError(j, 1E-6);
 	}*/
