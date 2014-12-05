@@ -265,9 +265,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
 	int bin = axis->FindFixBin(x);
 	double width = axis->GetBinWidth(bin);
-	double low = axis->GetBinLowEdge(bin);
-	if(x > low + width / 100) {
-		cerr << "Warning: " << x << " is not a bin boundary for " << axis->GetName() << " axis" << endl;
+	double lo = axis->GetBinLowEdge(bin);
+	double hi = axis->GetBinUpEdge(bin);
+	if(x > lo + width / 100 && x < hi - width / 100) {
+		cerr << "Warning: " << x << " is not a bin boundary for " << axis->GetName() << " axis (considered boundaries: " << lo << " and " << hi << ")" << endl;
 		throw std::runtime_error("binning error");
 	}
 	return bin;
