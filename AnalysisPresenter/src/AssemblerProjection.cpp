@@ -252,6 +252,8 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 		hBackground->SetBinError(i, sqrt(error2));
 	}
 	
+	double ratio = hData->Integral() / hBackground->Integral();
+	
 	TH1* hBackgroundErr = (TH1*)hBackground->Clone();
 	hBackgroundErr->Reset();
 	TH1* hBackgroundFullError = (TH1*)hBackground->Clone();
@@ -326,7 +328,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	pad1->SetLogy(log);
 	
 	TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
-	legend->SetHeader(TString::Format("Background [%.1f]", hBackground->Integral()).Data());
+	legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
 	TList* hists = m_components.find("background")->second.first->GetHists();
 	TIterator* iter = new TListIter(hists, false);
 	while(TH1* obj = (TH1*)iter->Next()) {
@@ -342,7 +344,6 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	pad2->cd();
 	
 	TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
-	double ratio = hData->Integral() / hBackground->Integral();
 	TLine* line2 = new TLine(hData->GetBinLowEdge(1), ratio, hData->GetBinLowEdge(hData->GetNbinsX()+1), ratio);
 	line2->SetLineColor(kRed);
 	line2->SetLineWidth(2);
@@ -352,18 +353,6 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 		hRatio->SetBinError(i, 0);
 	}
 	hRatio->Divide(hBackgroundFullError);
-	for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
-		double yield = hBackground->GetBinContent(i);
-		if(yield == 0) {
-			continue;
-		}
-		hRatioMC->SetBinContent(i, hRatioMC->GetBinContent(i) / yield);
-		hRatioMC->SetBinError(i, hRatioMC->GetBinError(i) / yield);
-	}
-	hRatioMC->SetFillColor(kBlack);
-	hRatioMC->SetFillStyle(3002);
-	hRatioMC->SetMarkerStyle(20);
-	hRatioMC->SetMarkerSize(0);
 	hRatio->GetXaxis()->SetLabelFont(43);
 	hRatio->GetXaxis()->SetLabelSize(16);
 	hRatio->GetYaxis()->SetLabelFont(43);
@@ -374,15 +363,33 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	hRatio->SetMinimum(0);
 	hRatio->SetMaximum(3);
 	hRatio->Draw("AXIS");
+	for(int i = 0; i < hRatioMC->GetXaxis()->GetNbins() + 1; ++i) {
+		double yield = hBackground->GetBinContent(i);
+		if(yield == 0) {
+			continue;
+		}
+		hRatioMC->SetBinContent(i, hRatioMC->GetBinContent(i) / yield);
+		hRatioMC->SetBinError(i, hRatioMC->GetBinError(i) / yield);
+		
+		if(hRatioMC->GetBinContent(i) > hRatio->GetMaximum()) {
+			double lo = hRatioMC->GetBinContent(i) - hRatioMC->GetBinError(i);
+			hRatioMC->SetBinContent(i, hRatio->GetMaximum());
+			hRatioMC->SetBinError(i, hRatioMC->GetBinContent(i) - lo);
+		}
+	}
+	hRatioMC->SetFillColor(kBlack);
+	hRatioMC->SetFillStyle(3002);
+	hRatioMC->SetMarkerStyle(20);
+	hRatioMC->SetMarkerSize(0);
 	line1->Draw();
 	line2->Draw();
 	hRatioMC->Draw("E2 SAME");
 	gStyle->SetOptFit(1111);
 	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
 //	hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
-/*	for(int j = 1; j < hRatio->GetXaxis()->GetNbins() + 1; ++j) {
+	for(int j = 1; j < hRatio->GetXaxis()->GetNbins() + 1; ++j) {
 		hRatio->SetBinError(j, 1E-6);
-	}*/
+	}
 	hRatio->Draw("SAME");
 	
 	return m_canvas;
