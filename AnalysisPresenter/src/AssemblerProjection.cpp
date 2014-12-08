@@ -42,8 +42,9 @@ AssemblerProjection::~AssemblerProjection() {
 	}
 }
 
+// Combine correlated uncertainties and assemble contributions into sorted histogram stack
 void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection) {
-	// Combine correlated uncertainties and assemble contributions into sorted histogram stack
+	m_typeProjections.insert(typeProjection);
 	
 	// Intermediate structure for main histogram, and stack for systematic uncertainties (statistical ones are taken care of in main histogram
 	std::vector<std::pair<TH1D*, double>> vh;
@@ -190,6 +191,14 @@ TH1* AssemblerProjection::getHistogram(TString type, TString correlationClass) c
 	assert(has(type, correlationClass));
 	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
+}
+
+std::vector<std::pair<double, double>> AssemblerProjection::getMeta(TString type, const char* var1, const char* var2) {
+	if(type != "data" || m_typeProjections[type].size() > 1) {
+		throw std::runtime_error("meta information currently only supported for one set of data");
+	}
+	
+	return m_typeProjections[type][0]->getPhysicsContribution()->getMeta();
 }
 
 std::set<TString> AssemblerProjection::getUncertainties() const {

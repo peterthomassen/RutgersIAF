@@ -138,12 +138,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	cout << "Running " << m_filename << " (" << m_type << ", lumi=" << m_lumi << "/pb) ";
 	TFile f(m_filename);
 	if(f.IsZombie()) {
-		return 0;
+		throw std::runtime_error("couldn't open contribution file");
 	}
 	TTree* treeR = (TTree*)f.Get("treeR");
-	if(!treeR) {
-		return 0;
-	}
+	assert(treeR);
 	treeR->SetWeight(1);
 	
 	if(selection == "") {
@@ -238,15 +236,20 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			step = n - k;
 		}
 		// PT 20141009: I checked that step refers to TTree entries, not entry instances. So we're good even when looping over collections, and always get full events counted properly.
-		long nSelected = treeR->Draw(varexp.c_str(), selection.Data(), "goff candle", step, k);
+		long nSelected = treeR->Draw((varexp + ":Entry$").c_str(), selection.Data(), "goff candle", step, k);
 		if(nSelected < 0) {
 			throw std::runtime_error("error selecting events");
 		}
-		for(int i = 0; i < treeR->GetSelectedRows(); ++i) {
+		for(int i = 0; i < nSelected; ++i) {
 			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
 				x[j] = treeR->GetVal(j)[i];
 			}
-			m_hn->Fill(x, treeR->GetW()[i]);
+			Long64_t bin = m_hn->Fill(x, treeR->GetW()[i]);
+			if(bin + 1 > (Long64_t)m_indices.size()) {
+				m_indices.push_back(std::vector<Long64_t>());
+			}
+			// Write down entry number
+			m_indices[bin].push_back(treeR->GetVal(m_hn->GetNdimensions())[i]);
 		}
 	}
 	
@@ -274,6 +277,17 @@ int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
 	return bin;
 }
 
+std::set<Long64_t> PhysicsContribution::getBins() const {
+	std::set<Long64_t> bins;
+	THnIter iter(m_hn, true);
+	Long64_t bin;
+	while((bin = iter.Next()) >= 0) {
+		auto ins = bins.insert(bin);
+		assert(ins.second);
+	}
+	return bins;
+}
+
 THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
 }
@@ -292,6 +306,29 @@ Int_t PhysicsContribution::getFillColor() const {
 
 double PhysicsContribution::getLumi() const {
 	return m_lumi;
+}
+
+std::vector<std::pair<double, double>> PhysicsContribution::getMeta(const char* var1, const char* var2) const {
+	TFile f(m_filename);
+	if(f.IsZombie()) {
+		throw std::runtime_error("couldn't open contribution file");
+	}
+	TTree* treeR = (TTree*)f.Get("treeR");
+	assert(treeR);
+	
+	std::vector<std::pair<double, double>> meta;
+	for(auto &bin : getBins()) {
+		for(auto &index : m_indices[bin]) {
+			long nSelected = treeR->Draw(TString::Format("%s:%s", var1, var2).Data(), "", "goff candle", 1, index);
+			assert(nSelected == 1);
+			meta.push_back(std::make_pair(treeR->GetVal(0)[0], treeR->GetVal(1)[0]));
+		}
+	}
+	
+	delete treeR;
+	f.Close();
+	
+	return meta;
 }
 
 TString PhysicsContribution::getName() const {

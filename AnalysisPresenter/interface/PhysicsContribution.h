@@ -2,6 +2,7 @@
 #define PhysicsContribution_h
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "THnBase.h"
@@ -20,11 +21,13 @@ public:
 	void addWeight(TString weight, double normalization = 1.0);
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	int findBinFromLowEdge(TAxis* axis, double x);
+	std::set<Long64_t> getBins() const;
 	THnBase* getContent() const;
 	TString getCorrelationClass() const;
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	Int_t getFillColor() const;
 	double getLumi() const;
+	std::vector<std::pair<double, double>> getMeta(const char* var1 = "RUN[0]", const char* var2 = "EVENT[0]") const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
 	double getWeight();
@@ -66,6 +69,7 @@ private:
 	
 	THnBase* m_hn = 0;
 	std::map<TString, THnBase*> m_hProjectionUncertainties;
+	std::vector<std::vector<Long64_t>> m_indices;
 	
 	std::map<PhysicsContribution*, std::map<TString, TString>> m_ensembleFakeRateParams;
 	std::map<TString, TString> m_fakerateMap;

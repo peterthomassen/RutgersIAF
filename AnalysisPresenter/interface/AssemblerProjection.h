@@ -31,6 +31,7 @@ public:
 	std::vector<TString> getCorrelationClasses(TString type);
 	TH1* getHistogram(TString type) const;
 	TH1* getHistogram(TString type, TString correlationClass) const;
+	std::vector<std::pair<double, double>> getMeta(TString type = "data", const char* var1 = "RUN[0]", const char* var2 = "EVENT[0]");
 	std::set<TString> getUncertainties() const;
 	
 	bool has(TString type) const;
@@ -57,6 +58,7 @@ private:
 	
 	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	std::map<TString, std::map<TString, std::pair<THStack*, THStack*>>> m_componentsByCorrelationClass; // like m_components["background"][""], where .first is the content (with stat uncertainties), and .second are syst uncertainties
+	std::map<TString, std::vector<PhysicsContributionProjection*>> m_typeProjections;
 	
 	
 	ClassDef(AssemblerProjection,1);
