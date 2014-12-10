@@ -41,7 +41,7 @@ public:
 	TCanvas* plot(bool log = true, double xminFit = 0, double xmaxFit = 0, const char* fitFormula = "pol0");
 	void print() const;
 	
-	void datacard(TString datacardName);
+	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 
 protected:
 	bool m_binForOverflow;
