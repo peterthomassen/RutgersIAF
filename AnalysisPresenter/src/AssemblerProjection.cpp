@@ -469,7 +469,7 @@ void AssemblerProjection::print() const {
 }
 
 
-void AssemblerProjection::datacard(TString datacardName) {
+void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 
 	std::cout << "Creating datacard..." << std::endl;
 	
@@ -502,10 +502,20 @@ void AssemblerProjection::datacard(TString datacardName) {
 	datacard << "Observation";
 	
 	//Calculate values for datacard
-	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	if (isData) {
 	
-		double contentData = getBin("data", i);
-		datacard << '\t' << contentData;
+		for (int i = 1; i <= hData->GetNbinsX(); ++i) {
+		
+			double contentData = getBin("data", i);
+			datacard << '\t' << contentData;
+		}
+	}
+	else {
+		for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
+	
+			double contentData = getBin("background", i);
+			datacard << '\t' << contentData;
+		}
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
@@ -518,9 +528,9 @@ void AssemblerProjection::datacard(TString datacardName) {
 			double hi = hData->GetXaxis()->GetBinUpEdge(i);
 		
 			if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
-				datacard << '\t' << m_name << lo << "-" << hi;
+				datacard << '\t' << m_name << lo << "_" << hi;
 			} else {
-				datacard << '\t' << m_name << lo << "-" << "inf";
+				datacard << '\t' << m_name << lo << "_" << "inf";
 			}
 		}
 	}
@@ -602,8 +612,8 @@ void AssemblerProjection::datacard(TString datacardName) {
 				
 					double contentSignalSyst = getBinSyst("signal", i, uncertainty, correlationClassesSignal[j]);		
 					double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
-					double ratio = contentSignalSyst/contentSignal;
-					if (contentSignal == 0) {ratio = 0.1;}
+					double ratio = systFactor * contentSignalSyst/contentSignal;
+					if (contentSignal == 0) {ratio = 0.05;}
 					datacard << '\t' << 1 + ratio;
 				}
 			}
@@ -615,8 +625,8 @@ void AssemblerProjection::datacard(TString datacardName) {
 			
 				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, correlationClassesBckgrd[j]);		
 				double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
-				double ratio = contentBackgroundSyst/contentBackground;
-				if (contentBackground == 0) {ratio = 0.1;}
+				double ratio = systFactor * contentBackgroundSyst/contentBackground;
+				if (contentBackground == 0) {ratio = 0.05;}
 				datacard << '\t' << 1 + ratio;
 			}
 		}
@@ -644,8 +654,8 @@ void AssemblerProjection::datacard(TString datacardName) {
 			
 				double contentSignalStat = getBinStat("signal", i, correlationClassesSignal[j]);		
 				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
-				double ratio = contentSignalStat/contentSignal;
-				if (contentSignal == 0) {ratio = 0.1;}
+				double ratio = statFactor * contentSignalStat/contentSignal;
+				if (contentSignal == 0) {ratio = 0.05;}
 				StatUncertainty[LoopIndex][LoopIndex] = 1 + ratio;
 				LoopIndex++;
 			}
@@ -657,8 +667,8 @@ void AssemblerProjection::datacard(TString datacardName) {
 		
 			double contentBackgroundStat = getBinStat("background", i, correlationClassesBckgrd[j]);		
 			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
-			double ratio = contentBackgroundStat/contentBackground;
-			if (contentBackground == 0) {ratio = 0.1;}
+			double ratio = statFactor * contentBackgroundStat/contentBackground;
+			if (contentBackground == 0) {ratio = 0.05;}
 			StatUncertainty[LoopIndex][LoopIndex] = 1 + ratio;
 			LoopIndex++;
 		}
