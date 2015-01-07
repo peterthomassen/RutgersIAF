@@ -198,7 +198,7 @@ std::vector<std::pair<double, double>> AssemblerProjection::getMeta(TString type
 		throw std::runtime_error("meta information currently only supported for one set of data");
 	}
 	
-	return m_typeProjections[type][0]->getPhysicsContribution()->getMeta();
+	return m_typeProjections[type][0]->getPhysicsContribution()->getMeta(var1, var2);
 }
 
 std::set<TString> AssemblerProjection::getUncertainties() const {
@@ -212,7 +212,7 @@ std::set<TString> AssemblerProjection::getUncertainties() const {
 }
 
 bool AssemblerProjection::has(TString type) const {
-	return (m_components.find(type) != m_components.end());
+	return (m_components.find(type) != m_components.end() && m_components.find(type)->second.first->GetHists());
 }
 
 bool AssemblerProjection::has(TString type, TString correlationClass) const {
@@ -227,10 +227,13 @@ bool AssemblerProjection::hasOverflowIncluded() const {
 }
 
 TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, const char* fitFormula) {
-	m_canvas = new TCanvas("c1", "c1", 700, 700);
+	bool hasBackground = has("background");
+	m_canvas = new TCanvas("c1", "c1", 700, hasBackground ? 700 : 490);
 	
-	TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
-	pad1->SetBottomMargin(0.025);
+	TPad *pad1 = new TPad("pad1","pad1",0,0,1,1);
+	if(hasBackground) {
+		pad1->SetBottomMargin(0.025);
+	}
 	pad1->Draw();
 	pad1->cd();
 	pad1->SetTicks(1, 1);
@@ -253,37 +256,6 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	hData->SetLineWidth(1);
 	hData->SetMarkerStyle(9);
 	
-	TH1* hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
-	for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
-		// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
-		// Those are together to "comprehensive systematic uncertainty"
-		double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
-		hBackground->SetBinError(i, sqrt(error2));
-	}
-	
-	double ratio = hData->Integral() / hBackground->Integral();
-	
-	TH1* hBackgroundErr = (TH1*)hBackground->Clone();
-	hBackgroundErr->Reset();
-	TH1* hBackgroundFullError = (TH1*)hBackground->Clone();
-	hBackgroundFullError->Reset();
-	const double alpha = 1 - 0.6827;
-	for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
-		double n = hBackground->GetBinContent(i);
-		double lo = (n == 0) ? 0 : ROOT::Math::gamma_quantile(alpha/2, n, 1.);
-		double hi = ROOT::Math::gamma_quantile_c(alpha/2, n+1, 1);
-		// Now, combine Poisson fluctuation range with "comprehensive systematic uncertainty" from above
-		lo = sqrt(pow(n - lo, 2) + pow(hBackground->GetBinError(i), 2));
-		hi = sqrt(pow(hi - n, 2) + pow(hBackground->GetBinError(i), 2));
-		hBackgroundFullError->SetBinContent(i, hBackground->GetBinContent(i));
-		hBackgroundFullError->SetBinError(i, lo);
-		lo = n - lo;
-		hi = n + hi;
-		n = (lo + hi) / 2;
-		hBackgroundErr->SetBinContent(i, n);
-		hBackgroundErr->SetBinError(i, (hi - lo) / 2);
-	}
-	
 	TH1* hSignal = 0;
 	if(has("signal")) {
 		hSignal = (TH1*)m_components.find("signal")->second.first->GetStack()->Last()->Clone();
@@ -293,113 +265,164 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 		}
 	}
 	
-	TH1* hRatio = (TH1*)hData->Clone("hRatio");
-	TH1* hRatioMC = (TH1*)hBackgroundErr->Clone("hRatio");
-	if(hSignal) {
-		hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
-	} else {
-		hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())));
+	TH1* hBackground = 0;
+	TH1* hBackgroundErr = 0;
+	TH1* hBackgroundFullError = 0;
+	TH1* hRatio = 0;
+	TH1* hRatioMC = 0;
+	if(hasBackground) {
+		hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
+		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+			// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
+			// Those are together to "comprehensive systematic uncertainty"
+			double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
+			hBackground->SetBinError(i, sqrt(error2));
+		}
+		
+		hBackgroundErr = (TH1*)hBackground->Clone();
+		hBackgroundErr->Reset();
+		hBackgroundFullError = (TH1*)hBackground->Clone();
+		hBackgroundFullError->Reset();
+		const double alpha = 1 - 0.6827;
+		for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
+			double n = hBackground->GetBinContent(i);
+			double lo = (n == 0) ? 0 : ROOT::Math::gamma_quantile(alpha/2, n, 1.);
+			double hi = ROOT::Math::gamma_quantile_c(alpha/2, n+1, 1);
+			// Now, combine Poisson fluctuation range with "comprehensive systematic uncertainty" from above
+			lo = sqrt(pow(n - lo, 2) + pow(hBackground->GetBinError(i), 2));
+			hi = sqrt(pow(hi - n, 2) + pow(hBackground->GetBinError(i), 2));
+			hBackgroundFullError->SetBinContent(i, hBackground->GetBinContent(i));
+			hBackgroundFullError->SetBinError(i, lo);
+			lo = n - lo;
+			hi = n + hi;
+			n = (lo + hi) / 2;
+			hBackgroundErr->SetBinContent(i, n);
+			hBackgroundErr->SetBinError(i, (hi - lo) / 2);
+		}
+		
+		hRatio = (TH1*)hData->Clone("hRatio");
+		hRatioMC = (TH1*)hBackgroundErr->Clone("hRatio");
+		
+		if(hSignal) {
+			hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
+		} else {
+			hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())));
+		}
 	}
+	
 	hData->SetMaximum(1.5 * hData->GetMaximum());
-	//hData->SetMinimum(log ? max(0.1, 0.1 * ((TH1*)m_components.find("background")->second.first->GetStack()->First())->Integral()) : 0);
-	hData->SetMinimum(log ? min(0.1, 0.5 * hBackground->GetMinimum(0)) : 0);
-	// Make sure the range spans at least one order of magnitude in log plots
-	if(log && hData->GetMinimum() > hData->GetMaximum() / 15) {
-		hData->SetMinimum(hData->GetMaximum() / 15);
+	if(log) {
+		hData->SetMinimum(hasBackground ? min(0.1, 0.5 * hBackground->GetMinimum(0)) : 0.1);
+		// Make sure the range spans at least one order of magnitude
+		if(hData->GetMinimum() > hData->GetMaximum() / 15) {
+			hData->SetMinimum(hData->GetMaximum() / 15);
+		}
+	} else {
+		hData->SetMinimum(0);
 	}
 	hData->GetXaxis()->SetTitle(title);
 	hData->SetLineColor(kRed);
 	
 	hData->Draw("EP");
-	hData->GetXaxis()->SetLabelFont(43);
-	hData->GetXaxis()->SetLabelSize(0);
+	if(hasBackground) {
+		hData->GetXaxis()->SetLabelFont(43);
+		hData->GetXaxis()->SetLabelSize(0);
+	}
 	hData->GetYaxis()->SetLabelFont(43);
 	hData->GetYaxis()->SetLabelSize(16);
-	((TH1*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
-	hBackground->SetFillColor(kRed);
-	hBackground->SetFillStyle(3001);
-	hBackground->Draw("E2 SAME");
-	hBackgroundErr->SetFillColor(kBlack);
-	hBackgroundErr->SetFillStyle(3002);
-	hBackgroundErr->SetMarkerStyle(20);
-	hBackgroundErr->SetMarkerSize(0);
-	hBackgroundErr->Draw("SAME E2");
-	if(hSignal) {
-		hSignal->SetMarkerColor(kWhite);
-		hSignal->SetMarkerStyle(21);
-		hSignal->SetFillColor(kPink);
-		hSignal->SetFillStyle(3008);
-		hSignal->Draw("SAME E2 P");
+	
+	if(hasBackground) {
+		((TH1*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
+		hBackground->SetFillColor(kRed);
+		hBackground->SetFillStyle(3001);
+		hBackground->Draw("E2 SAME");
+		hBackgroundErr->SetFillColor(kBlack);
+		hBackgroundErr->SetFillStyle(3002);
+		hBackgroundErr->SetMarkerStyle(20);
+		hBackgroundErr->SetMarkerSize(0);
+		hBackgroundErr->Draw("SAME E2");
+		if(hSignal) {
+			hSignal->SetMarkerColor(kWhite);
+			hSignal->SetMarkerStyle(21);
+			hSignal->SetFillColor(kPink);
+			hSignal->SetFillStyle(3008);
+			hSignal->Draw("SAME E2 P");
+		}
 	}
+	
 	hData->Draw("EP SAME");
 	hData->Draw("EP AXIS SAME");
 	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	
-	TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
-	legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
-	TList* hists = m_components.find("background")->second.first->GetHists();
-	TIterator* iter = new TListIter(hists, false);
-	while(TH1* obj = (TH1*)iter->Next()) {
-		legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
-	}
-	delete iter;
-	legend->Draw();
-	
-	m_canvas->cd();
-	TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
-	pad2->SetTopMargin(0.025);
-	pad2->Draw();
-	pad2->cd();
-	
-	TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
-	TLine* line2 = new TLine(hData->GetBinLowEdge(1), ratio, hData->GetBinLowEdge(hData->GetNbinsX()+1), ratio);
-	line2->SetLineColor(kRed);
-	line2->SetLineWidth(2);
-	hRatio->GetXaxis()->SetTitle(title);
-	hRatio->SetTitle("");
-	for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
-		hRatio->SetBinError(i, 0);
-	}
-	hRatio->Divide(hBackgroundFullError);
-	hRatio->GetXaxis()->SetLabelFont(43);
-	hRatio->GetXaxis()->SetLabelSize(16);
-	hRatio->GetYaxis()->SetLabelFont(43);
-	hRatio->GetYaxis()->SetLabelSize(16);
-	hRatio->GetYaxis()->SetTitle("data/background");
-	hRatio->SetFillColor(kBlack);
-	hRatio->SetFillStyle(3001);
-	hRatio->SetMinimum(0);
-	hRatio->SetMaximum(3);
-	hRatio->Draw("AXIS");
-	for(int i = 0; i < hRatioMC->GetXaxis()->GetNbins() + 1; ++i) {
-		double yield = hBackground->GetBinContent(i);
-		if(yield == 0) {
-			continue;
-		}
-		hRatioMC->SetBinContent(i, hRatioMC->GetBinContent(i) / yield);
-		hRatioMC->SetBinError(i, hRatioMC->GetBinError(i) / yield);
+	if(hasBackground) {
+		double ratio = hData->Integral() / hBackground->Integral();
 		
-		if(hRatioMC->GetBinContent(i) > hRatio->GetMaximum()) {
-			double lo = hRatioMC->GetBinContent(i) - hRatioMC->GetBinError(i);
-			hRatioMC->SetBinContent(i, hRatio->GetMaximum());
-			hRatioMC->SetBinError(i, hRatioMC->GetBinContent(i) - lo);
+		TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
+		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
+		TList* hists = m_components.find("background")->second.first->GetHists();
+		TIterator* iter = new TListIter(hists, false);
+		while(TH1* obj = (TH1*)iter->Next()) {
+			legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
 		}
+		delete iter;
+		legend->Draw();
+		
+		m_canvas->cd();
+		TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
+		pad2->SetTopMargin(0.025);
+		pad2->Draw();
+		pad2->cd();
+		
+		TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
+		TLine* line2 = new TLine(hData->GetBinLowEdge(1), ratio, hData->GetBinLowEdge(hData->GetNbinsX()+1), ratio);
+		line2->SetLineColor(kRed);
+		line2->SetLineWidth(2);
+		hRatio->GetXaxis()->SetTitle(title);
+		hRatio->SetTitle("");
+		for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
+			hRatio->SetBinError(i, 0);
+		}
+		hRatio->Divide(hBackgroundFullError);
+		hRatio->GetXaxis()->SetLabelFont(43);
+		hRatio->GetXaxis()->SetLabelSize(16);
+		hRatio->GetYaxis()->SetLabelFont(43);
+		hRatio->GetYaxis()->SetLabelSize(16);
+		hRatio->GetYaxis()->SetTitle("data/background");
+		hRatio->SetFillColor(kBlack);
+		hRatio->SetFillStyle(3001);
+		hRatio->SetMinimum(0);
+		hRatio->SetMaximum(3);
+		hRatio->Draw("AXIS");
+		for(int i = 0; i < hRatioMC->GetXaxis()->GetNbins() + 1; ++i) {
+			double yield = hBackground->GetBinContent(i);
+			if(yield == 0) {
+				continue;
+			}
+			hRatioMC->SetBinContent(i, hRatioMC->GetBinContent(i) / yield);
+			hRatioMC->SetBinError(i, hRatioMC->GetBinError(i) / yield);
+			
+			if(hRatioMC->GetBinContent(i) > hRatio->GetMaximum()) {
+				double lo = hRatioMC->GetBinContent(i) - hRatioMC->GetBinError(i);
+				hRatioMC->SetBinContent(i, hRatio->GetMaximum());
+				hRatioMC->SetBinError(i, hRatioMC->GetBinContent(i) - lo);
+			}
+		}
+		hRatioMC->SetFillColor(kBlack);
+		hRatioMC->SetFillStyle(3002);
+		hRatioMC->SetMarkerStyle(20);
+		hRatioMC->SetMarkerSize(0);
+		line1->Draw();
+		line2->Draw();
+		hRatioMC->Draw("E2 SAME");
+		gStyle->SetOptFit(1111);
+		((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
+//		hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
+		for(int j = 1; j < hRatio->GetXaxis()->GetNbins() + 1; ++j) {
+			hRatio->SetBinError(j, 1E-6);
+		}
+		hRatio->Draw("SAME");
 	}
-	hRatioMC->SetFillColor(kBlack);
-	hRatioMC->SetFillStyle(3002);
-	hRatioMC->SetMarkerStyle(20);
-	hRatioMC->SetMarkerSize(0);
-	line1->Draw();
-	line2->Draw();
-	hRatioMC->Draw("E2 SAME");
-	gStyle->SetOptFit(1111);
-	((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
-//	hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
-	for(int j = 1; j < hRatio->GetXaxis()->GetNbins() + 1; ++j) {
-		hRatio->SetBinError(j, 1E-6);
-	}
-	hRatio->Draw("SAME");
 	
 	return m_canvas;
 }
