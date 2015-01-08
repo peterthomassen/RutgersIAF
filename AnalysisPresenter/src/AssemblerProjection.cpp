@@ -230,7 +230,7 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 	bool hasBackground = has("background");
 	m_canvas = new TCanvas("c1", "c1", 700, hasBackground ? 700 : 490);
 	
-	TPad *pad1 = new TPad("pad1","pad1",0,0,1,1);
+	TPad *pad1 = new TPad("pad1", "pad1", 0, hasBackground ? 0.3 : 0, 1, 1);
 	if(hasBackground) {
 		pad1->SetBottomMargin(0.025);
 	}
