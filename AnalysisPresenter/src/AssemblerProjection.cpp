@@ -392,8 +392,14 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 		hRatio->SetFillColor(kBlack);
 		hRatio->SetFillStyle(3001);
 		hRatio->SetMinimum(0);
-		hRatio->SetMaximum(3);
+		if(hRatio->GetMaximum() > 1) {
+			hRatio->SetMaximum(3);
+		} else if(hRatio->GetMaximum() < 0.5) {
+			hRatio->SetMaximum(0.5);
+		}
+		hRatio->GetYaxis()->SetRangeUser(hRatio->GetMinimum(0), hRatio->GetMaximum());
 		hRatio->Draw("AXIS");
+		double hRatioMCErrorSum = 0;
 		for(int i = 0; i < hRatioMC->GetXaxis()->GetNbins() + 1; ++i) {
 			double yield = hBackground->GetBinContent(i);
 			if(yield == 0) {
@@ -405,16 +411,20 @@ TCanvas* AssemblerProjection::plot(bool log, double xminFit, double xmaxFit, con
 			if(hRatioMC->GetBinContent(i) > hRatio->GetMaximum()) {
 				double lo = hRatioMC->GetBinContent(i) - hRatioMC->GetBinError(i);
 				hRatioMC->SetBinContent(i, hRatio->GetMaximum());
-				hRatioMC->SetBinError(i, hRatioMC->GetBinContent(i) - lo);
+				hRatioMC->SetBinError(i, max(hRatioMC->GetBinContent(i) - lo, 0.0));
 			}
+			hRatioMCErrorSum += hRatioMC->GetBinError(i);
 		}
-		hRatioMC->SetFillColor(kBlack);
-		hRatioMC->SetFillStyle(3002);
-		hRatioMC->SetMarkerStyle(20);
-		hRatioMC->SetMarkerSize(0);
-		line1->Draw();
-		line2->Draw();
-		hRatioMC->Draw("E2 SAME");
+		// If all the uncertiancies in hRatioMC are 0 (this happens when the error bars are all out of y-axis range), ROOT would draw error bars filling all of the histogram frame. We don't want to draw anything in this case.
+		if(hRatioMCErrorSum > 0) {
+			hRatioMC->SetFillColor(kBlack);
+			hRatioMC->SetFillStyle(3002);
+			hRatioMC->SetMarkerStyle(20);
+			hRatioMC->SetMarkerSize(0);
+			line1->Draw();
+			line2->Draw();
+			hRatioMC->Draw("E2 SAME");
+		}
 		gStyle->SetOptFit(1111);
 		((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
 //		hRatio->Fit(fitFormula, "", "SAME AXIS", xminFit, xmaxFit);
