@@ -6,7 +6,7 @@
 
 class EventVariableOSSF : public EventVariable{
  public:
-  EventVariableOSSF(TString name, TString productname, TString prefix="", double zmass = 91, double width = 15) : EventVariable(name),m_prefix(prefix),m_zmass(zmass),m_zwidth(width) {m_productnames.push_back(productname);}
+  EventVariableOSSF(TString name, TString productname, TString prefix="", double zmass = 91, double width = 15, bool includeFakes = true) : EventVariable(name),m_prefix(prefix),m_zmass(zmass),m_zwidth(width),m_includeFakes(includeFakes) {m_productnames.push_back(productname);}
 
   void addProduct(TString);
 
@@ -19,6 +19,7 @@ class EventVariableOSSF : public EventVariable{
   double m_zmass;
   double m_zwidth;
   std::vector<TString> m_productnames;
+  bool m_includeFakes;
 
 
 };
