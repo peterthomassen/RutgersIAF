@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "TCanvas.h"
+#include "TF1.h"
 #include "THStack.h"
 #include "TROOT.h"
 
@@ -38,7 +39,7 @@ public:
 	bool has(TString type, TString correlationClass) const;
 	bool hasOverflowIncluded() const;
 	
-	TCanvas* plot(bool log = true, double xminFit = 0, double xmaxFit = 0, const char* fitFormula = "pol0");
+	TCanvas* plot(bool log = true, TF1* f1 = 0, double xminFit = 0, double xmaxFit = 0);
 	void print() const;
 	
 	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
