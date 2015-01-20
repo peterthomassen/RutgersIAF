@@ -241,7 +241,7 @@ void lheReader::ntuplizer(TString output)
   } // end if file open
 
   LHETree->Print();
-  LHETree->Write();
+  LHETree->Write("", TObject::kOverwrite);
 
   fileoutput->Close();
 }

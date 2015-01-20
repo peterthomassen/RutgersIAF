@@ -28,7 +28,7 @@ SignatureTreeWriter::~SignatureTreeWriter()
 void SignatureTreeWriter::finish()
 {
   m_handler->getOutFile()->cd();
-  m_tree->Write();
+  m_tree->Write("", TObject::kOverwrite);
 }
 
 void SignatureTreeWriter::fillTree()

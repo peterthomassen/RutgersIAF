@@ -395,5 +395,5 @@ void TheoryTreeWriter::finish()
 
   std::cout<<"About to write theory ntuple to file"<<std::endl;
   m_handler->getOutFile()->cd();
-  m_tree->Write();
+  m_tree->Write("", TObject::kOverwrite);
 }
