@@ -60,11 +60,17 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 		bestMass = bestMassLow;
 	}
 	
-	handler->setVariable(TString::Format("%sOSSFMINMLL",m_prefix.Data()),minMass);
-	handler->setVariable(TString::Format("%sOSSFCLOSEMLL",m_prefix.Data()),closeMass);
-	handler->setVariable(TString::Format("%sOSSFMAXMLL",m_prefix.Data()),maxMass);
-	handler->setVariable(TString::Format("%sMOSSF",m_prefix.Data()),bestMass);
 	handler->setVariable(TString::Format("%sNOSSF",m_prefix.Data()),nOSSF);
 	handler->setVariable(TString::Format("%sONZ",m_prefix.Data()),onZ);
+	
+	if(nOSSF != 0) {
+		handler->setVariable(TString::Format("%sOSSFMINMLL",m_prefix.Data()),minMass);
+		handler->setVariable(TString::Format("%sOSSFCLOSEMLL",m_prefix.Data()),closeMass);
+		handler->setVariable(TString::Format("%sOSSFMAXMLL",m_prefix.Data()),maxMass);
+		handler->setVariable(TString::Format("%sMOSSF",m_prefix.Data()),bestMass);
+	}
+	
+	// TODO add vector of all OSSF pair masses
+	
 	return true;
 }
