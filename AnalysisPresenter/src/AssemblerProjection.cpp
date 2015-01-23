@@ -675,7 +675,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	
 		for (int m = 0; m < NumberBins; m++) {
 		
-			StatUncertainty[n][m] = 0;
+			StatUncertainty[n][m] = 1;
 		}
 	}
 	
@@ -691,7 +691,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
 				double ratio = statFactor * contentSignalStat/contentSignal;
 				if (contentSignal == 0) {ratio = 0.05;}
-				StatUncertainty[LoopIndex][LoopIndex] = 1 + ratio;
+				StatUncertainty[LoopIndex][LoopIndex] += ratio;
 				LoopIndex++;
 			}
 		}
@@ -704,7 +704,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
 			double ratio = statFactor * contentBackgroundStat/contentBackground;
 			if (contentBackground == 0) {ratio = 0.05;}
-			StatUncertainty[LoopIndex][LoopIndex] = 1 + ratio;
+			StatUncertainty[LoopIndex][LoopIndex] += ratio;
 			LoopIndex++;
 		}
 	}
