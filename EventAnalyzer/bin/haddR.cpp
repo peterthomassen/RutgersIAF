@@ -29,6 +29,8 @@
 #include "TString.h"
 #include "TTree.h"
 
+using namespace std;
+
 Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const char* treeName) {
 	cout << "Now adding Rutgers trees ";
 	TFile* outfile = new TFile(targetname, "UPDATE");

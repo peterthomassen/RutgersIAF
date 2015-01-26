@@ -6,6 +6,8 @@
 
 #include <TString.h>
 
+using namespace std;
+
 //
 // class declaration
 //
