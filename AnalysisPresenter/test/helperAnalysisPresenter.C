@@ -1,8 +1,5 @@
 #include <iostream>
 #include <TH1.h>
-#include <TLatex.h>
-#include <TLegend.h>
-#include "TStyle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
@@ -17,9 +14,7 @@ void setupData(Assembler* assembler, bool fake = false, bool dilep = false) {
 	std::string infix = dilep ? "" : ".3L";
 	std::string suffix = ".root";
 	
-	PhysicsContribution* data = fake
-		? new PhysicsContribution("data", prefix + "20140923_fakeTracks" + infix + suffix, 19500, "2012trackFakeSeed")
-		: new PhysicsContribution("data", prefix + "20140923_data" + infix + suffix, 19500, "2012data");
+	PhysicsContribution* data = new PhysicsContribution("data", prefix + "20141215_data" + infix + suffix, 19500, "2012data");
 	
 	assembler->addContribution(data);
 }
@@ -51,14 +46,15 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 //	Double_t xsec_ttbar_semiLep = 2.0*WtoLNu*Wto2J*xsec_ttbar;
 //	Double_t xsec_wz = 32.3*(0.3257*0.10095)*1.20;
 	Double_t xsec_zz = 0.92*17.7*(0.10095*0.10095)*1.08;
+	xsec_zz *= 0.97 * 1.028;
 	Double_t xsec_ttw = 0.23;
 	Double_t xsec_ttz = 0.208;
 	
 	// Peter's numbers
 	double xsec_ttbar_fullLep = 23.08;
-	double xsec_ttbar_semiLep = 97.97;
+	double xsec_ttbar_semiLep = 97.97 * 1.32;
 	double xsec_wz = 1.2451;
-	xsec_wz *= 0.98;
+	xsec_wz *= 0.957;
 //	double xsec_zz = 0.181;
 //	double xsec_ttw = 0.2149;
 //	double xsec_ttz = 0.208;
@@ -66,15 +62,22 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	//ttbar = false;
 	
 	std::vector<PhysicsContribution*> mc;
+	std::vector<PhysicsContribution*> mcH;
 	
 	//PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, 1.2030, "WZ");
 	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, xsec_wz, "WZ");
 	//wz->addWeight("(NGOODJETS < 2) * 0.897051 + (NGOODJETS >= 2) * 2.0084"); // Richard's numbers
 	//wz->addWeight("(NGOODJETS == 0) * 1.024 + (NGOODJETS == 1) * 0.86 + (NGOODJETS == 2) * 1.1 + (NGOODJETS > 2) * 1"); // without ttbar MC
-	wz->addWeight("(NGOODJETS == 0) * 1.024 + (NGOODJETS == 1) * 0.81 + (NGOODJETS == 2) * 1.0 + (NGOODJETS > 2) * 1"); // with ttbar MC
+	////wz->addWeight("(NGOODJETS[0] == 0) * 1.024 + (NGOODJETS[0] == 1) * 0.81 + (NGOODJETS[0] == 2) * 1.0 + (NGOODJETS[0] > 2) * 1"); // with ttbar MC
+	
+	wz->addWeight("exp(-0.005 * PTMCZ[0]/sqrt(MMCZ[0]))", 1.038);
+	wz->addWeight("(NGOODJETS[0] == 0) * 1.06 + (NGOODJETS[0] == 1) * 0.89 + (NGOODJETS[0] == 2) * 1.18 + (NGOODJETS[0] > 2) * 1.32");
+	wz->addWeight("!(NGOODJETS > 1) + (NGOODJETS > 1) * Alt$((PTGOODJETS[0] < 70) * 0.75 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.16 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 0.88 + (PTGOODJETS[0] >= 150) * 1.26, 0)");
+	wz->addFlatUncertainty("normalizationWZ", 0.05);
+	wz->setCorrelationClass("wz");
 	
 	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZJetsTo4L" + infix + suffix, xsec_zz, "ZZ");
-	zz->addWeight("(NGOODJETS == 0) * 1.084 + (NGOODJETS == 1) * 0.75 + (NGOODJETS == 2) * 0.333 + (NGOODJETS > 2) * 1");
+	zz->addWeight("(NGOODJETS[0] == 0) * 1.084 + (NGOODJETS[0] == 1) * 0.75 + (NGOODJETS[0] == 2) * 0.333 + (NGOODJETS[0] > 2) * 1");
 	
 	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
 	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWJets" + infix + suffix, xsec_ttw, "TTW"));
@@ -85,15 +88,26 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 0.019, "WZZ"));
 	mc.push_back(zz);
 	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
-	if(ttbar) mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, xsec_ttbar_semiLep, "TT_SemiL"));
+	
+	// "(NGOODJETS < 2) * 1.42 + (NGOODJETS == 2) * 1.18 + (NGOODJETS == 3) * 1.04 + (NGOODJETS > 3) * 1" // Richard's numbers
+	TString nJetWeight = "(NGOODJETS[0] < 2) * 1.11 + (NGOODJETS[0] == 2) * 1.08 + (NGOODJETS[0] == 3) * 1.065 + (NGOODJETS[0] == 4) * 1.065 + (NGOODJETS[0] == 5) * 1.04 + (NGOODJETS[0] > 5) * 1"; // Peter's numbers
+	
+	PhysicsContribution* ttbarS = new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, xsec_ttbar_semiLep, "TT_SemiL");
+	ttbarS->addWeight(nJetWeight);
 	
 	PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullL");
-	ttbarF->addWeight("(NLEPTONS >= 3) * 1.5 + !(NLEPTONS >= 3) * 1");
-	//ttbarF->addWeight("(NGOODJETS < 2) * 1.42 + (NGOODJETS == 2) * 1.18 + (NGOODJETS == 3) * 1.04 + (NGOODJETS > 3) * 1"); // Richard's numbers
-	ttbarF->addWeight("(NGOODJETS < 2) * 1.30 + (NGOODJETS == 2) * 1.15 + (NGOODJETS == 3) * 1.10 + (NGOODJETS == 4) * 1.076 + (NGOODJETS > 4) * 1"); // Peter's numbers, regular bkgs + DY MC
+	ttbarF->addWeight(nJetWeight);
 	//ttbarF->addWeight("nTrackFakeElectrons + nTrackFakeMuons == 0");
+	ttbarF->addWeight("(NLEPTONS[0] >= 3) * 1.66 + !(NLEPTONS[0] >= 3) * 1");
 //	ttbarF->addFlatUncertainty("xsec", 0.3);
-	if(ttbar) mc.push_back(ttbarF);
+	ttbarF->addFlatUncertainty("fudge", 0.194);
+	if(ttbar) {
+		if(dilep) mc.push_back(ttbarS);
+		mc.push_back(ttbarF);
+	}
+
+	//mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
+	//mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 2950.0, "DYgt50"));
 	
 	if(dilep) {
 //		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
@@ -101,22 +115,57 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	}
 	
 	for(auto &contribution : mc) {
+		contribution->addWeight("WEIGHT[0]");
 		assembler->addContribution(contribution);
 	}
 	
-	assembler->addWeight("WEIGHT", "backgroundMC");
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToZZTo4L" + infix + suffix, 0.0053, "GluGluToHToZZTo4L"));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToTauTau" + infix + suffix, 0.0992, "VBF_HToTauTau"));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToWWTo2LAndTau2Nu" + infix + suffix, 0.0282, "VBF_HToWWTo2LAndTau2Nu"));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToZZTo4L" + infix + suffix, 0.000423, "VBF_HToZZTo4L"));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToTauTau" + infix + suffix, 0.0778, "WH_ZH_TTH_HToTauTau"));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToWW" + infix + suffix, 0.254, "WH_ZH_TTH_HToWW"));
+	
+	for(auto &contribution : mcH) {
+		contribution->addFlatUncertainty("xsecH", 0.5); // TODO correlations?
+		contribution->addWeight("WEIGHT[0]");
+		assembler->addContribution(contribution);
+	}
 }
 
-void setupBackgroundDD(Assembler* assembler) {
+void setupBackgroundDD(Assembler* assembler, TString option = "") {
 	std::vector<PhysicsContribution*> dd;
 	
-	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140923_fakeTracks.3L.root", assembler->getLumi(), "fakeTracks");
-	//fakeTracks->addFlatUncertainty("fakeTracks", 0.25);
-	dd.push_back(fakeTracks);
+	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20141215_fakeTracks.3L.root", assembler->getLumi(), "fakeTracks", (option == "justTracks") ? kWhite : -1);
+/*	fakeTracks->addWeight(
+		"(Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
+		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
+			" * 4 * ("
+				"(Min$(PTGOODELECTRONS) > 10 && Min$(PTGOODELECTRONS) < 15) * 0.09"
+				" + (Min$(PTGOODELECTRONS) > 15 && Min$(PTGOODELECTRONS) < 20) * 0.26"
+				" + (Min$(PTGOODELECTRONS) > 20 && Min$(PTGOODELECTRONS) < 25) * 0.58"
+				" + (Min$(PTGOODELECTRONS) > 25)"
+		")"
+		" + (Sum$(fakeRoleGOODMUONS) > 0)"
+			" * ("
+				"(Min$(PTGOODMUONS) > 10 && Min$(PTGOODMUONS) < 15) * 1.13"
+				" + (Min$(PTGOODMUONS) > 15)"
+		")"
+	);
+*/	//fakeTracks->addFlatUncertainty("trackFit", 0.125);
 	
-	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140923_fakePhotons.3L.root", assembler->getLumi(), "fakePhotons");
+	//fakeTracks->addFlatUncertainty("fakeTracks", 0.25);
+	if(option != "noTracks" && option != "justTaus" && option != "justPhotons") dd.push_back(fakeTracks);
+	
+	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20141215_fakeTaus.3L.root", assembler->getLumi(), "fakeTaus");
+	if(option != "noTaus" && option != "justTracks" && option != "justPhotons") dd.push_back(fakeTaus);
+	
+	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20141215_fakePhotons.3L.root", assembler->getLumi(), "fakePhotons");
+	//fakePhotons->addFlatUncertainty("photonFudge", 0.25);
 	//fakePhotons->setEnsembleFakeRateParam(fakeTracks, "NPROMPTTRACKS7", "0*(x < [0]) + 1*(x > 2*[0]) + (x/[0] - 1)*(x >= [0] && x <= 2*[0])");
-	dd.push_back(fakePhotons);
+	if(option != "noPhotons" && option != "justTracks" && option != "justTaus") dd.push_back(fakePhotons);
 	
 	//dd.push_back(new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140618_fakeMixed.root", assembler->getLumi(), "fakeMixed"));
 	
@@ -141,23 +190,70 @@ void setupFakeRates(Assembler* assembler) {
 	//assembler->setFakeRate("nTrackFakeNegElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.0299 + (HT > 200) * 0.0612284 ) + (NBJETSCSVM >= 1 && ONZ) * 0.0612284");
 	
 	// We found that NGOODJETS and HT binning does not work very well; NPROMPTINCLUSIVETRACK7 binning does a good job at least in 0b regions.
+	/*************
+	 * Keep plots with NPROMPTINCLUSIVETRACKS7 parameterization to evaluate systematic error
+	 * ********/
 	assembler->setFakeRate("nTrackFakeMuons",
-		"(NBJETSCSVM == 0 || ONZ) * (0.0238693 - 0.00175457 * NPROMPTINCLUSIVETRACKS7) * (1 + (NBJETSCSVM > 0))"
+//		"(NBJETSCSVM[0] == 0 || ONZ) * (0.0238693 - 0.00175457 * NPROMPTINCLUSIVETRACKS7[0]) * (1 + (NBJETSCSVM[0] > 0))"
+		"(NBJETSCSVM[0] == 0 || ONZ) * (0.00857965 + 0.000350065 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0)) * 0.67"
+////		"(NBJETSCSVM[0] == 0 || ONZ) * (0.00647354 + 0.00131217 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0)) * 0.67" // from 2el1mu case
+//		"0.0094 * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))"
+//		"0.00920823 + Max$(PTGOODJETS) * (1.48564e-05 + Max$(PTGOODJETS) * -3.78462e-07)"
 		//" + (NBJETSCSVM > 0 && !ONZ) * 0.14"
+/*		" * ((Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
+		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
+			" * 4 * ("
+				"(Min$(PTGOODELECTRONS) > 10 && Min$(PTGOODELECTRONS) < 15) * 0.09"
+				" + (Min$(PTGOODELECTRONS) > 15 && Min$(PTGOODELECTRONS) < 20) * 0.26"
+				" + (Min$(PTGOODELECTRONS) > 20 && Min$(PTGOODELECTRONS) < 25) * 0.58"
+				" + (Min$(PTGOODELECTRONS) > 25)"
+		")"
+		" + (Sum$(fakeRoleGOODMUONS) > 0)"
+			" * ("
+				"(Min$(PTGOODMUONS) > 10 && Min$(PTGOODMUONS) < 15) * 1.13"
+				" + (Min$(PTGOODMUONS) > 15)"
+		"))"*/
 	);
 	assembler->setFakeRate("nTrackFakeElectrons",
-		"(NBJETSCSVM == 0 || ONZ) * (-0.00698188 + 0.00706028 * NPROMPTINCLUSIVETRACKS7) * (1 + (NBJETSCSVM > 0))"
+//		"(NBJETSCSVM[0] == 0 || ONZ) * (-0.00698188 + 0.00706028 * NPROMPTINCLUSIVETRACKS7[0]) * (1 + (NBJETSCSVM[0] > 0))"
+		"(NBJETSCSVM[0] == 0 || ONZ) * (-0.0335643 + 0.0117106 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0))"
+////		"(NBJETSCSVM[0] == 0 || ONZ) * (-0.054686 + 0.0190867 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0))" // from 1el2mu case
+//		"0.0104 * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))"
+//		"0.0111485 + Max$(PTGOODJETS) * (-3.60633e-05 + Max$(PTGOODJETS) * 3.84498e-07)"
 		//" + (NBJETSCSVM > 0 && !ONZ) * 0.125"
+/*		" * ((Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
+		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
+			" * 4 * ("
+				"(Min$(PTGOODELECTRONS) > 10 && Min$(PTGOODELECTRONS) < 15) * 0.09"
+				" + (Min$(PTGOODELECTRONS) > 15 && Min$(PTGOODELECTRONS) < 20) * 0.26"
+				" + (Min$(PTGOODELECTRONS) > 20 && Min$(PTGOODELECTRONS) < 25) * 0.58"
+				" + (Min$(PTGOODELECTRONS) > 25)"
+		")"
+		" + (Sum$(fakeRoleGOODMUONS) > 0)"
+			" * ("
+				"(Min$(PTGOODMUONS) > 10 && Min$(PTGOODMUONS) < 15) * 1.13"
+				" + (Min$(PTGOODMUONS) > 15)"
+		"))"*/
 	);
+	
+	assembler->setFakeRate("nSidebandFakeTaus", "0.02");
 	
 	// Photon fake rates for Asymmetric Internal Conversions (AIC)
 	// AIC reduces the pt of the emitting lepton, and can push on-Z pairs below the Z peak. This causes migration between on-Z/off-Z etc.
 	// In regions where cuts don't depend (indirectly) on lepton pT cuts (like DY0), such events remain in the same bin.
 	// Thus, we only apply this fake rate in regions where events could migrate to, i.e. OSSF regions ONZ.
 	// Looking at the AIC control region, we find that we should halve the fake rate outside MLEPTONS = 75..100.
-	assembler->setFakeRate("nPhotonFakeMuons", "(NOSSF > 0 && !ONZ) * 0.0034 / (1 + (MLEPTONS < 75 || MLEPTONS > 100))");
-	assembler->setFakeRate("nPhotonFakeElectrons", "(NOSSF > 0 && !ONZ) * 0.0119 / (1 + (MLEPTONS < 75 || MLEPTONS > 100))");
+//	assembler->setFakeRate("nPhotonFakeMuons", "(NOSSF[0] > 0 && !ONZ) * 0.0027 / (1 + (MLEPTONS[0] < 75 || MLEPTONS[0] > 100))");
+//	assembler->setFakeRate("nPhotonFakeElectrons", "(NOSSF[0] > 0 && !ONZ) * 0.0119 / (1 + (MLEPTONS[0] < 75 || MLEPTONS[0] > 100)) * 0.75");
+	//assembler->setFakeRate("nPhotonFakeMuons", "0.0031 / (1 + ONZ) * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))");
+	//assembler->setFakeRate("nPhotonFakeElectrons", "0.0089 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))");
+	assembler->setFakeRate("nPhotonFakeMuons", "0.0031 / (1 + ONZ)");
+	assembler->setFakeRate("nPhotonFakeElectrons", "0.0089 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) )");
 }
+
+#include <TLatex.h>
+#include <TLegend.h>
+#include "TStyle.h"
 
 TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
 {
@@ -229,3 +325,18 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
 
 }
 
+std::vector<double> getFirst(std::vector<std::pair<double, double> > list) {
+	std::vector<double> list2;
+	for(size_t i = 0; i < list.size(); ++i) {
+		list2.push_back(list[i].first);
+	}
+	return list2;
+}
+
+std::vector<double> getSecond(std::vector<std::pair<double, double> > list) {
+	std::vector<double> list2;
+	for(size_t i = 0; i < list.size(); ++i) {
+		list2.push_back(list[i].second);
+	}
+	return list2;
+}
