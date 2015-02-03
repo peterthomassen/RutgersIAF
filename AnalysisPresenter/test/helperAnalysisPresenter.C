@@ -14,7 +14,9 @@ void setupData(Assembler* assembler, bool fake = false, bool dilep = false) {
 	std::string infix = dilep ? "" : ".3L";
 	std::string suffix = ".root";
 	
-	PhysicsContribution* data = new PhysicsContribution("data", prefix + "20141215_data" + infix + suffix, 19500, "2012data");
+	PhysicsContribution* data = fake
+		? new PhysicsContribution("data", prefix + "20141215_fakeTracks" + infix + suffix, 19500, "2012data")
+		: new PhysicsContribution("data", prefix + "20141215_data" + infix + suffix, 19500, "2012data");
 	
 	assembler->addContribution(data);
 }
@@ -31,7 +33,7 @@ void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false
 	assembler->addContribution(data);
 }
 
-void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = true) {
+void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = true, bool onlyTTF = false) {
 	std::string prefix = "/cms/thomassen/2014/Analysis/simulation/histograms/";
 	std::string infix = dilep ? "" : ".3L";
 	std::string suffix = ".simulation.root";
@@ -64,12 +66,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	std::vector<PhysicsContribution*> mc;
 	std::vector<PhysicsContribution*> mcH;
 	
-	//PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, 1.2030, "WZ");
 	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, xsec_wz, "WZ");
-	//wz->addWeight("(NGOODJETS < 2) * 0.897051 + (NGOODJETS >= 2) * 2.0084"); // Richard's numbers
-	//wz->addWeight("(NGOODJETS == 0) * 1.024 + (NGOODJETS == 1) * 0.86 + (NGOODJETS == 2) * 1.1 + (NGOODJETS > 2) * 1"); // without ttbar MC
-	////wz->addWeight("(NGOODJETS[0] == 0) * 1.024 + (NGOODJETS[0] == 1) * 0.81 + (NGOODJETS[0] == 2) * 1.0 + (NGOODJETS[0] > 2) * 1"); // with ttbar MC
-	
 	wz->addWeight("exp(-0.005 * PTMCZ[0]/sqrt(MMCZ[0]))", 1.038);
 	wz->addWeight("(NGOODJETS[0] == 0) * 1.06 + (NGOODJETS[0] == 1) * 0.89 + (NGOODJETS[0] == 2) * 1.18 + (NGOODJETS[0] > 2) * 1.32");
 	wz->addWeight("!(NGOODJETS > 1) + (NGOODJETS > 1) * Alt$((PTGOODJETS[0] < 70) * 0.75 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.16 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 0.88 + (PTGOODJETS[0] >= 150) * 1.26, 0)");
@@ -89,16 +86,16 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	mc.push_back(zz);
 	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
 	
-	// "(NGOODJETS < 2) * 1.42 + (NGOODJETS == 2) * 1.18 + (NGOODJETS == 3) * 1.04 + (NGOODJETS > 3) * 1" // Richard's numbers
 	TString nJetWeight = "(NGOODJETS[0] < 2) * 1.11 + (NGOODJETS[0] == 2) * 1.08 + (NGOODJETS[0] == 3) * 1.065 + (NGOODJETS[0] == 4) * 1.065 + (NGOODJETS[0] == 5) * 1.04 + (NGOODJETS[0] > 5) * 1"; // Peter's numbers
 	
 	PhysicsContribution* ttbarS = new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, xsec_ttbar_semiLep, "TT_SemiL");
 	ttbarS->addWeight(nJetWeight);
 	
+	//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + ".3LonZ" + suffix, xsec_ttbar_fullLep, "TT_FullL");
 	PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullL");
 	ttbarF->addWeight(nJetWeight);
 	//ttbarF->addWeight("nTrackFakeElectrons + nTrackFakeMuons == 0");
-	ttbarF->addWeight("(NLEPTONS[0] >= 3) * 1.66 + !(NLEPTONS[0] >= 3) * 1");
+	ttbarF->addWeight("1 + (NLEPTONS[0] >= 3 && nTrackFakeElectrons + nTrackFakeMuons == 0) * 0.66");
 //	ttbarF->addFlatUncertainty("xsec", 0.3);
 	ttbarF->addFlatUncertainty("fudge", 0.194);
 	if(ttbar) {
@@ -106,17 +103,23 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		mc.push_back(ttbarF);
 	}
 
-	//mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
-	//mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 2950.0, "DYgt50"));
-	
 	if(dilep) {
 //		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
 //		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 2950.0, "DYgt50"));
 	}
 	
+	if(onlyTTF) {
+		mc.clear();
+		mc.push_back(ttbarF);
+	}
+	
 	for(auto &contribution : mc) {
 		contribution->addWeight("WEIGHT[0]");
 		assembler->addContribution(contribution);
+	}
+	
+	if(onlyTTF) {
+		return;
 	}
 	
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
@@ -135,7 +138,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	}
 }
 
-void setupBackgroundDD(Assembler* assembler, TString option = "") {
+void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = false) {
 	std::vector<PhysicsContribution*> dd;
 	
 	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20141215_fakeTracks.3L.root", assembler->getLumi(), "fakeTracks", (option == "justTracks") ? kWhite : -1);
@@ -154,20 +157,22 @@ void setupBackgroundDD(Assembler* assembler, TString option = "") {
 				" + (Min$(PTGOODMUONS) > 15)"
 		")"
 	);
-*/	//fakeTracks->addFlatUncertainty("trackFit", 0.125);
-	
-	//fakeTracks->addFlatUncertainty("fakeTracks", 0.25);
+*/	
+	if(syst) {
+		fakeTracks->addFlatUncertainty("trackFit", 0.17);
+	}
 	if(option != "noTracks" && option != "justTaus" && option != "justPhotons") dd.push_back(fakeTracks);
 	
 	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20141215_fakeTaus.3L.root", assembler->getLumi(), "fakeTaus");
 	if(option != "noTaus" && option != "justTracks" && option != "justPhotons") dd.push_back(fakeTaus);
 	
 	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20141215_fakePhotons.3L.root", assembler->getLumi(), "fakePhotons");
-	//fakePhotons->addFlatUncertainty("photonFudge", 0.25);
-	//fakePhotons->setEnsembleFakeRateParam(fakeTracks, "NPROMPTTRACKS7", "0*(x < [0]) + 1*(x > 2*[0]) + (x/[0] - 1)*(x >= [0] && x <= 2*[0])");
+	if(syst) {
+		fakePhotons->addFlatUncertainty("photonElFake", 0.15);
+		//fakePhotons->addFlatUncertainty("photonFudge", 0.25);
+		//fakePhotons->setEnsembleFakeRateParam(fakeTracks, "NPROMPTTRACKS7", "0*(x < [0]) + 1*(x > 2*[0]) + (x/[0] - 1)*(x >= [0] && x <= 2*[0])");
+	}
 	if(option != "noPhotons" && option != "justTracks" && option != "justTaus") dd.push_back(fakePhotons);
-	
-	//dd.push_back(new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20140618_fakeMixed.root", assembler->getLumi(), "fakeMixed"));
 	
 	for(auto &contribution : dd) {
 		assembler->addContribution(contribution);
@@ -175,80 +180,24 @@ void setupBackgroundDD(Assembler* assembler, TString option = "") {
 }
 
 void setupFakeRates(Assembler* assembler) {
-	// [PT] These numbers were obtained from the MOSSF plots on Z
-	//assembler->setFakeRate("nTrackFakeMuons", "(NLEPTONS > 2) * 0.01544");
-	//assembler->setFakeRate("nTrackFakeElectrons", "(NLEPTONS > 2) * 0.02538");
-	
-	// Matt's numbers
-	//assembler->setFakeRate("nTrackFakeMuons", "(NBJETSCSVM == 0) * 0.018 + (NBJETSCSVM >= 1) * 0.13");
-	//assembler->setFakeRate("nTrackFakeElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.028 + (HT > 200) * 0.05 ) + (NBJETSCSVM >= 1) * 0.11");
-	
-	// Peter's numbers based on Matt's method
-	//assembler->setFakeRate("nTrackFakePosMuons",     "(NBJETSCSVM == 0) * ( (HT < 200) * ((NGOODELECTRONS == 2) * 0.0122 + (NGOODELECTRONS == 0) * 0.0165) + (HT > 200) * 0.0412961 ) + (NBJETSCSVM >= 1 && ONZ) * 0.0412961");
-	//assembler->setFakeRate("nTrackFakeNegMuons",     "(NBJETSCSVM == 0) * ( (HT < 200) * ((NGOODELECTRONS == 2) * 0.0145 + (NGOODELECTRONS == 0) * 0.0193) + (HT > 200) * 0.0412961 ) + (NBJETSCSVM >= 1 && ONZ) * 0.0412961");
-	//assembler->setFakeRate("nTrackFakePosElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.0241 + (HT > 200) * 0.0612284 ) + (NBJETSCSVM >= 1 && ONZ) * 0.0612284");
-	//assembler->setFakeRate("nTrackFakeNegElectrons", "(NBJETSCSVM == 0) * ( (HT < 200) * 0.0299 + (HT > 200) * 0.0612284 ) + (NBJETSCSVM >= 1 && ONZ) * 0.0612284");
-	
 	// We found that NGOODJETS and HT binning does not work very well; NPROMPTINCLUSIVETRACK7 binning does a good job at least in 0b regions.
-	/*************
-	 * Keep plots with NPROMPTINCLUSIVETRACKS7 parameterization to evaluate systematic error
-	 * ********/
 	assembler->setFakeRate("nTrackFakeMuons",
-//		"(NBJETSCSVM[0] == 0 || ONZ) * (0.0238693 - 0.00175457 * NPROMPTINCLUSIVETRACKS7[0]) * (1 + (NBJETSCSVM[0] > 0))"
-		"(NBJETSCSVM[0] == 0 || ONZ) * (0.00857965 + 0.000350065 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0)) * 0.67"
-////		"(NBJETSCSVM[0] == 0 || ONZ) * (0.00647354 + 0.00131217 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0)) * 0.67" // from 2el1mu case
-//		"0.0094 * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))"
-//		"0.00920823 + Max$(PTGOODJETS) * (1.48564e-05 + Max$(PTGOODJETS) * -3.78462e-07)"
-		//" + (NBJETSCSVM > 0 && !ONZ) * 0.14"
-/*		" * ((Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
-		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
-			" * 4 * ("
-				"(Min$(PTGOODELECTRONS) > 10 && Min$(PTGOODELECTRONS) < 15) * 0.09"
-				" + (Min$(PTGOODELECTRONS) > 15 && Min$(PTGOODELECTRONS) < 20) * 0.26"
-				" + (Min$(PTGOODELECTRONS) > 20 && Min$(PTGOODELECTRONS) < 25) * 0.58"
-				" + (Min$(PTGOODELECTRONS) > 25)"
-		")"
-		" + (Sum$(fakeRoleGOODMUONS) > 0)"
-			" * ("
-				"(Min$(PTGOODMUONS) > 10 && Min$(PTGOODMUONS) < 15) * 1.13"
-				" + (Min$(PTGOODMUONS) > 15)"
-		"))"*/
+		"0.0154" // "(NGOODMUONS[0]==1)*(0.01384 + -0.0003956*NPROMPTNONISOINCLUSIVETRACKS7[0]) + (NGOODMUONS[0]==3)*(0.01697 + -0.0001669*NPROMPTNONISOINCLUSIVETRACKS7[0])"
+		" * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
 	);
 	assembler->setFakeRate("nTrackFakeElectrons",
-//		"(NBJETSCSVM[0] == 0 || ONZ) * (-0.00698188 + 0.00706028 * NPROMPTINCLUSIVETRACKS7[0]) * (1 + (NBJETSCSVM[0] > 0))"
-		"(NBJETSCSVM[0] == 0 || ONZ) * (-0.0335643 + 0.0117106 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0))"
-////		"(NBJETSCSVM[0] == 0 || ONZ) * (-0.054686 + 0.0190867 * NPROMPTINCLUSIVETRACKS[0]) * (1 + (NBJETSCSVM[0] > 0))" // from 1el2mu case
-//		"0.0104 * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))"
-//		"0.0111485 + Max$(PTGOODJETS) * (-3.60633e-05 + Max$(PTGOODJETS) * 3.84498e-07)"
-		//" + (NBJETSCSVM > 0 && !ONZ) * 0.125"
-/*		" * ((Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
-		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
-			" * 4 * ("
-				"(Min$(PTGOODELECTRONS) > 10 && Min$(PTGOODELECTRONS) < 15) * 0.09"
-				" + (Min$(PTGOODELECTRONS) > 15 && Min$(PTGOODELECTRONS) < 20) * 0.26"
-				" + (Min$(PTGOODELECTRONS) > 20 && Min$(PTGOODELECTRONS) < 25) * 0.58"
-				" + (Min$(PTGOODELECTRONS) > 25)"
-		")"
-		" + (Sum$(fakeRoleGOODMUONS) > 0)"
-			" * ("
-				"(Min$(PTGOODMUONS) > 10 && Min$(PTGOODMUONS) < 15) * 1.13"
-				" + (Min$(PTGOODMUONS) > 15)"
-		"))"*/
+		"((NLEPTONS[0]==3&&NGOODELECTRONS[0]==1)*(0.006771 + 0.005532*NPROMPTNONISOINCLUSIVETRACKS7[0]) + (NLEPTONS[0]==3&&NGOODELECTRONS[0]==3)*(0.009287 + -0.001487*NPROMPTNONISOINCLUSIVETRACKS7[0])"
+		"+ (NLEPTONS[0]!=3||!(NGOODELECTRONS[0]%2))*(0.007453 + 0.003052*NPROMPTNONISOINCLUSIVETRACKS7[0]))" // this is not the average of the above, but measured (because of relative fractions)
+		" * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
 	);
 	
-	assembler->setFakeRate("nSidebandFakeTaus", "0.02");
+	assembler->setFakeRate("nSidebandFakeTaus", "(HT[0] < 200) * 0.0235 + !(HT[0] < 200) * 0.019");
 	
 	// Photon fake rates for Asymmetric Internal Conversions (AIC)
 	// AIC reduces the pt of the emitting lepton, and can push on-Z pairs below the Z peak. This causes migration between on-Z/off-Z etc.
-	// In regions where cuts don't depend (indirectly) on lepton pT cuts (like DY0), such events remain in the same bin.
-	// Thus, we only apply this fake rate in regions where events could migrate to, i.e. OSSF regions ONZ.
-	// Looking at the AIC control region, we find that we should halve the fake rate outside MLEPTONS = 75..100.
-//	assembler->setFakeRate("nPhotonFakeMuons", "(NOSSF[0] > 0 && !ONZ) * 0.0027 / (1 + (MLEPTONS[0] < 75 || MLEPTONS[0] > 100))");
-//	assembler->setFakeRate("nPhotonFakeElectrons", "(NOSSF[0] > 0 && !ONZ) * 0.0119 / (1 + (MLEPTONS[0] < 75 || MLEPTONS[0] > 100)) * 0.75");
-	//assembler->setFakeRate("nPhotonFakeMuons", "0.0031 / (1 + ONZ) * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))");
-	//assembler->setFakeRate("nPhotonFakeElectrons", "0.0089 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + (HT[0] >= 200) * 0.375) * (1 + (HT[0] < 200 && NBJETSCSVM[0] > 0))");
-	assembler->setFakeRate("nPhotonFakeMuons", "0.0031 / (1 + ONZ)");
-	assembler->setFakeRate("nPhotonFakeElectrons", "0.0089 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) )");
+	// Looking at the AIC control region, we find that we should adjust the fake rate outside MLEPTONS = 75..100.
+	assembler->setFakeRate("nPhotonFakeMuons", "(NOSSF == 1 && !ONZ && MOSSF < 91) * 0.00295 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.4 * (NBJETSCSVM[0] > 0))");
+	assembler->setFakeRate("nPhotonFakeElectrons", "0.0088 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.4 * (NBJETSCSVM[0] > 0))");
 }
 
 #include <TLatex.h>
