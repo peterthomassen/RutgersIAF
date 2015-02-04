@@ -95,7 +95,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullL");
 	ttbarF->addWeight(nJetWeight);
 	//ttbarF->addWeight("nTrackFakeElectrons + nTrackFakeMuons == 0");
-	ttbarF->addWeight("1 + (NLEPTONS[0] >= 3 && nTrackFakeElectrons + nTrackFakeMuons == 0) * 0.66");
+	ttbarF->addWeight("1 + (NLEPTONS[0] >= 3) * 0.66");
 //	ttbarF->addFlatUncertainty("xsec", 0.3);
 	ttbarF->addFlatUncertainty("fudge", 0.194);
 	if(ttbar) {
