@@ -191,7 +191,7 @@ void setupFakeRates(Assembler* assembler) {
 		" * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
 	);
 	
-	assembler->setFakeRate("nSidebandFakeTaus", "(HT[0] < 200) * 0.0235 + !(HT[0] < 200) * 0.019");
+	assembler->setFakeRate("nSidebandFakeTaus", "(HT[0] < 200) * 0.022 + !(HT[0] < 200) * 0.019");
 	
 	// Photon fake rates for Asymmetric Internal Conversions (AIC)
 	// AIC reduces the pt of the emitting lepton, and can push on-Z pairs below the Z peak. This causes migration between on-Z/off-Z etc.

@@ -12,11 +12,13 @@ void AIC() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:(NGOODELECTRONS%2){0,1}:NGOODELECTRONS{0,3}:NGOODMUONS{0,3}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,400,16}:MLEPTONS*1{6,406,120}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:(NGOODELECTRONS%2){0,1}:NGOODELECTRONS{0,3}:NGOODMUONS{0,3}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,200,8}:MLEPTONS*1{0,200,48}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
+	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
+	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
 	
 	// Global cuts, if desired
 	//TString selection = "NOTTRILEPTONONZ";
-	TString selection = "MOSSF < 81";
+	TString selection = "MOSSF < 81 && NGOODTAUS == 0";
 	//TString selection = "NPROMPTINCLUSIVETRACKS >= 6";
 	//TString selection = "!(MLEPTONS > 76 && MLEPTONS < 106)";
 	
@@ -27,8 +29,9 @@ void AIC() {
 	Assembler* assembler = new Assembler();
 	init(assembler);
 	setupData(assembler);
-	setupBackgroundMC(assembler);
-	setupBackgroundDD(assembler);
+	//setupBackgroundMC(assembler);
+	setupBackgroundMC(assembler, false, false);
+	setupBackgroundDD(assembler, "noTaus");
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	assembler->process(varexp, selection);
@@ -43,7 +46,6 @@ void AIC() {
 	// selection += "NLEPTONS == 3 && NOSSF == 1 && !ONZ && NGOODTAUS == 0 && NBJETSCSVM == 0 && HT < 200 && MET < 50"; // Richard's
 	//	selection += " && NLEPTONS == NGOODMUONS";
 	assembler->setRange("NLEPTONS", 3, 3);
-	assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("NBJETSCSVM", 0, 0);
@@ -62,6 +64,8 @@ void AIC() {
 	assembler->setRange("NGOODMUONS", 3, 3);
 	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_3mu.pdf");
 	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_3mu_fine.pdf");
+	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("AIC_MINMUONPT_3mu.pdf");
+	assembler->project("MAXMUONPT", true)->plot(false)->SaveAs("AIC_MAXMUONPT_3mu.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3mu-ONZ.pdf");
@@ -71,6 +75,7 @@ void AIC() {
 	assembler->setRange("NGOODMUONS", 1, 1);
 	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_2el1mu.pdf");
 	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_2el1mu_fine.pdf");
+	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("AIC_MINMUONPT_2el1mu.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_2el1mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_2el1mu-ONZ.pdf");
@@ -80,6 +85,8 @@ void AIC() {
 	assembler->setRange("NGOODELECTRONS", 3, 3);
 	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_3el.pdf");
 	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_3el_fine.pdf");
+	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("AIC_MINELECTRONPT_3el.pdf");
+	assembler->project("MAXELECTRONPT", true)->plot(false)->SaveAs("AIC_MAXELECTRONPT_3el.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3el-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3el-ONZ.pdf");
@@ -89,6 +96,7 @@ void AIC() {
 	assembler->setRange("NGOODELECTRONS", 1, 1);
 	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_1el2mu.pdf");
 	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_1el2mu_fine.pdf");
+	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("AIC_MINELECTRONPT_1el2mu.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_1el2mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_1el2mu-ONZ.pdf");
