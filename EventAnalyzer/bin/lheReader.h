@@ -5,8 +5,7 @@
 #include <fstream>
 
 #include <TString.h>
-
-using namespace std;
+#include <memory>
 
 //
 // class declaration
@@ -21,7 +20,7 @@ class lheReader {
     ~lheReader();
 
     // lheReader ifstream
-    ifstream fileinput;
+    std::vector<std::ifstream *> *inputfiles;
 
     bool m_debug;
 
@@ -74,7 +73,7 @@ class lheReader {
     bool getDebug(void);
     void setDebug(const char *);
 
-    void lhefile(TString);
+    void lhefile(std::vector<std::string>);
     void ntuplizer(TString);
 
     Int_t getRun(void);
@@ -86,6 +85,8 @@ class lheReader {
     Int_t getLumi(void);
     void setLumi(const char *);
 
+    void initialize(struct commandLineParameters *);
+
   private:
     Int_t    run_number;
     Int_t    event_number;
@@ -96,3 +97,4 @@ class lheReader {
 };
 
 #endif
+

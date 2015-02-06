@@ -15,13 +15,115 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <TObject.h>
 #include <TLorentzVector.h>
+
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <sstream>
+#include <unistd.h> 
+#include <ctype.h>
+#include <getopt.h>
 
 #include "lheReader.h"
 
 //
 // constructors and destructor
 //
+
+struct commandLineParameters
+{
+  std::vector<std::string> infile;      // -i
+  std::string outfile;                  // -o
+  std::string Run;                      // -r 
+  std::string Event;                    // -e
+  std::string Lumi;                     // -l 
+  std::string Debug;                    // -d
+
+  std::string input;
+
+  commandLineParameters(void) : 
+    Run("1"),              
+    Event("1"),            
+    Lumi("1"),          
+    Debug("false")      
+  {}
+  
+  void parseCommandLine(int argc, char **argv);
+
+private:
+
+  template <typename T> void getArg(T& pRetVal, char* arg) {
+
+    if (arg != '\0') {
+      std::istringstream(arg) >> pRetVal;
+    }
+  }
+};
+
+void commandLineParameters::parseCommandLine(int argc, char **argv)
+{
+  int opt;
+  
+  while ((opt = getopt(argc, argv, "o:i:r:e:l:d:h")) != -1) {
+
+    switch(opt) {
+
+    case 'i':
+      getArg(input, optarg);
+      infile.push_back(input);      
+
+      while (optind < argc && *argv[optind] != '-'){
+	getArg(input, optarg);
+	infile.push_back(input);
+	optind++;
+      }
+      break;
+    case 'o':
+      getArg(outfile, optarg);
+      break;
+    case 'r':
+      getArg(Run, optarg);
+      break;      
+    case 'e':
+      getArg(Event, optarg);
+      break;
+    case 'l':
+      getArg(Lumi, optarg);
+      break;
+    case 'd':
+      getArg(Debug, optarg);
+      break;           
+    case 'h':
+      std::cout << "synopsis: lheReader -i <input lhe file> -o <target output file>\n"
+		<< "-r [run number] -e [event number] -l [lumi number] -d [debug mode]" << std::endl;
+      exit(1);
+      break;      
+    case ':':
+      // missing option argument
+      fprintf(stderr, "%s: option '-%c' requires an argument\n", argv[0], optopt);
+      exit(1);
+      break;
+    case '?':
+    default:
+      // invalid option
+      fprintf(stderr, "%s: option '-%c' is invalid: ignored\nUse -h for a list of options.\n", argv[0], optopt);
+      exit(1);
+      break;      
+    }
+  }
+}
+
+void lheReader::initialize(struct commandLineParameters* args) {
+
+  this->setDebug(args->Debug.c_str());
+  this->lhefile(args->infile);
+  this->setRun(args->Run.c_str());
+  this->setEvent(args->Event.c_str());
+  this->setLumi(args->Lumi.c_str());
+  this->ntuplizer(args->outfile.c_str());
+}
 
 lheReader::lheReader()
 {
@@ -52,13 +154,19 @@ void lheReader::setDebug(const char *db)
   ss >> std::boolalpha >> m_debug;
 }
 
-void lheReader::lhefile(TString lhefilename)
+void lheReader::lhefile(std::vector<std::string> lhefilename)
 {
-  fileinput.open(lhefilename);
+  inputfiles  = new std::vector<std::ifstream*>;
+
+  for(int i = 0; i < (int)lhefilename.size(); ++i) {
+    inputfiles->push_back(new std::ifstream);
+    (*inputfiles)[i]->open(lhefilename[i]);
+  }
 }
 
 void lheReader::ntuplizer(TString output)
 {
+
   std::string lheline;
   std::string beginevent = "<event>";
   std::string endevent = "</event>";
@@ -99,149 +207,157 @@ void lheReader::ntuplizer(TString output)
   LHETree->Branch("phi","std::vector<Double_t>",&m_phi);
   LHETree->Branch("energy","std::vector<Double_t>",&m_energy);
 
-  if (fileinput.is_open()) {
+  if(!inputfiles->empty()) {
+    
+    std::vector<std::ifstream*>::const_iterator fileinput;
+    
+    for (fileinput = inputfiles->begin(); fileinput != inputfiles->end(); ++fileinput) {
+      
+      if ((*fileinput)->is_open()) { 
+	
+	if (m_debug) {
+	  std::cout << "File is open!!" << std::endl;
+	}
+	
+	while (getline(**fileinput, lheline)) { 
 
-    if (m_debug) {
-      std::cout << "File is open!!" << std::endl;
-    }
+	  // Find begining of event
+	  if (lheline == beginevent) {
+	    eventswitch = true;
 
-    while (getline(fileinput, lheline)) {
+	    if (m_debug) {
+	      std::cout << "Found begining of event!! " << eventswitch << std::endl;
+	      std::cout << "Inside event!!" << std::endl;
+	    }
 
-      // Find begining of event
-      if (lheline == beginevent) {
-        eventswitch = true;
+	    ++event_count;
 
-        if (m_debug) {
-          std::cout << "Found begining of event!! " << eventswitch << std::endl;
-          std::cout << "Inside event!!" << std::endl;
-        }
+	    run = getRun();
+	    event = event_count + getEvent() - 1;
+	    lumi = getLumi();
+	    
+	    continue;
+	  }
+	  
+	  if (eventswitch) {
+	    
+	    ++event_line_count;
+	    
+	    // Find line with event level information
+	    if (event_line_count == 1) {
 
-        ++event_count;
+	      std::stringstream ss(lheline);
+	      ss >> particle_n >> processID >> event_weight >> factorization_scale >> alpha_em >> alpha_s;
 
-        run = getRun();
-        event = event_count + getEvent() - 1;
-        lumi = getLumi();
+	      if (m_debug) {
+		std::cout << lheline << std::endl;
+		std::cout << "particle_n = " << particle_n << std::endl;
+		std::cout << "processID = " << processID << std::endl;
+		std::cout << "event_weight = " << event_weight << std::endl;
+		std::cout << "factorization_scale = " << factorization_scale << std::endl;
+		std::cout << "alpha_em = " << alpha_em << std::endl;
+		std::cout << "alpha_s = " << alpha_s << std::endl;
+	      }
+	    }
 
-        continue;
-      }
+	    // Find line with particle level information
+	    else if (event_line_count > 1 && lheline != "</event>") {
 
-      if (eventswitch) {
+	      std::stringstream ss(lheline);
 
-        ++event_line_count;
+	      ss >> pdgID >> state >> mother1 >> mother2 >> color >> anticolor
+		 >> Px >> Py >> Pz >> E >> Mass >> ctau >> spincosine;
 
-        // Find line with event level information
-        if (event_line_count == 1) {
+	      m_pdgID->push_back(pdgID);
+	      m_state->push_back(state);
+	      m_mother1->push_back(mother1);
+	      m_mother2->push_back(mother2);
+	      m_color->push_back(color);
+	      m_anticolor->push_back(anticolor);
+	      m_Px->push_back(Px);
+	      m_Py->push_back(Py);
+	      m_Pz->push_back(Pz);
+	      m_E->push_back(E);
+	      m_mass->push_back(Mass);
+	      m_ctau->push_back(ctau);
+	      m_spincosine->push_back(spincosine);
 
-          std::stringstream ss(lheline);
-          ss >> particle_n >> processID >> event_weight >> factorization_scale >> alpha_em >> alpha_s;
+	      TLorentzVector temp;
+	      temp.SetPxPyPzE(Px, Py, Pz , E);
+	      
+	      m_pt->push_back(temp.Pt());
+	      
+	      // Supress large eta value warnings by setting it to a large value by hand
+	      if (temp.Pt() == 0.0 && temp.Pz() > 0.0) {
+		m_eta->push_back(10e10);
+	      }
+	      
+	      else if (temp.Pt() == 0.0 && temp.Pz() < 0.0) {
+		m_eta->push_back(-10e10);
+	      }
+	      
+	      else {
+		m_eta->push_back(temp.Eta());
+	      }
+	      
+	      m_phi->push_back(temp.Phi());
+	      m_energy->push_back(temp.E());
+	      
+	      if (m_debug) {
+		std::cout << lheline << std::endl;
+		std::cout << pdgID << "    " << state << "    " << mother1 << "    " << mother2 << "  " 
+			  << color << "    " << anticolor << "  " << Px << " " << Py << "  " << Pz << "  " 
+			  << E << "  " << Mass << " " << ctau << " " << spincosine << std::endl;
+	      }
+	    }
 
-          if (m_debug) {
-            std::cout << lheline << std::endl;
-            std::cout << "particle_n = " << particle_n << std::endl;
-            std::cout << "processID = " << processID << std::endl;
-            std::cout << "event_weight = " << event_weight << std::endl;
-            std::cout << "factorization_scale = " << factorization_scale << std::endl;
-            std::cout << "alpha_em = " << alpha_em << std::endl;
-            std::cout << "alpha_s = " << alpha_s << std::endl;
-          }
-        }
+	    // Find end of event
+	    else if (lheline == endevent) {
 
-        // Find line with particle level information
-        else if (event_line_count > 1 && lheline != "</event>") {
+	      eventswitch = false;
+	      event_line_count = 0;
+	      
+	      LHETree->Fill();
 
-          std::stringstream ss(lheline);
+	      m_pdgID->clear();
+	      m_state->clear();
+	      m_mother1->clear();
+	      m_mother2->clear();
+	      m_color->clear();
+	      m_anticolor->clear();
+	      m_Px->clear();
+	      m_Py->clear();
+	      m_Pz->clear();
+	      m_E->clear();
+	      m_mass->clear();
+	      m_ctau->clear();
+	      m_spincosine->clear();
+	      m_pt->clear();
+	      m_eta->clear();
+	      m_phi->clear();
+	      m_energy->clear();
+	      
+	      if (m_debug) {
+		std::cout << "Found end of event!! " << eventswitch << std::endl;
+	      }
+	    }
+	  }
 
-          ss >> pdgID >> state >> mother1 >> mother2 >> color >> anticolor
-             >> Px >> Py >> Pz >> E >> Mass >> ctau >> spincosine;
-
-          m_pdgID->push_back(pdgID);
-          m_state->push_back(state);
-          m_mother1->push_back(mother1);
-          m_mother2->push_back(mother2);
-          m_color->push_back(color);
-          m_anticolor->push_back(anticolor);
-          m_Px->push_back(Px);
-          m_Py->push_back(Py);
-          m_Pz->push_back(Pz);
-          m_E->push_back(E);
-          m_mass->push_back(Mass);
-          m_ctau->push_back(ctau);
-          m_spincosine->push_back(spincosine);
-
-          TLorentzVector temp;
-          temp.SetPxPyPzE(Px, Py, Pz , E);
-
-          m_pt->push_back(temp.Pt());
-
-          // Supress large eta value warnings by setting it to a large value by hand
-          if (temp.Pt() == 0.0 && temp.Pz() > 0.0) {
-            m_eta->push_back(10e10);
-          }
-
-          else if (temp.Pt() == 0.0 && temp.Pz() < 0.0) {
-            m_eta->push_back(-10e10);
-          }
-
-          else {
-            m_eta->push_back(temp.Eta());
-          }
-
-          m_phi->push_back(temp.Phi());
-          m_energy->push_back(temp.E());
-
-          if (m_debug) {
-            std::cout << lheline << std::endl;
-            std::cout << pdgID << "    " << state << "    " << mother1 << "    " << mother2 << "  " 
-                      << color << "    " << anticolor << "  " << Px << " " << Py << "  " << Pz << "  " 
-                      << E << "  " << Mass << " " << ctau << " " << spincosine << std::endl;
-          }
-        }
-
-        // Find end of event
-        else if (lheline == endevent) {
-
-          eventswitch = false;
-          event_line_count = 0;
-
-          LHETree->Fill();
-
-          m_pdgID->clear();
-          m_state->clear();
-          m_mother1->clear();
-          m_mother2->clear();
-          m_color->clear();
-          m_anticolor->clear();
-          m_Px->clear();
-          m_Py->clear();
-          m_Pz->clear();
-          m_E->clear();
-          m_mass->clear();
-          m_ctau->clear();
-          m_spincosine->clear();
-          m_pt->clear();
-          m_eta->clear();
-          m_phi->clear();
-          m_energy->clear();
-
-          if (m_debug) {
-            std::cout << "Found end of event!! " << eventswitch << std::endl;
-          }
-        }
-      }
-
-      // Find header file information and skip over it
-      else {
-        if (m_debug) {
-          std::cout << "Line skipped!!" << std::endl;
-        }
-
-        continue;
-      }
-    }  // end while still lines in file loop
-  } // end if file open
-
+	  // Find header file information and skip over it
+	  else {
+	    if (m_debug) {
+	      std::cout << "Line skipped!!" << std::endl;
+	    }
+	    
+	    continue;
+	  }
+	} // end while still lines in file loop
+      } // end if file open
+    } // end for input fils loop
+  } // end of if input file is not empty
+  
   LHETree->Print();
-  LHETree->Write("", TObject::kOverwrite);
+  LHETree->Write("",TObject::kOverwrite);
 
   fileoutput->Close();
 }
@@ -283,47 +399,23 @@ int main(int argc, char **argv)
 {
   lheReader *handler = new lheReader();
 
-  if (argc < 2) {
-    std::cout << "Usage: " << argv[0] << " input.lhe output.root [run] [event] [lumi] [debugFlag]" << std::endl;
+  commandLineParameters *args = new commandLineParameters();
+  
+  if (argc < 2) {  
+    std::cout << "Usage: " << argv[0] << " -i <input.lhe> -o <output.root> -r [run] -e [event] -l [lumi] -d [debug flag]" << std::endl;
     return 1;
   }
+    
+  args->parseCommandLine(argc, argv);
 
-  else if (argc == 2 || argc > 7) {
-    std::cout << "You have specified too few or too many arguments!" << std::endl;
-    return 1;
-  }
-
-  for (int i = 1; i < argc; ++i) {
-
-    switch(i) {
-
-      case 1:
-        handler->lhefile(argv[i]);
-        break;
-
-      case 2:
-        handler->ntuplizer(argv[i]);
-        break;
-
-      case 3:
-        handler->setRun(argv[i]);
-        break;
-
-      case 4:
-        handler->setEvent(argv[i]);
-        break;
-
-      case 5:
-        handler->setLumi(argv[i]);
-        break;
-
-      case 6:
-        handler->setDebug(argv[i]);
-        break;
-      }
-  }
-
+  handler->initialize(args);
+  
   delete handler;
+  delete args;
 
+  handler = NULL;
+  args = NULL;
+  
   return 0;
 }
+
