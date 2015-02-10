@@ -884,12 +884,14 @@ void setupMC2(BaseHandler* handler, TString pufile, bool doMatching = true) {
 	  handler->addProductComparison("goodMuons","MCmuonsFromWZTau",mcMatchComparison,false);
   }
 
-  TFile infile(pufile.Data());
-  TH1F* pu = (TH1F*)infile.Get("puweights");
-  pu->SetDirectory(0);
-  EventVariableTH1<double>* pureweight = new EventVariableTH1<double>("pureweight","TRUENUMINTERACTIONS",pu);
-  handler->addEventVariable("PUWEIGHT",pureweight);
-  handler->addWeightVariable("PUWEIGHT");
+  if(pufile != "") {
+    TFile infile(pufile.Data());
+    TH1F* pu = (TH1F*)infile.Get("puweights");
+    pu->SetDirectory(0);
+    EventVariableTH1<double>* pureweight = new EventVariableTH1<double>("pureweight","TRUENUMINTERACTIONS",pu);
+    handler->addEventVariable("PUWEIGHT",pureweight);
+    handler->addWeightVariable("PUWEIGHT");
+  }
 
   //eps_inf*erf((pt-c)/sigma) + eps_c * (1-erf((pt-c)/sigma))
   TF1* electronIDISO = new TF1("elidiso","(TMath::Erf((x-[0])/[1])*([2]-[3])+[3])*(TMath::Erf((x-[0])/[4])*([5]-[6])+[6])",8,10000);
