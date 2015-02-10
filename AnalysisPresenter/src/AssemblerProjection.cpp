@@ -193,12 +193,12 @@ TH1* AssemblerProjection::getHistogram(TString type, TString correlationClass) c
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
 }
 
-std::vector<std::pair<double, double>> AssemblerProjection::getMeta(TString type, const char* var1, const char* var2) {
-	if(type != "data" || m_typeProjections[type].size() > 1) {
+std::vector<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString type) const {
+	if(type != "data" || m_typeProjections.at(type).size() > 1) {
 		throw std::runtime_error("meta information currently only supported for one set of data");
 	}
 	
-	return m_typeProjections[type][0]->getPhysicsContribution()->getMeta(var1, var2);
+	return m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
 }
 
 std::set<TString> AssemblerProjection::getUncertainties() const {
@@ -501,6 +501,12 @@ void AssemblerProjection::print() const {
 		printf(" : %.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
 	}
 	cout << endl;
+}
+
+void AssemblerProjection::printMeta(TString type) const {
+	for(auto &meta : getMeta(type)) {
+		cout << meta.entry << " " << meta.event << " " << meta.run << " " << meta.lumi << endl;
+	}
 }
 
 
