@@ -240,14 +240,16 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						}
 					}
 					
-					prepareEvent();
+					bool wellPrepared = prepareEvent();
+					if(!wellPrepared) {
+						continue;
+					}
 					analyzeEvent();
 
 					if(applyHandlerCuts()){
 					  bool saveEvent = false;
 					  bool isSet = getVariable("WRITEEVENT",saveEvent);
 					  if(m_writer && isSet && saveEvent)m_writer->fillTree();
-
 					}
 				}
 			}
@@ -446,7 +448,7 @@ bool BaseHandler::isProductPresent(TString prodName)
 }
 //-----------------------------------------
 //-----------------------------------------
-void BaseHandler::createProducts()
+bool BaseHandler::createProducts()
 {
   //calculate all of the variables and cuts
   map<TString,vector<SignatureObject*> >::iterator iIter;
@@ -649,6 +651,10 @@ void BaseHandler::createProducts()
 							break;
 						case 1:
 /*							*m_products[pname][index] *= 0.9;
+							if(m_products[pname][index]->Pt() < 10) {
+								cout << "skipping role=" << role << " incarnation: photon below threshold after loss factor, pt=" << m_products[pname][index]->Pt() << endl;
+								return false;
+							}
 							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
@@ -666,6 +672,10 @@ void BaseHandler::createProducts()
 							break;
 						case 2:
 /*							*m_products[pname][index] *= 0.9;
+							if(m_products[pname][index]->Pt() < 10) {
+								cout << "skipping role=" << role << " incarnation: photon below threshold after loss factor, pt=" << m_products[pname][index]->Pt() << endl;
+								return false;
+							}
 							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
@@ -684,7 +694,8 @@ void BaseHandler::createProducts()
 						case 3:
 							*m_products[pname][index] *= 0.8;
 							if(m_products[pname][index]->Pt() < 10) {
-								break;
+								cout << "skipping role=" << role << " incarnation: photon below threshold after loss factor, pt=" << m_products[pname][index]->Pt() << endl;
+								return false;
 							}
 							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 								TString varname = m_object_variable_list[k];
@@ -704,7 +715,8 @@ void BaseHandler::createProducts()
 						case 4:
 							*m_products[pname][index] *= 0.8;
 							if(m_products[pname][index]->Pt() < 10) {
-								break;
+								cout << "skipping role=" << role << " incarnation: photon below threshold after loss factor, pt=" << m_products[pname][index]->Pt() << endl;
+								return false;
 							}
 							for(int k = 0; k < (int)m_object_variable_list.size(); k++){
 								TString varname = m_object_variable_list[k];
@@ -776,6 +788,8 @@ void BaseHandler::createProducts()
 	}
 
   }
+  
+  return true;
 }
 //-----------------------------------------
 //-----------------------------------------
@@ -812,9 +826,11 @@ void BaseHandler::calcPhysicsWeight()
 }
 //-----------------------------------------
 //-----------------------------------------
-void BaseHandler::prepareEvent()
+bool BaseHandler::prepareEvent()
 {
-  if(m_currentEntry == m_lastEntryPrepared && !(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination")))return;
+  if(m_currentEntry == m_lastEntryPrepared && !(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination"))) {
+	  return true;
+  }
   resetProducts();
   resetVariables();
 
@@ -826,7 +842,10 @@ void BaseHandler::prepareEvent()
   m_variable_map_TString = m_reader->m_variable_mapTString;
   m_variable_map_bool = m_reader->m_variable_mapbool;
 
-  createProducts();
+  bool wellPrepared = createProducts();
+  if(!wellPrepared) {
+	  return false;
+  }
 
   calculateVariables();
 
@@ -834,7 +853,7 @@ void BaseHandler::prepareEvent()
 
   calcPhysicsWeight();
 
-  return;
+  return true;
 }
 //------------------------------------------
 //------------------------------------------

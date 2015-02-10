@@ -134,9 +134,9 @@ class BaseHandler : virtual public TObject {
   virtual void addProductSelfComparison(TString,ObjectComparison*,bool doAnd=true);
 
  protected:
-  virtual void createProducts();
+  virtual bool createProducts();
   virtual void resetProducts();
-  virtual void prepareEvent();
+  virtual bool prepareEvent();
   virtual void calculateVariables();
   virtual void resetVariables();
   virtual void calcPhysicsWeight();
@@ -150,7 +150,7 @@ class BaseHandler : virtual public TObject {
   bool m_doPriorityList;
 
   bool m_debugMode;
-
+  
   bool m_isMC;
   TString m_MCtype;
 
