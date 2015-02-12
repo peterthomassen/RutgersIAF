@@ -324,7 +324,7 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 		for(auto &metadata : m_metadata[bin]) {
 			auto ins = s.insert(metadata).second;
 			if(!ins) {
-				cout << "failed: " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+				cout << "Warning: duplicate event in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
 			}
 			//assert(ins);
 		}
