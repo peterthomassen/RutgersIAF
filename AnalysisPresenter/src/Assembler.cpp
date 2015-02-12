@@ -16,7 +16,9 @@
 #include <exception>
 
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 #include "RutgersIAF/debug.h"
 

@@ -1,5 +1,6 @@
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 #include "Math/QuantFuncMathCore.h"
 #include "TLegend.h"
@@ -193,7 +194,7 @@ TH1* AssemblerProjection::getHistogram(TString type, TString correlationClass) c
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
 }
 
-std::vector<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString type) const {
+std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString type) const {
 	if(type != "data" || m_typeProjections.at(type).size() > 1) {
 		throw std::runtime_error("meta information currently only supported for one set of data");
 	}
@@ -505,10 +506,9 @@ void AssemblerProjection::print() const {
 
 void AssemblerProjection::printMeta(TString type) const {
 	for(auto &meta : getMeta(type)) {
-		cout << meta.entry << " " << meta.event << " " << meta.run << " " << meta.lumi << endl;
+		cout << meta.event << " " << meta.run << " " << meta.lumi << " " << meta.fakeIncarnation << endl;
 	}
 }
-
 
 void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 

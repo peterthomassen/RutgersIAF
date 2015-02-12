@@ -14,10 +14,10 @@ class PhysicsContribution : public TObject {
 
 public:
 	struct metadata_t {
-		long entry;
 		long event;
 		int run;
 		int lumi;
+		int fakeIncarnation;
 	};
 	
 	PhysicsContribution();
@@ -28,13 +28,13 @@ public:
 	void addWeight(TString weight, double normalization = 1.0);
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
 	int findBinFromLowEdge(TAxis* axis, double x);
-	std::set<Long64_t> getBins() const;
+	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
 	THnBase* getContent() const;
 	TString getCorrelationClass() const;
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	Int_t getFillColor() const;
 	double getLumi() const;
-	std::vector<PhysicsContribution::metadata_t> getMeta() const;
+	std::set<PhysicsContribution::metadata_t> getMeta() const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
 	double getWeight();
@@ -87,5 +87,19 @@ private:
 	
 	ClassDef(PhysicsContribution,1);
 };
+
+inline bool operator<(const PhysicsContribution::metadata_t& x, const PhysicsContribution::metadata_t& y) {
+	// std::tie does not work with slc5_amd64_gcc481
+	//return std::tie(x.event, x.run, x.lumi, x.fakeIncarnation) < std::tie(y.event, y.run, y.lumi, y.fakeIncarnation);
+	return (x.event < y.event)
+		? true
+		: ((x.run < y.run)
+			? true
+			: ((x.lumi < y.lumi)
+				? true
+				: (x.fakeIncarnation < y.fakeIncarnation)
+			)
+		);
+}
 
 #endif

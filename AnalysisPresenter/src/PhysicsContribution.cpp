@@ -226,7 +226,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	m_scale = scale;
 	cout << "scale: " << m_scale << endl;
 	Double_t x[m_hn->GetNdimensions()];
-	std::string varexpMetadata = ":Entry$:EVENT[0]:RUN[0]:LUMI[0]";
+	std::string varexpMetadata = ":EVENT[0]:RUN[0]:LUMI[0]:fakeIncarnation[0]";
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
 			cout << (int)(10*k/treeR->GetEntries()) << flush;
@@ -249,12 +249,13 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			if(bin >= (Long64_t)m_metadata.size()) {
 				m_metadata.push_back(std::vector<metadata_t>());
 			}
-			// Write down entry number along with event and run number
-			metadata_t metadata = {};
-			metadata.entry = (long)(treeR->GetVal(m_hn->GetNdimensions() + 0)[i] + 0.5);
-			metadata.event = (long)(treeR->GetVal(m_hn->GetNdimensions() + 1)[i] + 0.5);
-			metadata.run   = (int) (treeR->GetVal(m_hn->GetNdimensions() + 2)[i] + 0.5);
-			metadata.lumi  = (int) (treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5);
+			// Write down event and run number, lumi section and fake incartion
+			metadata_t metadata = {
+				  (long)(treeR->GetVal(m_hn->GetNdimensions() + 0)[i] + 0.5)
+				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 1)[i] + 0.5)
+				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 2)[i] + 0.5)
+				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5)
+			};
 			m_metadata[bin].push_back(metadata);
 		}
 	}
@@ -314,15 +315,18 @@ double PhysicsContribution::getLumi() const {
 	return m_lumi;
 }
 
-std::vector<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
-	std::vector<PhysicsContribution::metadata_t> v;
+std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
+	std::set<PhysicsContribution::metadata_t> s;
 	for(auto &bin : getBins()) {
 		for(auto &metadata : m_metadata[bin]) {
-			v.push_back(metadata);
+			auto ins = s.insert(metadata).second;
+			if(!ins) {
+				cout << "failed: " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+			}
+			//assert(ins);
 		}
 	}
-	
-	return v;
+	return s;
 }
 
 TString PhysicsContribution::getName() const {

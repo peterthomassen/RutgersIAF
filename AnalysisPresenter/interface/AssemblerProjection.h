@@ -12,7 +12,8 @@
 #include "TROOT.h"
 
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
+
+class PhysicsContributionProjection;
 
 class AssemblerProjection : public TObject {
 
@@ -33,7 +34,7 @@ public:
 	std::vector<TString> getCorrelationClasses(TString type);
 	TH1* getHistogram(TString type) const;
 	TH1* getHistogram(TString type, TString correlationClass) const;
-	std::vector<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
+	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
 	std::set<TString> getUncertainties() const;
 	void printMeta(TString type = "data") const;
 	

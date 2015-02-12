@@ -8,11 +8,10 @@
 
 #include "TROOT.h"
 
-#include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
-
 class TFile;
+class AssemblerProjection;
+class PhysicsContribution;
+class PhysicsContributionProjection;
 
 class Assembler : public TObject {
 
