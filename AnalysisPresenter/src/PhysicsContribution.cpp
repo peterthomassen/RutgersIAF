@@ -226,7 +226,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	m_scale = scale;
 	cout << "scale: " << m_scale << endl;
 	Double_t x[m_hn->GetNdimensions()];
-	std::string varexpMetadata = ":EVENT[0]:RUN[0]:LUMI[0]:fakeIncarnation[0]";
+	std::string varexpIncarnation = treeR->GetListOfBranches()->FindObject("fakeIncarnation")
+		? "fakeIncarnation[0]"
+		: ((m_type == "backgroundDD") ? "Entry$" : "0");
+	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s", varexp.c_str(), varexpIncarnation.c_str());
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
 			cout << (int)(10*k/treeR->GetEntries()) << flush;
@@ -237,7 +240,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			step = n - k;
 		}
 		// PT 20141009: I checked that step refers to TTree entries, not entry instances. So we're good even when looping over collections, and always get full events counted properly.
-		long nSelected = treeR->Draw((varexp + varexpMetadata).c_str(), selection.Data(), "goff candle", step, k);
+		long nSelected = treeR->Draw(varexpFull.Data(), selection.Data(), "goff candle", step, k);
 		if(nSelected < 0) {
 			throw std::runtime_error("error selecting events");
 		}
