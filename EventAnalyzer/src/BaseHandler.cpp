@@ -240,10 +240,15 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						}
 					}
 					
+					int incarnation = m_trackFakeCombinationIndex
+						+ m_trackFakeCombination + m_photonFakeCombinationIndex
+						+ m_trackFakeCombination + m_photonFakeCombination + m_tauFakeCombinationIndex;
+					
 					bool wellPrepared = prepareEvent();
 					if(!wellPrepared) {
 						continue;
 					}
+					setVariable("fakeIncarnation", incarnation);
 					analyzeEvent();
 
 					if(applyHandlerCuts()){
