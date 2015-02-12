@@ -454,7 +454,7 @@ bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 		--last;
 	}
 	
-	if(last > axis->GetLast()) {
+	if(last > axis->GetNbins()) {
 		cerr << "Error: attempt to set " << name << " upper boundary to overflow bin. If intended, omit upper boundary." << endl;
 		throw std::runtime_error("invalid axis range");
 	}
@@ -489,7 +489,7 @@ bool PhysicsContribution::setRange(const char* name, double lo) {
 	}
 	axis->SetRange();
 	Int_t first = findBinFromLowEdge(axis, lo);
-	Int_t last  = axis->GetLast() + 1;
+	Int_t last  = axis->GetNbins() + 1;
 	axis->SetRange(first, last);
 	for(auto &uncertainty : m_uncertaintyMap) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
