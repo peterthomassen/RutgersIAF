@@ -1591,7 +1591,7 @@ void BaseHandler::analyzeEvent()
     ////////////////////////////
     if(applyHandlerCuts()){
 
-		if(m_trackFakeCombinationIndex > 0) {
+		if(m_trackFakeCombinationIndex > 0 || m_photonFakeCombinationIndex > 0 || m_tauFakeCombinationIndex > 0) {
 			return;
 		}
 

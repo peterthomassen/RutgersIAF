@@ -13,6 +13,13 @@ class PhysicsContributionProjection;
 class PhysicsContribution : public TObject {
 
 public:
+	struct metadata_t {
+		long entry;
+		long event;
+		int run;
+		int lumi;
+	};
+	
 	PhysicsContribution();
 	PhysicsContribution(TString type, TString filename, double lumi, TString name, Int_t fillColor = -1, bool unordered = true, bool forceData = false);
 	virtual ~PhysicsContribution();
@@ -27,7 +34,7 @@ public:
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	Int_t getFillColor() const;
 	double getLumi() const;
-	std::vector<std::pair<double, double>> getMeta(const char* var1 = "RUN[0]", const char* var2 = "EVENT[0]") const;
+	std::vector<PhysicsContribution::metadata_t> getMeta() const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
 	double getWeight();
@@ -69,7 +76,7 @@ private:
 	
 	THnBase* m_hn = 0;
 	std::map<TString, THnBase*> m_hProjectionUncertainties;
-	std::vector<std::vector<Long64_t>> m_indices;
+	std::vector<std::vector<metadata_t>> m_metadata;
 	
 	std::map<PhysicsContribution*, std::map<TString, TString>> m_ensembleFakeRateParams;
 	std::map<TString, TString> m_fakerateMap;

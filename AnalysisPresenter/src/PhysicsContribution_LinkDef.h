@@ -6,4 +6,5 @@
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 #pragma link C++ class PhysicsContribution+;
+#pragma link C++ class std::vector<PhysicsContribution::metadata_t>+;
 #endif

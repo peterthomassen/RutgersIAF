@@ -6,7 +6,7 @@
 */
 
 void exampleAnalysisTree(const char* infile = "MC/WZJetsTo3LNu/results_mc_v1_1_1_lzt.root"
-	, TString pufile = ""
+	, TString pufile = "PU/WZJetsTo3LNu.pu.root" // change to an empty string "" to run without a pileup file
 	, const char* outfile = "exampleAnalysisTree.root"
 	, int mode = 0
 	, const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
