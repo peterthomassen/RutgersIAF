@@ -335,10 +335,10 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	if(hasBackground) {
 		((TH1*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
 		hBackground->SetFillColor(kRed);
-		hBackground->SetFillStyle(3001);
+		hBackground->SetFillStyle(3002);
 		hBackground->Draw("E2 SAME");
 		hBackgroundErr->SetFillColor(kBlack);
-		hBackgroundErr->SetFillStyle(3002);
+		hBackgroundErr->SetFillStyle(3013);
 		hBackgroundErr->SetMarkerStyle(20);
 		hBackgroundErr->SetMarkerSize(0);
 		hBackgroundErr->Draw("SAME E2");
