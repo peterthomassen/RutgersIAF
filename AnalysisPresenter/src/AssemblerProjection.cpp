@@ -1,3 +1,4 @@
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
@@ -11,6 +12,7 @@
 
 #include <assert.h>
 #include <boost/bind.hpp>
+#include <boost/range/join.hpp>
 #include <cmath>
 #include <exception>
 
@@ -28,7 +30,25 @@ using namespace std;
 
 ClassImp(AssemblerProjection)
 
-AssemblerProjection::AssemblerProjection(TString name, TString title, bool binForOverflow) : m_binForOverflow(binForOverflow), m_name(name), m_title(title) {
+AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_title(assembler->getVarName(name)) {
+	cout << "constructor: " << this << endl;
+	std::map<TString, std::vector<PhysicsContributionProjection*>> hProjections;
+	
+	// Project event counts and uncertainty histograms
+	auto vData = m_assembler->getContributions("data");
+	auto vBackground = m_assembler->getContributions("background");
+	for(auto &contribution : boost::join(vData, vBackground)) {
+		if(hProjections.find(contribution->getType()) == hProjections.end()) {
+			hProjections.insert(make_pair(contribution->getType(), std::vector<PhysicsContributionProjection*>()));
+		}
+		
+		hProjections[contribution->getType()].push_back(contribution->project(name, binForOverflow));
+	}
+	
+	// Prepare projection for output: Put projections together
+	for(const auto &typeProjection : hProjections) {
+		add(typeProjection, assembler->getVarExp(), assembler->getSelection());
+	}
 }
 
 AssemblerProjection::AssemblerProjection() {
@@ -40,6 +60,13 @@ AssemblerProjection::~AssemblerProjection() {
 	for(auto &component : m_components) {
 		delete component.second.first;
 		delete component.second.second;
+	}
+	
+	return;
+	for(auto &typeProjection : m_typeProjections) {
+		for(auto &projection : typeProjection.second) {
+			delete projection;
+		}
 	}
 }
 

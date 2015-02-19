@@ -20,8 +20,13 @@ public:
 	virtual ~Assembler();
 	
 	void addContribution(PhysicsContribution*);
+	std::set<TString> getCorrelationClasses(TString type);
 	
+	std::vector<PhysicsContribution*> getContributions(TString type) const;
 	double getLumi() const;
+	TString getVarExp() const;
+	TString getVarName(TString name) const;
+	TString getSelection() const;
 	
 	void process(std::string, TString);
 	AssemblerProjection* project(const char*, const bool binForOverflow);
@@ -38,11 +43,8 @@ public:
 private:
 	TFile* m_outfile = 0;
 	
-	std::vector<PhysicsContribution*> m_data;
-	std::vector<PhysicsContribution*> m_background;
-	std::vector<PhysicsContribution*> m_signal;
+	std::map<TString, std::vector<PhysicsContribution*>> m_contributions;
 	
-	std::map<TString, std::vector<PhysicsContributionProjection*>> m_hProjections; // Example: m_hProjections["backgroundDD"] is a map whose keys are pointers to data-driven background histograms, including statistical uncertainties. The value is a map that contains systematic uncertainty histograms.
 	AssemblerProjection* m_projection = 0;
 	
 	TString m_varexp;

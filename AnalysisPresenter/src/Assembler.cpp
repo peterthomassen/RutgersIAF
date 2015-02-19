@@ -46,25 +46,49 @@ Assembler::~Assembler() {
 
 void Assembler::addContribution(PhysicsContribution* contribution) {
 	if(contribution->isData()) {
-		m_data.push_back(contribution);
+		m_contributions["data"].push_back(contribution);
 	} else if(contribution->isBackground()) {
 		if(contribution->getFillColor() < 0) {
-			contribution->setFillColor(2 + m_background.size());
+			contribution->setFillColor(2 + m_contributions["background"].size());
 		}
-		m_background.push_back(contribution);
+		m_contributions["background"].push_back(contribution);
 	} else if(contribution->isSignal()) {
-		m_signal.push_back(contribution);
+		m_contributions["signal"].push_back(contribution);
 	} else {
 		throw std::runtime_error("Unable to handle contribution");
 	}
 }
 
+std::set<TString> Assembler::getCorrelationClasses(TString type) {
+	std::set<TString> correlationClasses;
+	for(auto &contribution : m_contributions[type]) {
+		correlationClasses.insert(contribution->getCorrelationClass());
+	}
+	return correlationClasses;
+}
+
+std::vector<PhysicsContribution*> Assembler::getContributions(TString type) const {
+	return m_contributions.at(type);
+}
+
 double Assembler::getLumi() const {
 	double lumi = 0;
-	for(const auto &contribution : m_data) {
+	for(const auto &contribution : m_contributions.at("data")) {
 		lumi += contribution->getLumi();
 	}
 	return lumi;
+}
+
+TString Assembler::getVarExp() const {
+	return m_varexp;
+}
+
+TString Assembler::getVarName(TString name) const {
+	return m_vars.at(name);
+}
+
+TString Assembler::getSelection() const {
+	return m_selection;
 }
 
 void Assembler::process(std::string varexp, TString selection) {
@@ -121,8 +145,8 @@ void Assembler::process(std::string varexp, TString selection) {
 		hs->GetAxis(i)->SetTitle(variables[i]);
 	}
 	
-	auto contributionsModel = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
+	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
 		contribution->fillContent(hs, varexp, selection, scale);
 	}
@@ -130,71 +154,16 @@ void Assembler::process(std::string varexp, TString selection) {
 }
 
 AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow) {
-	// Clean up from earlier projections
-	for(auto &typeProjection : m_hProjections) {
-		for(auto &projection : typeProjection.second) {
-			delete projection;
-		}
-		typeProjection.second.clear();
-	}
-	m_hProjections.clear();
 	delete m_projection;
 	
-	// Project event counts and uncertainty histograms
-	auto contributionsModel = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsModel)) {
-		if(m_hProjections.find(contribution->getType()) == m_hProjections.end()) {
-			m_hProjections.insert(make_pair(contribution->getType(), std::vector<PhysicsContributionProjection*>()));
-		}
-		
-		m_hProjections[contribution->getType()].push_back(contribution->project(name, binForOverflow));
-	}
-	
-	// Ensemble-based scaling of data-driven backgrounds
-	for(auto &projectionDD : m_hProjections["background"]) {
-		// Fetch the PhysicsContribution object from which this data-driven predition was computed
-		const PhysicsContribution* contribution = projectionDD->getPhysicsContribution();
-		if(contribution->getType(true) != "backgroundDD") {
-			continue;
-		}
-		
-		for(const auto &params : contribution->getEnsembleFakeRateParams()) {
-			// Determine which variable to use
-			// TODO Add support for looking at two different variables (à la Rdxy)
-			for(const auto &params2 : params.second) {
-				TString varName = params2.first;
-				
-				// Get counts from both contributions and compute scale factor
-				// TODO one could use the integral, momentum, ... instead
-				double x = contribution->project(varName, true, true)->getHistogram()->GetEntries();
-				double par = params.first->project(varName, true, true)->getHistogram()->GetEntries();
-				
-				TFormula* f = new TFormula("", params2.second);
-				f->SetParameter(0, par);
-				double scale = f->Eval(x);
-				if(scale < 0) {
-					throw std::runtime_error("scale turns out negative; please fix your ensemble fake rate parameterization");
-				}
-				cout << "Scaling " << contribution->getName() << " by " << scale << " based on " << params.first->getName() << " " << varName << " [" << x << "/" << par << "=" << (x/par) << "]" << endl;
-				projectionDD->scale(f->Eval(x));
-				delete f;
-			}
-		}
-	}
-	
-	// Prepare projection for output: Put projections together
-	m_projection = new AssemblerProjection(name, m_vars[name], binForOverflow);
-	for(const auto &typeProjection : m_hProjections) {
-		m_projection->add(typeProjection, m_varexp, m_selection);
-	}
-	
+	m_projection = new AssemblerProjection(this, name, binForOverflow);
 	return m_projection;
 }
 
 void Assembler::save() {
 	m_outfile->cd();
 	cerr << "Currently only saving THn of first data file" << endl;
-	m_data[0]->getContent()->Write("data");
+	m_contributions["data"][0]->getContent()->Write("data");
 	this->Write("assembler");
 	m_outfile->Flush();
 }
@@ -219,46 +188,46 @@ void Assembler::save(const char* name, const bool binForOverflow) {
 }
 
 void Assembler::setDebug(bool debug) {
-	auto contributionsModel = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
+	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		contribution->setDebug(debug);
 	}
 }
 
 void Assembler::setFakeRate(TString name, TString f) {
-	for(auto &contribution : m_background) {
+	for(auto &contribution : m_contributions["background"]) {
 		contribution->setFakeRate(name, f);
 	}
 	// Declare fake rate so that PhysicsContribution::fillContent() knows how to skip events that have fake proxies
-	for(auto &contribution : boost::join(m_data, m_signal)) {
+	for(auto &contribution : boost::join(m_contributions["data"], m_contributions["signal"])) {
 		contribution->setFakeRate(name, "0");
 	}
 }
 
 void Assembler::setRange(const char* name, double lo, double hi, bool includeLast) {
-	auto contributionsModel = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
+	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		contribution->setRange(name, lo, hi, includeLast);
 	}
 }
 
 void Assembler::setRange(const char* name, double lo) {
-	auto contributionsModel = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
+	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		contribution->setRange(name, lo);
 	}
 }
 
 void Assembler::setRange(const char* name) {
-	auto contributionsModel = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
+	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		contribution->setRange(name);
 	}
 }
 
 void Assembler::setRange() {
-	auto contributionsModel = boost::join(m_background, m_signal);
-	for(auto &contribution : boost::join(m_data, contributionsModel)) {
+	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
+	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		contribution->setRange();
 	}
 }
