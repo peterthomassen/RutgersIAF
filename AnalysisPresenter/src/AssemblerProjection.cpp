@@ -292,9 +292,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	TH1* hBackground = 0;
 	TH1* hBackgroundErr = 0;
 	TH1* hRatio = 0;
-	TH1* hRatioMC = 0;
+	TH1* hRatioBkg = 0;
 	if(hasBackground) {
-		hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone();
+		hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone("background");
 		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
 			// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
 			// Those are together to "comprehensive systematic uncertainty"
@@ -302,7 +302,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			hBackground->SetBinError(i, sqrt(error2));
 		}
 		
-		hBackgroundErr = (TH1*)hBackground->Clone();
+		hBackgroundErr = (TH1*)hBackground->Clone("backgroundErr");
 		hBackgroundErr->Reset();
 		const double alpha = 1 - 0.6827;
 		for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
@@ -320,7 +320,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		}
 		
 		hRatio = (TH1*)hData->Clone("hRatio");
-		hRatioMC = (TH1*)hBackgroundErr->Clone("hRatio");
+		hRatioBkg = (TH1*)hBackgroundErr->Clone("hRatioBkg");
 		
 		if(hSignal) {
 			hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
@@ -342,7 +342,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->GetXaxis()->SetTitle(title);
 	hData->SetLineColor(kRed);
 	
-	hData->Draw("EP");
+	hData->Clone("dummy")->Draw("EP"); // use dummy name to allow unique name in TCanvas for the actual data histogram
 	if(hasBackground) {
 		hData->GetXaxis()->SetLabelFont(43);
 		hData->GetXaxis()->SetLabelSize(0);
@@ -351,7 +351,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->GetYaxis()->SetLabelSize(16);
 	
 	if(hasBackground) {
-		((TH1*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
+		((THStack*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
 		hBackground->SetFillColor(kRed);
 		hBackground->SetFillStyle(3002);
 		hBackground->Draw("E2 SAME");
@@ -369,8 +369,8 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		}
 	}
 	
-	hData->Draw("EP SAME");
-	hData->Draw("EP AXIS SAME");
+	hData->Clone("dummy")->Draw("AXIS SAME"); // Documentation says that statistics box is not drawn with SAME. However, it is for this specific Draw(), and it has the title "dummy". We don't want that. So, ...
+	hData->Draw("EP SAMES"); // ... let's request a statistics box for the actual data with SAMES. (Here, SAME doesn't draw the box. I propose a CERN experiment to study and develop a theory of the mysteries of ROOT.)
 	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	
@@ -418,31 +418,31 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		}
 		hRatio->GetYaxis()->SetRangeUser(hRatio->GetMinimum(0), hRatio->GetMaximum());
 		hRatio->Draw("AXIS");
-		double hRatioMCErrorSum = 0;
-		for(int i = 0; i < hRatioMC->GetXaxis()->GetNbins() + 1; ++i) {
+		double hRatioBkgErrorSum = 0;
+		for(int i = 0; i < hRatioBkg->GetXaxis()->GetNbins() + 1; ++i) {
 			double yield = hBackground->GetBinContent(i);
 			if(yield == 0) {
 				continue;
 			}
-			hRatioMC->SetBinContent(i, hRatioMC->GetBinContent(i) / yield);
-			hRatioMC->SetBinError(i, hRatioMC->GetBinError(i) / yield);
+			hRatioBkg->SetBinContent(i, hRatioBkg->GetBinContent(i) / yield);
+			hRatioBkg->SetBinError(i, hRatioBkg->GetBinError(i) / yield);
 			
-			if(hRatioMC->GetBinContent(i) > hRatio->GetMaximum()) {
-				double lo = hRatioMC->GetBinContent(i) - hRatioMC->GetBinError(i);
-				hRatioMC->SetBinContent(i, hRatio->GetMaximum());
-				hRatioMC->SetBinError(i, max(hRatioMC->GetBinContent(i) - lo, 0.0));
+			if(hRatioBkg->GetBinContent(i) > hRatio->GetMaximum()) {
+				double lo = hRatioBkg->GetBinContent(i) - hRatioBkg->GetBinError(i);
+				hRatioBkg->SetBinContent(i, hRatio->GetMaximum());
+				hRatioBkg->SetBinError(i, max(hRatioBkg->GetBinContent(i) - lo, 0.0));
 			}
-			hRatioMCErrorSum += hRatioMC->GetBinError(i);
+			hRatioBkgErrorSum += hRatioBkg->GetBinError(i);
 		}
-		// If all the uncertiancies in hRatioMC are 0 (this happens when the error bars are all out of y-axis range), ROOT would draw error bars filling all of the histogram frame. We don't want to draw anything in this case.
-		if(hRatioMCErrorSum > 0) {
-			hRatioMC->SetFillColor(kBlack);
-			hRatioMC->SetFillStyle(3002);
-			hRatioMC->SetMarkerStyle(20);
-			hRatioMC->SetMarkerSize(0);
+		// If all the uncertiancies in hRatioBkg are 0 (this happens when the error bars are all out of y-axis range), ROOT would draw error bars filling all of the histogram frame. We don't want to draw anything in this case.
+		if(hRatioBkgErrorSum > 0) {
+			hRatioBkg->SetFillColor(kBlack);
+			hRatioBkg->SetFillStyle(3002);
+			hRatioBkg->SetMarkerStyle(20);
+			hRatioBkg->SetMarkerSize(0);
 			line1->Draw();
 			line2->Draw();
-			hRatioMC->Draw("E2 SAME");
+			hRatioBkg->Draw("E2 SAME");
 		}
 		gStyle->SetOptFit(1111);
 		((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
