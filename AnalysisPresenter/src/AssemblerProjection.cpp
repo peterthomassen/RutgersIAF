@@ -31,7 +31,6 @@ using namespace std;
 ClassImp(AssemblerProjection)
 
 AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_title(assembler->getVarName(name)) {
-	cout << "constructor: " << this << endl;
 	std::map<TString, std::vector<PhysicsContributionProjection*>> hProjections;
 	
 	// Project event counts and uncertainty histograms
@@ -278,9 +277,6 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hData->SetBinContent(hData->GetNbinsX() + 1, hData->GetBinContent(hData->GetNbinsX()));
 		hData->SetEntries(nEntries);
 	}
-	for(int i = 0; i < hData->GetNbinsX() + 1; ++i) {
-		hData->SetBinError(i, 1e-3);
-	}
 	hData->SetLineWidth(1);
 	hData->SetMarkerStyle(9);
 	
@@ -295,7 +291,6 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	
 	TH1* hBackground = 0;
 	TH1* hBackgroundErr = 0;
-	TH1* hBackgroundFullError = 0;
 	TH1* hRatio = 0;
 	TH1* hRatioMC = 0;
 	if(hasBackground) {
@@ -309,8 +304,6 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		
 		hBackgroundErr = (TH1*)hBackground->Clone();
 		hBackgroundErr->Reset();
-		hBackgroundFullError = (TH1*)hBackground->Clone();
-		hBackgroundFullError->Reset();
 		const double alpha = 1 - 0.6827;
 		for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
 			double n = hBackground->GetBinContent(i);
@@ -319,8 +312,6 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			// Now, combine Poisson fluctuation range with "comprehensive systematic uncertainty" from above
 			lo = sqrt(pow(n - lo, 2) + pow(hBackground->GetBinError(i), 2));
 			hi = sqrt(pow(hi - n, 2) + pow(hBackground->GetBinError(i), 2));
-			hBackgroundFullError->SetBinContent(i, hBackground->GetBinContent(i));
-			hBackgroundFullError->SetBinError(i, lo);
 			lo = n - lo;
 			hi = n + hi;
 			n = (lo + hi) / 2;
@@ -409,9 +400,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio->GetXaxis()->SetTitle(title);
 		hRatio->SetTitle("");
 		for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
-			hRatio->SetBinError(i, 0);
+			hRatio->SetBinContent(i, hRatio->GetBinContent(i) / hBackground->GetBinContent(i));
+			hRatio->SetBinError(i, hRatio->GetBinError(i) / hBackground->GetBinContent(i));
 		}
-		hRatio->Divide(hBackgroundFullError);
 		hRatio->GetXaxis()->SetLabelFont(43);
 		hRatio->GetXaxis()->SetLabelSize(16);
 		hRatio->GetYaxis()->SetLabelFont(43);
@@ -457,9 +448,6 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
 		if(f1) {
 			hRatio->Fit(f1, "", "SAME AXIS", xminFit, xmaxFit);
-		}
-		for(int j = 1; j < hRatio->GetXaxis()->GetNbins() + 1; ++j) {
-			hRatio->SetBinError(j, 1E-6);
 		}
 		hRatio->Draw("SAME");
 	}
