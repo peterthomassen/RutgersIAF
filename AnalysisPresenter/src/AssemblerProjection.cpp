@@ -342,13 +342,14 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->GetXaxis()->SetTitle(title);
 	hData->SetLineColor(kRed);
 	
-	hData->Clone("dummy")->Draw("EP"); // use dummy name to allow unique name in TCanvas for the actual data histogram
 	if(hasBackground) {
 		hData->GetXaxis()->SetLabelFont(43);
 		hData->GetXaxis()->SetLabelSize(0);
 	}
 	hData->GetYaxis()->SetLabelFont(43);
 	hData->GetYaxis()->SetLabelSize(16);
+	
+	hData->Clone("dummy")->Draw("EP"); // use dummy name to allow unique name in TCanvas for the actual data histogram
 	
 	if(hasBackground) {
 		((THStack*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
