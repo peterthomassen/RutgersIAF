@@ -9,7 +9,9 @@
 #include "TROOT.h"
 
 class TFile;
+
 class AssemblerProjection;
+class Channel;
 class PhysicsContribution;
 class PhysicsContributionProjection;
 
@@ -22,6 +24,7 @@ public:
 	virtual ~Assembler();
 	
 	void addContribution(PhysicsContribution*);
+	Channel* channel(const char*);
 	std::set<TString> getCorrelationClasses(TString type);
 	
 	std::vector<PhysicsContribution*> getContributions(TString type) const;

@@ -329,6 +329,7 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 			//assert(ins);
 		}
 	}
+	cout << "meta: " << s.size() << " events" << endl;
 	return s;
 }
 

@@ -35,6 +35,7 @@ public:
 	TH1* getHistogram(TString type, TString correlationClass) const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
 	std::set<TString> getUncertainties() const;
+	bool isDistribution() const;
 	void printMeta(TString type = "data") const;
 	
 	bool has(TString type) const;
@@ -53,6 +54,7 @@ protected:
 	TString m_title;
 	
 	std::set<PhysicsContributionProjection*> m_projections;
+	std::vector<std::pair<int, int>> m_ranges;
 	
 	void add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection);
 	double extractStackBin(THStack* stack, int i, TString name) const;

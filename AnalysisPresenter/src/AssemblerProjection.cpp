@@ -30,7 +30,7 @@ using namespace std;
 
 ClassImp(AssemblerProjection)
 
-AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_title(assembler->getVarName(name)) {
+AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_title(assembler->getVarName(name)), m_ranges(assembler->getRanges()) {
 	std::map<TString, std::vector<PhysicsContributionProjection*>> hProjections;
 	
 	// Project event counts and uncertainty histograms
@@ -225,7 +225,14 @@ std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString t
 		throw std::runtime_error("meta information currently only supported for one set of data");
 	}
 	
-	return m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
+	// Set axis ranges that were used for this projection, get meta information, 
+	// and revert to current set of cuts
+	auto ranges = m_assembler->getRanges();
+	m_assembler->setRanges(m_ranges);
+	auto meta = m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
+	m_assembler->setRanges(ranges);
+	
+	return meta;
 }
 
 std::set<TString> AssemblerProjection::getUncertainties() const {
@@ -253,6 +260,10 @@ bool AssemblerProjection::hasOverflowIncluded() const {
 	return m_binForOverflow;
 }
 
+bool AssemblerProjection::isDistribution() const {
+	return (m_name != "_");
+}
+
 TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xmaxFit) {
 	bool hasBackground = has("background");
 	m_canvas = new TCanvas("c1", "c1", 700, hasBackground ? 700 : 490);
@@ -265,7 +276,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	pad1->cd();
 	pad1->SetTicks(1, 1);
 	
-	TString title = (m_title != m_name)
+	TString title = (isDistribution() && m_title != m_name)
 		? TString::Format("%s (%s)", m_title.Data(), m_name.Data())
 		: m_title;
 	
@@ -404,8 +415,13 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			hRatio->SetBinContent(i, hRatio->GetBinContent(i) / hBackground->GetBinContent(i));
 			hRatio->SetBinError(i, hRatio->GetBinError(i) / hBackground->GetBinContent(i));
 		}
-		hRatio->GetXaxis()->SetLabelFont(43);
-		hRatio->GetXaxis()->SetLabelSize(16);
+		if(isDistribution()) {
+			hRatio->GetXaxis()->SetLabelFont(43);
+			hRatio->GetXaxis()->SetLabelSize(16);
+		} else {
+			hRatio->GetXaxis()->SetLabelFont(43);
+			hRatio->GetXaxis()->SetLabelSize(0);
+		}
 		hRatio->GetYaxis()->SetLabelFont(43);
 		hRatio->GetYaxis()->SetLabelSize(16);
 		hRatio->GetYaxis()->SetTitle("data/background");
@@ -474,16 +490,20 @@ void AssemblerProjection::print() const {
 		double lo = hData->GetXaxis()->GetBinLowEdge(i);
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);
 		
-		if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
-			cout << m_name << " " << lo << "-" << hi;
-		} else {
-			cout << m_name << " " << lo << "-" << "inf";
+		if(isDistribution()) {
+			if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
+				cout << m_name << " " << lo << "-" << hi;
+			} else {
+				cout << m_name << " " << lo << "-" << "inf";
+			}
 		}
 		
 		double contentData = getBin("data", i);
 		sumData += contentData;
 		
-		printf("	%.0f", contentData);
+		if(isDistribution()) {
+			printf("	%.0f", contentData);
+		}
 		
 		if(has("background")) {
 			double contentBackground = getBin("background", i);
@@ -494,7 +514,9 @@ void AssemblerProjection::print() const {
 			sumBackgroundSyst += contentBackgroundSyst;
 			
 			// TODO Replace by Poisson error
-			printf(" : %.2f ± %.2f ± %.2f ± %.2f", contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
+			if(isDistribution()) {
+				printf(" : %.2f ± %.2f ± %.2f ± %.2f", contentBackground, sqrt(contentBackground), contentBackgroundStat, contentBackgroundSyst);
+			}
 		}
 		
 		if(has("signal")) {
@@ -505,11 +527,20 @@ void AssemblerProjection::print() const {
 			sumSignalStat2 += contentSignalStat*contentSignalStat;
 			sumSignalSyst += contentSignalSyst;
 			
-			printf(" : %.2f ± %.2f ± %.2f", contentSignal, contentSignalStat, contentSignalSyst);
+			if(isDistribution()) {
+				printf(" : %.2f ± %.2f ± %.2f", contentSignal, contentSignalStat, contentSignalSyst);
+			}
 		}
-		cout << endl;
+		
+		if(isDistribution()) {
+			cout << endl;
+		}
 	}
-	printf("Sum:		%.0f", sumData);
+	if(isDistribution()) {
+		printf("Sum:		%.0f", sumData);
+	} else {
+		printf("%s:	%.0f", m_title.Data(), sumData);
+	}
 	if(has("background")) {
 		// TODO Replace by Poisson error
 		printf(" : %.2f ± %.2f ± %.2f ± %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);

@@ -17,8 +17,8 @@
 
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 #include "RutgersIAF/debug.h"
 
@@ -59,16 +59,20 @@ void Assembler::addContribution(PhysicsContribution* contribution) {
 	}
 }
 
+Channel* Assembler::channel(const char* name) {
+	return new Channel(this, name);
+}
+
+std::vector<PhysicsContribution*> Assembler::getContributions(TString type) const {
+	return m_contributions.at(type);
+}
+
 std::set<TString> Assembler::getCorrelationClasses(TString type) {
 	std::set<TString> correlationClasses;
 	for(auto &contribution : m_contributions[type]) {
 		correlationClasses.insert(contribution->getCorrelationClass());
 	}
 	return correlationClasses;
-}
-
-std::vector<PhysicsContribution*> Assembler::getContributions(TString type) const {
-	return m_contributions.at(type);
 }
 
 double Assembler::getLumi() const {
@@ -168,10 +172,7 @@ void Assembler::process(std::string varexp, TString selection) {
 }
 
 AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow) {
-	delete m_projection;
-	
-	m_projection = new AssemblerProjection(this, name, binForOverflow);
-	return m_projection;
+	return new AssemblerProjection(this, name, binForOverflow);
 }
 
 void Assembler::save() {
