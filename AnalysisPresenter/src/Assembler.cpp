@@ -99,6 +99,11 @@ void Assembler::process(std::string varexp, TString selection) {
 	
 	cout << varexp << endl;
 	m_vars.clear();
+	
+	// Add axis "_" with just one bin for everything. This is to allow integration 
+	// while respecting cuts (setRange()) by means of projection on this axis.
+	// Used by the channel code.
+	varexp += ":0{-0.5,0.5,1,\"_\"}";
 	boost::char_separator<char> sep(":");
 	boost::tokenizer<boost::char_separator<char> > tokens(varexp, sep);
 	BOOST_FOREACH(const string& t, tokens) {
