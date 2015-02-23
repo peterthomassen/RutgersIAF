@@ -79,12 +79,21 @@ double Assembler::getLumi() const {
 	return lumi;
 }
 
+std::vector<std::pair<int, int>> Assembler::getRanges() const {
+	return m_contributions.at("data")[0]->getRanges();
+}
+
 TString Assembler::getVarExp() const {
 	return m_varexp;
 }
 
 TString Assembler::getVarName(TString name) const {
-	return m_vars.at(name);
+	auto pair = m_vars.find(name);
+	if(pair == m_vars.end()) {
+		cout << "invalid variable name " << name << endl;
+		throw std::runtime_error("");
+	}
+	return pair->second;
 }
 
 TString Assembler::getSelection() const {
@@ -234,5 +243,12 @@ void Assembler::setRange() {
 	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
 	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		contribution->setRange();
+	}
+}
+
+void Assembler::setRanges(std::vector<std::pair<int, int>> ranges) {
+	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
+	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
+		contribution->setRanges(ranges);
 	}
 }

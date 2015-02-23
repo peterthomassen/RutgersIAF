@@ -12,6 +12,8 @@ class PhysicsContributionProjection;
 
 class PhysicsContribution : public TObject {
 
+friend class Assembler;
+
 public:
 	struct metadata_t {
 		long event;
@@ -36,6 +38,7 @@ public:
 	double getLumi() const;
 	std::set<PhysicsContribution::metadata_t> getMeta() const;
 	TString getName() const;
+	TString getSelectionString() const;
 	TString getType(const bool detailed = false) const;
 	double getWeight();
 	
@@ -51,14 +54,19 @@ public:
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
 	void setFillColor(const Int_t fillColor);
-	bool setRange(const char*, double, double, bool = true);
-	bool setRange(const char*, double);
-	bool setRange(const char*);
-	bool setRange();
 
 protected:
 	void applyRelativeUncertainty(THnBase*, TString);
 	void applyUncertainty(TString, THnBase*);
+	
+	bool setRange(const char*, double, double, bool = true);
+	bool setRange(const char*, double);
+	bool setRange(const char*);
+	bool setRange();
+	
+	std::vector<std::pair<int, int>> getRanges() const;
+	void setRanges(std::vector<std::pair<int, int>> ranges);
+
 
 private:
 	TString m_correlationClass = "";

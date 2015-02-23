@@ -15,6 +15,8 @@ class PhysicsContributionProjection;
 
 class Assembler : public TObject {
 
+friend class AssemblerProjection;
+
 public:
 	Assembler(TString = "", Option_t* options = "CREATE");
 	virtual ~Assembler();
@@ -39,6 +41,10 @@ public:
 	void setRange(const char*, double);
 	void setRange(const char*);
 	void setRange();
+
+public:
+	std::vector<std::pair<int, int>> getRanges() const;
+	void setRanges(std::vector<std::pair<int, int>> ranges);
 
 private:
 	TFile* m_outfile = 0;

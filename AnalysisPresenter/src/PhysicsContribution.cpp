@@ -336,6 +336,40 @@ TString PhysicsContribution::getName() const {
 	return m_name;
 }
 
+std::vector<std::pair<int, int>> PhysicsContribution::getRanges() const {
+	std::vector<std::pair<int, int>> ranges;
+	for(int i = 0; i <= m_hn->GetListOfAxes()->GetLast(); ++i) {
+		TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->At(i);
+		bool kAxisRange = axis->TestBit(TAxis::kAxisRange);
+		ranges.emplace_back(kAxisRange ? axis->GetFirst() : 0, kAxisRange ? axis->GetLast() : 0);
+	}
+	return ranges;
+}
+
+TString PhysicsContribution::getSelectionString() const {
+	TString rangeString = m_selection;
+	auto ranges = getRanges();
+	for(size_t i = 0; i < ranges.size(); ++i) {
+		TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->At(i);
+		auto lo = ranges[i].first;
+		auto hi = ranges[i].second;
+		
+		const char* title = axis->GetTitle();
+		
+		if(lo == 0 && hi == 0) {
+			continue;
+		} else if(lo == hi) {
+			rangeString += TString::Format(" && %s == %.0f", title, axis->GetBinLowEdge(lo));
+		} else if(hi == axis->GetNbins() + 1) {
+			rangeString += TString::Format(" && %s >= %.0f", title, axis->GetBinLowEdge(lo));
+		} else {
+			rangeString += TString::Format(" && %s >= %.0f && %s < %.0f", title, axis->GetBinLowEdge(lo), title, axis->GetBinUpEdge(hi));
+		}
+	}
+	
+	return rangeString;
+}
+
 TString PhysicsContribution::getType(const bool detailed) const {
 	if(detailed) {
 		return m_type;
@@ -373,10 +407,7 @@ PhysicsContributionProjection* PhysicsContribution::project(const char* varName,
 	
 	TString title;
 	if(isData()) {
-		title = m_selection;
-		for(const auto &rangeString : m_rangeStrings) {
-			title += TString(" && ") + rangeString.second;
-		}
+		title = getSelectionString();
 	} else {
 		title = m_name;
 	}
@@ -469,15 +500,6 @@ bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
-	const char* title = axis->GetTitle();
-	if(lo == hi) {
-		m_rangeStrings[title] = TString::Format("%s == %.0f", title, lo);
-	} else if(includeLast) {
-		m_rangeStrings[title] = TString::Format("%s >= %.0f && %s <= %.0f", title, lo, title, hi);
-	} else {
-		m_rangeStrings[title] = TString::Format("%s >= %.0f && %s < %.0f", title, lo, title, hi);
-	}
-	
 	return true;
 }
 
@@ -495,9 +517,6 @@ bool PhysicsContribution::setRange(const char* name, double lo) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
-	const char* title = axis->GetTitle();
-	m_rangeStrings[title] = TString::Format("%s >= %.0f", title, lo);
-	
 	return true;
 }
 
@@ -512,9 +531,6 @@ bool PhysicsContribution::setRange(const char* name) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
 	
-	const char* title = axis->GetTitle();
-	m_rangeStrings.erase(title);
-	
 	return true;
 }
 
@@ -524,7 +540,17 @@ bool PhysicsContribution::setRange() {
 		uncertainty.second->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
 	}
 	
-	m_rangeStrings.clear();
-	
 	return true;
+}
+
+void PhysicsContribution::setRanges(std::vector<std::pair<int, int>> ranges) {
+	assert((int)ranges.size() == m_hn->GetListOfAxes()->GetLast() + 1);
+	for(size_t i = 0; i < ranges.size(); ++i) {
+		TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->At(i);
+		axis->SetRange(ranges[i].first, ranges[i].second);
+		for(auto &uncertainty : m_uncertaintyMap) {
+			axis = (TAxis*)uncertainty.second->GetListOfAxes()->At(i);
+			axis->SetRange(ranges[i].first, ranges[i].second);
+		}
+	}
 }
