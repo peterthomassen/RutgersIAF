@@ -33,37 +33,30 @@ Channel::~Channel() {
 	/* no-op */
 }
 
+double Channel::get(TString type) const {
+	return getBin(type, 1);
+}
+
+double Channel::get(TString type, TString correlationClass) const {
+	return getBin(type, 1, correlationClass);
+}
+
 double Channel::getStat(TString type) const {
-	assert(has(type));
-	cerr << "unimplemented" << endl;
-	assert(false);
-	return 0;
+	return getBinStat(type, 1);
 }
 
 double Channel::getStat(TString type, TString correlationClass) const {
-	assert(has(type, correlationClass));
-	cerr << "unimplemented" << endl;
-	assert(false);
-	return 0;
+	return getBinStat(type, 1, correlationClass);
 }
 
 double Channel::getSyst(TString type) const {
-	assert(has(type));
-	cerr << "unimplemented" << endl;
-	assert(false);
-	return 0;
+	return getBinSyst(type, 1);
 }
 
 double Channel::getSyst(TString type, TString name) const {
-	assert(has(type));
-	cerr << "unimplemented" << endl;
-	assert(false);
-	return 0;
+	return getBinSyst(type, 1, name);
 }
 
 double Channel::getSyst(TString type, TString name, TString correlationClass) const {
-	assert(has(type, correlationClass));
-	cerr << "unimplemented" << endl;
-	assert(false);
-	return 0;
+	return getBinSyst(type, 1, name, correlationClass);
 }

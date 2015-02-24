@@ -17,6 +17,8 @@ public:
 	Channel(Assembler* assembler, TString name = "");
 	virtual ~Channel();
 
+	double get(TString type) const;
+	double get(TString type, TString correlationClass) const;
 	double getStat(TString type) const;
 	double getStat(TString type, TString correlationClass) const;
 	double getSyst(TString type) const;
