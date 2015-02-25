@@ -1,6 +1,5 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 
 #include <assert.h>
 #include <boost/bind.hpp>
@@ -59,4 +58,13 @@ double Channel::getSyst(TString type, TString name) const {
 
 double Channel::getSyst(TString type, TString name, TString correlationClass) const {
 	return getBinSyst(type, 1, name, correlationClass);
+}
+
+AssemblerProjection* Channel::project(const char* name, const bool binForOverflow) {
+	auto ranges = m_assembler->getRanges();
+	m_assembler->setRanges(m_ranges);
+	auto projection = new AssemblerProjection(m_assembler, name, binForOverflow);
+	m_assembler->setRanges(ranges);
+	
+	return projection;
 }

@@ -31,6 +31,7 @@ public:
 	double getLumi() const;
 	TString getVarExp() const;
 	TString getVarName(TString name) const;
+	std::vector<std::pair<int, int>> getRanges() const;
 	TString getSelection() const;
 	
 	void process(std::string, TString);
@@ -44,9 +45,6 @@ public:
 	void setRange(const char*, double);
 	void setRange(const char*);
 	void setRange();
-
-public:
-	std::vector<std::pair<int, int>> getRanges() const;
 	void setRanges(std::vector<std::pair<int, int>> ranges);
 
 private:

@@ -24,6 +24,8 @@ public:
 	double getSyst(TString type) const;
 	double getSyst(TString type, TString name) const;
 	double getSyst(TString type, TString name, TString correlationClass) const;
+	
+	AssemblerProjection* project(const char*, const bool binForOverflow);
 
 protected:
 

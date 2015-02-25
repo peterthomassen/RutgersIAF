@@ -225,14 +225,16 @@ std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString t
 		throw std::runtime_error("meta information currently only supported for one set of data");
 	}
 	
-	// Set axis ranges that were used for this projection, get meta information, 
-	// and revert to current set of cuts
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
 	auto meta = m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
 	m_assembler->setRanges(ranges);
 	
 	return meta;
+}
+
+std::vector<std::pair<int, int>> AssemblerProjection::getRanges() const {
+	return m_ranges;
 }
 
 std::set<TString> AssemblerProjection::getUncertainties() const {
