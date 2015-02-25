@@ -11,7 +11,8 @@ ClassImp(EventVariableMT)
 bool EventVariableMT::calculate(BaseHandler* handler) {
   std::vector<SignatureObject*> el  = handler->getProduct(m_productEl);
   std::vector<SignatureObject*> mu  = handler->getProduct(m_productMu);
-  std::vector<SignatureObject*> tau = handler->getProduct(m_productTau);
+  std::vector<SignatureObject*> tau;
+  if(m_productTau != "")tau = handler->getProduct(m_productTau);
   
   int n = el.size() + mu.size() + tau.size();
   if(n < 1) return false;
