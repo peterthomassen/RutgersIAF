@@ -418,8 +418,12 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio->GetXaxis()->SetTitle(title);
 		hRatio->SetTitle("");
 		for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
-			hRatio->SetBinContent(i, hRatio->GetBinContent(i) / hBackground->GetBinContent(i));
-			hRatio->SetBinError(i, hRatio->GetBinError(i) / hBackground->GetBinContent(i));
+			double yield = hBackground->GetBinContent(i);
+			if(yield == 0) {
+				continue;
+			}
+			hRatio->SetBinContent(i, hRatio->GetBinContent(i) / yield);
+			hRatio->SetBinError(i, hRatio->GetBinError(i) / yield);
 		}
 		if(isDistribution()) {
 			hRatio->GetXaxis()->SetLabelFont(43);
@@ -457,7 +461,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			}
 			hRatioBkgErrorSum += hRatioBkg->GetBinError(i);
 		}
-		// If all the uncertiancies in hRatioBkg are 0 (this happens when the error bars are all out of y-axis range), ROOT would draw error bars filling all of the histogram frame. We don't want to draw anything in this case.
+		// If all the uncertainties in hRatioBkg are 0 (this happens when the error bars are all out of y-axis range), ROOT would draw error bars filling all of the histogram frame. We don't want to draw anything in this case.
 		if(hRatioBkgErrorSum > 0) {
 			hRatioBkg->SetFillColor(kBlack);
 			hRatioBkg->SetFillStyle(3002);
