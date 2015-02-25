@@ -18,6 +18,7 @@ class PhysicsContributionProjection;
 class Assembler : public TObject {
 
 friend class AssemblerProjection;
+friend class Channel;
 
 public:
 	Assembler(TString = "", Option_t* options = "CREATE");
@@ -31,7 +32,6 @@ public:
 	double getLumi() const;
 	TString getVarExp() const;
 	TString getVarName(TString name) const;
-	std::vector<std::pair<int, int>> getRanges() const;
 	TString getSelection() const;
 	
 	void process(std::string, TString);
@@ -46,6 +46,9 @@ public:
 	void setRange(const char*);
 	void setRange();
 	void setRanges(std::vector<std::pair<int, int>> ranges);
+
+protected:
+	std::vector<std::pair<int, int>> getRanges() const;
 
 private:
 	TFile* m_outfile = 0;
