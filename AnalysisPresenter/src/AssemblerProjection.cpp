@@ -419,11 +419,8 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio->SetTitle("");
 		for(int i = 0; i < hRatio->GetXaxis()->GetNbins() + 1; ++i) {
 			double yield = hBackground->GetBinContent(i);
-			if(yield == 0) {
-				continue;
-			}
-			hRatio->SetBinContent(i, hRatio->GetBinContent(i) / yield);
-			hRatio->SetBinError(i, hRatio->GetBinError(i) / yield);
+			hRatio->SetBinContent(i, (yield == 0) ? 0 : hRatio->GetBinContent(i) / yield);
+			hRatio->SetBinError(i, (yield == 0) ? 0 : hRatio->GetBinError(i) / yield);
 		}
 		if(isDistribution()) {
 			hRatio->GetXaxis()->SetLabelFont(43);
@@ -448,11 +445,8 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		double hRatioBkgErrorSum = 0;
 		for(int i = 0; i < hRatioBkg->GetXaxis()->GetNbins() + 1; ++i) {
 			double yield = hBackground->GetBinContent(i);
-			if(yield == 0) {
-				continue;
-			}
-			hRatioBkg->SetBinContent(i, hRatioBkg->GetBinContent(i) / yield);
-			hRatioBkg->SetBinError(i, hRatioBkg->GetBinError(i) / yield);
+			hRatioBkg->SetBinContent(i, (yield == 0) ? 0 : hRatioBkg->GetBinContent(i) / yield);
+			hRatioBkg->SetBinError(i, (yield == 0) ? 0 : hRatioBkg->GetBinError(i) / yield);
 			
 			if(hRatioBkg->GetBinContent(i) > hRatio->GetMaximum()) {
 				double lo = hRatioBkg->GetBinContent(i) - hRatioBkg->GetBinError(i);
