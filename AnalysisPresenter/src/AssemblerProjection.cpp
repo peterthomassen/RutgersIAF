@@ -33,10 +33,14 @@ ClassImp(AssemblerProjection)
 AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_title(assembler->getVarName(name)), m_ranges(assembler->getRanges()) {
 	std::map<TString, std::vector<PhysicsContributionProjection*>> hProjections;
 	
-	// Project event counts and uncertainty histograms
+	// Somehow putting all of this inline in the for loop doesn't work
 	auto vData = m_assembler->getContributions("data");
 	auto vBackground = m_assembler->getContributions("background");
-	for(auto &contribution : boost::join(vData, vBackground)) {
+	auto vSignal = m_assembler->getContributions("signal");
+	auto contributionsModel = boost::join(vBackground, vSignal);
+	
+	// Project event counts and uncertainty histograms
+	for(auto &contribution : boost::join(vData, contributionsModel)) {
 		if(hProjections.find(contribution->getType()) == hProjections.end()) {
 			hProjections.insert(make_pair(contribution->getType(), std::vector<PhysicsContributionProjection*>()));
 		}
