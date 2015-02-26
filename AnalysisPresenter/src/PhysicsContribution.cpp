@@ -322,11 +322,11 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 	std::set<PhysicsContribution::metadata_t> s;
 	for(auto &bin : getBins()) {
 		for(auto &metadata : m_metadata[bin]) {
-			auto ins = s.insert(metadata).second;
-			if(!ins) {
+			auto ins = s.insert(metadata);
+			if(!ins.second) {
 				cout << "Warning: duplicate event in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
 			}
-			//assert(ins);
+			//assert(ins.second);
 		}
 	}
 	cout << "meta: " << s.size() << " events" << endl;

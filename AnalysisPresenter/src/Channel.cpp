@@ -20,8 +20,8 @@ using namespace std;
 
 ClassImp(Channel)
 
-Channel::Channel(Assembler* assembler, TString title) : AssemblerProjection(assembler, "_", false) {
-	m_title = title; // needs to be specified here because inherited variable is not visible in initialization list
+Channel::Channel(Assembler* assembler, TString name) : AssemblerProjection(assembler, "_", false) {
+	m_name = name; // needs to be specified here because inherited variable is not visible in initialization list
 }
 
 Channel::Channel() {
@@ -38,6 +38,10 @@ double Channel::get(TString type) const {
 
 double Channel::get(TString type, TString correlationClass) const {
 	return getBin(type, 1, correlationClass);
+}
+
+TString Channel::getName() const {
+	return m_name;
 }
 
 double Channel::getStat(TString type) const {

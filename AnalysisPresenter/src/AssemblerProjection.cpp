@@ -52,6 +52,8 @@ AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, boo
 	for(const auto &typeProjection : hProjections) {
 		add(typeProjection, assembler->getVarExp(), assembler->getSelection());
 	}
+	
+	m_isDistribution = (name != "_");
 }
 
 AssemblerProjection::AssemblerProjection() {
@@ -267,7 +269,7 @@ bool AssemblerProjection::hasOverflowIncluded() const {
 }
 
 bool AssemblerProjection::isDistribution() const {
-	return (m_name != "_");
+	return m_isDistribution;
 }
 
 TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xmaxFit) {
@@ -282,9 +284,11 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	pad1->cd();
 	pad1->SetTicks(1, 1);
 	
-	TString title = (isDistribution() && m_title != m_name)
-		? TString::Format("%s (%s)", m_title.Data(), m_name.Data())
-		: m_title;
+	TString title = isDistribution() 
+		? (m_title != m_name)
+			? TString::Format("%s (%s)", m_title.Data(), m_name.Data())
+			: m_title
+		: m_name;
 	
 	// TODO Not cloning causes segfault ...
 	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();

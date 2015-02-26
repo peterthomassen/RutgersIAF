@@ -9,16 +9,18 @@
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
 
 class Assembler;
+class TString;
 
 class Channel : public AssemblerProjection {
 
 public:
 	Channel();
-	Channel(Assembler* assembler, TString name = "");
+	Channel(Assembler* assembler, TString name);
 	virtual ~Channel();
 
 	double get(TString type) const;
 	double get(TString type, TString correlationClass) const;
+	TString getName() const;
 	double getStat(TString type) const;
 	double getStat(TString type, TString correlationClass) const;
 	double getSyst(TString type) const;
