@@ -98,14 +98,14 @@ private:
 
 inline bool operator<(const PhysicsContribution::metadata_t& x, const PhysicsContribution::metadata_t& y) {
 	// std::tie does not work with slc5_amd64_gcc481
-	//return std::tie(x.event, x.run, x.lumi, x.fakeIncarnation) < std::tie(y.event, y.run, y.lumi, y.fakeIncarnation);
-	return (x.event < y.event)
+	//return std::tie(x.run, x.lumi, x.event, x.fakeIncarnation) < std::tie(y.run, y.lumi, y.event, y.fakeIncarnation);
+	return (x.run < y.run)
 		? true
-		: ((x.run < y.run)
+		: ((x.run == y.run && x.lumi < y.lumi)
 			? true
-			: ((x.lumi < y.lumi)
+			: ((x.run == y.run && x.lumi == y.lumi && x.event < y.event)
 				? true
-				: (x.fakeIncarnation < y.fakeIncarnation)
+				: (x.run == y.run && x.lumi == y.lumi && x.event == y.event && x.fakeIncarnation < y.fakeIncarnation)
 			)
 		);
 }
