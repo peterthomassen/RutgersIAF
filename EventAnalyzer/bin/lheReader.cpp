@@ -161,6 +161,7 @@ void lheReader::lhefile(std::vector<std::string> lhefilename)
   for(int i = 0; i < (int)lhefilename.size(); ++i) {
     inputfiles->push_back(new std::ifstream);
     (*inputfiles)[i]->open(lhefilename[i]);
+    labelString += "\n" + lhefilename[i];
   }
 }
 
@@ -220,6 +221,10 @@ void lheReader::ntuplizer(TString output)
 	}
 	
 	while (getline(**fileinput, lheline)) { 
+
+	  // Ignore #-tag comments, needed for LHE files with jet matching and model information within the event block
+	  if (lheline[0] == '#')
+	    continue;
 
 	  // Find begining of event
 	  if (lheline == beginevent) {
@@ -355,6 +360,10 @@ void lheReader::ntuplizer(TString output)
       } // end if file open
     } // end for input fils loop
   } // end of if input file is not empty
+
+  // output file contains information of input files used
+  label = labelString.Data();
+  label.Write("listOfLHEFilesUsed", TObject::kOverwrite);
   
   LHETree->Print();
   LHETree->Write("",TObject::kOverwrite);
@@ -397,9 +406,9 @@ void lheReader::setLumi(const char *l)
 
 int main(int argc, char **argv)
 {
-  lheReader *handler = new lheReader();
-
   commandLineParameters *args = new commandLineParameters();
+
+  lheReader *handler = new lheReader();
   
   if (argc < 2) {  
     std::cout << "Usage: " << argv[0] << " -i <input.lhe> -o <output.root> -r [run] -e [event] -l [lumi] -d [debug flag]" << std::endl;
