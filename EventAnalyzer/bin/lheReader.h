@@ -20,7 +20,7 @@ class lheReader {
     ~lheReader();
 
     // lheReader ifstream
-    std::vector<std::ifstream *> *inputfiles;
+    std::map<std::string, std::ifstream *> *inputfiles;
 
     bool m_debug;
 

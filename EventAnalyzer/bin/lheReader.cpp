@@ -17,6 +17,7 @@
 #include <TTree.h>
 #include <TObject.h>
 #include <TLorentzVector.h>
+#include <TPRegexp.h>
 
 #include <iostream>
 #include <cstdlib>
@@ -43,7 +44,8 @@ struct commandLineParameters
 
   std::string input;
 
-  commandLineParameters(void) : 
+  commandLineParameters(void) :
+    outfile("defaultOutPutFileName.root"),
     Run("1"),              
     Event("1"),            
     Lumi("1"),          
@@ -75,12 +77,15 @@ void commandLineParameters::parseCommandLine(int argc, char **argv)
       infile.push_back(input);      
 
       while (optind < argc && *argv[optind] != '-'){
-	getArg(input, optarg);
-	infile.push_back(input);
-	optind++;
+
+	if (TPRegexp("(\\.lhe)+").MatchB(argv[optind])) {
+	  infile.push_back(argv[optind++]);
+	}
+	else
+	  continue;
       }
       break;
-    case 'o':
+    case 'o':     
       getArg(outfile, optarg);
       break;
     case 'r':
@@ -156,12 +161,11 @@ void lheReader::setDebug(const char *db)
 
 void lheReader::lhefile(std::vector<std::string> lhefilename)
 {
-  inputfiles  = new std::vector<std::ifstream*>;
+  inputfiles  = new std::map<std::string, std::ifstream*>;
 
-  for(int i = 0; i < (int)lhefilename.size(); ++i) {
-    inputfiles->push_back(new std::ifstream);
-    (*inputfiles)[i]->open(lhefilename[i]);
-    labelString += "\n" + lhefilename[i];
+  for (int i = 0; i < (int)lhefilename.size(); ++i) {
+    inputfiles->insert(std::pair<std::string, std::ifstream*>(lhefilename[i], new std::ifstream));
+    (*inputfiles)[lhefilename[i]]->open(lhefilename[i], std::ifstream::in);
   }
 }
 
@@ -208,22 +212,25 @@ void lheReader::ntuplizer(TString output)
   LHETree->Branch("phi","std::vector<Double_t>",&m_phi);
   LHETree->Branch("energy","std::vector<Double_t>",&m_energy);
 
-  if(!inputfiles->empty()) {
-    
-    std::vector<std::ifstream*>::const_iterator fileinput;
+  if (!inputfiles->empty()) {
+
+    std::map<std::string, std::ifstream*>::const_iterator fileinput;
     
     for (fileinput = inputfiles->begin(); fileinput != inputfiles->end(); ++fileinput) {
       
-      if ((*fileinput)->is_open()) { 
+      if ((fileinput->second)->is_open()) { 
 	
+	// Store name of input file
+	labelString += "\n" + fileinput->first;
+
 	if (m_debug) {
 	  std::cout << "File is open!!" << std::endl;
 	}
 	
-	while (getline(**fileinput, lheline)) { 
+	while (getline(*fileinput->second, lheline)) { 
 
-	  // Ignore #-tag comments, needed for LHE files with jet matching and model information within the event block
-	  if (lheline[0] == '#')
+	  // Ignore #-tag comments, especially needed for LHE files with jet matching and model information within the event block
+	  if (TPRegexp("^#+").MatchB(lheline))
 	    continue;
 
 	  // Find begining of event
@@ -358,6 +365,9 @@ void lheReader::ntuplizer(TString output)
 	  }
 	} // end while still lines in file loop
       } // end if file open
+      else {
+	std::cout << "The following file failed to open: " << fileinput->first  << std::endl;
+      }
     } // end for input fils loop
   } // end of if input file is not empty
 
