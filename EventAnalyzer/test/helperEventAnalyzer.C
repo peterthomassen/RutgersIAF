@@ -21,6 +21,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableTriggerWeight.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableValue.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableCombined.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableInRange.h"
@@ -76,6 +77,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<double>("CHARGE",0,10,"CHARGEPOS"));
   handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<double>("CHARGE",-10,0,"CHARGENEG"));
 
+  handler->addObjectVariable("LEADTRACKDZ",new ObjectVariableAssociateVariable<double>("LEADTRACK","DZ","LEADTRACKDZ"));
+  handler->addObjectVariable("LEADTRACKDXY",new ObjectVariableAssociateVariable<double>("LEADTRACK","DXY","LEADTRACKDXY"));
 
   /////////////////
   ///Muon Cuts ///
@@ -508,6 +511,11 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("ETANONPROMPTMUONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptMuons"));
   handler->addEventVariable("RELISONONPROMPTMUONS", new EventVariableObjectVariableVector<double>("RELISO","nonPromptMuons"));
   
+  handler->addEventVariable("RELISOBASICELECTRONS", new EventVariableObjectVariableVector<double>("RELISO","basicElectrons"));
+  handler->addEventVariable("DXYBASICELECTRONS", new EventVariableObjectVariableVector<double>("FMVAVAR_D0","basicElectrons"));
+  handler->addEventVariable("RELISOBASICMUONS", new EventVariableObjectVariableVector<double>("RELISO","basicMuons"));
+  handler->addEventVariable("DXYBASICMUONS", new EventVariableObjectVariableVector<double>("INNERVERTDXY","basicMuons"));
+  
   handler->addEventVariable("NBASICTAUS", new EventVariableN("NBASICTAUS","basicTaus"));
   handler->addEventVariable("RELISOBASICTAUS", new EventVariableObjectVariableVector<double>("RELISO","basicTaus"));
   handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));
@@ -516,6 +524,8 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("QGOODTAUS", new EventVariableObjectVariableVector<double>("CHARGE","goodTaus"));
   handler->addEventVariable("PTGOODTAUS", new EventVariableObjectVariableVector<double>("PT","goodTaus"));
   handler->addEventVariable("ETAGOODTAUS", new EventVariableObjectVariableVector<double>("ETA","goodTaus"));
+  handler->addEventVariable("TAULEADTRACKDZ", new EventVariableObjectVariableVector<double>("LEADTRACKDZ","goodTaus"));
+  handler->addEventVariable("TAULEADTRACKDXY", new EventVariableObjectVariableVector<double>("LEADTRACKDXY","goodTaus"));
   handler->addEventVariable("fakeRoleGOODTAUS", new EventVariableObjectVariableVector<int>("fakeRole","goodTaus"));
   
   handler->addEventVariable("NSIDEBANDTAUS", new EventVariableN("NSIDEBANDTAUS","sidebandTaus"));
@@ -582,6 +592,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("ETAGOODTRACKS", new EventVariableObjectVariableVector<double>("ETA","goodTracks"));
   
   handler->addEventVariable("NBASICTRACKS", new EventVariableN("NBASICTRACKS","basicTracks"));
+  handler->addEventVariable("DXYBASICTRACKS", new EventVariableObjectVariableVector<double>("VERT_DXY","basicTracks"));
   handler->addEventVariable("NISOTRACKS", new EventVariableN("NISOTRACKS","isoTracks"));
   handler->addEventVariable("NPROMPTTRACKS", new EventVariableN("NPROMPTTRACKS","promptTracks"));
 
@@ -634,6 +645,10 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,10);
   OSSF->addProduct("goodElectrons");
   handler->addEventVariable("OSSF",OSSF);
+
+  EventVariableOSSF* OSSFnoFake = new EventVariableOSSF("OSSFnoFake","goodMuons","NOFAKE",mZ,10, false);
+  OSSFnoFake->addProduct("goodElectrons");
+  handler->addEventVariable("OSSFnoFake",OSSFnoFake);
 
   EventVariableMass* massLeptons = new EventVariableMass("MLEPTONS", "goodElectrons");
   massLeptons->addProduct("goodMuons");
@@ -715,6 +730,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
 	  handler->addEventVariable("DILEPTONNOTBELOW12", dileptonNotBelow12);
 
 	  EventVariableCombined* writeEvent = new EventVariableCombined("BTAGGED1L", "DILEPTONNOTBELOW12", false, "WRITEEVENT");
+	  //EventVariableInRange<int>* writeEvent = new EventVariableInRange<int>("NLEPTONS", -1e6, 1e6, "WRITEEVENT");
 	  handler->addEventVariable("WRITEEVENT", writeEvent);
   } else {
 	  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
