@@ -300,11 +300,11 @@ void lheReader::ntuplizer(TString output)
 	      m_pt->push_back(temp.Pt());
 	      
 	      // Supress large eta value warnings by setting it to a large value by hand
-	      if (temp.Pt() == 0.0 && temp.Pz() > 0.0) {
+	      if (temp.Pt() < 1e-10 && temp.Pz() > 0.0) {
 		m_eta->push_back(10e10);
 	      }
 	      
-	      else if (temp.Pt() == 0.0 && temp.Pz() < 0.0) {
+	      else if (temp.Pt() < 1e-10 && temp.Pz() < 0.0) {
 		m_eta->push_back(-10e10);
 	      }
 	      
