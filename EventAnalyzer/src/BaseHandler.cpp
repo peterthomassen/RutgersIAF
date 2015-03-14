@@ -752,15 +752,15 @@ bool BaseHandler::createProducts()
 		setVariable("nPhotonFakeNegMuons", nPhotonFakeNegMuons);
 	}
 	
-    //////////////////////////////////
-    ///add fake leptons from tracks///
-    //////////////////////////////////
+    ///////////////////
+    ///add fake taus///
+    ///////////////////
     
-    if(pname == "sidebandTaus" && getMode("tauFakeCombination")) {
-		int nSidebandFakeTaus = 0;
+    if(pname == "nonIsoTaus" && getMode("tauFakeCombination")) {
+		int nTauFakeTaus = 0;
 		if(m_trackFakeCombinationIndex + m_photonFakeCombinationIndex == 0) {
 			if(m_tauFakeCombinationIndex == 0) {
-				// Number of ways the taus can be treated as a) sideband taus, b) taus
+				// Number of ways the taus can be treated as a) seed taus, b) good taus
 				// Start counting at 0
 				m_tauFakeCombination = power(2, m_products[pname].size()) - 1;
 			} else {
@@ -781,7 +781,7 @@ bool BaseHandler::createProducts()
 							sort(m_products["goodTaus"].begin(),m_products["goodTaus"].end(),SignatureObjectComparison);
 							reverse(m_products["goodTaus"].begin(),m_products["goodTaus"].end());
 							m_products[pname].erase(m_products[pname].begin() + index);
-							++nSidebandFakeTaus;
+							++nTauFakeTaus;
 							break;
 					}
 					comboIndex /= 2;
@@ -789,7 +789,7 @@ bool BaseHandler::createProducts()
 				}
 			}
 		}
-		setVariable("nSidebandFakeTaus", nSidebandFakeTaus);
+		setVariable("nTauFakeTaus", nTauFakeTaus);
 	}
 
   }

@@ -54,6 +54,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("MUONTOTALISO",new ObjectVariableMuonTotalIso("TOTALISO"),false);
   handler->addObjectVariable("ELECTRONTOTALISO",new ObjectVariableElectronTotalIso("TOTALISO"),false);
   handler->addObjectVariable("DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR",new ObjectVariableInRange<double>("DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR",0.9,1e6));
+  handler->addObjectVariable("!DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR",new ObjectVariableReversed("DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR", "!DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR"));
   handler->addObjectVariable("TAUTOTALISO",new ObjectVariableTauTotalIso("TOTALISO"),false);
   handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
 
@@ -215,12 +216,15 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodTaus","DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR"); // supposed to contain ISO0to2 -- what else?
   //handler->addProductCut("goodTaus","ISO0to2");
 
-  handler->addProduct("sidebandTaus","ALLTAUS");
+  handler->addProduct("nonIsoTaus", "basicTaus");
+  handler->addProductCut("nonIsoTaus", "!DISC_BYLOOSECOMBINEDISOLATIONDELTABETACORR");
+
+/*  handler->addProduct("sidebandTaus","basicTaus");
   handler->addProductCut("sidebandTaus","ISO6to15");
 
-  handler->addProduct("otherTaus","ALLTAUS");
+  handler->addProduct("otherTaus","basicTaus");
   handler->addProductCut("otherTaus","ISOgt15");
-
+*/
 
   ////////////////
   ///Track Cuts///
@@ -528,8 +532,8 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("TAULEADTRACKDXY", new EventVariableObjectVariableVector<double>("LEADTRACKDXY","goodTaus"));
   handler->addEventVariable("fakeRoleGOODTAUS", new EventVariableObjectVariableVector<int>("fakeRole","goodTaus"));
   
-  handler->addEventVariable("NSIDEBANDTAUS", new EventVariableN("NSIDEBANDTAUS","sidebandTaus"));
-  handler->addEventVariable("NOTHERTAUS", new EventVariableN("NOTHERTAUS","otherTaus"));
+//  handler->addEventVariable("NSIDEBANDTAUS", new EventVariableN("NSIDEBANDTAUS","sidebandTaus"));
+//  handler->addEventVariable("NOTHERTAUS", new EventVariableN("NOTHERTAUS","otherTaus"));
   
   handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
   handler->addEventVariable("PTGOODJETS", new EventVariableObjectVariableVector<double>("PT","goodJets"));
