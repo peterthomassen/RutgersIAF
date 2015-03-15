@@ -57,7 +57,7 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->setRange("NGOODTAUS", 0, 0);
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1, 1);
+	assembler->setRange("ONZ", 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 200);
 	assembler->setRange("MET", 0, 30, false);
