@@ -280,7 +280,10 @@ int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
 	double width = axis->GetBinWidth(bin);
 	double lo = axis->GetBinLowEdge(bin);
 	double hi = axis->GetBinUpEdge(bin);
-	if(x > lo + width / 100 && x < hi - width / 100) {
+	if(x < lo) {
+		cerr << "Warning: " << x << " seems to be in the underflow bin of " << axis->GetName() << " axis; please rebin" << endl;
+		throw std::runtime_error("binning error");
+	} else if(x > lo + width / 100 && x < hi - width / 100) {
 		cerr << "Warning: " << x << " is not a bin boundary for " << axis->GetName() << " axis (considered boundaries: " << lo << " and " << hi << ")" << endl;
 		throw std::runtime_error("binning error");
 	}
@@ -342,7 +345,7 @@ std::vector<std::pair<int, int>> PhysicsContribution::getRanges() const {
 	for(int i = 0; i <= m_hn->GetListOfAxes()->GetLast(); ++i) {
 		TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->At(i);
 		bool kAxisRange = axis->TestBit(TAxis::kAxisRange);
-		ranges.emplace_back(kAxisRange ? axis->GetFirst() : 0, kAxisRange ? axis->GetLast() : 0);
+		ranges.emplace_back(kAxisRange ? axis->GetFirst() : 0, kAxisRange ? axis->GetLast() : -1);
 	}
 	return ranges;
 }
@@ -355,16 +358,21 @@ TString PhysicsContribution::getSelectionString() const {
 		auto lo = ranges[i].first;
 		auto hi = ranges[i].second;
 		
+		auto edgeLo = axis->GetBinLowEdge(lo);
+		auto edgeHi = axis->GetBinUpEdge(hi);
+		
+		bool oneBin = (edgeHi - edgeLo == 1);
+		
 		const char* title = axis->GetTitle();
 		
-		if(lo == 0 && hi == 0) {
+		if(hi < lo) {
 			continue;
-		} else if(lo == hi) {
+		} else if(oneBin) {
 			rangeString += TString::Format(" && %s == %.0f", title, axis->GetBinLowEdge(lo));
 		} else if(hi == axis->GetNbins() + 1) {
 			rangeString += TString::Format(" && %s >= %.0f", title, axis->GetBinLowEdge(lo));
 		} else {
-			rangeString += TString::Format(" && %s >= %.0f && %s < %.0f", title, axis->GetBinLowEdge(lo), title, axis->GetBinUpEdge(hi));
+			rangeString += TString::Format(" && %s >= %.0f && %s < %.0f", title, edgeLo, title, edgeHi);
 		}
 	}
 	
