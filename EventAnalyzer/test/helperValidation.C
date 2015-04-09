@@ -1109,7 +1109,7 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true, bool isMC =
 	handler->addEventVariable("ValST",ValST);
 	
 	//Mother Z
-	ObjectVariableValueInList<int>* ValMotherZ = new ObjectVariableValueInList<int>("MOTHER_PDGID",24);
+	ObjectVariableValueInList<int>* ValMotherZ = new ObjectVariableValueInList<int>("MOTHER_PDGID",23);
 	handler->addObjectVariable("ValMOTHERZ",ValMotherZ);
 
 	handler->addProduct("ValMCelectronsFromZ","MCelectrons");
@@ -1140,4 +1140,3 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true, bool isMC =
 	handler->addEventVariable("ValMCtausFromZPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCtausFromZ"));	
 	
 }
-
