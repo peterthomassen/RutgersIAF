@@ -34,6 +34,7 @@ public:
 	TH1* getHistogram(TString type) const;
 	TH1* getHistogram(TString type, TString correlationClass) const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
+	double getMoment(TString type, int k = 1, bool center = false) const;
 	std::vector<std::pair<int, int>> getRanges() const;
 	std::set<TString> getUncertainties() const;
 	bool isDistribution() const;
