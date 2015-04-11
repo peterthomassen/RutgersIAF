@@ -934,12 +934,6 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true, bool isMC =
 	//create Phi variable
 	handler->addObjectVariable("PHI",new ObjectVariableMethod("PHI", &SignatureObject::Phi));
 	
-	//create Status variable and status3
-	handler->addEventVariable("STATUS", new EventVariableObjectVariableVector<int>("STATUS","ALLMCPARTICLES"));
-	
-	ObjectVariableValueInList<int>* status3 = new ObjectVariableValueInList<int>("STATUS", 3);
-	handler->addObjectVariable("STATUS3", status3);
-	
 	//MC-Leptons: PT, Eta, N
 	ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
 	handler->addProductSelfComparison("MCelectrons",deltaR0p1);
@@ -1007,7 +1001,7 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true, bool isMC =
 		handler->addEventVariable("ValMatchingMuonsM", new EventVariableObjectVariableVector<double>("M","ValMatchingMuons"));
 		
 		handler->addProduct("ValMatchingTaus", "goodTaus");
-		handler->addProductComparison("ValMatchingTaus", "MCelectrons", mcMatchComparison, false);
+		handler->addProductComparison("ValMatchingTaus", "MCtaus", mcMatchComparison, false);
 		handler->addEventVariable("ValMatchingTausPT", new EventVariableObjectVariableVector<double>("PT","ValMatchingTaus"));
 		handler->addEventVariable("ValMatchingTausEta", new EventVariableObjectVariableVector<double>("ETA","ValMatchingTaus"));
 		handler->addEventVariable("ValMatchingTausN", new EventVariableN("ValMatchingTausN","ValMatchingTaus"));
