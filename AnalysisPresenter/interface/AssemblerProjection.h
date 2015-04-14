@@ -35,6 +35,7 @@ public:
 	TH1* getHistogram(TString type, TString correlationClass) const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
 	double getMoment(TString type, int k = 1, bool center = false) const;
+	double getMoment(TString type, TString correlationClass, int k = 1, bool center = false) const;
 	std::vector<std::pair<int, int>> getRanges() const;
 	std::set<TString> getUncertainties() const;
 	bool isDistribution() const;
@@ -61,6 +62,7 @@ protected:
 	void add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection);
 	double extractStackBin(THStack* stack, int i, TString name) const;
 	double addStackBinInQuadrature(THStack* stack, int i) const;
+	double getMoment(TH1* h, int k = 1, bool center = false) const;
 
 private:
 	TCanvas* m_canvas = 0;

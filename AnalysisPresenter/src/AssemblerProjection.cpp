@@ -239,6 +239,17 @@ std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString t
 	return meta;
 }
 
+double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
+	double moment = 0;
+	for(int i = 1; i <= h->GetNbinsX(); ++i) {
+		double idx = center
+			? ((h->GetXaxis()->GetBinLowEdge(i) + h->GetXaxis()->GetBinUpEdge(i)) / 2)
+			: h->GetXaxis()->GetBinLowEdge(i);
+		moment += pow(idx, k) * h->GetBinContent(i);
+	}
+	return moment;
+}
+
 double AssemblerProjection::getMoment(TString type, int k, bool center) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
@@ -249,14 +260,20 @@ double AssemblerProjection::getMoment(TString type, int k, bool center) const {
 	if(hasOverflowIncluded() && h->GetBinContent(h->GetNbinsX() + 1) != 0) {
 		throw std::runtime_error("can't compute moment when overflow bin is not empty");
 	}
-	double moment = 0;
-	for(int i = 1; i <= h->GetNbinsX(); ++i) {
-		double idx = center
-			? ((h->GetXaxis()->GetBinLowEdge(i) + h->GetXaxis()->GetBinUpEdge(i)) / 2)
-			: h->GetXaxis()->GetBinLowEdge(i);
-		moment += pow(idx, k) * h->GetBinContent(i);
+	return getMoment(h, k, center);
+}
+
+double AssemblerProjection::getMoment(TString type, TString correlationClass, int k, bool center) const {
+	assert(has(type, correlationClass));
+	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
+	if(!stack) {
+		return 0;
 	}
-	return moment;
+	TH1* h = (TH1*)stack->Last();
+	if(hasOverflowIncluded() && h->GetBinContent(h->GetNbinsX() + 1) != 0) {
+		throw std::runtime_error("can't compute moment when overflow bin is not empty");
+	}
+	return getMoment(h, k, center);
 }
 
 std::vector<std::pair<int, int>> AssemblerProjection::getRanges() const {
