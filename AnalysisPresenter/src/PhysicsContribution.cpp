@@ -20,7 +20,7 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, Int_t fillColor, bool unordered, bool forceData) : m_filename(filename), m_fillColor(fillColor), m_name(name), m_type(type), m_unordered(unordered) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, Int_t fillColor, bool unordered) : m_filename(filename), m_fillColor(fillColor), m_name(name), m_type(type), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
@@ -41,17 +41,11 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 	f.Close();
 	
 	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
-		cout << "was processing " << m_filename << endl;
-		if(forceData) {
-			m_MC = false;
-			cout << "WARNING: forcing use of MC file as data. This is not well-tested." << endl;
-		} else {
-			throw std::runtime_error("data files should not have a WEIGHT branch");
-		}
+		cout << "Warning: " << m_filename << " has WEIGHT branch, but is being used as " << m_type << endl;
 	}
 	if(!m_MC && (m_type == "signal" || m_type == "backgroundMC")) {
 		cout << "was processing " << m_filename << endl;
-		throw std::runtime_error("MC files should have a WEIGHT branch");
+		throw std::runtime_error("MC file does not have a WEIGHT branch");
 	}
 	
 	m_lumi = isMC()
