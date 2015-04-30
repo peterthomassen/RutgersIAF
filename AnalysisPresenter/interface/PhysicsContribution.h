@@ -25,7 +25,7 @@ public:
 	};
 	
 	PhysicsContribution();
-	PhysicsContribution(TString type, TString filename, double lumi, TString name, TString treeRname = "treeR", Int_t fillColor = -1, bool unordered = true);
+	PhysicsContribution(TString type, TString filename, double lumi, TString name, bool allowNegative = false, TString treeRname = "treeR", Int_t fillColor = -1, bool unordered = true);
 	virtual ~PhysicsContribution();
 	
 	void addFlatUncertainty(TString, double);

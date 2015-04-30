@@ -33,7 +33,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 	if(!contribution->isData()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
 			// Set negative bins to 0 (this can happen due to fake subtraction etc.)
-			if(m_histogram->GetBinContent(i) < 0) {
+			if(!m_contribution->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
 			}
 			

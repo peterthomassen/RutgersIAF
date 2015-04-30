@@ -20,10 +20,14 @@ Bundle::Bundle() {
 	/* no-op */
 }
 
-Bundle::Bundle(TString type, TString name, Int_t fillColor) : m_fillColor(fillColor), m_name(name), m_type(type) {
+Bundle::Bundle(TString type, TString name, bool allowNegative, Int_t fillColor) : m_allowNegative(allowNegative), m_fillColor(fillColor), m_name(name), m_type(type) {
 }
 
 Bundle::~Bundle() {
+}
+
+bool Bundle::getAllowNegative() const {
+	return m_allowNegative;
 }
 
 Int_t Bundle::getFillColor() const {

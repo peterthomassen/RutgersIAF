@@ -13,13 +13,12 @@ class BundleProjection;
 
 class Bundle : public TObject {
 
-friend class Assembler;
-
 public:
 	Bundle();
-	Bundle(TString type, TString name, Int_t fillColor = -1);
+	Bundle(TString type, TString name, bool allowNegative = false, Int_t fillColor = -1);
 	virtual ~Bundle();
 	
+	bool getAllowNegative() const;
 	Int_t getFillColor() const;
 	TString getName() const;
 	TString getType(const bool detailed = false) const;
@@ -31,6 +30,7 @@ public:
 	void setFillColor(const Int_t fillColor);
 
 protected:
+	bool m_allowNegative;
 	Int_t m_fillColor = -1;
 	TString m_name;
 	TString m_type;

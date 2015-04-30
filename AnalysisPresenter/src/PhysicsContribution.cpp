@@ -20,7 +20,7 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, TString treeRname, Int_t fillColor, bool unordered) : Bundle(type, name, fillColor), m_filename(filename), m_treeRname(treeRname), m_unordered(unordered) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, bool allowNegative, TString treeRname, Int_t fillColor, bool unordered) : Bundle(type, name, allowNegative, fillColor), m_filename(filename), m_treeRname(treeRname), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
