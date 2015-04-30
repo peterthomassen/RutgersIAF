@@ -478,6 +478,10 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio->SetMinimum(0);
 		if(hRatio->GetMaximum() > 1) {
 			hRatio->SetMaximum(3);
+		} else if(hRatio->GetMaximum() < 0.1) {
+			hRatio->SetMaximum(0.1);
+		} else if(hRatio->GetMaximum() < 0.3) {
+			hRatio->SetMaximum(0.3);
 		} else if(hRatio->GetMaximum() < 0.5) {
 			hRatio->SetMaximum(0.5);
 		}
