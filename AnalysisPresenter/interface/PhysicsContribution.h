@@ -1,7 +1,7 @@
 #ifndef PhysicsContribution_h
 #define PhysicsContribution_h
 
-#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/BaseBundle.h"
 
 #include <map>
 #include <set>
@@ -12,7 +12,7 @@
 
 class PhysicsContributionProjection;
 
-class PhysicsContribution : public Bundle {
+class PhysicsContribution : public BaseBundle {
 
 friend class Assembler;
 

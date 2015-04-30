@@ -1,7 +1,7 @@
 #ifndef Bundle_h
 #define Bundle_h
 
-#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/BaseBundle.h"
 
 #include <map>
 #include <set>
@@ -9,33 +9,19 @@
 
 #include "TROOT.h"
 
-class BundleProjection;
-
-class Bundle : public TObject {
+class Bundle : public BaseBundle {
 
 public:
 	Bundle();
 	Bundle(TString type, TString name, bool allowNegative = false, Int_t fillColor = -1);
 	virtual ~Bundle();
 	
-	bool getAllowNegative() const;
-	Int_t getFillColor() const;
-	TString getName() const;
-	TString getType(const bool detailed = false) const;
-	
-	bool isBackground() const;
-	bool isData() const;
-	bool isSignal() const;
-	
-	void setFillColor(const Int_t fillColor);
+	bool addComponent(BaseBundle* component);
 
 protected:
-	bool m_allowNegative;
-	Int_t m_fillColor = -1;
-	TString m_name;
-	TString m_type;
 
 private:
+	std::vector<BaseBundle*> m_components;
 
 	ClassDef(Bundle,1);
 };
