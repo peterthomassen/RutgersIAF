@@ -1,6 +1,8 @@
 #ifndef PhysicsContribution_h
 #define PhysicsContribution_h
 
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+
 #include <map>
 #include <set>
 #include <vector>
@@ -10,7 +12,7 @@
 
 class PhysicsContributionProjection;
 
-class PhysicsContribution : public TObject {
+class PhysicsContribution : public Bundle {
 
 friend class Assembler;
 
@@ -34,18 +36,12 @@ public:
 	THnBase* getContent() const;
 	TString getCorrelationClass() const;
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
-	Int_t getFillColor() const;
 	double getLumi() const;
 	std::set<PhysicsContribution::metadata_t> getMeta() const;
-	TString getName() const;
 	TString getSelectionString() const;
-	TString getType(const bool detailed = false) const;
 	double getWeight();
 	
-	bool isBackground() const;
-	bool isData() const;
 	bool isMC() const;
-	bool isSignal() const;
 	
 	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false, const bool plain = false) const;
 	
@@ -53,7 +49,6 @@ public:
 	void setCorrelationClass(TString correlationClass);
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
-	void setFillColor(const Int_t fillColor);
 
 protected:
 	void applyRelativeUncertainty(THnBase*, TString);
@@ -72,13 +67,10 @@ private:
 	TString m_correlationClass = "";
 	bool m_debug = false;
 	TString m_filename;
-	Int_t m_fillColor = -1;
 	double m_lumi;
 	bool m_MC = false;
-	TString m_name;
 	double m_scale = 0;
 	TString m_selection;
-	TString m_type;
 	bool m_unordered;
 	double m_weight = 0;
 	
