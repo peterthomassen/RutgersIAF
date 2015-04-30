@@ -20,7 +20,7 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, Int_t fillColor, bool unordered) : Bundle(type, name, fillColor), m_filename(filename), m_unordered(unordered) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, TString treeRname, Int_t fillColor, bool unordered) : Bundle(type, name, fillColor), m_filename(filename), m_treeRname(treeRname), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
@@ -30,7 +30,7 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 		cout << "was processing " << m_filename << endl;
 		throw std::runtime_error("could not open contribution root file");
 	}
-	TTree* treeR = (TTree*)f.Get("treeR");
+	TTree* treeR = (TTree*)f.Get(m_treeRname);
 	if(!treeR) {
 		cout << "was processing " << m_filename << endl;
 		throw std::runtime_error("contribution root file does not contain treeR");
@@ -134,7 +134,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	if(f.IsZombie()) {
 		throw std::runtime_error("couldn't open contribution file");
 	}
-	TTree* treeR = (TTree*)f.Get("treeR");
+	TTree* treeR = (TTree*)f.Get(m_treeRname);
 	assert(treeR);
 	treeR->SetWeight(1);
 	
