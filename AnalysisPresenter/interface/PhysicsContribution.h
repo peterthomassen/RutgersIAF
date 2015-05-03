@@ -34,7 +34,6 @@ public:
 	int findBinFromLowEdge(TAxis* axis, double x);
 	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
 	THnBase* getContent() const;
-	TString getCorrelationClass() const;
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	double getLumi() const;
 	std::set<PhysicsContribution::metadata_t> getMeta() const;
@@ -43,10 +42,10 @@ public:
 	
 	bool isMC() const;
 	
-	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false, const bool plain = false) const;
+	void print(int level = 0) const;
+	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false) const;
 	
 	bool setDebug(bool);
-	void setCorrelationClass(TString correlationClass);
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
 
@@ -64,7 +63,6 @@ protected:
 
 
 private:
-	TString m_correlationClass = "";
 	bool m_debug = false;
 	TString m_filename;
 	double m_lumi;

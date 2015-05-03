@@ -18,7 +18,7 @@ PhysicsContributionProjection::PhysicsContributionProjection() {
 	/* no-op */
 }
 
-PhysicsContributionProjection::PhysicsContributionProjection(const TString name, const TString title, const PhysicsContribution* contribution, const char* varName, const std::map<TString, THnBase*>* uncertaintyMap, const double zerostat) : m_contribution(contribution), m_name(name), m_title(title) {
+PhysicsContributionProjection::PhysicsContributionProjection(const TString name, const TString title, const PhysicsContribution* contribution, const char* varName, const std::map<TString, THnBase*>* uncertaintyMap, const double zerostat) : m_name(name), m_contribution(contribution), m_title(title) {
 	TAxis* axis = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(varName);
 	if(!axis) {
 		cerr << "Could not find axis " << varName << endl;
@@ -26,11 +26,11 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 	}
 	int dim = contribution->getContent()->GetListOfAxes()->IndexOf(axis);
 	
-	m_histogram = m_contribution->getContent()->Projection(dim, "E");
+	m_histogram = contribution->getContent()->Projection(dim, "E");
 	m_histogram->SetName(name);
 	m_histogram->SetTitle(title);
 	
-	if(!contribution->isData()) {
+	if(!m_contribution->isData()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
 			// Set negative bins to 0 (this can happen due to fake subtraction etc.)
 			if(!m_contribution->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {
@@ -54,6 +54,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const TString name,
 }
 
 PhysicsContributionProjection::~PhysicsContributionProjection() {
+	cout << "Called ~PhysicsContributionProjection()" << endl;
 	delete m_histogram;
 	for(auto &uncertainty : m_uncertainties) {
 		delete uncertainty.second;
@@ -61,12 +62,12 @@ PhysicsContributionProjection::~PhysicsContributionProjection() {
 	m_uncertainties.clear();
 }
 
-const PhysicsContribution* PhysicsContributionProjection::getPhysicsContribution() const {
-	return m_contribution;
-}
-
 TH1D* PhysicsContributionProjection::getHistogram() const {
 	return m_histogram;
+}
+
+const PhysicsContribution* PhysicsContributionProjection::getPhysicsContribution() const {
+	return m_contribution;
 }
 
 std::map<TString, TH1D*> PhysicsContributionProjection::getUncertainties() const {

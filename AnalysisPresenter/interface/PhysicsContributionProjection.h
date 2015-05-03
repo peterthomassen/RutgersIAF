@@ -24,16 +24,17 @@ public:
 	void scale(const double scale);
 
 protected:
-	const PhysicsContribution* m_contribution = 0;
 	TH1D* m_histogram = 0;
 	TString m_name;
+	const PhysicsContribution* m_contribution = 0;
 	TString m_title;
+	
+	std::map<TString, TH1D*> m_uncertainties;
 	
 	static void incorporateOverflow(TH1D* &);
 
 private:
-	std::map<TString, TH1D*> m_uncertainties;
-	
+
 	ClassDef(PhysicsContributionProjection,1);
 };
 

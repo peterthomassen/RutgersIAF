@@ -26,7 +26,6 @@ public:
 	
 	void addContribution(PhysicsContribution*);
 	Channel* channel(const char*);
-	std::set<TString> getCorrelationClasses(TString type);
 	
 	std::vector<PhysicsContribution*> getContributions(TString type) const;
 	double getLumi() const;

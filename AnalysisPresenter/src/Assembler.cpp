@@ -67,14 +67,6 @@ std::vector<PhysicsContribution*> Assembler::getContributions(TString type) cons
 	return m_contributions.at(type);
 }
 
-std::set<TString> Assembler::getCorrelationClasses(TString type) {
-	std::set<TString> correlationClasses;
-	for(auto &contribution : m_contributions[type]) {
-		correlationClasses.insert(contribution->getCorrelationClass());
-	}
-	return correlationClasses;
-}
-
 double Assembler::getLumi() const {
 	double lumi = 0;
 	for(const auto &contribution : m_contributions.at("data")) {

@@ -23,6 +23,7 @@ public:
 	bool isData() const;
 	bool isSignal() const;
 	
+	virtual void print(int level = 0) const = 0;
 	void setFillColor(const Int_t fillColor);
 
 protected:

@@ -19,13 +19,10 @@ public:
 	virtual ~Channel();
 
 	double get(TString type) const;
-	double get(TString type, TString correlationClass) const;
 	TString getName() const;
 	double getStat(TString type) const;
-	double getStat(TString type, TString correlationClass) const;
 	double getSyst(TString type) const;
 	double getSyst(TString type, TString name) const;
-	double getSyst(TString type, TString name, TString correlationClass) const;
 	
 	AssemblerProjection* project(const char*, const bool binForOverflow);
 

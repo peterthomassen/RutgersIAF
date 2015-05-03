@@ -299,10 +299,6 @@ THnBase* PhysicsContribution::getContent() const {
 	return m_hn;
 }
 
-TString PhysicsContribution::getCorrelationClass() const {
-	return m_correlationClass;
-}
-
 std::map<PhysicsContribution*, std::map<TString, TString>> PhysicsContribution::getEnsembleFakeRateParams() const {
 	return m_ensembleFakeRateParams;
 }
@@ -373,7 +369,12 @@ bool PhysicsContribution::isMC() const {
 	return m_MC;
 }
 
-PhysicsContributionProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow, const bool plain) const {
+void PhysicsContribution::print(int level) const {
+	std::string prefix = std::string(2 * level, ' ');
+	cout << prefix << getName() << " (" << m_filename << ", " << m_treeRname << ")" << endl;
+}
+
+PhysicsContributionProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow) const {
 	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
 	
 	TString title;
@@ -383,9 +384,7 @@ PhysicsContributionProjection* PhysicsContribution::project(const char* varName,
 		title = m_name;
 	}
 	
-	PhysicsContributionProjection* projection = plain
-		? new PhysicsContributionProjection(m_name, title, this, varName)
-		: new PhysicsContributionProjection(m_name, title, this, varName, &m_uncertaintyMap, zerostat);
+	PhysicsContributionProjection* projection = new PhysicsContributionProjection(m_name, title, this, varName, &m_uncertaintyMap, zerostat);
 	
 	if(binForOverflow) {
 		projection->incorporateOverflow();
@@ -398,10 +397,6 @@ PhysicsContributionProjection* PhysicsContribution::project(const char* varName,
 	}
 	
 	return projection;
-}
-
-void PhysicsContribution::setCorrelationClass(TString correlationClass) {
-	m_correlationClass = correlationClass;
 }
 
 bool PhysicsContribution::setDebug(bool debug) {

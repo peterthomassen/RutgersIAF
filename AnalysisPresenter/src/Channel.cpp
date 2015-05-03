@@ -36,10 +36,6 @@ double Channel::get(TString type) const {
 	return getBin(type, 1);
 }
 
-double Channel::get(TString type, TString correlationClass) const {
-	return getBin(type, 1, correlationClass);
-}
-
 TString Channel::getName() const {
 	return m_name;
 }
@@ -48,20 +44,12 @@ double Channel::getStat(TString type) const {
 	return getBinStat(type, 1);
 }
 
-double Channel::getStat(TString type, TString correlationClass) const {
-	return getBinStat(type, 1, correlationClass);
-}
-
 double Channel::getSyst(TString type) const {
 	return getBinSyst(type, 1);
 }
 
 double Channel::getSyst(TString type, TString name) const {
 	return getBinSyst(type, 1, name);
-}
-
-double Channel::getSyst(TString type, TString name, TString correlationClass) const {
-	return getBinSyst(type, 1, name, correlationClass);
 }
 
 AssemblerProjection* Channel::project(const char* name, const bool binForOverflow) {

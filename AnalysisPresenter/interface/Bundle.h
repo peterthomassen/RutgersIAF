@@ -17,6 +17,9 @@ public:
 	virtual ~Bundle();
 	
 	bool addComponent(BaseBundle* component);
+	std::vector<BaseBundle*> getComponents() const;
+	
+	void print(int level = 0) const;
 
 protected:
 

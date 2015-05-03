@@ -31,6 +31,24 @@ bool Bundle::addComponent(BaseBundle* component) {
 		return false;
 	}
 	
+	if(getType() != component->getType()) {
+		cerr << "Warning: Trying to add component " << component->getName() << " of type " << component->getType() << " to bundle " << getName() << " which is of type " << getType() << endl;
+		throw std::runtime_error("oops");
+		return false;
+	}
+	
 	m_components.push_back(component);
 	return true;
+}
+
+std::vector<BaseBundle*> Bundle::getComponents() const {
+	return m_components;
+}
+
+void Bundle::print(int level) const {
+	std::string prefix = std::string(2 * level, ' ');
+	cout << prefix << getName() << " (" << m_components.size() << ")" << endl;
+	for(auto &component : m_components) {
+		component->print(level + 1);
+	}
 }

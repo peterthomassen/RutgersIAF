@@ -1,5 +1,6 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
@@ -30,7 +31,7 @@ using namespace std;
 
 ClassImp(AssemblerProjection)
 
-AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_title(assembler->getVarName(name)), m_ranges(assembler->getRanges()) {
+AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_ranges(assembler->getRanges()), m_title(assembler->getVarName(name)) {
 	std::map<TString, std::vector<PhysicsContributionProjection*>> hProjections;
 	
 	// Somehow putting all of this inline in the for loop doesn't work
@@ -50,10 +51,26 @@ AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, boo
 	
 	// Prepare projection for output: Put projections together
 	for(const auto &typeProjection : hProjections) {
-		add(typeProjection, assembler->getVarExp(), assembler->getSelection());
+		m_typeProjections.insert(typeProjection);
+		add(typeProjection.first);
 	}
 	
 	m_isDistribution = (name != "_");
+}
+
+AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, bool combineMissing) : m_assembler(parent->m_assembler), m_binForOverflow(parent->m_binForOverflow), m_isDistribution(parent->m_isDistribution), m_name(parent->m_name), m_parent(parent), m_ranges(parent->m_ranges), m_title(parent->m_title) {
+	for(auto &parentComponent : m_parent->m_components) {
+		TString type = parentComponent.first;
+		
+		if(bundle->getType() != type) {
+			m_components[type] = m_parent->m_components.at(type);
+			continue;
+		}
+		
+		for(auto &component : bundle->getComponents()) {
+			component = component;
+		}
+	}
 }
 
 AssemblerProjection::AssemblerProjection() {
@@ -61,42 +78,22 @@ AssemblerProjection::AssemblerProjection() {
 }
 
 AssemblerProjection::~AssemblerProjection() {
-	//delete m_canvas; // TODO this causes a segfault -- probably something to do with http://root.cern.ch/phpBB3/viewtopic.php?f=14&t=11472
+	//delete m_canvas; // TODO doing this causes a segfault -- probably something to do with http://root.cern.ch/phpBB3/viewtopic.php?f=14&t=11472
 	for(auto &component : m_components) {
 		delete component.second.first;
 		delete component.second.second;
 	}
-	
-	return;
-	for(auto &typeProjection : m_typeProjections) {
-		for(auto &projection : typeProjection.second) {
-			delete projection;
-		}
-	}
 }
 
 // Combine correlated uncertainties and assemble contributions into sorted histogram stack
-void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContributionProjection*>> typeProjection, TString varexp, TString selection) {
-	m_typeProjections.insert(typeProjection);
-	
+void AssemblerProjection::add(TString type) {
 	// Intermediate structure for main histogram, and stack for systematic uncertainties (statistical ones are taken care of in main histogram
 	std::vector<std::pair<TH1D*, double>> vh;
-	THStack* hsSyst = new THStack("hsSyst", varexp + TString(" {") + selection + TString("}"));
+	THStack* hsSyst = new THStack("hsSyst", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
 	
 	// Also, break things down by correlation class (for datacards and such)
-	std::vector<TString> correlationClasses;
-	std::map<TString, std::pair<THStack*, THStack*>> hsByCorrelationClass;
-	for(const auto &contributionProjection : typeProjection.second) {
-		TString correlationClass = contributionProjection->getPhysicsContribution()->getCorrelationClass();
-		if(std::find(correlationClasses.begin(), correlationClasses.end(), correlationClass) == correlationClasses.end()) {
-			correlationClasses.push_back(correlationClass);
-			THStack* hs2 = new THStack((TString("hs_") + correlationClass).Data(), varexp + TString(" {") + selection + TString("}"));
-			THStack* hsSyst2 = new THStack((TString("hsSyst_") + correlationClass).Data(), varexp + TString(" {") + selection + TString("}"));
-			hsByCorrelationClass.insert(make_pair(correlationClass, make_pair(hs2, hsSyst2)));
-		}
-		
+	for(const auto &contributionProjection : m_typeProjections[type]) {
 		vh.push_back(make_pair(contributionProjection->getHistogram(), contributionProjection->getHistogram()->Integral()));
-		hsByCorrelationClass[correlationClass].first->Add((TH1*)contributionProjection->getHistogram()->Clone());
 		
 		for(const auto &uncertainty : contributionProjection->getUncertainties()) {
 			// Combine uncertainties into main histograms
@@ -110,21 +107,7 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 			} else {
 				hsSyst->Add(uncertainty.second);
 			}
-			
-			// Combine uncertainties into correlation class histograms
-			hUncertainty = (TH1D*)hsByCorrelationClass[correlationClass].second->FindObject(uncertainty.first);
-			if(hUncertainty) {
-				for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
-					double value = hUncertainty->GetBinContent(j);
-					value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
-					hUncertainty->SetBinContent(j, value);
-				}
-			} else {
-				hsByCorrelationClass[correlationClass].second->Add((TH1*)uncertainty.second->Clone());
-			}
 		}
-		
-		m_projections.insert(contributionProjection);
 	}
 	
 	// Sort by amount of contribution
@@ -134,17 +117,16 @@ void AssemblerProjection::add(std::pair<TString, std::vector<PhysicsContribution
 	);
 	
 	// Prepare content stack
-	THStack* hs = new THStack("hs", varexp + TString(" {") + selection + TString("}"));
+	THStack* hs = new THStack("hs", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
 	for(const auto &contribution : vh) {
 		contribution.first->SetLineWidth(0);
 		hs->Add(contribution.first);
 	}
 	
-	if(m_components.find(typeProjection.first) != m_components.end()) {
+	if(m_components.find(type) != m_components.end()) {
 		throw std::runtime_error("overwriting projection components not supported");
 	}
-	m_components.insert(make_pair(typeProjection.first, make_pair(hs, hsSyst)));
-	m_componentsByCorrelationClass.insert(make_pair(typeProjection.first, hsByCorrelationClass));
+	m_components.insert(make_pair(type, make_pair(hs, hsSyst)));
 }
 
 double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const {
@@ -156,6 +138,10 @@ double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const
 		val2 += pow(obj->GetBinContent(i), 2);
 	}
 	return sqrt(val2);
+}
+
+AssemblerProjection* AssemblerProjection::bundle(Bundle* bundle, bool combineMissing) const {
+	return new AssemblerProjection(this, bundle, combineMissing);
 }
 
 double AssemblerProjection::extractStackBin(THStack* stack, int i, TString name) const {
@@ -172,21 +158,9 @@ double AssemblerProjection::getBin(TString type, int i) const {
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
 }
 
-double AssemblerProjection::getBin(TString type, int i, TString correlationClass) const {
-	assert(has(type, correlationClass));
-	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
-	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
-}
-
 double AssemblerProjection::getBinStat(TString type, int i) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
-	return stack ? ((TH1*)stack->Last())->GetBinError(i) : 0;
-}
-
-double AssemblerProjection::getBinStat(TString type, int i, TString correlationClass) const {
-	assert(has(type, correlationClass));
-	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinError(i) : 0;
 }
 
@@ -200,29 +174,9 @@ double AssemblerProjection::getBinSyst(TString type, int i, TString name) const 
 	return extractStackBin(m_components.find(type)->second.second, i, name);
 }
 
-double AssemblerProjection::getBinSyst(TString type, int i, TString name, TString correlationClass) const {
-	assert(has(type, correlationClass));
-	return extractStackBin(m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.second, i, name);
-}
-
-std::vector<TString> AssemblerProjection::getCorrelationClasses(TString type) {
-	assert(has(type));
-	std::vector<TString> correlationClasses;
-	for(auto &componentByCorrelationClass: m_componentsByCorrelationClass.find(type)->second) {
-		correlationClasses.push_back(componentByCorrelationClass.first);
-	}
-	return correlationClasses;
-}
-
 TH1* AssemblerProjection::getHistogram(TString type) const {
 	assert(has(type));
 	TObjArray* stack = m_components.find(type)->second.first->GetStack();
-	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
-}
-
-TH1* AssemblerProjection::getHistogram(TString type, TString correlationClass) const {
-	assert(has(type, correlationClass));
-	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
 }
 
@@ -233,10 +187,12 @@ std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString t
 	
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
-	auto meta = m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
+//	auto meta = m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
 	m_assembler->setRanges(ranges);
 	
-	return meta;
+return std::set<PhysicsContribution::metadata_t>();
+	
+//	return meta;
 }
 
 double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
@@ -263,28 +219,17 @@ double AssemblerProjection::getMoment(TString type, int k, bool center) const {
 	return getMoment(h, k, center);
 }
 
-double AssemblerProjection::getMoment(TString type, TString correlationClass, int k, bool center) const {
-	assert(has(type, correlationClass));
-	TObjArray* stack = m_componentsByCorrelationClass.find(type)->second.find(correlationClass)->second.first->GetStack();
-	if(!stack) {
-		return 0;
-	}
-	TH1* h = (TH1*)stack->Last();
-	if(hasOverflowIncluded() && h->GetBinContent(h->GetNbinsX() + 1) != 0) {
-		throw std::runtime_error("can't compute moment when overflow bin is not empty");
-	}
-	return getMoment(h, k, center);
-}
-
 std::vector<std::pair<int, int>> AssemblerProjection::getRanges() const {
 	return m_ranges;
 }
 
 std::set<TString> AssemblerProjection::getUncertainties() const {
 	std::set<TString> uncertainties;
-	for(auto &projection : m_projections) {
-		for(auto &projectionUncertainties : projection->getUncertainties()) {
-			uncertainties.insert(projectionUncertainties.first);
+	for(auto &typeProjection : m_typeProjections) {
+		for(auto &projection : typeProjection.second) {
+			for(auto &projectionUncertainties : projection->getUncertainties()) {
+				uncertainties.insert(projectionUncertainties.first);
+			}
 		}
 	}
 	return uncertainties;
@@ -292,13 +237,6 @@ std::set<TString> AssemblerProjection::getUncertainties() const {
 
 bool AssemblerProjection::has(TString type) const {
 	return (m_components.find(type) != m_components.end() && m_components.find(type)->second.first->GetHists());
-}
-
-bool AssemblerProjection::has(TString type, TString correlationClass) const {
-	return (
-		m_componentsByCorrelationClass.find(type) != m_componentsByCorrelationClass.end()
-		&& m_componentsByCorrelationClass.find(type)->second.find(correlationClass) != m_componentsByCorrelationClass.find(type)->second.end()
-	);
 }
 
 bool AssemblerProjection::hasOverflowIncluded() const {
@@ -606,7 +544,7 @@ void AssemblerProjection::printMeta(TString type) const {
 	}
 }
 
-void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
+/*void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 
 	std::cout << "Creating datacard..." << std::endl;
 	
@@ -825,3 +763,4 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	
 	datacard.close();
 }
+*/
