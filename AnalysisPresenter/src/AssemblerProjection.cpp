@@ -1,8 +1,8 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/BaseBundleProjection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 #include "Math/QuantFuncMathCore.h"
 #include "TLegend.h"
@@ -32,7 +32,7 @@ using namespace std;
 ClassImp(AssemblerProjection)
 
 AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_ranges(assembler->getRanges()), m_title(assembler->getVarName(name)) {
-	std::map<TString, std::vector<PhysicsContributionProjection*>> hProjections;
+	m_isDistribution = (name != "_");
 	
 	// Somehow putting all of this inline in the for loop doesn't work
 	auto vData = m_assembler->getContributions("data");
@@ -42,33 +42,40 @@ AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, boo
 	
 	// Project event counts and uncertainty histograms
 	for(auto &contribution : boost::join(vData, contributionsModel)) {
-		if(hProjections.find(contribution->getType()) == hProjections.end()) {
-			hProjections.insert(make_pair(contribution->getType(), std::vector<PhysicsContributionProjection*>()));
+		if(m_typeProjections.find(contribution->getType()) == m_typeProjections.end()) {
+			m_typeProjections.insert(make_pair(contribution->getType(), std::vector<BaseBundleProjection*>()));
 		}
 		
-		hProjections[contribution->getType()].push_back(contribution->project(name, binForOverflow));
+		m_typeProjections[contribution->getType()].push_back(contribution->project(name, binForOverflow));
 	}
 	
-	// Prepare projection for output: Put projections together
-	for(const auto &typeProjection : hProjections) {
-		m_typeProjections.insert(typeProjection);
-		add(typeProjection.first);
-	}
-	
-	m_isDistribution = (name != "_");
+	prepareStacks();
 }
 
 AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, bool combineMissing) : m_assembler(parent->m_assembler), m_binForOverflow(parent->m_binForOverflow), m_isDistribution(parent->m_isDistribution), m_name(parent->m_name), m_parent(parent), m_ranges(parent->m_ranges), m_title(parent->m_title) {
-	for(auto &parentComponent : m_parent->m_components) {
-		TString type = parentComponent.first;
+	for(auto &parentTypeProjection : m_parent->m_typeProjections) {
+		TString type = parentTypeProjection.first;
 		
 		if(bundle->getType() != type) {
-			m_components[type] = m_parent->m_components.at(type);
+			m_typeProjections[type] = m_parent->m_typeProjections.at(type);
 			continue;
+		
 		}
+		m_typeProjections.insert(make_pair(type, std::vector<BaseBundleProjection*>()));
 		
 		for(auto &component : bundle->getComponents()) {
-			component = component;
+			m_typeProjections[type].push_back(component->project(m_name, m_binForOverflow));
+		}
+	}
+	
+	prepareStacks();
+	
+	cout << "after bundling " << bundle->getName() << ", we have " << m_components["background"].first->GetHists()->GetEntries() << " hists in the stack" << endl;
+	cout << "BaseBundleProjections and their contributions in there:" << endl;
+	for(BaseBundleProjection* projection : m_typeProjections[bundle->getType()]) {
+		cout << projection->getSource()->getName() << endl;
+		for(auto contribution : projection->getPhysicsContributions()) {
+			cout << "  " << contribution->getName() << endl;
 		}
 	}
 }
@@ -85,59 +92,17 @@ AssemblerProjection::~AssemblerProjection() {
 	}
 }
 
-// Combine correlated uncertainties and assemble contributions into sorted histogram stack
-void AssemblerProjection::add(TString type) {
-	// Intermediate structure for main histogram, and stack for systematic uncertainties (statistical ones are taken care of in main histogram
-	std::vector<std::pair<TH1D*, double>> vh;
-	THStack* hsSyst = new THStack("hsSyst", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
-	
-	// Also, break things down by correlation class (for datacards and such)
-	for(const auto &contributionProjection : m_typeProjections[type]) {
-		vh.push_back(make_pair(contributionProjection->getHistogram(), contributionProjection->getHistogram()->Integral()));
-		
-		for(const auto &uncertainty : contributionProjection->getUncertainties()) {
-			// Combine uncertainties into main histograms
-			TH1D* hUncertainty = (TH1D*)hsSyst->FindObject(uncertainty.first);
-			if(hUncertainty) {
-				for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
-					double value = hUncertainty->GetBinContent(j);
-					value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
-					hUncertainty->SetBinContent(j, value);
-				}
-			} else {
-				hsSyst->Add(uncertainty.second);
-			}
-		}
-	}
-	
-	// Sort by amount of contribution
-	std::sort(vh.begin()
-		, vh.end()
-		, boost::bind(&std::pair<TH1D*, double>::second, _1) < boost::bind(&std::pair<TH1D*, double>::second, _2)
-	);
-	
-	// Prepare content stack
-	THStack* hs = new THStack("hs", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
-	for(const auto &contribution : vh) {
-		contribution.first->SetLineWidth(0);
-		hs->Add(contribution.first);
-	}
-	
-	if(m_components.find(type) != m_components.end()) {
-		throw std::runtime_error("overwriting projection components not supported");
-	}
-	m_components.insert(make_pair(type, make_pair(hs, hsSyst)));
-}
-
 double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const {
 	TList* hists = stack->GetHists();
 	double val2 = 0;
 	TIterator* iter = new TListIter(hists);
 	// If hists was 0, Next() returns 0, so we're fine. This happens if the stack is empty (common use case: stack for systematic uncertainties).
 	while(TH1* obj = (TH1*)iter->Next()) {
-		val2 += pow(obj->GetBinContent(i), 2);
+		//val2 += pow(obj->GetBinContent(i), 2);
+		val2 = sqrt(val2*val2 + pow(obj->GetBinContent(i), 2));
 	}
-	return sqrt(val2);
+	//return sqrt(val2);
+	return val2;
 }
 
 AssemblerProjection* AssemblerProjection::bundle(Bundle* bundle, bool combineMissing) const {
@@ -188,11 +153,9 @@ std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString t
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
 //	auto meta = m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
+auto meta = std::set<PhysicsContribution::metadata_t>();
 	m_assembler->setRanges(ranges);
-	
-return std::set<PhysicsContribution::metadata_t>();
-	
-//	return meta;
+	return meta;
 }
 
 double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
@@ -457,6 +420,52 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	}
 	
 	return m_canvas;
+}
+
+void AssemblerProjection::prepareStacks() {
+	// Combine correlated uncertainties and assemble contributions / bundle components into sorted histogram stack
+	for(const auto &typeProjection : m_typeProjections) {
+		// Intermediate structure for main histogram, and stack for systematic uncertainties (statistical ones are taken care of in main histogram
+		std::vector<std::pair<TH1D*, double>> vh;
+		THStack* hsSyst = new THStack("hsSyst", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
+		
+		// Also, break things down by correlation class (for datacards and such)
+		for(const auto &baseBundleProjection : typeProjection.second) {
+			vh.push_back(make_pair(baseBundleProjection->getHistogram(), baseBundleProjection->getHistogram()->Integral()));
+			
+			for(const auto &uncertainty : baseBundleProjection->getUncertainties()) {
+				// Combine uncertainties into main histograms
+				TH1D* hUncertainty = (TH1D*)hsSyst->FindObject(uncertainty.first);
+				if(hUncertainty) {
+					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
+						double value = hUncertainty->GetBinContent(j);
+						value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
+						hUncertainty->SetBinContent(j, value);
+					}
+				} else {
+					hsSyst->Add(uncertainty.second);
+				}
+			}
+		}
+		
+		// Sort by amount of contribution
+		std::sort(vh.begin()
+			, vh.end()
+			, boost::bind(&std::pair<TH1D*, double>::second, _1) < boost::bind(&std::pair<TH1D*, double>::second, _2)
+		);
+		
+		// Prepare content stack
+		THStack* hs = new THStack("hs", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
+		for(const auto &contribution : vh) {
+			contribution.first->SetLineWidth(0);
+			hs->Add(contribution.first);
+		}
+		
+		if(m_components.find(typeProjection.first) != m_components.end()) {
+			throw std::runtime_error("overwriting projection components not supported");
+		}
+		m_components.insert(make_pair(typeProjection.first, make_pair(hs, hsSyst)));
+	}
 }
 
 void AssemblerProjection::print() const {

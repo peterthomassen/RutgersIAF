@@ -10,6 +10,7 @@
 #include "THnBase.h"
 #include "TTree.h"
 
+#include "RutgersIAF/AnalysisPresenter/interface/BaseBundleProjection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
 
 using namespace std;
@@ -374,17 +375,10 @@ void PhysicsContribution::print(int level) const {
 	cout << prefix << getName() << " (" << m_filename << ", " << m_treeRname << ")" << endl;
 }
 
-PhysicsContributionProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow) const {
+BaseBundleProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow) const {
 	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
 	
-	TString title;
-	if(isData()) {
-		title = getSelectionString();
-	} else {
-		title = m_name;
-	}
-	
-	PhysicsContributionProjection* projection = new PhysicsContributionProjection(m_name, title, this, varName, &m_uncertaintyMap, zerostat);
+	PhysicsContributionProjection* projection = new PhysicsContributionProjection(this, varName, &m_uncertaintyMap, zerostat);
 	
 	if(binForOverflow) {
 		projection->incorporateOverflow();

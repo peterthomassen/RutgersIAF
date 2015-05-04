@@ -17,6 +17,7 @@
 
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
@@ -46,21 +47,47 @@ Assembler::~Assembler() {
 
 void Assembler::addContribution(PhysicsContribution* contribution) {
 	if(contribution->isData()) {
+		if(std::find(m_contributions["data"].begin(), m_contributions["data"].end(), contribution) != m_contributions["data"].end()) {
+			cerr << "Cannot add " << contribution->getType() << " contribution " << contribution->getName() << " twice" << endl;
+			throw std::runtime_error("Unable to handle contribution");
+		}
 		m_contributions["data"].push_back(contribution);
 	} else if(contribution->isBackground()) {
+		if(std::find(m_contributions["background"].begin(), m_contributions["background"].end(), contribution) != m_contributions["background"].end()) {
+			cerr << "Cannot add " << contribution->getType() << " contribution " << contribution->getName() << " twice" << endl;
+			throw std::runtime_error("Unable to handle contribution");
+		}
 		if(contribution->getFillColor() < 0) {
 			contribution->setFillColor(2 + m_contributions["background"].size());
 		}
 		m_contributions["background"].push_back(contribution);
 	} else if(contribution->isSignal()) {
+		if(std::find(m_contributions["signal"].begin(), m_contributions["signal"].end(), contribution) != m_contributions["signal"].end()) {
+			cerr << "Cannot add " << contribution->getType() << " contribution " << contribution->getName() << " twice" << endl;
+			throw std::runtime_error("Unable to handle contribution");
+		}
 		m_contributions["signal"].push_back(contribution);
 	} else {
 		throw std::runtime_error("Unable to handle contribution");
 	}
 }
 
+void Assembler::addBundle(Bundle* bundle) {
+	if(m_bundles.find(bundle->getName()) != m_bundles.end()) {
+		cerr << "There is already a bundle with name " << bundle->getName() << " declared to the assembler" << endl;
+		throw std::runtime_error("Unable to handle bundle");
+	}
+	m_bundles.insert(make_pair(bundle->getName(), bundle));
+}
+
 Channel* Assembler::channel(const char* name) {
 	return new Channel(this, name);
+}
+
+Bundle* Assembler::getBundle(TString name) const {
+	return (m_bundles.find(name) != m_bundles.end())
+		? m_bundles.at(name)
+		: 0;
 }
 
 std::vector<PhysicsContribution*> Assembler::getContributions(TString type) const {

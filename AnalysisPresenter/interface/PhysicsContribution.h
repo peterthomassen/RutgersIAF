@@ -43,7 +43,7 @@ public:
 	bool isMC() const;
 	
 	void print(int level = 0) const;
-	PhysicsContributionProjection* project(const char* varName, const bool binForOverflow = false) const;
+	BaseBundleProjection* project(const char* varName, const bool binForOverflow = false) const;
 	
 	bool setDebug(bool);
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);

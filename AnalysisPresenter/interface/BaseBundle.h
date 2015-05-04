@@ -7,6 +7,8 @@
 
 #include "TROOT.h"
 
+class BaseBundleProjection;
+
 class BaseBundle : public TObject {
 
 public:
@@ -24,6 +26,7 @@ public:
 	bool isSignal() const;
 	
 	virtual void print(int level = 0) const = 0;
+	virtual BaseBundleProjection* project(const char* varName, const bool binForOverflow = false) const = 0;
 	void setFillColor(const Int_t fillColor);
 
 protected:

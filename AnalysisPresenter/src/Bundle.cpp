@@ -10,6 +10,9 @@
 #include "THnBase.h"
 #include "TTree.h"
 
+#include "RutgersIAF/AnalysisPresenter/interface/BaseBundleProjection.h"
+#include "RutgersIAF/AnalysisPresenter/interface/BundleProjection.h"
+
 using namespace std;
 
 ClassImp(Bundle)
@@ -51,4 +54,18 @@ void Bundle::print(int level) const {
 	for(auto &component : m_components) {
 		component->print(level + 1);
 	}
+}
+
+BaseBundleProjection* Bundle::project(const char* varName, const bool binForOverflow) const {
+	BundleProjection* projection = new BundleProjection(this, varName);
+	
+	if(binForOverflow) {
+		projection->incorporateOverflow();
+	}
+	
+	if(m_fillColor >= 0) {
+		projection->getHistogram()->SetFillColor(m_fillColor);
+	}
+	
+	return projection;
 }

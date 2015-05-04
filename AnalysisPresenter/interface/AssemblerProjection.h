@@ -55,8 +55,7 @@ protected:
 	std::vector<std::pair<int, int>> m_ranges;
 	TString m_title;
 	
-	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
-	std::map<TString, std::vector<PhysicsContributionProjection*>> m_typeProjections;
+	std::map<TString, std::vector<BaseBundleProjection*>> m_typeProjections;
 	
 	double extractStackBin(THStack* stack, int i, TString name) const;
 	double addStackBinInQuadrature(THStack* stack, int i) const;
@@ -65,7 +64,9 @@ protected:
 private:
 	TCanvas* m_canvas = 0;
 	
-	void add(TString type);
+	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
+	
+	void prepareStacks();
 
 
 	ClassDef(AssemblerProjection,1);

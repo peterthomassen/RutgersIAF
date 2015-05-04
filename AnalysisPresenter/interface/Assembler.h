@@ -11,6 +11,7 @@
 class TFile;
 
 class AssemblerProjection;
+class Bundle;
 class Channel;
 class PhysicsContribution;
 class PhysicsContributionProjection;
@@ -24,9 +25,11 @@ public:
 	Assembler(TString = "", Option_t* options = "CREATE");
 	virtual ~Assembler();
 	
-	void addContribution(PhysicsContribution*);
+	void addContribution(PhysicsContribution* contribution);
+	void addBundle(Bundle* bundle);
 	Channel* channel(const char*);
 	
+	Bundle* getBundle(TString name) const;
 	std::vector<PhysicsContribution*> getContributions(TString type) const;
 	double getLumi() const;
 	TString getVarExp() const;
@@ -53,6 +56,7 @@ private:
 	TFile* m_outfile = 0;
 	
 	std::map<TString, std::vector<PhysicsContribution*>> m_contributions;
+	std::map<TString, Bundle*> m_bundles;
 	
 	AssemblerProjection* m_projection = 0;
 	

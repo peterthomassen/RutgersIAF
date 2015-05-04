@@ -3,11 +3,11 @@
 
 #include "RutgersIAF/AnalysisPresenter/interface/BaseBundle.h"
 
-#include <map>
-#include <set>
 #include <vector>
 
 #include "TROOT.h"
+
+class BundleProjection;
 
 class Bundle : public BaseBundle {
 
@@ -20,6 +20,7 @@ public:
 	std::vector<BaseBundle*> getComponents() const;
 	
 	void print(int level = 0) const;
+	BaseBundleProjection* project(const char* varName, const bool binForOverflow = false) const;
 
 protected:
 
