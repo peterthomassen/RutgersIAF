@@ -57,9 +57,6 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	}
 	
 	if(!m_source->isData()) {
-if(m_source->getAllowNegative()) {
-	cout << "!!!!!! contribution " << getSource()->getName() << " allows negative contributions! yay" << endl;
-}
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
 			// Set negative bins to 0 (this can happen due to fake subtraction etc.)
 			if(!m_source->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {

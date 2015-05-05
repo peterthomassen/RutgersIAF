@@ -130,7 +130,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	m_hn = (THnBase*)hn->Clone();
 	
-	cout << "Running " << m_filename << " (" << m_type << ", lumi=" << m_lumi << "/pb) ";
+	cout << "Running " << m_filename << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
 	TFile f(m_filename);
 	if(f.IsZombie()) {
 		throw std::runtime_error("couldn't open contribution file");
@@ -201,11 +201,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		
 		// Signal
 		if(isSignal()) {
-			cout << endl << "Notice: Fake rates are being ignored in signal treatment";
+			cout << "Notice: Fake rates are being ignored in signal treatment" << endl;
 		}
 	}
 	
-	if(m_debug) cout << endl << selection << endl;
+	if(m_debug) cout << selection << endl;
 	
 	int step = 10000;
 	int n = treeR->GetEntries();

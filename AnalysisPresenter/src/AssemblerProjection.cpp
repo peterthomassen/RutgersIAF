@@ -76,7 +76,6 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		for(auto &contribution : m_assembler->getPhysicsContributions(type)) {
 			if(contributions.find(contribution) == contributions.end()) {
 				if(missingName == "") {
-					cout << "Adding " << contribution->getName() << " separately" << endl;
 					auto projection = contribution->project(m_name, m_binForOverflow);
 					m_typeProjections[type].push_back(projection);
 					std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
@@ -87,7 +86,6 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 			}
 		}
 		if(missing->getComponents().size() > 0) {
-			cout << "Adding " << missing->getName() << " separately" << endl;
 			auto projection = missing->project(m_name, m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
@@ -97,15 +95,6 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 	}
 	
 	prepareStacks();
-	
-	cout << "after bundling " << bundle->getName() << ", we have " << m_components["background"].first->GetHists()->GetEntries() << " hists in the stack" << endl;
-	cout << "BaseBundleProjections and their contributions in there:" << endl;
-	for(BaseBundleProjection* projection : m_typeProjections[bundle->getType()]) {
-		cout << projection->getSource()->getName() << endl;
-		for(auto contribution : projection->getPhysicsContributions()) {
-			cout << "  " << contribution->getName() << endl;
-		}
-	}
 }
 
 AssemblerProjection::AssemblerProjection() {
