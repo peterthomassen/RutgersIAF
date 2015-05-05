@@ -30,7 +30,7 @@ public:
 	Channel* channel(const char*);
 	
 	Bundle* getBundle(TString name) const;
-	std::vector<PhysicsContribution*> getContributions(TString type) const;
+	std::vector<PhysicsContribution*> getPhysicsContributions(TString type) const;
 	double getLumi() const;
 	TString getVarExp() const;
 	TString getVarName(TString name) const;

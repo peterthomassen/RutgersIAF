@@ -90,7 +90,7 @@ Bundle* Assembler::getBundle(TString name) const {
 		: 0;
 }
 
-std::vector<PhysicsContribution*> Assembler::getContributions(TString type) const {
+std::vector<PhysicsContribution*> Assembler::getPhysicsContributions(TString type) const {
 	return m_contributions.at(type);
 }
 

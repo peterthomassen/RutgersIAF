@@ -22,10 +22,10 @@ class AssemblerProjection : public TObject {
 public:
 	AssemblerProjection();
 	AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow);
-	AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, bool combineMissing);
+	AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, TString missingName);
 	virtual ~AssemblerProjection();
 
-	AssemblerProjection* bundle(Bundle* bundle, bool combineMissing = false) const;
+	AssemblerProjection* bundle(Bundle* bundle, TString missingName = "") const;
 	double getBin(TString type, int i) const;
 	double getBinStat(TString type, int i) const;
 	double getBinSyst(TString type, int i) const;

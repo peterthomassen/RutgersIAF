@@ -35,9 +35,9 @@ AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, boo
 	m_isDistribution = (name != "_");
 	
 	// Somehow putting all of this inline in the for loop doesn't work
-	auto vData = m_assembler->getContributions("data");
-	auto vBackground = m_assembler->getContributions("background");
-	auto vSignal = m_assembler->getContributions("signal");
+	auto vData = m_assembler->getPhysicsContributions("data");
+	auto vBackground = m_assembler->getPhysicsContributions("background");
+	auto vSignal = m_assembler->getPhysicsContributions("signal");
 	auto contributionsModel = boost::join(vBackground, vSignal);
 	
 	// Project event counts and uncertainty histograms
@@ -52,7 +52,7 @@ AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, boo
 	prepareStacks();
 }
 
-AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, bool combineMissing) : m_assembler(parent->m_assembler), m_binForOverflow(parent->m_binForOverflow), m_isDistribution(parent->m_isDistribution), m_name(parent->m_name), m_parent(parent), m_ranges(parent->m_ranges), m_title(parent->m_title) {
+AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, TString missingName) : m_assembler(parent->m_assembler), m_binForOverflow(parent->m_binForOverflow), m_isDistribution(parent->m_isDistribution), m_name(parent->m_name), m_parent(parent), m_ranges(parent->m_ranges), m_title(parent->m_title) {
 	for(auto &parentTypeProjection : m_parent->m_typeProjections) {
 		TString type = parentTypeProjection.first;
 		
@@ -63,8 +63,36 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		}
 		m_typeProjections.insert(make_pair(type, std::vector<BaseBundleProjection*>()));
 		
+		std::set<const PhysicsContribution*> contributions;
 		for(auto &component : bundle->getComponents()) {
-			m_typeProjections[type].push_back(component->project(m_name, m_binForOverflow));
+			auto projection = component->project(m_name, m_binForOverflow);
+			m_typeProjections[type].push_back(projection);
+			// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
+			std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
+			contributions.insert(projectionContributions.begin(), projectionContributions.end());
+		}
+		
+		Bundle* missing = new Bundle(type, missingName);
+		for(auto &contribution : m_assembler->getPhysicsContributions(type)) {
+			if(contributions.find(contribution) == contributions.end()) {
+				if(missingName == "") {
+					cout << "Adding " << contribution->getName() << " separately" << endl;
+					auto projection = contribution->project(m_name, m_binForOverflow);
+					m_typeProjections[type].push_back(projection);
+					std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
+					contributions.insert(projectionContributions.begin(), projectionContributions.end());
+				} else {
+					missing->addComponent(contribution);
+				}
+			}
+		}
+		if(missing->getComponents().size() > 0) {
+			cout << "Adding " << missing->getName() << " separately" << endl;
+			auto projection = missing->project(m_name, m_binForOverflow);
+			m_typeProjections[type].push_back(projection);
+			// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
+			std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
+			contributions.insert(projectionContributions.begin(), projectionContributions.end());
 		}
 	}
 	
@@ -98,15 +126,13 @@ double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const
 	TIterator* iter = new TListIter(hists);
 	// If hists was 0, Next() returns 0, so we're fine. This happens if the stack is empty (common use case: stack for systematic uncertainties).
 	while(TH1* obj = (TH1*)iter->Next()) {
-		//val2 += pow(obj->GetBinContent(i), 2);
-		val2 = sqrt(val2*val2 + pow(obj->GetBinContent(i), 2));
+		val2 += pow(obj->GetBinContent(i), 2);
 	}
-	//return sqrt(val2);
-	return val2;
+	return sqrt(val2);
 }
 
-AssemblerProjection* AssemblerProjection::bundle(Bundle* bundle, bool combineMissing) const {
-	return new AssemblerProjection(this, bundle, combineMissing);
+AssemblerProjection* AssemblerProjection::bundle(Bundle* bundle, TString missingName) const {
+	return new AssemblerProjection(this, bundle, missingName);
 }
 
 double AssemblerProjection::extractStackBin(THStack* stack, int i, TString name) const {
