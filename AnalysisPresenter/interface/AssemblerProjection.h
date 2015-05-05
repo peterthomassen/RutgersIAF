@@ -49,6 +49,7 @@ public:
 protected:
 	Assembler* m_assembler;
 	bool m_binForOverflow;
+	Bundle* m_bundle = 0;
 	bool m_isDistribution;
 	TString m_name;
 	const AssemblerProjection* m_parent = 0;

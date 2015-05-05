@@ -90,6 +90,10 @@ Bundle* Assembler::getBundle(TString name) const {
 		: 0;
 }
 
+Bundle* Assembler::getDefaultBundle() const {
+	return m_defaultBundle;
+}
+
 std::vector<PhysicsContribution*> Assembler::getPhysicsContributions(TString type) const {
 	return m_contributions.at(type);
 }
@@ -191,7 +195,11 @@ void Assembler::process(std::string varexp, TString selection) {
 }
 
 AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow) {
-	return new AssemblerProjection(this, name, binForOverflow);
+	AssemblerProjection* projection = new AssemblerProjection(this, name, binForOverflow);
+	if(getDefaultBundle()) {
+		projection = projection->bundle(getDefaultBundle());
+	}
+	return projection;
 }
 
 void Assembler::save() {
@@ -226,6 +234,12 @@ void Assembler::setDebug(bool debug) {
 	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		contribution->setDebug(debug);
 	}
+}
+
+Bundle* Assembler::setDefaultBundle(Bundle* bundle) {
+	Bundle* prev = getDefaultBundle();
+	m_defaultBundle = bundle;
+	return prev;
 }
 
 void Assembler::setFakeRate(TString name, TString f) {

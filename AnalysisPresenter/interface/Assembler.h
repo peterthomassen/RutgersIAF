@@ -30,6 +30,7 @@ public:
 	Channel* channel(const char*);
 	
 	Bundle* getBundle(TString name) const;
+	Bundle* getDefaultBundle() const;
 	std::vector<PhysicsContribution*> getPhysicsContributions(TString type) const;
 	double getLumi() const;
 	TString getVarExp() const;
@@ -42,6 +43,7 @@ public:
 	void save(const char*, const bool binForOverflow = true);
 	
 	void setDebug(bool);
+	Bundle* setDefaultBundle(Bundle* bundle);
 	void setFakeRate(TString, TString);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
@@ -58,6 +60,7 @@ private:
 	std::map<TString, std::vector<PhysicsContribution*>> m_contributions;
 	std::map<TString, Bundle*> m_bundles;
 	
+	Bundle* m_defaultBundle = 0;
 	AssemblerProjection* m_projection = 0;
 	
 	TString m_varexp;
