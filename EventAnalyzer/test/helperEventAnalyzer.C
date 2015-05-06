@@ -550,6 +550,8 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("PTGOODJETS", new EventVariableObjectVariableVector<double>("PT","goodJets"));
   handler->addEventVariable("ETAGOODJETS", new EventVariableObjectVariableVector<double>("ETA","goodJets"));
   handler->addEventVariable("BDISCCSVGOODJETS", new EventVariableObjectVariableVector<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS","goodJets"));
+  handler->addEventVariable("BDISCJETPROBBJETTAGSGOODJETS", new EventVariableObjectVariableVector<double>("BDISCPOS_JETPROBABILITYBJETTAGS","goodJets"));
+  handler->addEventVariable("BDISCJETBPROBBJETTAGSGOODJETS", new EventVariableObjectVariableVector<double>("BDISCPOS_JETBPROBABILITYBJETTAGS","goodJets"));
   
   handler->addEventVariable("NGOODPHOTONS", new EventVariableN("NGOODPHOTONS","goodPhotons"));
   handler->addEventVariable("PTGOODPHOTONS", new EventVariableObjectVariableVector<double>("PT","goodPhotons"));
@@ -776,6 +778,10 @@ void setupFilterCuts(BaseHandler* handler)
 
 void setupMC1(BaseHandler* handler, TString pufile, bool doMatching = true, bool wzKinematics = false)
 {
+  // Avoid compiler warnings
+  pufile = pufile;
+  doMatching = doMatching;
+
 
   ////Additional products
   
