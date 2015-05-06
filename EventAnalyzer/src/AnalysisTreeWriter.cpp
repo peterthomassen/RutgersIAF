@@ -19,8 +19,8 @@ AnalysisTreeWriter::AnalysisTreeWriter(BaseHandler* handler,TString treename)
 AnalysisTreeWriter::~AnalysisTreeWriter() { }
 
 void AnalysisTreeWriter::finish() {
-	if(m_n > 0 && m_tree->GetBranch("WEIGHT")) {
-		m_tree->SetWeight(1./m_n);
+	if(m_handler->getN() > 0 && m_tree->GetBranch("WEIGHT")) {
+		m_tree->SetWeight(1./m_handler->getN());
 	}
 	m_handler->getOutFile()->cd();
 	m_tree->Write(0, TObject::kOverwrite);

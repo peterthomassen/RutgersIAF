@@ -17,7 +17,3 @@ BaseTreeWriter::~BaseTreeWriter()
 {
 
 }
-
-void BaseTreeWriter::setNumberOfInputEvents(int n) {
-	m_n = n;
-}

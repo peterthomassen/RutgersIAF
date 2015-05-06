@@ -60,8 +60,8 @@ BaseHandler::~BaseHandler()
 }
 
 //-----------------------------------------
-int BaseHandler::getMode(std::string name) {
-        std::map<std::string, int>::iterator it = m_mode.find(name);
+int BaseHandler::getMode(std::string name) const {
+        std::map<std::string, int>::const_iterator it = m_mode.find(name);
         return (it != m_mode.end())
                 ? it->second
                 : 0;
@@ -171,7 +171,7 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 		nEntryHigh = nevents;
 	}
 	if(m_writer) {
-		m_writer->setNumberOfInputEvents(nEntryHigh - nEntryLow);
+		m_n = nEntryHigh - nEntryLow;
 	}
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 		if(done) break;
