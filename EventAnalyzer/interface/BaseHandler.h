@@ -110,8 +110,8 @@ class BaseHandler : virtual public TObject {
   virtual void addWeightVariable(TString);
 
   BaseTreeReader* getReader(){return m_reader;}
-  BaseTreeWriter* getWriter(){return m_writer;}
-  void setWriter(BaseTreeWriter* c){m_writer = c;}
+  BaseTreeWriter* getWriter(TString fakeCombination = "") const;
+  void setWriter(BaseTreeWriter* writer, TString fakeCombination = "");
   TFile* getOutFile(){return m_outFile;}
 
   void addDumpEvent(int,int,long);
@@ -223,8 +223,9 @@ class BaseHandler : virtual public TObject {
   std::vector<SignatureWithBjets*> m_bjetSignatures;
   Signature* m_noCutSignature;
   TFile* m_outFile;  
-  BaseTreeReader* m_reader;  
-  BaseTreeWriter* m_writer;
+  BaseTreeReader* m_reader;
+  BaseTreeWriter* m_writer = 0;
+  std::map<TString, BaseTreeWriter*> m_writers;
 
   ClassDef(BaseHandler,1);
 

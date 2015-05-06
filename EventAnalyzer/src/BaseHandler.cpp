@@ -48,8 +48,6 @@ BaseHandler::BaseHandler(TString ofname, BaseTreeReader* reader)
   m_outFile = new TFile(m_outFileName.Data(),"RECREATE");
   m_noCutSignature = new Signature("noCutSignature","");
 
-  m_writer = 0;
-
   m_reader = reader;  
 }
 
@@ -143,7 +141,9 @@ void BaseHandler::finishSignatures()
   for(unsigned int s = 0; s < m_bjetSignatures.size(); s++){
     m_bjetSignatures[s]->finish();
   }
-  if(m_writer)m_writer->finish();
+  for(auto &writer : m_writers) {
+    writer.second->finish();
+  }
   m_outFile->Close();
 }
 
@@ -170,7 +170,7 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 	if(nEntryHigh == 0 || nEntryHigh > nevents) {
 		nEntryHigh = nevents;
 	}
-	if(m_writer) {
+	if(m_writers.size() > 0) {
 		m_n = nEntryHigh - nEntryLow;
 	}
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
@@ -208,14 +208,24 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						m_reader->dumpEventInfo();
 					}
 					
+					m_writer = getWriter();
 					if(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination")) {
 						cout << "E=" << event;
-						if(getMode("trackFakeCombination")) cout << " trackIt=" << m_trackFakeCombinationIndex;
-						if(getMode("photonFakeCombination")) cout << " photonIt=" << m_photonFakeCombinationIndex;
-						if(getMode("tauFakeCombination")) cout << " tauIt=" << m_tauFakeCombinationIndex;
 						if((bool)m_trackFakeCombinationIndex + (bool)m_photonFakeCombinationIndex + (bool)m_tauFakeCombinationIndex > 1) {
 							cout << ", skipping (multiple)" << '\n';
 							continue;
+						}
+						if(getMode("trackFakeCombination")) {
+							cout << " trackIt=" << m_trackFakeCombinationIndex;
+							if(m_trackFakeCombinationIndex) m_writer = getWriter("trackFakeCombination");
+						}
+						if(getMode("photonFakeCombination")) {
+							cout << " photonIt=" << m_photonFakeCombinationIndex;
+							if(m_photonFakeCombinationIndex) m_writer = getWriter("photonFakeCombination");
+						}
+						if(getMode("tauFakeCombination")) {
+							cout << " tauIt=" << m_tauFakeCombinationIndex;
+							if(m_tauFakeCombinationIndex) m_writer = getWriter("tauFakeCombination");
 						}
 						cout << '\n';
 					}
@@ -249,12 +259,16 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						continue;
 					}
 					setVariable("fakeIncarnation", incarnation);
-					analyzeEvent();
+					if(incarnation == 0) {
+						analyzeEvent();
+					}
 
 					if(applyHandlerCuts()){
 					  bool saveEvent = false;
 					  bool isSet = getVariable("WRITEEVENT",saveEvent);
-					  if(m_writer && isSet && saveEvent)m_writer->fillTree();
+					  if(m_writer && isSet && saveEvent) {
+						  m_writer->fillTree();
+					  }
 					}
 				}
 			}
@@ -1565,36 +1579,29 @@ ObjectVariable* BaseHandler::getObjectVariable(TString varname)
 //-----------------------------------------
 void BaseHandler::analyzeEvent()
 {
-
 	unsigned int nSig = m_Signatures.size();
 	unsigned int nBjetSig = m_bjetSignatures.size();
 	unsigned int nPreSig = m_preHandlerCutSignatures.size();
 	vector<int> isSigVec(nSig + nBjetSig + nPreSig,0);
 
-	if(m_trackFakeCombinationIndex == 0) {
-		m_noCutSignature->fillHistograms();
+	m_noCutSignature->fillHistograms();
 
-		if(m_debugMode)
-		  printDebugInfo();
+	if(m_debugMode)
+	  printDebugInfo();
 
-		for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
-		  if(m_preHandlerCutSignatures[s]->isSignature()){
-			printSignature(m_preHandlerCutSignatures[s]);
-			m_preHandlerCutSignatures[s]->fillHistograms();
-			isSigVec[s+nSig+nBjetSig]=1;
-		setVariable(m_preHandlerCutSignatures[s]->getName(),true);
-		  }
-		}
+	for(unsigned int s = 0; s < m_preHandlerCutSignatures.size(); s++){
+	  if(m_preHandlerCutSignatures[s]->isSignature()){
+		printSignature(m_preHandlerCutSignatures[s]);
+		m_preHandlerCutSignatures[s]->fillHistograms();
+		isSigVec[s+nSig+nBjetSig]=1;
+	setVariable(m_preHandlerCutSignatures[s]->getName(),true);
+	  }
 	}
+	
     ////////////////////////////
     //Check handler level cuts//
     ////////////////////////////
     if(applyHandlerCuts()){
-
-		if(m_trackFakeCombinationIndex > 0 || m_photonFakeCombinationIndex > 0 || m_tauFakeCombinationIndex > 0) {
-			return;
-		}
-
 
     ////////////////////////////////////////////////////////////
     //Check if it is part of the signature and fill histograms//
@@ -1661,6 +1668,23 @@ void BaseHandler::printDebugInfo()
 void BaseHandler::addPrintModule(PrintModule* pm)
 {
   if(find(m_print_modules.begin(),m_print_modules.end(),pm) == m_print_modules.end())m_print_modules.push_back(pm);
+}
+//-----------------------------------------
+//-----------------------------------------
+void BaseHandler::setWriter(BaseTreeWriter* writer, TString fakeCombination) {
+	m_writers[fakeCombination] = writer;
+	if(fakeCombination == "") {
+		m_writer = writer;
+	}
+}
+//-----------------------------------------
+//-----------------------------------------
+BaseTreeWriter* BaseHandler::getWriter(TString fakeCombination) const {
+	std::map<TString, BaseTreeWriter*>::const_iterator it = m_writers.find(fakeCombination);
+	// Return what we found or defer to default writer
+	return (it != m_writers.end())
+		? it->second
+		: (fakeCombination != "" ? getWriter() : 0);
 }
 //-----------------------------------------
 //-----------------------------------------
