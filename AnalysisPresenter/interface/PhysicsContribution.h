@@ -30,7 +30,7 @@ public:
 	
 	void addFlatUncertainty(TString, double);
 	void addWeight(TString weight, double normalization = 1.0);
-	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.01);
+	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.1);
 	int findBinFromLowEdge(TAxis* axis, double x);
 	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
 	THnBase* getContent() const;

@@ -227,7 +227,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s", varexp.c_str(), varexpIncarnation.c_str());
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
-			cout << (int)(10*k/treeR->GetEntries()) << flush;
+			cout << (int)(10*k/n) << flush;
 		} else {
 			cout << '.' << flush;
 		}
