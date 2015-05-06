@@ -264,6 +264,10 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("isoNonPromptInclusiveTracks","IREL0p15");
   handler->addProductCut("isoNonPromptInclusiveTracks","TRACK_NONPROMPT");
   
+  handler->addProduct("nonIsoNonPromptInclusiveTracks","inclusiveTracks");
+  handler->addProductCut("nonIsoNonPromptInclusiveTracks","NOTIREL0p15");
+  handler->addProductCut("nonIsoNonPromptInclusiveTracks","TRACK_NONPROMPT");
+  
   handler->addProduct("inclusiveTracks7","ALLRECOTRACKS");
   handler->addProductCut("inclusiveTracks7","PT7");
   handler->addProductCut("inclusiveTracks7","ETA2p4");
@@ -288,6 +292,10 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("isoNonPromptInclusiveTracks7","inclusiveTracks7");
   handler->addProductCut("isoNonPromptInclusiveTracks7","IREL0p15");
   handler->addProductCut("isoNonPromptInclusiveTracks7","TRACK_NONPROMPT");
+  
+  handler->addProduct("nonIsoNonPromptInclusiveTracks7","inclusiveTracks7");
+  handler->addProductCut("nonIsoNonPromptInclusiveTracks7","NOTIREL0p15");
+  handler->addProductCut("nonIsoNonPromptInclusiveTracks7","TRACK_NONPROMPT");
   
   // Regular tracks
   handler->addProduct("basicTracks","ALLRECOTRACKS");
@@ -483,7 +491,8 @@ void setupProducts(BaseHandler* handler)
 
 void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSample = false)
 {
-  const double mZ = 91;
+  const double mZ = 90; // 91
+  const double zWidth = 15; // 10
   const double mW = 80.385;
   
   TString products[6] = {"posGoodMuons","negGoodMuons","posGoodElectrons","negGoodElectrons","posGoodTracks","negGoodTracks"};
@@ -531,13 +540,16 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("TAULEADTRACKDZ", new EventVariableObjectVariableVector<double>("LEADTRACKDZ","goodTaus"));
   handler->addEventVariable("TAULEADTRACKDXY", new EventVariableObjectVariableVector<double>("LEADTRACKDXY","goodTaus"));
   handler->addEventVariable("fakeRoleGOODTAUS", new EventVariableObjectVariableVector<int>("fakeRole","goodTaus"));
+  handler->addEventVariable("TOTALISOGOODTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","goodTaus"));
   
 //  handler->addEventVariable("NSIDEBANDTAUS", new EventVariableN("NSIDEBANDTAUS","sidebandTaus"));
 //  handler->addEventVariable("NOTHERTAUS", new EventVariableN("NOTHERTAUS","otherTaus"));
+  handler->addEventVariable("TOTALISONONISOTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","nonIsoTaus"));
   
   handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
   handler->addEventVariable("PTGOODJETS", new EventVariableObjectVariableVector<double>("PT","goodJets"));
   handler->addEventVariable("ETAGOODJETS", new EventVariableObjectVariableVector<double>("ETA","goodJets"));
+  handler->addEventVariable("BDISCCSVGOODJETS", new EventVariableObjectVariableVector<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS","goodJets"));
   
   handler->addEventVariable("NGOODPHOTONS", new EventVariableN("NGOODPHOTONS","goodPhotons"));
   handler->addEventVariable("PTGOODPHOTONS", new EventVariableObjectVariableVector<double>("PT","goodPhotons"));
@@ -581,6 +593,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("NPROMPTINCLUSIVETRACKS", new EventVariableN("NPROMPTINCLUSIVETRACKS","promptInclusiveTracks"));
   handler->addEventVariable("NISONONPROMPTINCLUSIVETRACKS", new EventVariableN("NISONONPROMPTINCLUSIVETRACKS","isoNonPromptInclusiveTracks"));
   handler->addEventVariable("NPROMPTNONISOINCLUSIVETRACKS", new EventVariableN("NPROMPTNONISOINCLUSIVETRACKS","promptNonIsoInclusiveTracks"));
+  handler->addEventVariable("NNONISONONPROMPTINCLUSIVETRACKS", new EventVariableN("NNONISONONPROMPTINCLUSIVETRACKS","nonIsoNonPromptInclusiveTracks"));
   
   handler->addEventVariable("NINCLUSIVETRACKS7", new EventVariableN("NINCLUSIVETRACKS7","inclusiveTracks7"));
   handler->addEventVariable("NISOINCLUSIVETRACKS7", new EventVariableN("NISOINCLUSIVETRACKS7","isoInclusiveTracks7"));
@@ -588,6 +601,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("NPROMPTIREL0p30INCLUSIVETRACKS7", new EventVariableN("NPROMPTIREL0p30INCLUSIVETRACKS7","promptIREL0p30InclusiveTracks7"));
   handler->addEventVariable("NISONONPROMPTINCLUSIVETRACKS7", new EventVariableN("NISONONPROMPTINCLUSIVETRACKS7","isoNonPromptInclusiveTracks7"));
   handler->addEventVariable("NPROMPTNONISOINCLUSIVETRACKS7", new EventVariableN("NPROMPTNONISOINCLUSIVETRACKS7","promptNonIsoInclusiveTracks7"));
+  handler->addEventVariable("NNONISONONPROMPTINCLUSIVETRACKS7", new EventVariableN("NNONISONONPROMPTINCLUSIVETRACKS7","nonIsoNonPromptInclusiveTracks7"));
   
   // Regular tracks
   handler->addEventVariable("NGOODTRACKS", new EventVariableN("NGOODTRACKS","goodTracks"));
@@ -646,11 +660,11 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   EventVariableSumPT* pTbjetsCSVM = new EventVariableSumPT("HTCSVM","bJetsCSVM");
   handler->addEventVariable("HTCSVM",pTbjetsCSVM);
 
-  EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,10);
+  EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,zWidth);
   OSSF->addProduct("goodElectrons");
   handler->addEventVariable("OSSF",OSSF);
 
-  EventVariableOSSF* OSSFnoFake = new EventVariableOSSF("OSSFnoFake","goodMuons","NOFAKE",mZ,10, false);
+  EventVariableOSSF* OSSFnoFake = new EventVariableOSSF("OSSFnoFake","goodMuons","NOFAKE",mZ,zWidth, false);
   OSSFnoFake->addProduct("goodElectrons");
   handler->addEventVariable("OSSFnoFake",OSSFnoFake);
 
@@ -658,6 +672,10 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   massLeptons->addProduct("goodMuons");
   massLeptons->addProduct("goodTaus");
   handler->addEventVariable("MLEPTONS", massLeptons);
+
+  EventVariableMass* massLightLeptons = new EventVariableMass("MLIGHTLEPTONS", "goodElectrons");
+  massLightLeptons->addProduct("goodMuons");
+  handler->addEventVariable("MLIGHTLEPTONS", massLightLeptons);
 
   EventVariableMass* massPhotons = new EventVariableMass("MPHOTONS", "goodPhotons");
   handler->addEventVariable("MPHOTONS", massPhotons);
@@ -692,7 +710,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   EventVariableInRange<int>* trileptons = new EventVariableInRange<int>("NLEPTONS", 3, 1e6, "TRILEPTONS");
   handler->addEventVariable("TRILEPTONS", trileptons);
   
-  EventVariableInRange<double>* mLeptonsOnZ = new EventVariableInRange<double>("MLEPTONS", mZ-10, mZ+10, "MLEPTONSONZ");
+  EventVariableInRange<double>* mLeptonsOnZ = new EventVariableInRange<double>("MLEPTONS", mZ-zWidth, mZ+zWidth, "MLEPTONSONZ");
   handler->addEventVariable("MLEPTONSONZ", mLeptonsOnZ);
 
   EventVariableInRange<double>* met0to50 = new EventVariableInRange<double>("MET", 0, 50, "MET0to50");
@@ -799,16 +817,28 @@ void setupMC1(BaseHandler* handler, TString pufile, bool doMatching = true, bool
   handler->addProduct("MCmuonsFromWZTau","MCmuons");
   handler->addProductCut("MCmuonsFromWZTau","MOTHERWZTau");
 
-  ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
-  handler->addProductSelfComparison("MCmuonsFromWZTau",deltaR0p1);
-  handler->addProductSelfComparison("MCelectronsFromWZTau",deltaR0p1);
-
   handler->addProduct("MCmuonsFake","MCmuons");
   handler->addProductCut("MCmuonsFake","MOTHERnotWZTau");
   handler->addProductCut("MCmuonsFake", "STATUS1");
   
+  handler->addProduct("MCtaus","ALLMCPARTICLES");
+  handler->addProductCut("MCtaus","PDGID15");
+
+  handler->addProduct("MCtausFromWZTau","MCtaus");
+  handler->addProductCut("MCtausFromWZTau","MOTHERWZTau");
+
+  handler->addProduct("MCtausFake","MCtaus");
+  handler->addProductCut("MCtausFake","MOTHERnotWZTau");
+  handler->addProductCut("MCtausFake", "STATUS1");
+  
+  ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
+  handler->addProductSelfComparison("MCmuonsFromWZTau",deltaR0p1);
+  handler->addProductSelfComparison("MCelectronsFromWZTau",deltaR0p1);
+  handler->addProductSelfComparison("MCtausFromWZTau",deltaR0p1);
+
   handler->addProductSelfComparison("MCmuonsFake",deltaR0p1);
   handler->addProductSelfComparison("MCelectronsFake",deltaR0p1);
+  handler->addProductSelfComparison("MCtausFake",deltaR0p1);
 
   if(wzKinematics) {
 	  ObjectVariableValueInList<int>* pdgid6 = new ObjectVariableValueInList<int>("PDGID",6);
@@ -853,6 +883,7 @@ void setupMC2(BaseHandler* handler, TString pufile, bool doMatching = true) {
   ObjectComparisonMatchDeltaRCharge* mcMatchComparison = new ObjectComparisonMatchDeltaRCharge(0.1);
   handler->addProductComparison("goodMuonsNoMC","MCmuonsFromWZTau",mcMatchComparison);
   handler->addProductComparison("goodElectronsNoMC","MCelectronsFromWZTau",mcMatchComparison);
+  handler->addProductComparison("goodTausNoMC","MCtausFromWZTau",mcMatchComparison);
   
   EventVariableProductAngle* fakeAngle = new EventVariableProductAngle("MCmuonsFake", "bJetsCSVM", "FAKEANGLE");
   fakeAngle->addProduct("MCelectronsFake");
@@ -902,6 +933,7 @@ void setupMC2(BaseHandler* handler, TString pufile, bool doMatching = true) {
   if(doMatching) {
 	  handler->addProductComparison("goodElectrons","MCelectronsFromWZTau",mcMatchComparison,false);
 	  handler->addProductComparison("goodMuons","MCmuonsFromWZTau",mcMatchComparison,false);
+	  handler->addProductComparison("goodTaus","MCtausFromWZTau",mcMatchComparison,false);
   }
 
   if(pufile != "") {
