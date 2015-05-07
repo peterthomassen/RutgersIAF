@@ -20,6 +20,7 @@
 
 #include "TFileMerger.h"
 
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -32,7 +33,7 @@
 using namespace std;
 
 Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const char* treeName) {
-	cout << "Now adding Rutgers trees ";
+	cout << "Now adding Rutgers tree " << treeName << " ";
 	TFile* outfile = new TFile(targetname, "UPDATE");
 	
 	outfile->cd();
@@ -242,7 +243,7 @@ int main( int argc, char **argv )
 
    if ( argc < 3 || "-h" == string(argv[1]) || "--help" == string(argv[1]) ) {
       cout << "This is a modified version of ROOT hadd that implements special treatment for trees with name treeR." << endl;
-      cout << "Usage: " << argv[0] << " [-f[0-9]] [-k] [-T] [-O] [-n maxopenedfiles] [-t treeName] [-v verbosity] targetfile source1 [source2 source3 ...]" << endl;
+      cout << "Usage: " << argv[0] << " [-f[0-9]] [-k] [-T] [-O] [-n maxopenedfiles] [-t treeNamePrefix] [-v verbosity] targetfile source1 [source2 source3 ...]" << endl;
       cout << "This program will add histograms from a list of root files and write them" << endl;
       cout << "to a target root file. The target file is newly created and must not " << endl;
       cout << "exist, or if -f (\"force\") is given, must not be one of the source files." << endl;
@@ -268,7 +269,7 @@ int main( int argc, char **argv )
    Bool_t noTrees = kFALSE;
    Int_t maxopenedfiles = 0;
    Int_t verbosity = 99;
-   string treeName_ = "treeR";
+   string treeNamePrefix = "treeR";
 
    int outputPlace = 0;
    int ffirst = 2;
@@ -319,7 +320,7 @@ int main( int argc, char **argv )
          if (a+1 >= argc) {
             cerr << "Error: no tree name was provided after -t.\n";
          } else {
-            treeName_ = argv[a+1];
+            treeNamePrefix = argv[a+1];
 	    ++a;
 	    ++ffirst;
          }
@@ -412,11 +413,31 @@ int main( int argc, char **argv )
          cout <<"hadd merging will be slower"<<endl;
       }
    }
+   
+   std::set<TString> treeRnames;
+   TFile* f = new TFile(vInputFiles[0]);
+   TIterator* fi = f->GetListOfKeys()->MakeIterator();
+   TNamed* treeRname;
+   while( (treeRname = (TNamed*)fi->Next()) ) {
+      TString name = treeRname->GetName();
+      if(!name.BeginsWith(treeNamePrefix)) {
+         continue;
+      }
+      treeRnames.insert(treeRname->GetName());
+   }
+   delete treeRname;
+   delete fi;
+   f->Close();
+   
    merger.SetNotrees(noTrees);
-   merger.AddObjectNames(treeName_.c_str());
+   for(auto &treeName : treeRnames) {
+      merger.AddObjectNames(treeName.Data());
+   }
    Bool_t status = merger.PartialMerge(TFileMerger::kAll | TFileMerger::kRegular | TFileMerger::kSkipListed);
    if(!noTrees) {
-     status &= mergeTreeR(targetname, vInputFiles, treeName_.c_str());
+      for(auto &treeName : treeRnames) {
+         status &= mergeTreeR(targetname, vInputFiles, treeName.Data());
+      }
    }
 
    if (status) {
