@@ -167,9 +167,19 @@ std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString t
 	
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
-//	auto meta = m_typeProjections.at(type)[0]->getPhysicsContribution()->getMeta();
-auto meta = std::set<PhysicsContribution::metadata_t>();
+	auto contributions = m_typeProjections.at(type)[0]->getPhysicsContributions();
+	
+	if(contributions.size() > 1) {
+		throw std::runtime_error("meta information currently only supported for one set of data");
+	}
+	
+	auto meta = std::set<PhysicsContribution::metadata_t>();
+	for(auto &contribution : contributions) {
+		meta = contribution->getMeta();
+	}
+	
 	m_assembler->setRanges(ranges);
+	
 	return meta;
 }
 
