@@ -46,6 +46,14 @@ public:
     return dummy;
   }
 
+  virtual void Copy(TObject& hnew) const
+  {
+    TH1F::Copy(hnew);
+    ((SignatureTH1F_TriggerName&)hnew).m_productName = m_productName;
+    ((SignatureTH1F_TriggerName&)hnew).m_maxPrescale = m_maxPrescale;
+    ((SignatureTH1F_TriggerName&)hnew).m_triggerNames = m_triggerNames;
+  }
+
   ClassDef(SignatureTH1F_TriggerName,1);
 
  protected:

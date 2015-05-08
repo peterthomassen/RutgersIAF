@@ -17,6 +17,10 @@ public:
   {    
     return TH1F::Fill(0.5,1);
   }
+  virtual void Copy(TObject& hnew) const
+  {
+    TH1F::Copy(hnew);
+  }
 
   ClassDef(SignatureTH1F_CountNoWeight,1);
 

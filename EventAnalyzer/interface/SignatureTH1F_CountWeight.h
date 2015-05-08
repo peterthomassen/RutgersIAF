@@ -18,6 +18,11 @@ public:
     return TH1F::Fill(0.5,handler->getPhysicsWeight());
   }
 
+  virtual void Copy(TObject& hnew) const
+  {
+    TH1F::Copy(hnew);
+  }
+
   ClassDef(SignatureTH1F_CountWeight,1);
 
  protected:

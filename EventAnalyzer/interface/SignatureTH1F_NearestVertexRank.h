@@ -45,6 +45,13 @@ public:
     return TH1F::Fill(rank,handler->getPhysicsWeight());
   }
 
+  virtual void Copy(TObject& hnew) const
+  {
+    TH1F::Copy(hnew);
+    ((SignatureTH1F_NearestVertexRank&)hnew).m_vertexProductName = m_vertexProductName;
+    ((SignatureTH1F_NearestVertexRank&)hnew).m_otherProductName = m_otherProductName;
+  }
+
   ClassDef(SignatureTH1F_NearestVertexRank,1);
 
  protected:

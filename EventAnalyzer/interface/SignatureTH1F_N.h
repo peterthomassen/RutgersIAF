@@ -20,6 +20,12 @@ public:
 
     void addProduct(TString);
 
+    virtual void Copy(TObject& hnew) const
+    {
+      TH1F::Copy(hnew);
+      ((SignatureTH1F_N&)hnew).m_productnames = m_productnames;
+    }
+
     ClassDef(SignatureTH1F_N,1);
 
  protected:

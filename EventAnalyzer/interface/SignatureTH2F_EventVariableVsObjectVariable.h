@@ -38,6 +38,13 @@ class SignatureTH2F_EventVariableVsObjectVariable : public SignatureTH2F
     }
     return dummy;
   }
+  virtual void Copy(TObject& hnew) const
+  {
+    TH2F::Copy(hnew);
+    ((SignatureTH2F_EventVariableVsObjectVariable<T1,T2>&)hnew).m_eventvar = m_eventvar;
+    ((SignatureTH2F_EventVariableVsObjectVariable<T1,T2>&)hnew).m_objectvar = m_objectvar;
+    ((SignatureTH2F_EventVariableVsObjectVariable<T1,T2>&)hnew).m_productnames = m_productnames;
+  }
 
  private:
   TString m_eventvar;

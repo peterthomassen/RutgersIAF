@@ -39,6 +39,13 @@ public:
     return dummy;
   }
 
+  virtual void Copy(TObject& hnew) const
+  {
+    TH1F::Copy(hnew);
+    ((SignatureTH1F_TEST<T>&)hnew).m_varname = m_varname;
+    ((SignatureTH1F_TEST<T>&)hnew).m_productnames = m_productnames;
+  }
+
   ClassDef(SignatureTH1F_TEST,1);
 
   TString m_varname;

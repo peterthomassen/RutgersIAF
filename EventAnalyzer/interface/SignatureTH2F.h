@@ -2,6 +2,7 @@
 #define SignatureTH2F_H
 
 #include <TH2F.h>
+#include <TObject.h>
 #include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 
 class SignatureTH2F : public TH2F  {
@@ -17,6 +18,7 @@ class SignatureTH2F : public TH2F  {
 
       using TH2F::Fill;
       virtual Int_t Fill(BaseHandler*) = 0;
+      virtual void Copy(TObject& hnew) const = 0;
 
    protected:
 

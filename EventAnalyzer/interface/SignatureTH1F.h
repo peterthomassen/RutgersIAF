@@ -1,6 +1,7 @@
 #ifndef SignatureTH1F_h
 #define SignatureTH1F_h
 #include <TH1F.h>
+#include <TObject.h>
 #include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
 
 class SignatureTH1F : public TH1F  {
@@ -11,6 +12,7 @@ class SignatureTH1F : public TH1F  {
   virtual ~SignatureTH1F(){/* no-op*/}
   using TH1F::Fill;
   virtual Int_t Fill(BaseHandler*) = 0;
+  virtual void Copy(TObject&) const = 0;
   //virtual Int_t Fill(double);
 
  protected:
