@@ -1,3 +1,43 @@
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableCombined.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableInRange.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableN.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMT.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableOS.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableOSSF.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariablePairMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMixedPairMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableReversed.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableSumPT.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableThreshold.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableTH1.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableTriggerWeight.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableValue.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableCombined.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableInRange.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableMethod.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRelIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableReversed.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableValue.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_EventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_ObjectVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_AssociateVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonSkimRecoTracks.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonElectron.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_N.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableValueInList.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableInRange.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonMatchDeltaRCharge.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRename.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F_EventVariableVsEventVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH2F_ObjectVariableVsObjectVariable.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
+
 void setupEfficiencyProducts(BaseHandler* handler)
 {
   ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
@@ -125,7 +165,7 @@ void setupEfficiencyProducts(BaseHandler* handler)
   handler->addProductCut("startElectrons","PT10");
   handler->addProductCut("startElectrons","ETA2p4");
   handler->addProductCut("startElectrons","ELECTRON_NOTGAP");
-  handler->addProductCut("startElectrons","ELECTRON_dz1");
+
   handler->addProduct("startElectrons_matched","startElectrons");
   handler->addProductComparison("startElectrons_matched","MCELECTRONSFROMBOSON",mcMatch,false);
 
@@ -156,7 +196,8 @@ void setupEfficiencyProducts(BaseHandler* handler)
     if(electronCuts[i] == "ELECTRON_dxy"){
       handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("dz_%s",pnameMatched.Data()),"dz",pnameMatched,"dz Distribution",200,-5,5));
     }else if(electronCuts[i] == "ELECTRON_HADRONICOVEREM"){
-      handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("full5x5_sigmaIetaIeta_%s",pnameMatched.Data()),"full5x5_sigmaIetaIeta",pnameMatched,"dz Distribution",200,-5,5));
+      handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(TString::Format("full5x5_sigmaIetaIeta_%s",pnameMatched.Data()),"full5x5_sigmaIetaIeta",pnameMatched,"full5x5_sigmaIetaIeta Distribution",200,0,0.1));
+      handler->addHistogram(new SignatureTH2F_ObjectVariableVsObjectVariable<double,double>("PT","full5x5_sigmaIetaIeta",pnameMatched,TString::Format("full5x5_sigmaIetaIeta_vs_PT_%s",pnameMatched.Data()),"",100,0,200,200,0,0.1));
     }
   }
 

@@ -24,6 +24,12 @@ public:
     return TH1F::Fill(value,handler->getPhysicsWeight());
   }
 
+  virtual void Copy(TObject& hnew) const
+  {
+    TH1F::Copy(hnew);
+    ((SignatureTH1F_EventVariable<T>&)hnew).m_varname = m_varname;
+  }
+
   ClassDef(SignatureTH1F_EventVariable,1);
 
  protected:

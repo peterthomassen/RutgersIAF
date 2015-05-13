@@ -9,6 +9,19 @@ using namespace std;
 
 LHETreeReader::LHETreeReader(TTree* tree) : BaseTreeReader(tree)
 {
+  m_pdgID = 0;
+  m_state = 0;
+  m_mother1 = 0;
+  m_mother2 = 0;
+  m_color = 0;
+  m_anticolor = 0;
+  m_Px = 0;
+  m_Py = 0;
+  m_Pz = 0;
+  m_E = 0;
+  m_ctau = 0;
+  m_spincosine = 0;
+
   m_inTree->SetBranchAddress("run",&run);
   m_inTree->SetBranchAddress("event",&event);
   m_inTree->SetBranchAddress("lumi",&lumi);
@@ -58,10 +71,10 @@ void LHETreeReader::createMCParticles()
     mcpart->setVariable("ANTICOLOR",(*m_anticolor)[i]);
     mcpart->setVariable("MOTHER_NTID",(*m_mother1)[i]-1);
     mcpart->setVariable("SECONDARY_MOTHER_NTID",(*m_mother2)[i]-1);
-    if((*m_mother1)[i] >= 0 && (*m_mother1)[i]-1 < (int)mcparticles.size()){
+    if(i > 0 && (*m_mother1)[i] > 0 && (*m_mother1)[i]-1 < (int)mcparticles.size()){
       mcpart->setAssociate("MOTHER",mcparticles[(*m_mother1)[i]-1]);
     }
-    if((*m_mother1)[i] > 0 && (*m_mother2)[i]-1 < (int)mcparticles.size()){
+    if(i > 0 && (*m_mother2)[i] > 0 && (*m_mother2)[i]-1 < (int)mcparticles.size()){
       mcpart->setAssociate("SECONDARY_MOTHER",mcparticles[(*m_mother2)[i]-1]);
     }
     mcparticles.push_back(mcpart);

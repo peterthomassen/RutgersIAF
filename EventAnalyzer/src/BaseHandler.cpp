@@ -41,6 +41,7 @@ BaseHandler::BaseHandler(TString ofname, BaseTreeReader* reader)
 
   m_isMC = false;
   m_physicsWeight = 1.0;
+  m_doPriorityList = false;
 
   m_lastEntryPrepared = -1;
   m_currentEntry = -1;

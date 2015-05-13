@@ -13,6 +13,7 @@ void EventVariableOSSF::addProduct(TString pname) {
 	}
 }
 
+<<<<<<< HEAD
 bool EventVariableOSSF::calculate(BaseHandler* handler) {
 	double minMass = 1e6;
 	double maxMass = 0;
@@ -28,7 +29,7 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 			if(!m_includeFakes && v[j]->getVariable("fakeRole", fakeRole) && fakeRole > 0) {
 				continue;
 			}
-			double charge1 = 0;
+			int charge1 = 0;
 			bool charge1set = (v[j])->getVariable("CHARGE",charge1);
 			if(!charge1set) {
 				continue;
@@ -38,7 +39,7 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 				if(!m_includeFakes && v[k]->getVariable("fakeRole", fakeRole) && fakeRole > 0) {
 					continue;
 				}
-				double charge2 = 0;
+				int charge2 = 0;
 				bool charge2set = (v[k])->getVariable("CHARGE",charge2);
 				if(!charge2set) {
 					continue;

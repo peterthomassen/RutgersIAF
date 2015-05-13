@@ -22,6 +22,12 @@ class SignatureTH2F_EventVariableVsEventVariable : public SignatureTH2F
     if(!handler->getVariable(m_var2,val2))return -1;
     return TH2F::Fill(val1,val2,handler->getPhysicsWeight());
   }
+  virtual void Copy(TObject& hnew)const
+  {
+    TH2F::Copy(hnew);
+    ((SignatureTH2F_EventVariableVsEventVariable<T1,T2>&)hnew).m_var1 = m_var1;
+    ((SignatureTH2F_EventVariableVsEventVariable<T1,T2>&)hnew).m_var2 = m_var2;
+  }
 
  private:
   TString m_var1;

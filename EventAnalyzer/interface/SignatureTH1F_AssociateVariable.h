@@ -41,6 +41,14 @@ public:
     return dummy;
   }
 
+  virtual void Copy(TObject& hnew) const
+  {
+    TH1F::Copy(hnew);
+    ((SignatureTH1F_AssociateVariable<T>&)hnew).m_varname = m_varname;
+    ((SignatureTH1F_AssociateVariable<T>&)hnew).m_associatename = m_associatename;
+    ((SignatureTH1F_AssociateVariable<T>&)hnew).m_productnames = m_productnames;
+  }
+
   ClassDef(SignatureTH1F_AssociateVariable,1);
 
  protected:

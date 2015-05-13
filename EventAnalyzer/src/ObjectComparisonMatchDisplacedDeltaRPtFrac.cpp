@@ -1,0 +1,3 @@
+#include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonMatchDisplacedDeltaRPtFrac.h"
+
+ClassImp(ObjectComparisonMatchDisplacedDeltaRPtFrac)

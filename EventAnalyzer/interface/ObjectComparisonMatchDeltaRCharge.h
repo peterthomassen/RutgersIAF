@@ -9,16 +9,20 @@
 
 class ObjectComparisonMatchDeltaRCharge : public ObjectComparison {
  public:
-  ObjectComparisonMatchDeltaRCharge(double deltar,TString name="objectcomparisonmatchdeltarcharge"): ObjectComparison(name),m_deltar(deltar){}
+ ObjectComparisonMatchDeltaRCharge(double deltar,TString associateName="associate",TString name="objectcomparisonmatchdeltarcharge"): ObjectComparison(name),m_deltar(deltar),m_associateName(associateName){}
   virtual ~ObjectComparisonMatchDeltaRCharge() {}
 
   virtual bool passCut(SignatureObject* a,SignatureObject* b) const {
-    double a_charge = 0;
-    double b_charge = 0;
-    bool a_isSet = a->getVariable("CHARGE",a_charge);
-    bool b_isSet = a->getVariable("CHARGE",b_charge);
+    int a_charge = 0;
+    int b_charge = 0;
+    bool a_isSet = a->getVariable("charge",a_charge);
+    bool b_isSet = a->getVariable("charge",b_charge);
     if(!a_isSet || !b_isSet)return false;
-    if(fabs(a_charge - b_charge) < 1e-3 && TLorentzVector(*a).DeltaR(TLorentzVector(*b)) < m_deltar)return true;
+    if(a_charge == b_charge && TLorentzVector(*a).DeltaR(TLorentzVector(*b)) < m_deltar){
+      a->setAssociate(m_associateName,b);
+      a->setVariable(TString::Format("hasAssociate_%s",m_associateName.Data()),true);
+      return true;
+    }
     return false;
   }
   virtual bool operator()(SignatureObject* a,SignatureObject* b) const {
@@ -27,6 +31,7 @@ class ObjectComparisonMatchDeltaRCharge : public ObjectComparison {
 
  private:
   double m_deltar;
+  TString m_associateName;
 
   ClassDef(ObjectComparisonMatchDeltaRCharge,1);
 };

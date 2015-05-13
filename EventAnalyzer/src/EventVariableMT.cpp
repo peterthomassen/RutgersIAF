@@ -11,7 +11,8 @@ ClassImp(EventVariableMT)
 bool EventVariableMT::calculate(BaseHandler* handler) {
   std::vector<SignatureObject*> el  = handler->getProduct(m_productEl);
   std::vector<SignatureObject*> mu  = handler->getProduct(m_productMu);
-  std::vector<SignatureObject*> tau = handler->getProduct(m_productTau);
+  std::vector<SignatureObject*> tau;
+  if(m_productTau != "")tau = handler->getProduct(m_productTau);
   
   int n = el.size() + mu.size() + tau.size();
   if(n < 1) return false;
@@ -23,23 +24,23 @@ bool EventVariableMT::calculate(BaseHandler* handler) {
   TLorentzVector wl;
   
   TLorentzVector metv = *(TLorentzVector*)(handler->getProduct(m_productMET)[0]);
-  std::vector<double> chargeEl(el.size());
+  std::vector<int> chargeEl(el.size());
   for(size_t i = 0; i < el.size(); ++i) {
-    double charge;
+    int charge;
     assert(el[i]->getVariable("CHARGE",charge));
     chargeEl[i] = charge;
   }
   
-  std::vector<double> chargeMu(mu.size());
+  std::vector<int> chargeMu(mu.size());
   for(size_t i = 0; i < mu.size(); ++i) {
-    double charge;
+    int charge;
     assert(mu[i]->getVariable("CHARGE",charge));
     chargeMu[i] = charge;
   }
   
-  std::vector<double> chargeTau(tau.size());
+  std::vector<int> chargeTau(tau.size());
   for(size_t i = 0; i < tau.size(); ++i) {
-    double charge;
+    int charge;
     assert(tau[i]->getVariable("CHARGE",charge));
     chargeTau[i] = charge;
   }
@@ -89,7 +90,7 @@ bool EventVariableMT::calculate(BaseHandler* handler) {
     // Loop over the two flavors that the dilepton pair from Z can contain (including 1e1tau and 1m1tau)
     for(int iFlavor = 0; iFlavor <= 1; ++iFlavor) {
       std::vector<SignatureObject*> lepFl1, lepFl2;
-      std::vector<double> chargeFl1, chargeFl2;
+      std::vector<int> chargeFl1, chargeFl2;
       if(iFlavor == 0) {
 	lepFl1 = el;
 	lepFl2 = mu;
