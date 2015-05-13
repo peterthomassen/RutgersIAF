@@ -13,7 +13,6 @@ void EventVariableOSSF::addProduct(TString pname) {
 	}
 }
 
-<<<<<<< HEAD
 bool EventVariableOSSF::calculate(BaseHandler* handler) {
 	double minMass = 1e6;
 	double maxMass = 0;
