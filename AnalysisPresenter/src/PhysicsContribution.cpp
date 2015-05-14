@@ -130,7 +130,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	m_hn = (THnBase*)hn->Clone();
 	
-	cout << "Running " << m_filename << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
+	cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
 	TFile f(m_filename);
 	if(f.IsZombie()) {
 		throw std::runtime_error("couldn't open contribution file");

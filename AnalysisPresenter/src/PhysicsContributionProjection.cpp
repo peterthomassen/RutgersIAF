@@ -59,7 +59,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 }
 
 PhysicsContributionProjection::~PhysicsContributionProjection() {
-	cout << "Called ~PhysicsContributionProjection() -- check that ~BaseBundleProjection() is also called" << endl;
+	/* no-op */
 }
 
 void PhysicsContributionProjection::scale(const double scale) {

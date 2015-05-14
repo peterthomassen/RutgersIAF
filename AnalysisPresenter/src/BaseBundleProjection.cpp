@@ -22,8 +22,7 @@ BaseBundleProjection::BaseBundleProjection(const BaseBundle* source, const char*
 }
 
 BaseBundleProjection::~BaseBundleProjection() {
-	cout << "Called ~BaseBundleProjection()" << endl;
-	delete m_histogram;
+//	delete m_histogram; // for some reason, this statement makes ROOT crash after running an AnalysisPresenter macro (tried ROOT 5.34)
 	for(auto &uncertainty : m_uncertainties) {
 		delete uncertainty.second;
 	}

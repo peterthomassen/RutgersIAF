@@ -107,6 +107,12 @@ AssemblerProjection::~AssemblerProjection() {
 		delete component.second.first;
 		delete component.second.second;
 	}
+	
+	for(auto &typeProjection : m_typeProjections) {
+		for(auto &projection : typeProjection.second) {
+			delete projection;
+		}
+	}
 }
 
 double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const {

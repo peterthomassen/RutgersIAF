@@ -67,5 +67,5 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 }
 
 BundleProjection::~BundleProjection() {
-	cout << "Called ~BundleProjection() -- check that ~BaseBundleProjection() is also called" << endl;
+	/* no-op */
 }
