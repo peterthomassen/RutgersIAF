@@ -592,7 +592,7 @@ bool BaseHandler::createProducts()
 				unsigned comboIndex = m_trackFakeCombinationIndex;
 				size_t index = m_products[pname].size() - 1;
 				while(comboIndex > 0) {
-					double charge = 0;
+					int charge = 0;
 					assert(m_products[pname][index]->getVariable("CHARGE", charge));
 					int role = comboIndex % 3;
 					m_products[pname][index]->setVariable("fakeRole", role);
@@ -679,7 +679,7 @@ bool BaseHandler::createProducts()
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
-*/							m_products[pname][index]->setVariable("CHARGE", +1.0);
+*/							m_products[pname][index]->setVariable("CHARGE", +1);
 							for(size_t k = 0; k < m_products["goodElectrons"].size(); ++k){
 								m_products["goodElectrons"][k]->setVariable("fakeRole", 0, false);
 							}
@@ -700,7 +700,7 @@ bool BaseHandler::createProducts()
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
-*/							m_products[pname][index]->setVariable("CHARGE", -1.0);
+*/							m_products[pname][index]->setVariable("CHARGE", -1);
 							for(size_t k = 0; k < m_products["goodElectrons"].size(); ++k){
 								m_products["goodElectrons"][k]->setVariable("fakeRole", 0, false);
 							}
@@ -721,7 +721,7 @@ bool BaseHandler::createProducts()
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
-							m_products[pname][index]->setVariable("CHARGE", +1.0);
+							m_products[pname][index]->setVariable("CHARGE", +1);
 							for(size_t k = 0; k < m_products["goodMuons"].size(); ++k){
 								m_products["goodMuons"][k]->setVariable("fakeRole", 0, false);
 							}
@@ -742,7 +742,7 @@ bool BaseHandler::createProducts()
 								TString varname = m_object_variable_list[k];
 								m_object_variables[varname]->calculate(m_products[pname][index]);
 							}
-							m_products[pname][index]->setVariable("CHARGE", -1.0);
+							m_products[pname][index]->setVariable("CHARGE", -1);
 							for(size_t k = 0; k < m_products["goodMuons"].size(); ++k){
 								m_products["goodMuons"][k]->setVariable("fakeRole", 0, false);
 							}

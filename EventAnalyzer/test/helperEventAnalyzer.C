@@ -75,8 +75,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ISOgt15",new ObjectVariableInRange<double>("TOTALISO",15,1e6,"ISOgt15"));
   handler->addObjectVariable("BARREL",new ObjectVariableInRange<double>("ETA",-1.5,1.5,"barrelEta"));
   handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL","endcapEta"));
-  handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<double>("CHARGE",0,10,"CHARGEPOS"));
-  handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<double>("CHARGE",-10,0,"CHARGENEG"));
+  handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<int>("CHARGE",0,10,"CHARGEPOS"));
+  handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<int>("CHARGE",-10,0,"CHARGENEG"));
 
   handler->addObjectVariable("LEADTRACKDZ",new ObjectVariableAssociateVariable<double>("LEADTRACK","DZ","LEADTRACKDZ"));
   handler->addObjectVariable("LEADTRACKDXY",new ObjectVariableAssociateVariable<double>("LEADTRACK","DXY","LEADTRACKDXY"));
@@ -503,23 +503,23 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   }
   
   handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
-  handler->addEventVariable("QGOODELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","goodElectrons"));
+  handler->addEventVariable("QGOODELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","goodElectrons"));
   handler->addEventVariable("PTGOODELECTRONS", new EventVariableObjectVariableVector<double>("PT","goodElectrons"));
   handler->addEventVariable("ETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("ETA","goodElectrons"));
   handler->addEventVariable("fakeRoleGOODELECTRONS", new EventVariableObjectVariableVector<int>("fakeRole","goodElectrons"));
   
   handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
-  handler->addEventVariable("QGOODMUONS", new EventVariableObjectVariableVector<double>("CHARGE","goodMuons"));
+  handler->addEventVariable("QGOODMUONS", new EventVariableObjectVariableVector<int>("CHARGE","goodMuons"));
   handler->addEventVariable("PTGOODMUONS", new EventVariableObjectVariableVector<double>("PT","goodMuons"));
   handler->addEventVariable("ETAGOODMUONS", new EventVariableObjectVariableVector<double>("ETA","goodMuons"));
   handler->addEventVariable("fakeRoleGOODMUONS", new EventVariableObjectVariableVector<int>("fakeRole","goodMuons"));
 
-  handler->addEventVariable("QNONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","nonPromptElectrons"));
+  handler->addEventVariable("QNONPROMPTELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","nonPromptElectrons"));
   handler->addEventVariable("PTNONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("PT","nonPromptElectrons"));
   handler->addEventVariable("ETANONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptElectrons"));
   handler->addEventVariable("RELISONONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("RELISO","nonPromptElectrons"));
   
-  handler->addEventVariable("QNONPROMPTMUONS", new EventVariableObjectVariableVector<double>("CHARGE","nonPromptMuons"));
+  handler->addEventVariable("QNONPROMPTMUONS", new EventVariableObjectVariableVector<int>("CHARGE","nonPromptMuons"));
   handler->addEventVariable("PTNONPROMPTMUONS", new EventVariableObjectVariableVector<double>("PT","nonPromptMuons"));
   handler->addEventVariable("ETANONPROMPTMUONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptMuons"));
   handler->addEventVariable("RELISONONPROMPTMUONS", new EventVariableObjectVariableVector<double>("RELISO","nonPromptMuons"));
@@ -534,7 +534,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));
   
   handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
-  handler->addEventVariable("QGOODTAUS", new EventVariableObjectVariableVector<double>("CHARGE","goodTaus"));
+  handler->addEventVariable("QGOODTAUS", new EventVariableObjectVariableVector<int>("CHARGE","goodTaus"));
   handler->addEventVariable("PTGOODTAUS", new EventVariableObjectVariableVector<double>("PT","goodTaus"));
   handler->addEventVariable("ETAGOODTAUS", new EventVariableObjectVariableVector<double>("ETA","goodTaus"));
   handler->addEventVariable("TAULEADTRACKDZ", new EventVariableObjectVariableVector<double>("LEADTRACKDZ","goodTaus"));
@@ -558,32 +558,32 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("ETAGOODPHOTONS", new EventVariableObjectVariableVector<double>("ETA","goodPhotons"));
 
   handler->addEventVariable("nINPELECTRONS", new EventVariableN("nINPELECTRONS","isoNonPromptElectrons"));
-  handler->addEventVariable("QINPELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","isoNonPromptElectrons"));
+  handler->addEventVariable("QINPELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","isoNonPromptElectrons"));
   handler->addEventVariable("PTINPELECTRONS", new EventVariableObjectVariableVector<double>("PT","isoNonPromptElectrons"));
   handler->addEventVariable("ETAINPELECTRONS", new EventVariableObjectVariableVector<double>("ETA","isoNonPromptElectrons"));
 
   handler->addEventVariable("nNIPELECTRONS", new EventVariableN("nNIPELECTRONS","promptNonIsoElectrons"));
-  handler->addEventVariable("QNIPELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","promptNonIsoElectrons"));
+  handler->addEventVariable("QNIPELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","promptNonIsoElectrons"));
   handler->addEventVariable("PTNIPELECTRONS", new EventVariableObjectVariableVector<double>("PT","promptNonIsoElectrons"));
   handler->addEventVariable("ETANIPELECTRONS", new EventVariableObjectVariableVector<double>("ETA","promptNonIsoElectrons"));
 
   handler->addEventVariable("nNINPELECTRONS", new EventVariableN("nNIPELECTRONS","nonPromptNonIsoElectrons"));
-  handler->addEventVariable("QNINPELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","nonPromptNonIsoElectrons"));
+  handler->addEventVariable("QNINPELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","nonPromptNonIsoElectrons"));
   handler->addEventVariable("PTNINPELECTRONS", new EventVariableObjectVariableVector<double>("PT","nonPromptNonIsoElectrons"));
   handler->addEventVariable("ETANINPELECTRONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptNonIsoElectrons"));
   
   handler->addEventVariable("nINPMUONS", new EventVariableN("nINPMUONS","isoNonPromptMuons"));
-  handler->addEventVariable("QINPMUONS", new EventVariableObjectVariableVector<double>("CHARGE","isoNonPromptMuons"));
+  handler->addEventVariable("QINPMUONS", new EventVariableObjectVariableVector<int>("CHARGE","isoNonPromptMuons"));
   handler->addEventVariable("PTINPMUONS", new EventVariableObjectVariableVector<double>("PT","isoNonPromptMuons"));
   handler->addEventVariable("ETAINPMUONS", new EventVariableObjectVariableVector<double>("ETA","isoNonPromptMuons"));
   
   handler->addEventVariable("nNIPMUONS", new EventVariableN("nNIPMUONS","promptNonIsoMuons"));
-  handler->addEventVariable("QNIPMUONS", new EventVariableObjectVariableVector<double>("CHARGE","promptNonIsoMuons"));
+  handler->addEventVariable("QNIPMUONS", new EventVariableObjectVariableVector<int>("CHARGE","promptNonIsoMuons"));
   handler->addEventVariable("PTNIPMUONS", new EventVariableObjectVariableVector<double>("PT","promptNonIsoMuons"));
   handler->addEventVariable("ETANIPMUONS", new EventVariableObjectVariableVector<double>("ETA","promptNonIsoMuons"));
   
   handler->addEventVariable("nNINPMUONS", new EventVariableN("nNIPMUONS","nonPromptNonIsoMuons"));
-  handler->addEventVariable("QNINPMUONS", new EventVariableObjectVariableVector<double>("CHARGE","nonPromptNonIsoMuons"));
+  handler->addEventVariable("QNINPMUONS", new EventVariableObjectVariableVector<int>("CHARGE","nonPromptNonIsoMuons"));
   handler->addEventVariable("PTNINPMUONS", new EventVariableObjectVariableVector<double>("PT","nonPromptNonIsoMuons"));
   handler->addEventVariable("ETANINPMUONS", new EventVariableObjectVariableVector<double>("ETA","nonPromptNonIsoMuons"));
 
@@ -607,7 +607,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   
   // Regular tracks
   handler->addEventVariable("NGOODTRACKS", new EventVariableN("NGOODTRACKS","goodTracks"));
-  handler->addEventVariable("QGOODTRACKS", new EventVariableObjectVariableVector<double>("CHARGE","goodTracks"));
+  handler->addEventVariable("QGOODTRACKS", new EventVariableObjectVariableVector<int>("CHARGE","goodTracks"));
   handler->addEventVariable("PTGOODTRACKS", new EventVariableObjectVariableVector<double>("PT","goodTracks"));
   handler->addEventVariable("ETAGOODTRACKS", new EventVariableObjectVariableVector<double>("ETA","goodTracks"));
   

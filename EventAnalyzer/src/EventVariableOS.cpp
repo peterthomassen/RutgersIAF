@@ -22,11 +22,11 @@ bool EventVariableOS::calculate(BaseHandler* handler) {
 	}
 
 	for(int j = 0; j < (int)v.size(); j++){
-		double charge1 = 0;
+		int charge1 = 0;
 		bool charge1set = (v[j])->getVariable("CHARGE",charge1);
 		if(!charge1set)continue;
 		for(int k = j+1; k < (int)v.size(); k++){
-			double charge2 = 0;
+			int charge2 = 0;
 			bool charge2set = (v[k])->getVariable("CHARGE",charge2);
 			if(!charge2set) {
 				continue;

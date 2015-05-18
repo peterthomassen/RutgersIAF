@@ -1,6 +1,8 @@
 #include "RutgersIAF/EventAnalyzer/interface/SkimTreeReader.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 
+#include <assert.h>
+
 ClassImp(SkimTreeReader)
 
 using namespace std;
@@ -567,7 +569,8 @@ void SkimTreeReader::createMCParticles()
     mcpart->setVariable("VX",mc_part_vx[i]);
     mcpart->setVariable("VY",mc_part_vy[i]);
     mcpart->setVariable("VZ",mc_part_vz[i]);
-    mcpart->setVariable("CHARGE",mc_part_charge[i]);
+    assert(fabs(mc_part_charge[i] - (int)(1.1*mc_part_charge[i])) < 0.05);
+    mcpart->setVariable("CHARGE",(int)(1.1*mc_part_charge[i]));
     mcpart->setVariable("STATUS",mc_part_status[i]);
     mcpart->setVariable("BARCODE",mc_part_barcode[i]);
     mcpart->setVariable("MOTHER_PDGID",mc_part_mother_pdgID[i]);
@@ -602,7 +605,8 @@ void SkimTreeReader::createTracks()
     recotrack->setVariable("NVALIDMUONHITS",reco_track_nValidMuonHits[i]);
     recotrack->setVariable("CALOISO2",reco_track_caloIso2[i]);
     recotrack->setVariable("VERT_DXY",reco_track_vert_dxy[i]);
-    recotrack->setVariable("CHARGE",reco_track_charge[i]);
+    assert(fabs(reco_track_charge[i] - (int)(1.1*reco_track_charge[i])) < 0.05);
+    recotrack->setVariable("CHARGE",(int)(1.1*reco_track_charge[i]));
     recotrack->setVariable("CALOISO1",reco_track_caloIso1[i]);
     recotrack->setVariable("TRACKISO",reco_track_trackIso[i]);
     recotrack->setVariable("ISGLOBAL",reco_track_isGlobal[i]);
@@ -703,7 +707,8 @@ void SkimTreeReader::createMuons()
     muon->setVariable("ISGLOBALMUONPROMPTTIGHT",pat_muon_isGlobalMuonPromptTight[i]);
     muon->setVariable("PF_PHOTONISO",pat_muon_PF_photonIso[i]);
     muon->setVariable("DRMIN",pat_muon_dRmin[i]);
-    muon->setVariable("CHARGE",pat_muon_charge[i]);
+    assert(fabs(pat_muon_charge[i] - (int)(1.1*pat_muon_charge[i])) < 0.05);
+    muon->setVariable("CHARGE",(int)(1.1*pat_muon_charge[i]));
     muon->setVariable("CALENERGYHAD",pat_muon_calEnergyHad[i]);
     muon->setVariable("CALOCOMPATIBILITY",pat_muon_caloCompatibility[i]);
     muon->setVariable("DRMIN_TRACK_NTID",pat_muon_dRmin_track_ntID[i]);
@@ -783,7 +788,8 @@ void SkimTreeReader::createElectrons()
     electron->setVariable("FMVAVAR_DPHICALO",pat_electron_fMVAVar_dphicalo[i]);
     electron->setVariable("SWISSCROSS",pat_electron_swissCross[i]);
     electron->setVariable("PF_PHOTONISO",pat_electron_PF_photonIso[i]);
-    electron->setVariable("CHARGE",pat_electron_charge[i]);
+    assert(fabs(pat_electron_charge[i] - (int)(1.1*pat_electron_charge[i])) < 0.05);
+    electron->setVariable("CHARGE",(int)(1.1*pat_electron_charge[i]));
     electron->setVariable("FMVAVAR_PRESHOWEROVERRAW",pat_electron_fMVAVar_PreShowerOverRaw[i]);
     electron->setVariable("FMVAVAR_KFHITS",pat_electron_fMVAVar_kfhits[i]);
     electron->setVariable("EIDTIGHT",pat_electron_eidTight[i]);
@@ -942,7 +948,7 @@ void SkimTreeReader::createJets()
     jet->setVariable("NEUTRALHADRONFRACTION",pat_jet_neutralHadronFraction[i]);
     jet->setVariable("ISCALO",pat_jet_isCalo[i]);
     jet->setVariable("EHF",pat_jet_ehf[i]);
-    //jet->setVariable("CHARGE",pat_jet_charge[i]);
+    //jet->setVariable("CHARGE",(int)(1.1*pat_jet_charge[i])); // do we know this charge is int?
     jet->setVariable("BDISCRIMINATOR_SSVERTEXPURE",pat_jet_bDiscriminator_ssVertexPure[i]);
     jet->setVariable("BDISCRIMINATOR",pat_jet_bDiscriminator[i]);
     jet->setVariable("PHIPHIMOMENT",pat_jet_phiphiMoment[i]);
@@ -1038,7 +1044,8 @@ void SkimTreeReader::createTaus()
     tau->setVariable("CHARGEDHADRONISO",pat_tau_PF_chargedHadronIso03[i]);
     tau->setVariable("NEUTRALHADRONISO",pat_tau_PF_neutralHadronIso03[i]);
     tau->setVariable("PHOTONISO",pat_tau_PF_photonIso03[i]);
-    tau->setVariable("CHARGE",pat_tau_PF_signalCharge[i]);
+    assert(fabs(pat_tau_PF_signalCharge[i] - (int)(1.1*pat_tau_PF_signalCharge[i])) < 0.05);
+    tau->setVariable("CHARGE",(int)(1.1*pat_tau_PF_signalCharge[i]));
     tau->setVariable("PF_NEUTRALHADRONISO05",pat_tau_PF_neutralHadronIso05[i]);
     tau->setVariable("TRACKISO",pat_tau_trackIso[i]);
     tau->setVariable("PF_ISOGAMMAETSUM",pat_tau_PF_isoGammaEtSum[i]);

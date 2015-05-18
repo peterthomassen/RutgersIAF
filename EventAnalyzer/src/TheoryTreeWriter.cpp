@@ -262,7 +262,7 @@ void TheoryTreeWriter::fillTree()
   for (Int_t i = 0; i < (Int_t)goodMuons.size(); ++i) {
     double type = -999.0;
     double btag = -999.0;
-    double muon_charge = -999.0;
+    int muon_charge = -999;
 
     TLorentzVector muon = TLorentzVector(*goodMuons[i]);
 
@@ -281,7 +281,7 @@ void TheoryTreeWriter::fillTree()
   for (Int_t i = 0; i < (Int_t)goodElectrons.size(); ++i) {
     double type = -999.0;
     double btag = -999.0;
-    double electron_charge = -999.0;
+    int electron_charge = -999;
 
     TLorentzVector electron = TLorentzVector(*goodElectrons[i]);
 
@@ -314,7 +314,7 @@ void TheoryTreeWriter::fillTree()
   for (Int_t i = 0; i < (Int_t)goodTracks.size(); ++i) {
     double type = -999.0;
     double btag = -999.0;
-    double track_charge = -999.0;
+    int track_charge = -999;
 
     Double_t track_energy = sqrt(pow(goodTracks[i]->Pt(),2)+pow(goodTracks[i]->Pz(),2)+pow(0.14,2));  // M_pion = 0.140 GeV
 
