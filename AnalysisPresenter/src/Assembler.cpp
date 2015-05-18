@@ -194,11 +194,17 @@ void Assembler::process(std::string varexp, TString selection) {
 	delete hs;
 }
 
-AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow) {
-	AssemblerProjection* projection = new AssemblerProjection(this, name, binForOverflow);
-	if(getDefaultBundle()) {
-		projection = projection->bundle(getDefaultBundle());
+AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow, Bundle* bundle) {
+	if(!bundle) {
+		bundle = getDefaultBundle();
 	}
+	
+	AssemblerProjection* projection = new AssemblerProjection(this, name, binForOverflow);
+	
+	if(bundle) {
+		projection = projection->bundle(bundle);
+	}
+	
 	return projection;
 }
 

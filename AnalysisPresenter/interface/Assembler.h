@@ -38,7 +38,7 @@ public:
 	TString getSelection() const;
 	
 	void process(std::string, TString);
-	AssemblerProjection* project(const char*, const bool binForOverflow);
+	AssemblerProjection* project(const char*, const bool binForOverflow, Bundle* bundle = 0);
 	void save();
 	void save(const char*, const bool binForOverflow = true);
 	
