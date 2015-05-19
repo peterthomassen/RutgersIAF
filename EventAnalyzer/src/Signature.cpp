@@ -72,15 +72,18 @@ void Signature::finish()
   if(m_isFinish) return;
 
   for(int i = 0; i < (int)m_1dhistograms.size(); i++){
-    TH1F h = *(dynamic_cast<TH1F *>(m_1dhistograms[i]));
+    TH1F h;
+    m_1dhistograms[i]->TH1F::Copy(h);
     h.Write();
   }
   for(int i = 0; i < (int)m_2dhistograms.size(); i++){
-    TH2F h = *(dynamic_cast<TH2F *>(m_2dhistograms[i]));
+    TH2F h;
+    m_2dhistograms[i]->TH2F::Copy(h);
     h.Write();
   }
   for(int i = 0; i < (int)m_3dhistograms.size(); i++){
-    TH3F h = *(dynamic_cast<TH3F *>(m_3dhistograms[i]));
+    TH3F h;
+    m_3dhistograms[i]->TH3F::Copy(h);
     h.Write();
   }
   m_isFinish = 1;
