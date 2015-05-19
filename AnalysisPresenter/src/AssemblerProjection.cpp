@@ -67,9 +67,12 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		for(auto &component : bundle->getComponents()) {
 			auto projection = component->project(m_name, m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
+			
+			size_t oldSize = contributions.size();
 			// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
 			std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
 			contributions.insert(projectionContributions.begin(), projectionContributions.end());
+			assert(contributions.size() == oldSize + projectionContributions.size());
 		}
 		
 		Bundle* missing = new Bundle(type, missingName);
@@ -78,8 +81,12 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 				if(missingName == "") {
 					auto projection = contribution->project(m_name, m_binForOverflow);
 					m_typeProjections[type].push_back(projection);
+					
+					size_t oldSize = contributions.size();
+					// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
 					std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
 					contributions.insert(projectionContributions.begin(), projectionContributions.end());
+					assert(contributions.size() == oldSize + projectionContributions.size());
 				} else {
 					missing->addComponent(contribution);
 				}
@@ -88,9 +95,12 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		if(missing->getComponents().size() > 0) {
 			auto projection = missing->project(m_name, m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
+			
+			size_t oldSize = contributions.size();
 			// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
 			std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
 			contributions.insert(projectionContributions.begin(), projectionContributions.end());
+			assert(contributions.size() == oldSize + projectionContributions.size());
 		}
 	}
 	
