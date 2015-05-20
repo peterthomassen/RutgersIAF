@@ -1,3 +1,8 @@
+/**
+ * This example macro reads ZZ background MC data and produces a file 
+ * with AnalysisTree in it with all MC validation variables.
+*/
+
 
 void ValidationAnalysis(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC_53X/ZZJetsTo4L/All/results_mc_v1_1_*.root"
 	, TString pufile="/cms/matt/mwalker/Analysis/20120920_newPU/histograms/ZZJetsTo4L.pu.root"
@@ -5,6 +10,7 @@ void ValidationAnalysis(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC
 	, int mode = 0
 	, Int_t iLo = 0	// change this to start running here
 	, Int_t iHi = 0	// change this to stop running here
+	, Bool_t isMCData = true // change this to run over MC simulations
 ) {
 	// Initialization. Read library, set up include path, and load helpers.
 	gSystem->Load("libRutgersIAFEventAnalyzer.so");
@@ -37,8 +43,6 @@ void ValidationAnalysis(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC
 	
 	Bool_t matchingFlag = !(input.Contains("/TTJets") || input.Contains("/DYJets") || input.Contains("Zbb"));
 	Bool_t wzKinematics = input.Contains("/WZJetsTo3LNu");
-	
-	Bool_t isMCData = true;
 
 	
 	// Set up leptons with quality cuts, triggers, analysis variables, ...
