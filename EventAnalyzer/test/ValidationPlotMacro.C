@@ -1,3 +1,11 @@
+/**
+ * This example macro reads some the Validation variables 
+ * from ValidationAnalysis.C for ttbar semileptonic background and creates a PDF with plots
+ * for all these variables.
+ * Change the name of your sample in every command it occurs.
+*/
+
+
 #include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
@@ -738,4 +746,3 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	delete treeR;
 	ValFile->Close();
 }
-
