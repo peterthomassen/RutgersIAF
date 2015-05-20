@@ -26,23 +26,30 @@ public:
 	virtual ~AssemblerProjection();
 
 	AssemblerProjection* bundle(Bundle* bundle, TString missingName = "") const;
+	
 	double getBin(TString type, int i) const;
+	double getBin(TString type, int i, TString bundleName) const;
 	double getBinStat(TString type, int i) const;
+	double getBinStat(TString type, int i, TString bundleName) const;
 	double getBinSyst(TString type, int i) const;
 	double getBinSyst(TString type, int i, TString name) const;
+	double getBinSyst(TString type, int i, TString name, TString bundleName) const;
+	std::vector<TString> getBundleNames(TString type) const;
 	TH1* getHistogram(TString type) const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
 	double getMoment(TString type, int k = 1, bool center = false) const;
 	std::vector<std::pair<int, int>> getRanges() const;
-	std::set<TString> getUncertainties() const;
-	bool isDistribution() const;
-	void printMeta(TString type = "data") const;
+	std::set<TString> getUncertaintyNames() const;
 	
 	bool has(TString type) const;
+	bool has(TString type, TString bundleName) const;
 	bool hasOverflowIncluded() const;
+	bool isDistribution() const;
 	
 	TCanvas* plot(bool log = true, TF1* f1 = 0, double xminFit = 0, double xmaxFit = 0);
+	
 	void print() const;
+	void printMeta(TString type = "data") const;
 	
 	//void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 
@@ -65,7 +72,8 @@ protected:
 private:
 	TCanvas* m_canvas = 0;
 	
-	std::map<TString, std::pair<THStack*, THStack*>> m_components; // like m_components["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
+	std::map<TString, std::pair<THStack*, THStack*>> m_stacks; // like m_stacks["background"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
+	std::map<TString, std::map<TString, std::pair<THStack*, THStack*>>> m_bundles; // like m_bundles["background"]["rare"], where .first is the content (with stat uncertainties), and .second are syst uncertainties
 	
 	void prepareStacks();
 

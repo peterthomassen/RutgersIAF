@@ -178,13 +178,11 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		return;
 	}
 	
-//	return;
-	
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToZZTo4L" + infix + suffix, 0.0053, "GluGluToHToZZTo4L"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToTauTau" + infix + suffix, 0.0992, "VBF_HToTauTau"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToWWTo2LAndTau2Nu" + infix + suffix, 0.0282, "VBF_HToWWTo2LAndTau2Nu"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToTauTau" + infix + suffix, 0.0992, "VBF_HToTauTau"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToWWTo2LAndTau2Nu" + infix + suffix, 0.0282, "VBF_HToWWTo2LAndTau2Nu"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToZZTo4L" + infix + suffix, 0.000423, "VBF_HToZZTo4L"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToTauTau" + infix + suffix, 0.0778, "WH_ZH_TTH_HToTauTau"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToWW" + infix + suffix, 0.254, "WH_ZH_TTH_HToWW"));
@@ -431,4 +429,30 @@ std::vector<double> getSecond(std::vector<std::pair<double, double> > list) {
 		list2.push_back(list[i].second);
 	}
 	return list2;
+}
+
+void writeUncertainties(AssemblerProjection* projection) {
+	cout << endl << "====== now printing uncertainties" << endl;
+	
+	auto uncertaintyNames = projection->getUncertaintyNames();
+	for(int i = 1; i <= 5; ++i) {
+		cout << endl;
+		cout << "BIN " << i << endl;
+		cout << "TOTAL:";
+		cout << " " << projection->getBin("background", i);
+		cout << " pm " << projection->getBinStat("background", i) << " pm " << projection->getBinSyst("background", i) << endl;
+		for(const auto &uncertaintyName : uncertaintyNames) {
+			cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst("background", i, uncertaintyName) << endl;
+		}
+		cout << endl;
+		
+		for(const auto &bundleName : projection->getBundleNames("background")) {
+			cout << "bundleName: " << bundleName;
+			cout << " " << projection->getBin("background", i, bundleName);
+			cout << " pm " << projection->getBinStat("background", i, bundleName) << endl;
+			for(const auto &uncertaintyName : uncertaintyNames) {
+				cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst("background", i, uncertaintyName, bundleName) << endl;
+			}
+		}
+	}
 }
