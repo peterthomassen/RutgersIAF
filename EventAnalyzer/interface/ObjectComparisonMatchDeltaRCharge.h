@@ -17,6 +17,8 @@ class ObjectComparisonMatchDeltaRCharge : public ObjectComparison {
     int b_charge = 0;
     bool a_isSet = a->getVariable("charge",a_charge);
     bool b_isSet = a->getVariable("charge",b_charge);
+    if(!a_isSet) a_isSet = a->getVariable("CHARGE",a_charge);
+    if(!b_isSet) b_isSet = b->getVariable("CHARGE",b_charge);
     if(!a_isSet || !b_isSet)return false;
     if(a_charge == b_charge && TLorentzVector(*a).DeltaR(TLorentzVector(*b)) < m_deltar){
       a->setAssociate(m_associateName,b);
