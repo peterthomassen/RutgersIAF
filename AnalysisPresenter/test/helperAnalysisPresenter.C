@@ -12,8 +12,8 @@ void init(Assembler* assembler) {
 	Bundle* fakeBundle = new Bundle("background", "Fakes");
 	assembler->addBundle(fakeBundle);
 	
-	//Bundle* bundleHiggs = new Bundle("background", "Higgs");
-	//assembler->addBundle(bundleHiggs);
+	Bundle* bundleHiggs = new Bundle("background", "Higgs");
+	assembler->addBundle(bundleHiggs);
 	
 	Bundle* rareBundle = new Bundle("background", "Rare MC");
 	assembler->addBundle(rareBundle);
@@ -24,7 +24,7 @@ void init(Assembler* assembler) {
 void prepare(Assembler* assembler) {
 	Bundle* presentationBundle = new Bundle("background", "presentationBundle");
 	presentationBundle->addComponent(assembler->getBundle("Fakes"));
-	//presentationBundle->addComponent(assembler->getBundle("Higgs"));
+	presentationBundle->addComponent(assembler->getBundle("Higgs"));
 	presentationBundle->addComponent(assembler->getBundle("Rare MC"));
 	
 	assembler->setDefaultBundle(presentationBundle);
@@ -38,9 +38,8 @@ void setupData(Assembler* assembler, bool fake = false, bool dilep = false) {
 	std::string suffix = ".root";
 	
 	PhysicsContribution* data = fake
-		? new PhysicsContribution("data", prefix + "20150506_data" + infix + suffix, 19500, "2012data", false, "treeRfakeTracks")
-//		? new PhysicsContribution("data", prefix + "20150408_fakeTaus" + infix + suffix, 19500, "2012data")
-		: new PhysicsContribution("data", prefix + "20150408_data" + infix + suffix, 19500, "2012data");
+		? new PhysicsContribution("data", prefix + "20150518_data" + infix + suffix, 19500, "2012data", false, "treeRfakeTracks")
+		: new PhysicsContribution("data", prefix + "20150518_data" + infix + suffix, 19500, "2012data");
 	
 	assembler->addContribution(data);
 }
@@ -179,7 +178,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		return;
 	}
 	
-	return;
+//	return;
 	
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
@@ -204,7 +203,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	Bundle* fakeBundle = assembler->getBundle("Fakes");
 	
 	////// Tracks
-	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.3L.root", assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
+	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
 /*	fakeTracks->addWeight(
 		"(Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
 		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
@@ -230,7 +229,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	}
 	
 	////// Taus
-	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.3L.root", assembler->getLumi(), "fakeTaus", false, "treeRfakeTaus");
+	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakeTaus", false, "treeRfakeTaus");
 	fakeTaus->addWeight("fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15");
 	if(syst) {
 		fakeTaus->addFlatUncertainty("tauFit", 0.11); // for HT > 200 GeV, it is that high
@@ -241,7 +240,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	}
 	
 	////// Taus (2L)
-	PhysicsContribution* fakeTaus2L = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.root", assembler->getLumi(), "fakeTaus2L", false, "treeRfakeTaus");
+	PhysicsContribution* fakeTaus2L = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.root", assembler->getLumi(), "fakeTaus2L", false, "treeRfakeTaus");
 	fakeTaus2L->addWeight("fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15");
 	if(syst) {
 		fakeTaus2L->addFlatUncertainty("tauFit", 0.11); // for HT > 200 GeV, it is that high
@@ -251,7 +250,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	}
 	
 	////// Photons
-	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.3L.root", assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
+	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
 	if(syst) {
 		fakePhotons->addFlatUncertainty("photonElFake", 0.15);
 		//fakePhotons->addFlatUncertainty("photonFudge", 0.25);
