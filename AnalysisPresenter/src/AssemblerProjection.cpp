@@ -671,7 +671,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(0);
-	datacard << "#Datacard Version 0.1" << '\n' << "#Dec. 2014" << '\n' << '\n';
+	datacard << "#Datacard Version 1.1" << '\n' << "#May 2015" << '\n' << '\n';
 	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + hData->GetNbinsX()*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
