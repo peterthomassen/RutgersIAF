@@ -51,7 +51,7 @@ public:
 	void print() const;
 	void printMeta(TString type = "data") const;
 	
-	//void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
+	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 
 protected:
 	Assembler* m_assembler;
