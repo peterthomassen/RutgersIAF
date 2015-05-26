@@ -23,11 +23,15 @@ void init(Assembler* assembler) {
 
 void prepare(Assembler* assembler) {
 	Bundle* presentationBundle = new Bundle("background", "presentationBundle");
-	presentationBundle->addComponent(assembler->getBundle("Fakes"));
-	presentationBundle->addComponent(assembler->getBundle("Higgs"));
-	presentationBundle->addComponent(assembler->getBundle("Rare MC"));
-	
 	assembler->setDefaultBundle(presentationBundle);
+	
+	std::vector<TString> bundleNames = {"Fakes", "Higgs", "Rare MC"};
+	for(const auto &bundleName : bundleNames) {
+		Bundle* bundle = assembler->getBundle(bundleName);
+		if(bundle->getComponents().size() > 0) {
+			presentationBundle->addComponent(bundle);
+		}
+	}
 	
 	assembler->getDefaultBundle()->print();
 }
@@ -121,11 +125,15 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	assembler->addBundle(bundleTTbar);
 	
 	if(ttbar) {
-		if(dilep && !onlyTTF) {
+		if(dilep) {
 			PhysicsContribution* ttbarS = new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, xsec_ttbar_semiLep, "TT_SemiL");
 			ttbarS->addWeight(nJetWeight);
 			mc.push_back(ttbarS);
 			bundleTTbar->addComponent(ttbarS);
+		}
+		
+		if(onlyTTF) {
+			mc.clear();
 		}
 		
 		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + ".3LonZ" + suffix, xsec_ttbar_fullLep, "TT_FullL");
@@ -154,9 +162,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			assembler->getBundle("Fakes")->addComponent(contribution);
 		}
 	}
-
+	
 	correlationBundle->addComponent(bundleTTbar);
-
+	
 	if(dilep) {
 //		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
 //		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 2950.0, "DYgt50"));
@@ -168,14 +176,14 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		assembler->addContribution(contribution);
 	}
 	
+	if(onlyTTF) {
+		return;
+	}
+	
 	for(auto &contribution : mcRare) {
 		contribution->addWeight("WEIGHT[0]");
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
-	}
-	
-	if(onlyTTF) {
-		return;
 	}
 	
 //	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
