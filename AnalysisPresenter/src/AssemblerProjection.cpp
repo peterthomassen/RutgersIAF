@@ -644,18 +644,18 @@ void AssemblerProjection::printMeta(TString type) const {
 	}
 }
 
-/*void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
+void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 
 	std::cout << "Creating datacard..." << std::endl;
 	
 	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	int bins = hData->GetNbinsX();
-	std::vector<TString> correlationClassesSignal;
-	correlationClassesSignal = getCorrelationClasses("signal");
-	int NumberCorClassesSignal = correlationClassesSignal.size();
-	std::vector<TString> correlationClassesBckgrd;
-	correlationClassesBckgrd = getCorrelationClasses("background");
-	int NumberCorClassesBackgrd = correlationClassesBckgrd.size();
+	std::vector<TString> BundlesSignal;
+	BundlesSignal = getBundleNames("signal");
+	int NumberBundlesSignal = BundlesSignal.size();
+	std::vector<TString> BundlesBckgrd;
+	BundlesBckgrd = getBundleNames("background");
+	int NumberBundlesBackgrd = BundlesBckgrd.size();
 
 	
 	//Create datacard
@@ -672,7 +672,7 @@ void AssemblerProjection::printMeta(TString type) const {
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(0);
 	datacard << "#Datacard Version 0.1" << '\n' << "#Dec. 2014" << '\n' << '\n';
-	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberCorClassesBackgrd+NumberCorClassesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertainties().size() + hData->GetNbinsX()*(NumberCorClassesBackgrd+NumberCorClassesSignal) << " number nuisance parameters" << '\n';
+	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + hData->GetNbinsX()*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
 	
@@ -697,7 +697,7 @@ void AssemblerProjection::printMeta(TString type) const {
 	datacard << "bin";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
-		for (int j = 0; j < (NumberCorClassesSignal + NumberCorClassesBackgrd); j++) {
+		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
 		
 			double lo = hData->GetXaxis()->GetBinLowEdge(i);
 			double hi = hData->GetXaxis()->GetBinUpEdge(i);
@@ -714,23 +714,23 @@ void AssemblerProjection::printMeta(TString type) const {
 	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
-		for (int j = 0; j < NumberCorClassesSignal; j++) {
+		for (int j = 0; j < NumberBundlesSignal; j++) {
 		
-			if(correlationClassesSignal[j]=="") {
+			if(BundlesSignal[j]=="") {
 				datacard << '\t' << "remain_signal";
 			}
 			else {
-				datacard << '\t' << "signal_" << correlationClassesSignal[j];
+				datacard << '\t' << "signal_" << BundlesSignal[j];
 			}
 		}
 		
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
-			if(correlationClassesBckgrd[j]=="") {
+			if(BundlesBckgrd[j]=="") {
 				datacard << '\t' << "remain_bckgrd";
 			}
 			else {
-				datacard << '\t' << "bckgrd_" << correlationClassesBckgrd[j];
+				datacard << '\t' << "bckgrd_" << BundlesBckgrd[j];
 			}
 		}
 			
@@ -739,12 +739,12 @@ void AssemblerProjection::printMeta(TString type) const {
 	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
-		for (int j = 0; j < NumberCorClassesSignal; j++) {
+		for (int j = 0; j < NumberBundlesSignal; j++) {
 		
-			datacard << '\t' << (NumberCorClassesSignal - j)*(-1)+1;
+			datacard << '\t' << (NumberBundlesSignal - j)*(-1)+1;
 		}
 		
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
 			datacard << '\t' << j + 1;
 		}
@@ -756,9 +756,9 @@ void AssemblerProjection::printMeta(TString type) const {
 	
 		if(has("signal")) {
 		
-			for (int j = 0; j < NumberCorClassesSignal; j++) {
+			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
-				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
 				datacard << '\t' << contentSignal;
 			}
 		}
@@ -766,16 +766,16 @@ void AssemblerProjection::printMeta(TString type) const {
 			perror("***Error: No Signal***");
 		}
 		
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
-			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);
+			double contentBackground = getBin("background", i, BundlesBckgrd[j]);
 			datacard << '\t' << contentBackground;
 		}
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	
-	for (auto &uncertainty : getUncertainties()) {
+	for (auto &uncertainty : getUncertaintyNames()) {
 	
 		datacard << uncertainty << "  lnN";
 		
@@ -783,10 +783,10 @@ void AssemblerProjection::printMeta(TString type) const {
 		
 			if(has("signal")) {
 			
-				for (int j = 0; j < NumberCorClassesSignal; j++) {
+				for (int j = 0; j < NumberBundlesSignal; j++) {
 				
-					double contentSignalSyst = getBinSyst("signal", i, uncertainty, correlationClassesSignal[j]);		
-					double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+					double contentSignalSyst = getBinSyst("signal", i, uncertainty, BundlesSignal[j]);		
+					double contentSignal = getBin("signal", i, BundlesSignal[j]);	
 					double ratio = systFactor * contentSignalSyst/contentSignal;
 					if (contentSignal == 0) {ratio = 0.05;}
 					datacard << '\t' << 1 + ratio;
@@ -796,10 +796,10 @@ void AssemblerProjection::printMeta(TString type) const {
 				perror("***Error: No Signal -> No variance***");
 			}
 
-			for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+			for (int j = 0; j < NumberBundlesBackgrd; j++) {
 			
-				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, correlationClassesBckgrd[j]);		
-				double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
+				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, BundlesBckgrd[j]);		
+				double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
 				double ratio = systFactor * contentBackgroundSyst/contentBackground;
 				if (contentBackground == 0) {ratio = 0.05;}
 				datacard << '\t' << 1 + ratio;
@@ -808,7 +808,7 @@ void AssemblerProjection::printMeta(TString type) const {
 		datacard << '\n';
 	}
 		
-	int NumberBins = (NumberCorClassesBackgrd + NumberCorClassesSignal)*(hData->GetNbinsX());
+	int NumberBins = (NumberBundlesBackgrd + NumberBundlesSignal)*(hData->GetNbinsX());
 	double StatUncertainty[NumberBins][NumberBins];
 	
 	for (int n = 0; n < NumberBins; n++) {
@@ -825,10 +825,10 @@ void AssemblerProjection::printMeta(TString type) const {
 	
 		if(has("signal")) {
 		
-			for (int j = 0; j < NumberCorClassesSignal; j++) {
+			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
-				double contentSignalStat = getBinStat("signal", i, correlationClassesSignal[j]);		
-				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+				double contentSignalStat = getBinStat("signal", i, BundlesSignal[j]);		
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
 				double ratio = statFactor * contentSignalStat/contentSignal;
 				if (contentSignal == 0) {ratio = 0.05;}
 				StatUncertainty[LoopIndex][LoopIndex] += ratio;
@@ -838,10 +838,10 @@ void AssemblerProjection::printMeta(TString type) const {
 		else {
 			perror("***Error: No Signal -> No variance***");
 		}
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
-			double contentBackgroundStat = getBinStat("background", i, correlationClassesBckgrd[j]);		
-			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
+			double contentBackgroundStat = getBinStat("background", i, BundlesBckgrd[j]);		
+			double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
 			double ratio = statFactor * contentBackgroundStat/contentBackground;
 			if (contentBackground == 0) {ratio = 0.05;}
 			StatUncertainty[LoopIndex][LoopIndex] += ratio;
@@ -863,4 +863,3 @@ void AssemblerProjection::printMeta(TString type) const {
 	
 	datacard.close();
 }
-*/
