@@ -1,6 +1,7 @@
 /**
  * This example macro reads ZZ background MC data and produces a file 
  * with AnalysisTree in it with all MC validation variables.
+ * Output is used for ValidationPlotMacro.C.
 */
 
 
