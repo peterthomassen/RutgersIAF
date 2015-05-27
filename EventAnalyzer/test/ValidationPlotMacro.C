@@ -1,8 +1,11 @@
-/**
- * This example macro reads some the Validation variables 
+/* This example macro reads some the Validation variables 
  * from ValidationAnalysis.C for ttbar semileptonic background and creates a PDF with plots
- * for all these variables.
- * Change the name of your sample in every command it occurs.
+ * for all the validation variables.
+ * Some instructions:
+ * Change the name of your PDF-file to the name of the sample, e.g. ttbarS.
+ * Change the name of the sample on the plots as well.
+ * When you have your own variables to plot (1D, 2D, 3D), 
+ * just create them in the same way as the others (space under the variables).
 */
 
 
@@ -33,8 +36,18 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
+	variables.push_back("ValRecElectronsPT");	
+	titles.push_back("Reconstructed Electrons PT");		
+	lableX.push_back("PT");
+	lableY.push_back("");
+	lableZ.push_back("");
 	variables.push_back("ValMCelectronsPhi");
 	titles.push_back("Generator Electrons Phi");		
+	lableX.push_back("Phi");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValRecElectronsPhi");
+	titles.push_back("Reconstructed Electrons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
@@ -43,35 +56,24 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
+	variables.push_back("ValRecElectronsEta");
+	titles.push_back("Reconstructed Electrons Eta");		
+	lableX.push_back("Eta");
+	lableY.push_back("");
+	lableZ.push_back("");
 	variables.push_back("ValMCelectronsN");
 	titles.push_back("Number of Generator Electrons");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValRecElectronsN");
+	titles.push_back("Number of Reconstructed Electrons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	variables.push_back("ValMCelectronsM");
 	titles.push_back("Generator Electrons Mass");		
 	lableX.push_back("M");
-	lableY.push_back("");
-	lableZ.push_back("");
-	
-	/*variables.push_back("ValRecElectronsPT");	
-	titles.push_back("Reconstructed Electrons PT");		
-	lableX.push_back("PT");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecElectronsPhi");
-	titles.push_back("Reconstructed Electrons Phi");		
-	lableX.push_back("Phi");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecElectronsEta");
-	titles.push_back("Reconstructed Electrons Eta");		
-	lableX.push_back("Eta");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecElectronsN");
-	titles.push_back("Number of Reconstructed Electrons");		
-	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	variables.push_back("ValRecElectronsM");
@@ -138,8 +140,18 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
+	variables.push_back("ValRecMuonsPT");	
+	titles.push_back("Reconstructed Muons PT");		
+	lableX.push_back("PT");
+	lableY.push_back("");
+	lableZ.push_back("");
 	variables.push_back("ValMCmuonsPhi");
 	titles.push_back("Generator Muons Phi");		
+	lableX.push_back("Phi");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValRecMuonsPhi");
+	titles.push_back("Reconstructed Muons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
@@ -148,35 +160,24 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
+	variables.push_back("ValRecMuonsEta");
+	titles.push_back("Reconstructed Muons Eta");		
+	lableX.push_back("Eta");
+	lableY.push_back("");
+	lableZ.push_back("");
 	variables.push_back("ValMCmuonsN");
 	titles.push_back("Number of Generator Muons");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValRecMuonsN");
+	titles.push_back("Number of Reconstructed Muons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	variables.push_back("ValMCmuonsM");
 	titles.push_back("Generator Muons Mass");		
 	lableX.push_back("M");
-	lableY.push_back("");
-	lableZ.push_back("");
-	
-	variables.push_back("ValRecMuonsPT");	
-	titles.push_back("Reconstructed Muons PT");		
-	lableX.push_back("PT");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecMuonsPhi");
-	titles.push_back("Reconstructed Muons Phi");		
-	lableX.push_back("Phi");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecMuonsEta");
-	titles.push_back("Reconstructed Muons Eta");		
-	lableX.push_back("Eta");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecMuonsN");
-	titles.push_back("Number of Reconstructed Muons");		
-	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	variables.push_back("ValRecMuonsM");
@@ -243,8 +244,18 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
+	variables.push_back("ValRecTausPT");	
+	titles.push_back("Reconstructed Taus PT");		
+	lableX.push_back("PT");
+	lableY.push_back("");
+	lableZ.push_back("");
 	variables.push_back("ValMCtausPhi");
 	titles.push_back("Generator Taus Phi");		
+	lableX.push_back("Phi");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValRecTausPhi");
+	titles.push_back("Reconstructed Taus Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
@@ -253,35 +264,24 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
+	variables.push_back("ValRecTausEta");
+	titles.push_back("Reconstructed Taus Eta");		
+	lableX.push_back("Eta");
+	lableY.push_back("");
+	lableZ.push_back("");
 	variables.push_back("ValMCtausN");
 	titles.push_back("Number of Generator Taus");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValRecTausN");
+	titles.push_back("Number of Reconstructed Taus");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	variables.push_back("ValMCtausM");
 	titles.push_back("Generator Taus Mass");		
 	lableX.push_back("M");
-	lableY.push_back("");
-	lableZ.push_back("");
-	
-	variables.push_back("ValRecTausPT");	
-	titles.push_back("Reconstructed Taus PT");		
-	lableX.push_back("PT");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecTausPhi");
-	titles.push_back("Reconstructed Taus Phi");		
-	lableX.push_back("Phi");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecTausEta");
-	titles.push_back("Reconstructed Taus Eta");		
-	lableX.push_back("Eta");
-	lableY.push_back("");
-	lableZ.push_back("");
-	variables.push_back("ValRecTausN");
-	titles.push_back("Number of Reconstructed Taus");		
-	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	variables.push_back("ValRecTausM");
@@ -515,13 +515,22 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	titles.push_back("MT");		
 	lableX.push_back("MT");
 	lableY.push_back("");
-	lableZ.push_back("");*/
+	lableZ.push_back("");
 	
+	
+	/*your own plots, e.g:
+	//2D:
 	variables.push_back("ValMCtausEta:ValMCtausPhi");
 	titles.push_back("Generator Taus Eta vs Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
 	lableZ.push_back("");
+	//3D:
+	variables.push_back("ValMCtausPT:ValMCtausEta:ValMCtausPhi");
+	titles.push_back("Generator Taus PT vs Eta && Phi");		
+	lableX.push_back("Phi");
+	lableY.push_back("Eta");
+	lableZ.push_back("PT");*/
 	
 	//Nice plots layout	
 	gStyle->SetFrameBorderMode(0);
@@ -554,18 +563,27 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	
 	//Draw histograms in one pdf; identify 1D, 2D or 3D plots
 	
+	TCanvas* canvas = new TCanvas("canvas");
+	canvas->Divide(2,2);
+	int n_plot = 0;
+	int fullPages = variables.size()/4;
+	if (variables.size()%4==0) {fullPages--;}
+	
 	for(size_t i = 0; i < variables.size(); ++i) {
 		char colon = ':';
 		int i_colon = colon;
 		int n_dim = variables[i].CountChar(i_colon);
+		
 		
 		cout << "Histogram " << i+1 << "/" << variables.size() << endl;
 		if (n_dim<0 || n_dim>2) {cout << "*** Hist " << variables[i] << " error: wrong dimensions for Hist ***" << endl; continue;}
 		if (treeR->GetEntries(variables[i])==0) {cout << "Histogram with no entries (" << variables[i] << ") -> not drawn..." << endl; continue;}
 		
 		//begin pdf
-		if (i==0 && i!=variables.size()-1) {
+		if (i<4) {
 			if (n_dim==0) {
+				n_plot++;
+				canvas->cd(n_plot);
 				treeR->Draw(variables[i]); 
 				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
 				if(htemp1) {
@@ -577,13 +595,15 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
-					Info->Draw();  
+					Info->Draw();
 					
-					c1->Print("validation_ttbarS.pdf(");
+					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf("); n_plot=0;}
 				} 
 				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
 			}
 			if (n_dim==1) {
+				n_plot++;
+				canvas->cd(n_plot);
 				treeR->Draw(variables[i],"","COLZ"); 
 				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
 				if(htemp2) {
@@ -598,11 +618,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
 					
-					c1->Print("validation_ttbarS.pdf(");
+					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf("); n_plot=0;}
 				} 
 				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
 			}
 			if (n_dim==2) {
+				n_plot++;
+				canvas->cd(n_plot);
 				treeR->Draw(variables[i],"","ISO"); 
 				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
 				if(htemp3) {
@@ -617,15 +639,84 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
 					
-					c1->Print("validation_ttbarS.pdf(");
+					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf("); n_plot=0;}
+				} 
+				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
+			}
+		}
+		
+		//mid of pdf
+		if (i>3 && i<4*fullPages) {
+			if (n_dim==0) {
+				n_plot++;
+				canvas->cd(n_plot);
+				treeR->Draw(variables[i]); 
+				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
+				if(htemp1) {
+					htemp1->Draw();
+					htemp1->SetTitle(titles[i]);
+					htemp1->GetXaxis()->SetTitle(lableX[i]);
+					htemp1->GetYaxis()->SetTitle(lableY[i]);
+					
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					Info->AddText("CMS Simulation");
+					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->Draw();
+					
+					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf"); n_plot=0;}
+				} 
+				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
+			}
+			if (n_dim==1) {
+				n_plot++;
+				canvas->cd(n_plot);
+				treeR->Draw(variables[i],"","COLZ"); 
+				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
+				if(htemp2) {
+					htemp2->Draw("COLZ");
+					htemp2->SetTitle(titles[i]);
+					htemp2->GetXaxis()->SetTitle(lableX[i]);
+					htemp2->GetYaxis()->SetTitle(lableY[i]);
+					htemp2->GetZaxis()->SetTitle(lableZ[i]);
+					
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					Info->AddText("CMS Simulation");
+					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->Draw();
+					
+					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf"); n_plot=0;}
+				} 
+				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
+			}
+			if (n_dim==2) {
+				n_plot++;
+				canvas->cd(n_plot);
+				treeR->Draw(variables[i],"","ISO"); 
+				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
+				if(htemp3) {
+					htemp3->Draw("ISO");
+					htemp3->SetTitle(titles[i]);
+					htemp3->GetXaxis()->SetTitle(lableX[i]);
+					htemp3->GetYaxis()->SetTitle(lableY[i]);
+					htemp3->GetZaxis()->SetTitle(lableZ[i]);
+					
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					Info->AddText("CMS Simulation");
+					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->Draw();
+					
+					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf"); n_plot=0;}
 				} 
 				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
 			}
 		}
 		
 		//end pdf
-		if (i!=0 && i==variables.size()-1) {
+		if (i==fullPages*4) {canvas->Clear(); canvas->Divide(2,2);}
+		if (i>=fullPages*4) {
 			if (n_dim==0) {
+				n_plot++;
+				canvas->cd(n_plot);
 				treeR->Draw(variables[i]); 
 				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
 				if(htemp1) {
@@ -639,11 +730,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
 					
-					c1->Print("validation_ttbarS.pdf)");
+					if (i==variables.size()-1) {canvas->Print("validation_ttbarS.pdf)");}
 				} 
 				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
 			}
 			if (n_dim==1) {
+				n_plot++;
+				canvas->cd(n_plot);
 				treeR->Draw(variables[i],"","COLZ"); 
 				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
 				if(htemp2) {
@@ -658,11 +751,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
 					
-					c1->Print("validation_ttbarS.pdf)");
+					if (i==variables.size()-1) {canvas->Print("validation_ttbarS.pdf)");}
 				} 
 				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
 			}
 			if (n_dim==2) {
+				n_plot++;
+				canvas->cd(n_plot);
 				treeR->Draw(variables[i],"","ISO"); 
 				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
 				if(htemp3) {
@@ -677,72 +772,14 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
 					
-					c1->Print("validation_ttbarS.pdf)");
+					if (i==variables.size()-1) {canvas->Print("validation_ttbarS.pdf)");}
 				} 
 				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
 			}
 		}
 		
-		//rest of pdf
-		if(i!=0 && i!=variables.size()-1) {
-			if (n_dim==0) {
-				treeR->Draw(variables[i]); 
-				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
-				if(htemp1) {
-					htemp1->Draw();
-					htemp1->SetTitle(titles[i]);
-					htemp1->GetXaxis()->SetTitle(lableX[i]);
-					htemp1->GetYaxis()->SetTitle(lableY[i]);
-					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
-					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
-					Info->Draw();
-					
-					c1->Print("validation_ttbarS.pdf");
-				} 
-				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
-			}
-			if (n_dim==1) {
-				treeR->Draw(variables[i],"","COLZ"); 
-				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
-				if(htemp2) {
-					htemp2->Draw("COLZ");
-					htemp2->SetTitle(titles[i]);
-					htemp2->GetXaxis()->SetTitle(lableX[i]);
-					htemp2->GetYaxis()->SetTitle(lableY[i]);
-					htemp2->GetZaxis()->SetTitle(lableZ[i]);
-					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
-					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
-					Info->Draw();
-					
-					c1->Print("validation_ttbarS.pdf");
-				} 
-				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
-			}
-			if (n_dim==2) {
-				treeR->Draw(variables[i],"","ISO"); 
-				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
-				if(htemp3) {
-					htemp3->Draw("ISO");
-					htemp3->SetTitle(titles[i]);
-					htemp3->GetXaxis()->SetTitle(lableX[i]);
-					htemp3->GetYaxis()->SetTitle(lableY[i]);
-					htemp3->GetZaxis()->SetTitle(lableZ[i]);
-					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
-					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
-					Info->Draw();
-					
-					c1->Print("validation_ttbarS.pdf");
-				} 
-				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
-			}
-		}
 	}
 	delete treeR;
 	ValFile->Close();
 }
+
