@@ -546,12 +546,12 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	gStyle->SetLabelFont(42,"x");
 	gStyle->SetLabelFont(42,"y");
 	gStyle->SetLabelFont(42,"z");
-	gStyle->SetLabelSize(0.03,"x");
-	gStyle->SetTitleSize(0.03,"x");
-	gStyle->SetLabelSize(0.03,"y");
-	gStyle->SetTitleSize(0.03,"y");
-	gStyle->SetLabelSize(0.03,"z");
-	gStyle->SetTitleSize(0.03,"z");
+	gStyle->SetLabelSize(0.04,"x");
+	gStyle->SetTitleSize(0.04,"x");
+	gStyle->SetLabelSize(0.04,"y");
+	gStyle->SetTitleSize(0.04,"y");
+	gStyle->SetLabelSize(0.04,"z");
+	gStyle->SetTitleSize(0.04,"z");
 
 	gStyle->SetOptTitle(1);
 	gStyle->SetOptStat(0);
@@ -592,7 +592,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp1->GetXaxis()->SetTitle(lableX[i]);
 					htemp1->GetYaxis()->SetTitle(lableY[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -613,7 +613,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp2->GetYaxis()->SetTitle(lableY[i]);
 					htemp2->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -634,7 +634,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp3->GetYaxis()->SetTitle(lableY[i]);
 					htemp3->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -658,7 +658,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp1->GetXaxis()->SetTitle(lableX[i]);
 					htemp1->GetYaxis()->SetTitle(lableY[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -679,7 +679,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp2->GetYaxis()->SetTitle(lableY[i]);
 					htemp2->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -700,7 +700,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp3->GetYaxis()->SetTitle(lableY[i]);
 					htemp3->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -725,7 +725,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp1->GetXaxis()->SetTitle(lableX[i]);
 					htemp1->GetYaxis()->SetTitle(lableY[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -746,7 +746,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp2->GetYaxis()->SetTitle(lableY[i]);
 					htemp2->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -767,7 +767,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp3->GetYaxis()->SetTitle(lableY[i]);
 					htemp3->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText("ttbar semileptonic 8 TeV");
 					Info->Draw();
@@ -782,4 +782,3 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	delete treeR;
 	ValFile->Close();
 }
-
