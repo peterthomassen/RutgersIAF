@@ -2,8 +2,7 @@
  * from ValidationAnalysis.C for ttbar semileptonic background and creates a PDF with plots
  * for all the validation variables.
  * Some instructions:
- * Change the name of your PDF-file to the name of the sample, e.g. ttbarS.
- * Change the name of the sample on the plots as well.
+ * Change the name for your sample (line 21) and the energy for your sample (line 22).
  * When you have your own variables to plot (1D, 2D, 3D), 
  * just create them in the same way as the others (space under the variables).
 */
@@ -18,6 +17,9 @@
 using namespace std;
 
 void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttbarS/validation_ttbarS.root") {
+	
+	TString sample = "ttbar_semileptonic";
+	TString energy = "8 TeV";
 	
 	TFile *ValFile = TFile::Open(inputFile);
 	TTree* treeR = (TTree*)ValFile->Get("treeR");
@@ -82,7 +84,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableY.push_back("");
 	lableZ.push_back("");
 	
-	variables.push_back("ValMatchingElectronsPT");	
+	/*variables.push_back("ValMatchingElectronsPT");	
 	titles.push_back("Matching Electrons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
@@ -515,10 +517,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	titles.push_back("MT");		
 	lableX.push_back("MT");
 	lableY.push_back("");
-	lableZ.push_back("");
+	lableZ.push_back("");*/
 	
 	
-	/*your own plots, e.g:
+	//your own plots, e.g:
 	//2D:
 	variables.push_back("ValMCtausEta:ValMCtausPhi");
 	titles.push_back("Generator Taus Eta vs Phi");		
@@ -530,7 +532,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	titles.push_back("Generator Taus PT vs Eta && Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
-	lableZ.push_back("PT");*/
+	lableZ.push_back("PT");
 	
 	//Nice plots layout	
 	gStyle->SetFrameBorderMode(0);
@@ -569,6 +571,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	int fullPages = variables.size()/4;
 	if (variables.size()%4==0) {fullPages--;}
 	
+	
 	for(size_t i = 0; i < variables.size(); ++i) {
 		char colon = ':';
 		int i_colon = colon;
@@ -594,10 +597,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf("); n_plot=0;}
+					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
 				} 
 				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
 			}
@@ -615,10 +618,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf("); n_plot=0;}
+					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
 				} 
 				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
 			}
@@ -636,10 +639,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf("); n_plot=0;}
+					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
 				} 
 				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
 			}
@@ -660,10 +663,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf"); n_plot=0;}
+					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
 				} 
 				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
 			}
@@ -681,10 +684,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf"); n_plot=0;}
+					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
 				} 
 				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
 			}
@@ -702,10 +705,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (n_plot==4) {canvas->Print("validation_ttbarS.pdf"); n_plot=0;}
+					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
 				} 
 				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
 			}
@@ -727,10 +730,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (i==variables.size()-1) {canvas->Print("validation_ttbarS.pdf)");}
+					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
 				} 
 				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
 			}
@@ -748,10 +751,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (i==variables.size()-1) {canvas->Print("validation_ttbarS.pdf)");}
+					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
 				} 
 				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
 			}
@@ -769,10 +772,10 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					
 					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText("ttbar semileptonic 8 TeV");
+					Info->AddText(sample + " " + energy);
 					Info->Draw();
 					
-					if (i==variables.size()-1) {canvas->Print("validation_ttbarS.pdf)");}
+					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
 				} 
 				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
 			}
@@ -782,3 +785,4 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	delete treeR;
 	ValFile->Close();
 }
+
