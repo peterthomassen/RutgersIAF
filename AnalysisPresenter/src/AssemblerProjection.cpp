@@ -671,7 +671,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(0);
-	datacard << "#Datacard Version 1.1" << '\n' << "#May 2015" << '\n' << '\n';
+	datacard << "#Datacard Version 1.1" << '\n' << "#Jun 2015" << '\n' << '\n';
 	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + hData->GetNbinsX()*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
@@ -758,7 +758,8 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		
 			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
-				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);
+				if (contentSignal < 0.001) {contentSignal = 0.001;}				
 				datacard << '\t' << contentSignal;
 			}
 		}
@@ -769,6 +770,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
 			double contentBackground = getBin("background", i, BundlesBckgrd[j]);
+			if (contentBackground < 0.001) {contentBackground = 0.001;}
 			datacard << '\t' << contentBackground;
 		}
 	}
@@ -786,9 +788,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 				for (int j = 0; j < NumberBundlesSignal; j++) {
 				
 					double contentSignalSyst = getBinSyst("signal", i, uncertainty, BundlesSignal[j]);		
-					double contentSignal = getBin("signal", i, BundlesSignal[j]);	
+					double contentSignal = getBin("signal", i, BundlesSignal[j]);
+					if (contentSignal < 0.001) {contentSignal = 0.001;}					
 					double ratio = systFactor * contentSignalSyst/contentSignal;
-					if (contentSignal == 0) {ratio = 0.05;}
 					datacard << '\t' << 1 + ratio;
 				}
 			}
@@ -799,9 +801,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 			for (int j = 0; j < NumberBundlesBackgrd; j++) {
 			
 				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, BundlesBckgrd[j]);		
-				double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
+				double contentBackground = getBin("background", i, BundlesBckgrd[j]);
+				if (contentBackground < 0.001) {contentBackground = 0.001;}				
 				double ratio = systFactor * contentBackgroundSyst/contentBackground;
-				if (contentBackground == 0) {ratio = 0.05;}
 				datacard << '\t' << 1 + ratio;
 			}
 		}
@@ -828,9 +830,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
 				double contentSignalStat = getBinStat("signal", i, BundlesSignal[j]);		
-				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);
+				if (contentSignal < 0.001) {contentSignal = 0.001;}				
 				double ratio = statFactor * contentSignalStat/contentSignal;
-				if (contentSignal == 0) {ratio = 0.05;}
 				StatUncertainty[LoopIndex][LoopIndex] += ratio;
 				LoopIndex++;
 			}
@@ -841,9 +843,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
 			double contentBackgroundStat = getBinStat("background", i, BundlesBckgrd[j]);		
-			double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
+			double contentBackground = getBin("background", i, BundlesBckgrd[j]);
+			if (contentBackground < 0.001) {contentBackground = 0.001;}
 			double ratio = statFactor * contentBackgroundStat/contentBackground;
-			if (contentBackground == 0) {ratio = 0.05;}
 			StatUncertainty[LoopIndex][LoopIndex] += ratio;
 			LoopIndex++;
 		}
