@@ -211,7 +211,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	int n = treeR->GetEntries();
 	// Limit reading of MC such that the scale factor is no less than minScale (default: 0.01) if the sample is randomly distributed (as given by m_unordered).
 	// This means that we are skipping MC events beyond 100 times the data luminosity.
-	if(!isData() && m_unordered && scale < minScale) {
+	if(!isData() && m_unordered && scale < minScale && n > 0) {
 		int nOld = n;
 		double scaleOld = scale;
 		n /= minScale / scale;

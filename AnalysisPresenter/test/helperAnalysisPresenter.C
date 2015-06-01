@@ -12,8 +12,8 @@ void init(Assembler* assembler) {
 	Bundle* fakeBundle = new Bundle("background", "Fakes");
 	assembler->addBundle(fakeBundle);
 	
-	//Bundle* bundleHiggs = new Bundle("background", "Higgs");
-	//assembler->addBundle(bundleHiggs);
+	Bundle* bundleHiggs = new Bundle("background", "Higgs");
+	assembler->addBundle(bundleHiggs);
 	
 	Bundle* rareBundle = new Bundle("background", "Rare MC");
 	assembler->addBundle(rareBundle);
@@ -23,11 +23,15 @@ void init(Assembler* assembler) {
 
 void prepare(Assembler* assembler) {
 	Bundle* presentationBundle = new Bundle("background", "presentationBundle");
-	presentationBundle->addComponent(assembler->getBundle("Fakes"));
-	//presentationBundle->addComponent(assembler->getBundle("Higgs"));
-	presentationBundle->addComponent(assembler->getBundle("Rare MC"));
-	
 	assembler->setDefaultBundle(presentationBundle);
+	
+	std::vector<TString> bundleNames = {"Fakes", "Higgs", "Rare MC"};
+	for(const auto &bundleName : bundleNames) {
+		Bundle* bundle = assembler->getBundle(bundleName);
+		if(bundle->getComponents().size() > 0) {
+			presentationBundle->addComponent(bundle);
+		}
+	}
 	
 	assembler->getDefaultBundle()->print();
 }
@@ -38,9 +42,8 @@ void setupData(Assembler* assembler, bool fake = false, bool dilep = false) {
 	std::string suffix = ".root";
 	
 	PhysicsContribution* data = fake
-		? new PhysicsContribution("data", prefix + "20150506_data" + infix + suffix, 19500, "2012data", false, "treeRfakeTracks")
-//		? new PhysicsContribution("data", prefix + "20150408_fakeTaus" + infix + suffix, 19500, "2012data")
-		: new PhysicsContribution("data", prefix + "20150408_data" + infix + suffix, 19500, "2012data");
+		? new PhysicsContribution("data", prefix + "20150518_data" + infix + suffix, 19500, "2012data", false, "treeRfakeTracks")
+		: new PhysicsContribution("data", prefix + "20150518_data" + infix + suffix, 19500, "2012data");
 	
 	assembler->addContribution(data);
 }
@@ -122,11 +125,15 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	assembler->addBundle(bundleTTbar);
 	
 	if(ttbar) {
-		if(dilep && !onlyTTF) {
+		if(dilep) {
 			PhysicsContribution* ttbarS = new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, xsec_ttbar_semiLep, "TT_SemiL");
 			ttbarS->addWeight(nJetWeight);
 			mc.push_back(ttbarS);
 			bundleTTbar->addComponent(ttbarS);
+		}
+		
+		if(onlyTTF) {
+			mc.clear();
 		}
 		
 		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + ".3LonZ" + suffix, xsec_ttbar_fullLep, "TT_FullL");
@@ -155,9 +162,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			assembler->getBundle("Fakes")->addComponent(contribution);
 		}
 	}
-
+	
 	correlationBundle->addComponent(bundleTTbar);
-
+	
 	if(dilep) {
 //		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
 //		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 2950.0, "DYgt50"));
@@ -169,23 +176,21 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		assembler->addContribution(contribution);
 	}
 	
+	if(onlyTTF) {
+		return;
+	}
+	
 	for(auto &contribution : mcRare) {
 		contribution->addWeight("WEIGHT[0]");
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
 	}
 	
-	if(onlyTTF) {
-		return;
-	}
-	
-	return;
-	
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToZZTo4L" + infix + suffix, 0.0053, "GluGluToHToZZTo4L"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToTauTau" + infix + suffix, 0.0992, "VBF_HToTauTau"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToWWTo2LAndTau2Nu" + infix + suffix, 0.0282, "VBF_HToWWTo2LAndTau2Nu"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToTauTau" + infix + suffix, 0.0992, "VBF_HToTauTau"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToWWTo2LAndTau2Nu" + infix + suffix, 0.0282, "VBF_HToWWTo2LAndTau2Nu"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToZZTo4L" + infix + suffix, 0.000423, "VBF_HToZZTo4L"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToTauTau" + infix + suffix, 0.0778, "WH_ZH_TTH_HToTauTau"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToWW" + infix + suffix, 0.254, "WH_ZH_TTH_HToWW"));
@@ -204,7 +209,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	Bundle* fakeBundle = assembler->getBundle("Fakes");
 	
 	////// Tracks
-	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.3L.root", assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
+	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
 /*	fakeTracks->addWeight(
 		"(Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
 		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
@@ -230,7 +235,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	}
 	
 	////// Taus
-	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.3L.root", assembler->getLumi(), "fakeTaus", false, "treeRfakeTaus");
+	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakeTaus", false, "treeRfakeTaus");
 	fakeTaus->addWeight("fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15");
 	if(syst) {
 		fakeTaus->addFlatUncertainty("tauFit", 0.11); // for HT > 200 GeV, it is that high
@@ -241,7 +246,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	}
 	
 	////// Taus (2L)
-	PhysicsContribution* fakeTaus2L = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.root", assembler->getLumi(), "fakeTaus2L", false, "treeRfakeTaus");
+	PhysicsContribution* fakeTaus2L = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.root", assembler->getLumi(), "fakeTaus2L", false, "treeRfakeTaus");
 	fakeTaus2L->addWeight("fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15");
 	if(syst) {
 		fakeTaus2L->addFlatUncertainty("tauFit", 0.11); // for HT > 200 GeV, it is that high
@@ -251,7 +256,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	}
 	
 	////// Photons
-	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150506_data.3L.root", assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
+	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
 	if(syst) {
 		fakePhotons->addFlatUncertainty("photonElFake", 0.15);
 		//fakePhotons->addFlatUncertainty("photonFudge", 0.25);
@@ -432,4 +437,30 @@ std::vector<double> getSecond(std::vector<std::pair<double, double> > list) {
 		list2.push_back(list[i].second);
 	}
 	return list2;
+}
+
+void writeUncertainties(AssemblerProjection* projection) {
+	cout << endl << "====== now printing uncertainties" << endl;
+	
+	auto uncertaintyNames = projection->getUncertaintyNames();
+	for(int i = 1; i <= 5; ++i) {
+		cout << endl;
+		cout << "BIN " << i << endl;
+		cout << "TOTAL:";
+		cout << " " << projection->getBin("background", i);
+		cout << " pm " << projection->getBinStat("background", i) << " pm " << projection->getBinSyst("background", i) << endl;
+		for(const auto &uncertaintyName : uncertaintyNames) {
+			cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst("background", i, uncertaintyName) << endl;
+		}
+		cout << endl;
+		
+		for(const auto &bundleName : projection->getBundleNames("background")) {
+			cout << "bundleName: " << bundleName;
+			cout << " " << projection->getBin("background", i, bundleName);
+			cout << " pm " << projection->getBinStat("background", i, bundleName) << endl;
+			for(const auto &uncertaintyName : uncertaintyNames) {
+				cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst("background", i, uncertaintyName, bundleName) << endl;
+			}
+		}
+	}
 }

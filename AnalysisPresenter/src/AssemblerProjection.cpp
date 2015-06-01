@@ -67,9 +67,12 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		for(auto &component : bundle->getComponents()) {
 			auto projection = component->project(m_name, m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
+			
+			size_t oldSize = contributions.size();
 			// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
 			std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
 			contributions.insert(projectionContributions.begin(), projectionContributions.end());
+			assert(contributions.size() == oldSize + projectionContributions.size());
 		}
 		
 		Bundle* missing = new Bundle(type, missingName);
@@ -78,8 +81,12 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 				if(missingName == "") {
 					auto projection = contribution->project(m_name, m_binForOverflow);
 					m_typeProjections[type].push_back(projection);
+					
+					size_t oldSize = contributions.size();
+					// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
 					std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
 					contributions.insert(projectionContributions.begin(), projectionContributions.end());
+					assert(contributions.size() == oldSize + projectionContributions.size());
 				} else {
 					missing->addComponent(contribution);
 				}
@@ -88,9 +95,12 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		if(missing->getComponents().size() > 0) {
 			auto projection = missing->project(m_name, m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
+			
+			size_t oldSize = contributions.size();
 			// Doing the next two lines in one line (without extra projectionContributions) gives infinite loop
 			std::set<const PhysicsContribution*> projectionContributions = projection->getPhysicsContributions();
 			contributions.insert(projectionContributions.begin(), projectionContributions.end());
+			assert(contributions.size() == oldSize + projectionContributions.size());
 		}
 	}
 	
@@ -103,7 +113,7 @@ AssemblerProjection::AssemblerProjection() {
 
 AssemblerProjection::~AssemblerProjection() {
 	//delete m_canvas; // TODO doing this causes a segfault -- probably something to do with http://root.cern.ch/phpBB3/viewtopic.php?f=14&t=11472
-	for(auto &component : m_components) {
+	for(auto &component : m_stacks) {
 		delete component.second.first;
 		delete component.second.second;
 	}
@@ -140,29 +150,55 @@ double AssemblerProjection::extractStackBin(THStack* stack, int i, TString name)
 
 double AssemblerProjection::getBin(TString type, int i) const {
 	assert(has(type));
-	TObjArray* stack = m_components.find(type)->second.first->GetStack();
+	TObjArray* stack = m_stacks.find(type)->second.first->GetStack();
+	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
+}
+
+double AssemblerProjection::getBin(TString type, int i, TString bundleName) const {
+	assert(has(type, bundleName));
+	TObjArray* stack = m_bundles.find(type)->second.find(bundleName)->second.first->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinContent(i) : 0;
 }
 
 double AssemblerProjection::getBinStat(TString type, int i) const {
 	assert(has(type));
-	TObjArray* stack = m_components.find(type)->second.first->GetStack();
+	TObjArray* stack = m_stacks.find(type)->second.first->GetStack();
+	return stack ? ((TH1*)stack->Last())->GetBinError(i) : 0;
+}
+
+double AssemblerProjection::getBinStat(TString type, int i, TString bundleName) const {
+	assert(has(type, bundleName));
+	TObjArray* stack = m_bundles.find(type)->second.find(bundleName)->second.first->GetStack();
 	return stack ? ((TH1*)stack->Last())->GetBinError(i) : 0;
 }
 
 double AssemblerProjection::getBinSyst(TString type, int i) const {
 	assert(has(type));
-	return addStackBinInQuadrature(m_components.find(type)->second.second, i);
+	return addStackBinInQuadrature(m_stacks.find(type)->second.second, i);
 }
 
 double AssemblerProjection::getBinSyst(TString type, int i, TString name) const {
 	assert(has(type));
-	return extractStackBin(m_components.find(type)->second.second, i, name);
+	return extractStackBin(m_stacks.find(type)->second.second, i, name);
+}
+
+double AssemblerProjection::getBinSyst(TString type, int i, TString name, TString bundleName) const {
+	assert(has(type, bundleName));
+	return extractStackBin(m_bundles.find(type)->second.find(bundleName)->second.second, i, name);
+}
+
+std::vector<TString> AssemblerProjection::getBundleNames(TString type) const {
+	assert(has(type));
+	std::vector<TString> bundleNames;
+	for(auto &bundle : m_bundles.find(type)->second) {
+		bundleNames.push_back(bundle.first);
+	}
+	return bundleNames;
 }
 
 TH1* AssemblerProjection::getHistogram(TString type) const {
 	assert(has(type));
-	TObjArray* stack = m_components.find(type)->second.first->GetStack();
+	TObjArray* stack = m_stacks.find(type)->second.first->GetStack();
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
 }
 
@@ -202,7 +238,7 @@ double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
 
 double AssemblerProjection::getMoment(TString type, int k, bool center) const {
 	assert(has(type));
-	TObjArray* stack = m_components.find(type)->second.first->GetStack();
+	TObjArray* stack = m_stacks.find(type)->second.first->GetStack();
 	if(!stack) {
 		return 0;
 	}
@@ -217,20 +253,27 @@ std::vector<std::pair<int, int>> AssemblerProjection::getRanges() const {
 	return m_ranges;
 }
 
-std::set<TString> AssemblerProjection::getUncertainties() const {
-	std::set<TString> uncertainties;
+std::set<TString> AssemblerProjection::getUncertaintyNames() const {
+	std::set<TString> uncertaintyNames;
 	for(auto &typeProjection : m_typeProjections) {
 		for(auto &projection : typeProjection.second) {
 			for(auto &projectionUncertainties : projection->getUncertainties()) {
-				uncertainties.insert(projectionUncertainties.first);
+				uncertaintyNames.insert(projectionUncertainties.first);
 			}
 		}
 	}
-	return uncertainties;
+	return uncertaintyNames;
 }
 
 bool AssemblerProjection::has(TString type) const {
-	return (m_components.find(type) != m_components.end() && m_components.find(type)->second.first->GetHists());
+	return (m_stacks.find(type) != m_stacks.end() && m_stacks.find(type)->second.first->GetHists());
+}
+
+bool AssemblerProjection::has(TString type, TString bundleName) const {
+	return (
+		m_bundles.find(type) != m_bundles.end()
+		&& m_bundles.find(type)->second.find(bundleName) != m_bundles.find(type)->second.end()
+	);
 }
 
 bool AssemblerProjection::hasOverflowIncluded() const {
@@ -260,7 +303,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		: m_name;
 	
 	// TODO Not cloning causes segfault ...
-	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	if(hasOverflowIncluded()) {
 		// Set overflow bin content to make it show up in statistics box
 		auto nEntries = hData->GetEntries();
@@ -272,7 +315,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	
 	TH1* hSignal = 0;
 	if(has("signal")) {
-		hSignal = (TH1*)m_components.find("signal")->second.first->GetStack()->Last()->Clone();
+		hSignal = (TH1*)m_stacks.find("signal")->second.first->GetStack()->Last()->Clone();
 		for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
 			double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
 			hSignal->SetBinError(i, sqrt(error2));
@@ -284,7 +327,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	TH1* hRatio = 0;
 	TH1* hRatioBkg = 0;
 	if(hasBackground) {
-		hBackground = (TH1*)m_components.find("background")->second.first->GetStack()->Last()->Clone("background");
+		hBackground = (TH1*)m_stacks.find("background")->second.first->GetStack()->Last()->Clone("background");
 		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
 			// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
 			// Those are together to "comprehensive systematic uncertainty"
@@ -342,7 +385,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->Clone("dummy")->Draw("EP"); // use dummy name to allow unique name in TCanvas for the actual data histogram
 	
 	if(hasBackground) {
-		((THStack*)m_components.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
+		((THStack*)m_stacks.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
 		hBackground->SetFillColor(kRed);
 		hBackground->SetFillStyle(3002);
 		hBackground->Draw("E2 SAME");
@@ -370,7 +413,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		
 		TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
 		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
-		TList* hists = m_components.find("background")->second.first->GetHists();
+		TList* hists = m_stacks.find("background")->second.first->GetHists();
 		TIterator* iter = new TListIter(hists, false);
 		while(TH1* obj = (TH1*)iter->Next()) {
 			legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
@@ -460,9 +503,23 @@ void AssemblerProjection::prepareStacks() {
 		std::vector<std::pair<TH1D*, double>> vh;
 		THStack* hsSyst = new THStack("hsSyst", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
 		
-		// Also, break things down by correlation class (for datacards and such)
+		// Bundle-wise structure (for datacard correlation bundles and such)
+		m_bundles.insert(make_pair(typeProjection.first, std::map<TString, std::pair<THStack*, THStack*>>()));
+		
+		// Loop over signal / background components
 		for(const auto &baseBundleProjection : typeProjection.second) {
+			TString bundleName = baseBundleProjection->getSource()->getName();
+			
+			// Prepare bundle-wise stacks
+			THStack* hsBundle = new THStack((TString("hs_") + bundleName).Data(), m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
+			THStack* hsSystBundle = new THStack((TString("hsSyst_") + bundleName).Data(), m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
+			m_bundles[typeProjection.first].insert(make_pair(bundleName, make_pair(hsBundle, hsSystBundle)));
+			
+			// Add histogram contents
 			vh.push_back(make_pair(baseBundleProjection->getHistogram(), baseBundleProjection->getHistogram()->Integral()));
+			
+			// Same in the bundle-wise structure
+			hsBundle->Add(baseBundleProjection->getHistogram());
 			
 			for(const auto &uncertainty : baseBundleProjection->getUncertainties()) {
 				// Combine uncertainties into main histograms
@@ -476,6 +533,9 @@ void AssemblerProjection::prepareStacks() {
 				} else {
 					hsSyst->Add(uncertainty.second);
 				}
+				
+				// Same in the bundle-wise structure
+				hsSystBundle->Add(uncertainty.second);
 			}
 		}
 		
@@ -492,10 +552,10 @@ void AssemblerProjection::prepareStacks() {
 			hs->Add(contribution.first);
 		}
 		
-		if(m_components.find(typeProjection.first) != m_components.end()) {
+		if(m_stacks.find(typeProjection.first) != m_stacks.end()) {
 			throw std::runtime_error("overwriting projection components not supported");
 		}
-		m_components.insert(make_pair(typeProjection.first, make_pair(hs, hsSyst)));
+		m_stacks.insert(make_pair(typeProjection.first, make_pair(hs, hsSyst)));
 	}
 }
 
@@ -508,11 +568,11 @@ void AssemblerProjection::print() const {
 	double sumSignalStat2 = 0;
 	double sumSignalSyst = 0;
 	
-	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	//cout << "data entries: " << hData->GetEntries() << endl;
 	//cout << "data integral: " << hData->Integral() << endl;
 	//cout << "data integral w/ overflow: " << hData->Integral(0, hData->GetNbinsX() + 1) << endl;
-	cout << ((TH1*)m_components.find("data")->second.first->GetStack()->Last())->GetTitle() << endl;
+	cout << ((TH1*)m_stacks.find("data")->second.first->GetStack()->Last())->GetTitle() << endl;
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		double lo = hData->GetXaxis()->GetBinLowEdge(i);
 		double hi = hData->GetXaxis()->GetBinUpEdge(i);
@@ -584,18 +644,18 @@ void AssemblerProjection::printMeta(TString type) const {
 	}
 }
 
-/*void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
+void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 
 	std::cout << "Creating datacard..." << std::endl;
 	
-	TH1* hData = (TH1*)m_components.find("data")->second.first->GetStack()->Last()->Clone();
+	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	int bins = hData->GetNbinsX();
-	std::vector<TString> correlationClassesSignal;
-	correlationClassesSignal = getCorrelationClasses("signal");
-	int NumberCorClassesSignal = correlationClassesSignal.size();
-	std::vector<TString> correlationClassesBckgrd;
-	correlationClassesBckgrd = getCorrelationClasses("background");
-	int NumberCorClassesBackgrd = correlationClassesBckgrd.size();
+	std::vector<TString> BundlesSignal;
+	BundlesSignal = getBundleNames("signal");
+	int NumberBundlesSignal = BundlesSignal.size();
+	std::vector<TString> BundlesBckgrd;
+	BundlesBckgrd = getBundleNames("background");
+	int NumberBundlesBackgrd = BundlesBckgrd.size();
 
 	
 	//Create datacard
@@ -611,8 +671,8 @@ void AssemblerProjection::printMeta(TString type) const {
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(0);
-	datacard << "#Datacard Version 0.1" << '\n' << "#Dec. 2014" << '\n' << '\n';
-	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberCorClassesBackgrd+NumberCorClassesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertainties().size() + hData->GetNbinsX()*(NumberCorClassesBackgrd+NumberCorClassesSignal) << " number nuisance parameters" << '\n';
+	datacard << "#Datacard Version 1.1" << '\n' << "#May 2015" << '\n' << '\n';
+	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + hData->GetNbinsX()*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
 	
@@ -637,7 +697,7 @@ void AssemblerProjection::printMeta(TString type) const {
 	datacard << "bin";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
-		for (int j = 0; j < (NumberCorClassesSignal + NumberCorClassesBackgrd); j++) {
+		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
 		
 			double lo = hData->GetXaxis()->GetBinLowEdge(i);
 			double hi = hData->GetXaxis()->GetBinUpEdge(i);
@@ -654,23 +714,23 @@ void AssemblerProjection::printMeta(TString type) const {
 	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
-		for (int j = 0; j < NumberCorClassesSignal; j++) {
+		for (int j = 0; j < NumberBundlesSignal; j++) {
 		
-			if(correlationClassesSignal[j]=="") {
+			if(BundlesSignal[j]=="") {
 				datacard << '\t' << "remain_signal";
 			}
 			else {
-				datacard << '\t' << "signal_" << correlationClassesSignal[j];
+				datacard << '\t' << "signal_" << BundlesSignal[j];
 			}
 		}
 		
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
-			if(correlationClassesBckgrd[j]=="") {
+			if(BundlesBckgrd[j]=="") {
 				datacard << '\t' << "remain_bckgrd";
 			}
 			else {
-				datacard << '\t' << "bckgrd_" << correlationClassesBckgrd[j];
+				datacard << '\t' << "bckgrd_" << BundlesBckgrd[j];
 			}
 		}
 			
@@ -679,12 +739,12 @@ void AssemblerProjection::printMeta(TString type) const {
 	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
-		for (int j = 0; j < NumberCorClassesSignal; j++) {
+		for (int j = 0; j < NumberBundlesSignal; j++) {
 		
-			datacard << '\t' << (NumberCorClassesSignal - j)*(-1)+1;
+			datacard << '\t' << (NumberBundlesSignal - j)*(-1)+1;
 		}
 		
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
 			datacard << '\t' << j + 1;
 		}
@@ -696,9 +756,9 @@ void AssemblerProjection::printMeta(TString type) const {
 	
 		if(has("signal")) {
 		
-			for (int j = 0; j < NumberCorClassesSignal; j++) {
+			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
-				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
 				datacard << '\t' << contentSignal;
 			}
 		}
@@ -706,16 +766,16 @@ void AssemblerProjection::printMeta(TString type) const {
 			perror("***Error: No Signal***");
 		}
 		
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
-			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);
+			double contentBackground = getBin("background", i, BundlesBckgrd[j]);
 			datacard << '\t' << contentBackground;
 		}
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	
-	for (auto &uncertainty : getUncertainties()) {
+	for (auto &uncertainty : getUncertaintyNames()) {
 	
 		datacard << uncertainty << "  lnN";
 		
@@ -723,10 +783,10 @@ void AssemblerProjection::printMeta(TString type) const {
 		
 			if(has("signal")) {
 			
-				for (int j = 0; j < NumberCorClassesSignal; j++) {
+				for (int j = 0; j < NumberBundlesSignal; j++) {
 				
-					double contentSignalSyst = getBinSyst("signal", i, uncertainty, correlationClassesSignal[j]);		
-					double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+					double contentSignalSyst = getBinSyst("signal", i, uncertainty, BundlesSignal[j]);		
+					double contentSignal = getBin("signal", i, BundlesSignal[j]);	
 					double ratio = systFactor * contentSignalSyst/contentSignal;
 					if (contentSignal == 0) {ratio = 0.05;}
 					datacard << '\t' << 1 + ratio;
@@ -736,10 +796,10 @@ void AssemblerProjection::printMeta(TString type) const {
 				perror("***Error: No Signal -> No variance***");
 			}
 
-			for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+			for (int j = 0; j < NumberBundlesBackgrd; j++) {
 			
-				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, correlationClassesBckgrd[j]);		
-				double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
+				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, BundlesBckgrd[j]);		
+				double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
 				double ratio = systFactor * contentBackgroundSyst/contentBackground;
 				if (contentBackground == 0) {ratio = 0.05;}
 				datacard << '\t' << 1 + ratio;
@@ -748,7 +808,7 @@ void AssemblerProjection::printMeta(TString type) const {
 		datacard << '\n';
 	}
 		
-	int NumberBins = (NumberCorClassesBackgrd + NumberCorClassesSignal)*(hData->GetNbinsX());
+	int NumberBins = (NumberBundlesBackgrd + NumberBundlesSignal)*(hData->GetNbinsX());
 	double StatUncertainty[NumberBins][NumberBins];
 	
 	for (int n = 0; n < NumberBins; n++) {
@@ -765,10 +825,10 @@ void AssemblerProjection::printMeta(TString type) const {
 	
 		if(has("signal")) {
 		
-			for (int j = 0; j < NumberCorClassesSignal; j++) {
+			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
-				double contentSignalStat = getBinStat("signal", i, correlationClassesSignal[j]);		
-				double contentSignal = getBin("signal", i, correlationClassesSignal[j]);	
+				double contentSignalStat = getBinStat("signal", i, BundlesSignal[j]);		
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
 				double ratio = statFactor * contentSignalStat/contentSignal;
 				if (contentSignal == 0) {ratio = 0.05;}
 				StatUncertainty[LoopIndex][LoopIndex] += ratio;
@@ -778,10 +838,10 @@ void AssemblerProjection::printMeta(TString type) const {
 		else {
 			perror("***Error: No Signal -> No variance***");
 		}
-		for (int j = 0; j < NumberCorClassesBackgrd; j++) {
+		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
-			double contentBackgroundStat = getBinStat("background", i, correlationClassesBckgrd[j]);		
-			double contentBackground = getBin("background", i, correlationClassesBckgrd[j]);	
+			double contentBackgroundStat = getBinStat("background", i, BundlesBckgrd[j]);		
+			double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
 			double ratio = statFactor * contentBackgroundStat/contentBackground;
 			if (contentBackground == 0) {ratio = 0.05;}
 			StatUncertainty[LoopIndex][LoopIndex] += ratio;
@@ -803,4 +863,3 @@ void AssemblerProjection::printMeta(TString type) const {
 	
 	datacard.close();
 }
-*/
