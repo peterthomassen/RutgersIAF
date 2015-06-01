@@ -49,6 +49,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/PrintModuleEventVariables.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableExtreme.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableEffectiveArea.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableEffectiveAreaMiniIsolation.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableEventVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRhoCorrectedTotalIso.h"
 
@@ -213,6 +214,14 @@ void setupProducts(BaseHandler* handler)
   areaEl->addArea(2.5,0.1530);
   handler->addObjectVariable("ELECTRON_AREA", areaEl);
 
+  ObjectVariableEffectiveAreaMiniIsolation* areaElmi = new ObjectVariableEffectiveAreaMiniIsolation("miniIsoCone",0.3,2,"ELECTRON_AREA_MINIISO");
+  areaElmi->addArea(0.8,0.1013);
+  areaElmi->addArea(1.3,0.0988);
+  areaElmi->addArea(2.0,0.0572);
+  areaElmi->addArea(2.2,0.0842);
+  areaElmi->addArea(2.5,0.1530);
+  handler->addObjectVariable("ELECTRON_AREA_MINIISO", areaElmi);
+
   ObjectVariableEffectiveArea* areaMu = new ObjectVariableEffectiveArea("MUON_AREA");
   areaMu->addArea(0.8,0.0913);
   areaMu->addArea(1.3,0.0765);
@@ -221,10 +230,48 @@ void setupProducts(BaseHandler* handler)
   areaMu->addArea(2.5,0.1177);
   handler->addObjectVariable("MUON_AREA", areaMu);
 
+  ObjectVariableEffectiveAreaMiniIsolation* areaMumi = new ObjectVariableEffectiveAreaMiniIsolation("miniIsoCone",0.3,2,"MUON_AREA_MINIISO");
+  areaMumi->addArea(0.8,0.0913);
+  areaMumi->addArea(1.3,0.0765);
+  areaMumi->addArea(2.0,0.0546);
+  areaMumi->addArea(2.2,0.0728);
+  areaMumi->addArea(2.5,0.1177);
+  handler->addObjectVariable("MUON_AREA_MINIISO", areaMumi);
+
   handler->addObjectVariable("RHO", new ObjectVariableEventVariable<double>("rhoAll",handler));
   handler->addObjectVariable("ELECTRON_totalIso", new ObjectVariableRhoCorrectedTotalIso("sumChargedHadronPt","sumNeutralHadronEt","sumPhotonEt","RHO","ELECTRON_AREA","TOTALISO"),false);
   handler->addObjectVariable("MUON_totalIso", new ObjectVariableRhoCorrectedTotalIso("pfIsolationR03sumChargedHadronPt","pfIsolationR03sumNeutralHadronEt","pfIsolationR03sumPhotonEt","RHO","MUON_AREA","TOTALISO"),false);
+  handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO"),false);
+  handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO"),false);
   handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
+  handler->addObjectVariable("MINIISO",new ObjectVariableRelIso("MINIISO","TOTALMINIISO"));
+  handler->addObjectVariable("MINIISO0p40", new ObjectVariableInRange<double>("MINIISO",0,0.4));
+  handler->addObjectVariable("MINIISO0p22", new ObjectVariableInRange<double>("MINIISO",0,0.22));
+  handler->addObjectVariable("MINIISO0p14", new ObjectVariableInRange<double>("MINIISO",0,0.14));
+  handler->addObjectVariable("MINIISO0p10", new ObjectVariableInRange<double>("MINIISO",0,0.1));
+  handler->addObjectVariable("MINIISO0p075", new ObjectVariableInRange<double>("MINIISO",0,0.075));
+  handler->addObjectVariable("MINIISO0p05", new ObjectVariableInRange<double>("MINIISO",0,0.05));
+  handler->addObjectVariable("PTRATIO0p63",new ObjectVariableInRange<double>("ptRatio",0.63,1e6));
+  handler->addObjectVariable("PTRATIO0p68",new ObjectVariableInRange<double>("ptRatio",0.68,1e6));
+  handler->addObjectVariable("PTRATIO0p70",new ObjectVariableInRange<double>("ptRatio",0.70,1e6));
+  handler->addObjectVariable("PTRATIO0p725",new ObjectVariableInRange<double>("ptRatio",0.725,1e6));
+  handler->addObjectVariable("PTREL6",new ObjectVariableInRange<double>("ptRel",6,1e6));
+  handler->addObjectVariable("PTREL6p7",new ObjectVariableInRange<double>("ptRel",6.7,1e6));
+  handler->addObjectVariable("PTREL7",new ObjectVariableInRange<double>("ptRel",7,1e6));
+  handler->addObjectVariable("PTREL8",new ObjectVariableInRange<double>("ptRel",8,1e6));
+
+  handler->addObjectVariable("MULTIISOJETL",new ObjectVariableCombined("PTRATIO0p63","PTREL6",false));
+  handler->addObjectVariable("MULTIISOJETM",new ObjectVariableCombined("PTRATIO0p68","PTREL6p7",false));
+  handler->addObjectVariable("MULTIISOJETT",new ObjectVariableCombined("PTRATIO0p70","PTREL7",false));
+  handler->addObjectVariable("MULTIISOJETVT",new ObjectVariableCombined("PTRATIO0p725","PTREL7",false));
+  handler->addObjectVariable("MULTIISOJETHT",new ObjectVariableCombined("PTRATIO0p725","PTREL8",false));
+
+  handler->addObjectVariable("MULTIISOL",new ObjectVariableCombined("MINIISO0p22","MULTIISOJETL",true));
+  handler->addObjectVariable("MULTIISOM",new ObjectVariableCombined("MINIISO0p14","MULTIISOJETM",true));
+  handler->addObjectVariable("MULTIISOT",new ObjectVariableCombined("MINIISO0p10","MULTIISOJETT",true));
+  handler->addObjectVariable("MULTIISOVT",new ObjectVariableCombined("MINIISO0p075","MULTIISOJETVT",true));
+  handler->addObjectVariable("MULTIISOHT",new ObjectVariableCombined("MINIISO0p05","MULTIISOJETHT",true));
+
   handler->addObjectVariable("IREL0p15",new ObjectVariableInRange<double>("RELISO",0,0.15,"IREL0p15"));
   handler->addObjectVariable("NOTIREL0p15", new ObjectVariableReversed("IREL0p15"));
   handler->addObjectVariable("IREL0p23",new ObjectVariableInRange<double>("RELISO",0,0.23,"IREL0p23"));
@@ -315,14 +362,16 @@ void setupProducts(BaseHandler* handler)
   electron_loose->addVariable("ETA2p5");
   electron_loose->addVariable("ELECTRON_BARREL_dxy");
   electron_loose->addVariable("ELECTRON_BARREL_dz");
-  electron_loose->addVariable("IREL0p5");
+  //electron_loose->addVariable("IREL0p5");
+  electron_loose->addVariable("MINIISO0p40");
   electron_loose->addVariable("ELECTRON_passConversionVeto");
   electron_loose->addVariable("ELECTRON_MISSINGHITS");
 
   handler->addObjectVariable("ELECTRON_LOOSE",electron_loose);
 
   ObjectVariableCombined* electron_tight = new ObjectVariableCombined("ELECTRON_MVA_TIGHT","SIP3D_4sigma",true,"ELECTRON_TIGHT");
-  electron_tight->addVariable("IREL0p15");
+  //electron_tight->addVariable("IREL0p15");
+  electron_tight->addVariable("MULTIISOM");
   electron_tight->addVariable("PT10");
   handler->addObjectVariable("ELECTRON_TIGHT",electron_tight);
 
@@ -349,7 +398,8 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("looseMuons","MUON_GLOBALORTRACKER");
   handler->addProductCut("looseMuons","MUON_dxy");
   handler->addProductCut("looseMuons","MUON_dz");
-  handler->addProductCut("looseMuons","IREL0p5");
+  //handler->addProductCut("looseMuons","IREL0p5");
+  handler->addProductCut("looseMuons","MINIISO0p40");
 
   /*
   handler->addProduct("goodMuons","basicMuons");
@@ -359,7 +409,8 @@ void setupProducts(BaseHandler* handler)
   */
   handler->addProduct("goodMuons","looseMuons");
   handler->addProductCut("goodMuons","PT10");
-  handler->addProductCut("goodMuons","IREL0p15");
+  handler->addProductCut("goodMuons","MULTIISOL");
+  //handler->addProductCut("goodMuons","IREL0p15");
   handler->addProductCut("goodMuons","SIP3D_4sigma");
   handler->addProductCut("goodMuons","MUON_GOODSEGCOM");
   handler->addProductCut("goodMuons","MUON_validFraction");

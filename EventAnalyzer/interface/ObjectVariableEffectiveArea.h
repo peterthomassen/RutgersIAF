@@ -19,11 +19,11 @@ class ObjectVariableEffectiveArea : public ObjectVariable {
   ObjectVariableEffectiveArea(TString name):ObjectVariable(name){}
   virtual ~ObjectVariableEffectiveArea() {}
 
-  void addArea(double maxEta, double area);
+  virtual void addArea(double maxEta, double area);
 
   virtual bool calculate(SignatureObject*);
 
- private:
+ protected:
   std::map<double,double> m_eta_area_map;
 
   ClassDef(ObjectVariableEffectiveArea,1);
