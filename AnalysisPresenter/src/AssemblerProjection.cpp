@@ -533,7 +533,8 @@ void AssemblerProjection::prepareStacks() {
 						hUncertainty->SetBinContent(j, value);
 					}
 				} else {
-					hsSyst->Add(uncertainty.second);
+					// We need to add a clone because we will manipulate this later
+					hsSyst->Add((TH1D*)uncertainty.second->Clone());
 				}
 				
 				// Same in the bundle-wise structure (but uncertainty names can occur only once)
