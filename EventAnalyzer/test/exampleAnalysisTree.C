@@ -12,7 +12,7 @@ void exampleAnalysisTree(const char* infile = "MC/WZJetsTo3LNu/results_mc_v1_1_1
 	, const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
 	, Int_t iLo = 0	// change this to start running here
 	, Int_t iHi = 0	// change this to stop running here
-	, Bool_t isMCData = true // change this to run over MC simulations
+	, Bool_t isMC = true // change this to run over MC simulations
 ) {
 	// Initialization. Read library, set up include path, and load helpers.
 	gSystem->Load("libRutgersIAFEventAnalyzer.so");
@@ -39,7 +39,7 @@ void exampleAnalysisTree(const char* infile = "MC/WZJetsTo3LNu/results_mc_v1_1_1
 	handler->setWriter(writer);
 	
 	// Tell the EventAnalyzer which runs / lumi sections to use and which to ignore
-	if (!isMCData) handler->readGoodRunLumiFromJSON(TString(json));
+	if (!isMC) handler->readGoodRunLumiFromJSON(TString(json));
 	
 	// If specified, only run over a subset of events. Provide indices in iLo, iHi
 	if(iLo > 0) handler->setMode("nEntryLow", iLo);
@@ -52,11 +52,11 @@ void exampleAnalysisTree(const char* infile = "MC/WZJetsTo3LNu/results_mc_v1_1_1
 	//handler->setDebugMode(true);
 	
 	// Set up leptons with quality cuts, triggers, analysis variables, ...
-	if (isMCData) setupMC1(handler,pufile,matchingFlag,wzKinematics);
+	if (isMC) setupMC1(handler,pufile,matchingFlag,wzKinematics);
 	setupProducts(handler);
-	if (isMCData) setupMC2(handler,pufile,matchingFlag);
+	if (isMC) setupMC2(handler,pufile,matchingFlag);
 	setupTriggers(handler, mode);
-	setupVariables(handler);
+	setupVariables(handler, isMC);
 	setupFilterCuts(handler);
 	
 	// And send it running ...
