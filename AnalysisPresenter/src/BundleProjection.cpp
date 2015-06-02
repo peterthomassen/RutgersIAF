@@ -49,7 +49,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 			} else {
 				for(int j = 1; j <= uncertainty.second->GetNbinsX() + 1; ++j) {
 					double value = m_uncertainties[uncertainty.first]->GetBinContent(j);
-					value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
+					value += uncertainty.second->GetBinContent(j);
 					m_uncertainties[uncertainty.first]->SetBinContent(j, value);
 				}
 			}

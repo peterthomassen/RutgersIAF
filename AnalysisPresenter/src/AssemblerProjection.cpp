@@ -523,7 +523,9 @@ void AssemblerProjection::prepareStacks() {
 			
 			for(const auto &uncertainty : baseBundleProjection->getUncertainties()) {
 				// Combine uncertainties into main histograms
-				TH1D* hUncertainty = (TH1D*)hsSyst->FindObject(uncertainty.first);
+				TH1D* hUncertainty = hsSyst->GetHists()
+					? (TH1D*)hsSyst->GetHists()->FindObject(uncertainty.first)
+					: 0;
 				if(hUncertainty) {
 					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
 						double value = hUncertainty->GetBinContent(j);
@@ -534,7 +536,7 @@ void AssemblerProjection::prepareStacks() {
 					hsSyst->Add(uncertainty.second);
 				}
 				
-				// Same in the bundle-wise structure
+				// Same in the bundle-wise structure (but uncertainty names can occur only once)
 				hsSystBundle->Add(uncertainty.second);
 			}
 		}
