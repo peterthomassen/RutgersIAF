@@ -137,6 +137,7 @@ double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const
 }
 
 AssemblerProjection* AssemblerProjection::bundle(Bundle* bundle, TString missingName) const {
+	assert(bundle);
 	return new AssemblerProjection(this, bundle, missingName);
 }
 
