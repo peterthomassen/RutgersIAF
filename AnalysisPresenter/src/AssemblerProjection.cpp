@@ -653,11 +653,17 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	
 	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	int bins = hData->GetNbinsX();
+	
 	std::vector<TString> BundlesSignal;
 	BundlesSignal = getBundleNames("signal");
+	std::vector<TString> BundlesSignalName;
+	BundlesSignalName = getBundleNames("signal");
 	int NumberBundlesSignal = BundlesSignal.size();
+	
 	std::vector<TString> BundlesBckgrd;
 	BundlesBckgrd = getBundleNames("background");
+	std::vector<TString> BundlesBckgrdName;
+	BundlesBckgrdName = getBundleNames("background");
 	int NumberBundlesBackgrd = BundlesBckgrd.size();
 
 	
@@ -674,7 +680,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(0);
-	datacard << "#Datacard Version 1.1" << '\n' << "#Jun 2015" << '\n' << '\n';
+	datacard << "#Datacard Version 1.1" << '\n' << "#May 2015" << '\n' << '\n';
 	datacard << "imax " << bins << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + hData->GetNbinsX()*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
@@ -723,7 +729,8 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 				datacard << '\t' << "remain_signal";
 			}
 			else {
-				datacard << '\t' << "signal_" << BundlesSignal[j];
+				BundlesSignalName[j].ReplaceAll(" ", "_");
+				datacard << '\t' << "signal_" << BundlesSignalName[j];
 			}
 		}
 		
@@ -733,7 +740,8 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 				datacard << '\t' << "remain_bckgrd";
 			}
 			else {
-				datacard << '\t' << "bckgrd_" << BundlesBckgrd[j];
+				BundlesBckgrdName[j].ReplaceAll(" ", "_");
+				datacard << '\t' << "bckgrd_" << BundlesBckgrdName[j];
 			}
 		}
 			
@@ -781,8 +789,10 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	
 	for (auto &uncertainty : getUncertaintyNames()) {
-	
-		datacard << uncertainty << "  lnN";
+		
+		TString UncertaintyName = uncertainty;
+		UncertaintyName.ReplaceAll(" ", "_");
+		datacard << UncertaintyName << " lnN";
 		
 		for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		
@@ -856,7 +866,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	
 	for (int n = 0; n < NumberBins; n++) {
 	
-		datacard << "Stat" << n + 1 << "  lnN";
+		datacard << "Stat" << n + 1 << " lnN";
 	
 		for (int m = 0; m < NumberBins; m++) {
 		
