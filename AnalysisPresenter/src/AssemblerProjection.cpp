@@ -65,7 +65,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		
 		std::set<const PhysicsContribution*> contributions;
 		for(auto &component : bundle->getComponents()) {
-			auto projection = component->project(m_name, m_binForOverflow);
+			auto projection = component->project(isDistribution() ? m_name : "_", m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			
 			size_t oldSize = contributions.size();
@@ -79,7 +79,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		for(auto &contribution : m_assembler->getPhysicsContributions(type)) {
 			if(contributions.find(contribution) == contributions.end()) {
 				if(missingName == "") {
-					auto projection = contribution->project(m_name, m_binForOverflow);
+					auto projection = contribution->project(isDistribution() ? m_name : "_", m_binForOverflow);
 					m_typeProjections[type].push_back(projection);
 					
 					size_t oldSize = contributions.size();
@@ -93,7 +93,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 			}
 		}
 		if(missing->getComponents().size() > 0) {
-			auto projection = missing->project(m_name, m_binForOverflow);
+			auto projection = missing->project(isDistribution() ? m_name : "_", m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			
 			size_t oldSize = contributions.size();
