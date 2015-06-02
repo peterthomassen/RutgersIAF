@@ -40,21 +40,47 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	m_histogram->Reset();
 	m_histogram->SetTitle(bundle->getName());
 	
+	// Use this histogram to find for which bins we need zerostat
+	TH1D* histogramDummy = (TH1D*)projections[0]->getHistogram()->Clone();
+	histogramDummy->Reset();
+	
 	for(auto &projection : projections) {
-		m_histogram->Add(projection->getHistogram());
+		histogramDummy->Add(projection->getHistogram());
+	}
+	
+	for(auto &projection : projections) {
+		for(int i = 1; i <= m_histogram->GetNbinsX() + 1; ++i) {
+			if(histogramDummy->GetBinContent(i) > 0) {
+				// Avoid summing up zerostat uncertainties if there are non-zero contributions
+				if(projection->getHistogram()->GetBinContent(i) == 0) {
+					continue;
+				}
+				
+				double value = m_histogram->GetBinContent(i);
+				value += projection->getHistogram()->GetBinContent(i);
+				m_histogram->SetBinContent(i, value);
+			}
+			
+			// Sum up zerostat uncertainties
+			double value = m_histogram->GetBinError(i);
+			value = sqrt(value*value + pow(projection->getHistogram()->GetBinError(i), 2));
+			m_histogram->SetBinError(i, value);
+		}
 		
 		for(auto &uncertainty : projection->getUncertainties()) {
 			if(m_uncertainties.find(uncertainty.first) == m_uncertainties.end()) {
 				m_uncertainties.insert(make_pair(uncertainty.first, (TH1D*)uncertainty.second->Clone()));
 			} else {
-				for(int j = 1; j <= uncertainty.second->GetNbinsX() + 1; ++j) {
-					double value = m_uncertainties[uncertainty.first]->GetBinContent(j);
-					value += uncertainty.second->GetBinContent(j);
-					m_uncertainties[uncertainty.first]->SetBinContent(j, value);
+				for(int i = 1; i <= uncertainty.second->GetNbinsX() + 1; ++i) {
+					double value = m_uncertainties[uncertainty.first]->GetBinContent(i);
+					value += uncertainty.second->GetBinContent(i);
+					m_uncertainties[uncertainty.first]->SetBinContent(i, value);
 				}
 			}
 		}
 	}
+	
+	delete histogramDummy;
 	
 	if(!m_source->isData()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
