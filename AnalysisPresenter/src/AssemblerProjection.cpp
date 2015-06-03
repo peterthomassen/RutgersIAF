@@ -648,7 +648,7 @@ void AssemblerProjection::printMeta(TString type) const {
 	}
 }
 
-void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
+void AssemblerProjection::datacard(TString datacardName, bool isChannel, bool isData, double statFactor, double systFactor) {
 
 	std::cout << "Creating datacard..." << std::endl;
 	
@@ -711,11 +711,16 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		
 			double lo = hData->GetXaxis()->GetBinLowEdge(i);
 			double hi = hData->GetXaxis()->GetBinUpEdge(i);
+			
+			if(isChannel) {datacard << '\t' << m_name;}
+			else {
 		
-			if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
-				datacard << '\t' << m_name << lo << "_" << hi;
-			} else {
-				datacard << '\t' << m_name << lo << "_" << "inf";
+				if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
+					datacard << '\t' << m_name << lo << "_" << hi;
+				} 
+				else {
+					datacard << '\t' << m_name << lo << "_" << "inf";
+				}
 			}
 		}
 	}
