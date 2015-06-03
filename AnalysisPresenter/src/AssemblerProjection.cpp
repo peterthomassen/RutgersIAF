@@ -65,7 +65,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		
 		std::set<const PhysicsContribution*> contributions;
 		for(auto &component : bundle->getComponents()) {
-			auto projection = component->project(m_name, m_binForOverflow);
+			auto projection = component->project(isDistribution() ? m_name : "_", m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			
 			size_t oldSize = contributions.size();
@@ -79,7 +79,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		for(auto &contribution : m_assembler->getPhysicsContributions(type)) {
 			if(contributions.find(contribution) == contributions.end()) {
 				if(missingName == "") {
-					auto projection = contribution->project(m_name, m_binForOverflow);
+					auto projection = contribution->project(isDistribution() ? m_name : "_", m_binForOverflow);
 					m_typeProjections[type].push_back(projection);
 					
 					size_t oldSize = contributions.size();
@@ -93,7 +93,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 			}
 		}
 		if(missing->getComponents().size() > 0) {
-			auto projection = missing->project(m_name, m_binForOverflow);
+			auto projection = missing->project(isDistribution() ? m_name : "_", m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			
 			size_t oldSize = contributions.size();
@@ -137,6 +137,7 @@ double AssemblerProjection::addStackBinInQuadrature(THStack* stack, int i) const
 }
 
 AssemblerProjection* AssemblerProjection::bundle(Bundle* bundle, TString missingName) const {
+	assert(bundle);
 	return new AssemblerProjection(this, bundle, missingName);
 }
 
@@ -523,7 +524,9 @@ void AssemblerProjection::prepareStacks() {
 			
 			for(const auto &uncertainty : baseBundleProjection->getUncertainties()) {
 				// Combine uncertainties into main histograms
-				TH1D* hUncertainty = (TH1D*)hsSyst->FindObject(uncertainty.first);
+				TH1D* hUncertainty = hsSyst->GetHists()
+					? (TH1D*)hsSyst->GetHists()->FindObject(uncertainty.first)
+					: 0;
 				if(hUncertainty) {
 					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
 						double value = hUncertainty->GetBinContent(j);
@@ -531,10 +534,11 @@ void AssemblerProjection::prepareStacks() {
 						hUncertainty->SetBinContent(j, value);
 					}
 				} else {
-					hsSyst->Add(uncertainty.second);
+					// We need to add a clone because we will manipulate this later
+					hsSyst->Add((TH1D*)uncertainty.second->Clone());
 				}
 				
-				// Same in the bundle-wise structure
+				// Same in the bundle-wise structure (but uncertainty names can occur only once)
 				hsSystBundle->Add(uncertainty.second);
 			}
 		}
@@ -650,11 +654,17 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	
 	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	int bins = hData->GetNbinsX();
+	
 	std::vector<TString> BundlesSignal;
 	BundlesSignal = getBundleNames("signal");
+	std::vector<TString> BundlesSignalName;
+	BundlesSignalName = getBundleNames("signal");
 	int NumberBundlesSignal = BundlesSignal.size();
+	
 	std::vector<TString> BundlesBckgrd;
 	BundlesBckgrd = getBundleNames("background");
+	std::vector<TString> BundlesBckgrdName;
+	BundlesBckgrdName = getBundleNames("background");
 	int NumberBundlesBackgrd = BundlesBckgrd.size();
 
 	
@@ -694,7 +704,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "bin";
+	datacard << "bin\t";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
@@ -711,7 +721,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	}
 	datacard << std::fixed << std::setprecision(3);
 	datacard << '\n';
-	datacard << "process";
+	datacard << "process\t";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberBundlesSignal; j++) {
@@ -720,7 +730,8 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 				datacard << '\t' << "remain_signal";
 			}
 			else {
-				datacard << '\t' << "signal_" << BundlesSignal[j];
+				BundlesSignalName[j].ReplaceAll(" ", "_");
+				datacard << '\t' << "signal_" << BundlesSignalName[j];
 			}
 		}
 		
@@ -730,13 +741,14 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 				datacard << '\t' << "remain_bckgrd";
 			}
 			else {
-				datacard << '\t' << "bckgrd_" << BundlesBckgrd[j];
+				BundlesBckgrdName[j].ReplaceAll(" ", "_");
+				datacard << '\t' << "bckgrd_" << BundlesBckgrdName[j];
 			}
 		}
 			
 	}
 	datacard << '\n';
-	datacard << "process";
+	datacard << "process\t";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberBundlesSignal; j++) {
@@ -751,14 +763,15 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		
 	}
 	datacard << '\n';
-	datacard << "rate";
+	datacard << "rate\t";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
 		if(has("signal")) {
 		
 			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
-				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);
+				if (contentSignal < 0.001) {contentSignal = 0.001;}				
 				datacard << '\t' << contentSignal;
 			}
 		}
@@ -769,6 +782,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
 			double contentBackground = getBin("background", i, BundlesBckgrd[j]);
+			if (contentBackground < 0.001) {contentBackground = 0.001;}
 			datacard << '\t' << contentBackground;
 		}
 	}
@@ -776,8 +790,10 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	
 	for (auto &uncertainty : getUncertaintyNames()) {
-	
-		datacard << uncertainty << "  lnN";
+		
+		TString UncertaintyName = uncertainty;
+		UncertaintyName.ReplaceAll(" ", "_");
+		datacard << UncertaintyName << " lnN";
 		
 		for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		
@@ -786,9 +802,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 				for (int j = 0; j < NumberBundlesSignal; j++) {
 				
 					double contentSignalSyst = getBinSyst("signal", i, uncertainty, BundlesSignal[j]);		
-					double contentSignal = getBin("signal", i, BundlesSignal[j]);	
+					double contentSignal = getBin("signal", i, BundlesSignal[j]);
+					if (contentSignal < 0.001) {contentSignal = 0.001;}					
 					double ratio = systFactor * contentSignalSyst/contentSignal;
-					if (contentSignal == 0) {ratio = 0.05;}
 					datacard << '\t' << 1 + ratio;
 				}
 			}
@@ -799,9 +815,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 			for (int j = 0; j < NumberBundlesBackgrd; j++) {
 			
 				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, BundlesBckgrd[j]);		
-				double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
+				double contentBackground = getBin("background", i, BundlesBckgrd[j]);
+				if (contentBackground < 0.001) {contentBackground = 0.001;}				
 				double ratio = systFactor * contentBackgroundSyst/contentBackground;
-				if (contentBackground == 0) {ratio = 0.05;}
 				datacard << '\t' << 1 + ratio;
 			}
 		}
@@ -828,9 +844,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
 				double contentSignalStat = getBinStat("signal", i, BundlesSignal[j]);		
-				double contentSignal = getBin("signal", i, BundlesSignal[j]);	
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);
+				if (contentSignal < 0.001) {contentSignal = 0.001;}				
 				double ratio = statFactor * contentSignalStat/contentSignal;
-				if (contentSignal == 0) {ratio = 0.05;}
 				StatUncertainty[LoopIndex][LoopIndex] += ratio;
 				LoopIndex++;
 			}
@@ -841,9 +857,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
 			double contentBackgroundStat = getBinStat("background", i, BundlesBckgrd[j]);		
-			double contentBackground = getBin("background", i, BundlesBckgrd[j]);	
+			double contentBackground = getBin("background", i, BundlesBckgrd[j]);
+			if (contentBackground < 0.001) {contentBackground = 0.001;}
 			double ratio = statFactor * contentBackgroundStat/contentBackground;
-			if (contentBackground == 0) {ratio = 0.05;}
 			StatUncertainty[LoopIndex][LoopIndex] += ratio;
 			LoopIndex++;
 		}
@@ -851,7 +867,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	
 	for (int n = 0; n < NumberBins; n++) {
 	
-		datacard << "Stat" << n + 1 << "  lnN";
+		datacard << "Stat" << n + 1 << " lnN";
 	
 		for (int m = 0; m < NumberBins; m++) {
 		

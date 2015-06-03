@@ -22,17 +22,18 @@ void init(Assembler* assembler) {
 }
 
 void prepare(Assembler* assembler) {
-	Bundle* presentationBundle = new Bundle("background", "presentationBundle");
-	assembler->setDefaultBundle(presentationBundle);
-	
 	std::vector<TString> bundleNames = {"Fakes", "Higgs", "Rare MC"};
+	
+	Bundle* presentationBundle = new Bundle("background", "presentationBundle");
 	for(const auto &bundleName : bundleNames) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
 			presentationBundle->addComponent(bundle);
 		}
 	}
+	assembler->addBundle(presentationBundle);
 	
+	assembler->setDefaultBundle(presentationBundle);
 	assembler->getDefaultBundle()->print();
 }
 
@@ -439,27 +440,31 @@ std::vector<double> getSecond(std::vector<std::pair<double, double> > list) {
 	return list2;
 }
 
-void writeUncertainties(AssemblerProjection* projection) {
-	cout << endl << "====== now printing uncertainties" << endl;
+void writeUncertainties(AssemblerProjection* projection, TString type) {
+	cout << endl << "====== now printing uncertainties for contributions of type " << type << endl;
+	if(!projection->has(type)) {
+		cerr << "Projection does not have contributions of type " << type << endl;
+		return;
+	}
 	
 	auto uncertaintyNames = projection->getUncertaintyNames();
 	for(int i = 1; i <= 5; ++i) {
 		cout << endl;
 		cout << "BIN " << i << endl;
 		cout << "TOTAL:";
-		cout << " " << projection->getBin("background", i);
-		cout << " pm " << projection->getBinStat("background", i) << " pm " << projection->getBinSyst("background", i) << endl;
+		cout << " " << projection->getBin(type, i);
+		cout << " pm " << projection->getBinStat(type, i) << " pm " << projection->getBinSyst(type, i) << endl;
 		for(const auto &uncertaintyName : uncertaintyNames) {
-			cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst("background", i, uncertaintyName) << endl;
+			cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst(type, i, uncertaintyName) << endl;
 		}
 		cout << endl;
 		
-		for(const auto &bundleName : projection->getBundleNames("background")) {
+		for(const auto &bundleName : projection->getBundleNames(type)) {
 			cout << "bundleName: " << bundleName;
-			cout << " " << projection->getBin("background", i, bundleName);
-			cout << " pm " << projection->getBinStat("background", i, bundleName) << endl;
+			cout << " " << projection->getBin(type, i, bundleName);
+			cout << " pm " << projection->getBinStat(type, i, bundleName) << endl;
 			for(const auto &uncertaintyName : uncertaintyNames) {
-				cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst("background", i, uncertaintyName, bundleName) << endl;
+				cout << "uncertainty name: " << uncertaintyName << " " << projection->getBinSyst(type, i, uncertaintyName, bundleName) << endl;
 			}
 		}
 	}
