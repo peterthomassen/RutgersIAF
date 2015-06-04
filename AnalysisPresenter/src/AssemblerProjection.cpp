@@ -648,12 +648,17 @@ void AssemblerProjection::printMeta(TString type) const {
 	}
 }
 
-void AssemblerProjection::datacard(TString datacardName, bool isChannel, bool isData, double statFactor, double systFactor) {
+void AssemblerProjection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 
 	std::cout << "Creating datacard..." << std::endl;
 	
 	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	int bins = hData->GetNbinsX();
+	
+	if(!has("signal")) {
+		std::cout << "*** Error: No signal added -> BREAK! ***" << std::endl;
+		return;
+	}
 	
 	std::vector<TString> BundlesSignal;
 	BundlesSignal = getBundleNames("signal");
@@ -708,19 +713,12 @@ void AssemblerProjection::datacard(TString datacardName, bool isChannel, bool is
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
-		
-			double lo = hData->GetXaxis()->GetBinLowEdge(i);
-			double hi = hData->GetXaxis()->GetBinUpEdge(i);
 			
-			if(isChannel) {datacard << '\t' << m_name;}
+			if(isDistribution()==false) {
+				datacard << '\t' << m_name;
+			}
 			else {
-		
-				if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
-					datacard << '\t' << m_name << lo << "_" << hi;
-				} 
-				else {
-					datacard << '\t' << m_name << lo << "_" << "inf";
-				}
+				datacard << '\t' << m_name << i;
 			}
 		}
 	}
@@ -770,18 +768,12 @@ void AssemblerProjection::datacard(TString datacardName, bool isChannel, bool is
 	datacard << '\n';
 	datacard << "rate\t";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
-	
-		if(has("signal")) {
 		
-			for (int j = 0; j < NumberBundlesSignal; j++) {
-			
-				double contentSignal = getBin("signal", i, BundlesSignal[j]);
-				if (contentSignal < 0.001) {contentSignal = 0.001;}				
-				datacard << '\t' << contentSignal;
-			}
-		}
-		else {
-			perror("***Error: No Signal***");
+		for (int j = 0; j < NumberBundlesSignal; j++) {
+		
+			double contentSignal = getBin("signal", i, BundlesSignal[j]);
+			if (contentSignal < 0.001) {contentSignal = 0.001;}			
+			datacard << '\t' << contentSignal;
 		}
 		
 		for (int j = 0; j < NumberBundlesBackgrd; j++) {
@@ -802,21 +794,15 @@ void AssemblerProjection::datacard(TString datacardName, bool isChannel, bool is
 		
 		for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		
-			if(has("signal")) {
+			for (int j = 0; j < NumberBundlesSignal; j++) {
 			
-				for (int j = 0; j < NumberBundlesSignal; j++) {
-				
-					double contentSignalSyst = getBinSyst("signal", i, uncertainty, BundlesSignal[j]);		
-					double contentSignal = getBin("signal", i, BundlesSignal[j]);
-					if (contentSignal < 0.001) {contentSignal = 0.001;}					
-					double ratio = systFactor * contentSignalSyst/contentSignal;
-					datacard << '\t' << 1 + ratio;
-				}
+				double contentSignalSyst = getBinSyst("signal", i, uncertainty, BundlesSignal[j]);		
+				double contentSignal = getBin("signal", i, BundlesSignal[j]);
+				if (contentSignal < 0.001) {contentSignal = 0.001;}					
+				double ratio = systFactor * contentSignalSyst/contentSignal;
+				datacard << '\t' << 1 + ratio;
 			}
-			else {
-				perror("***Error: No Signal -> No variance***");
-			}
-
+			
 			for (int j = 0; j < NumberBundlesBackgrd; j++) {
 			
 				double contentBackgroundSyst = getBinSyst("background", i, uncertainty, BundlesBckgrd[j]);		
@@ -844,21 +830,16 @@ void AssemblerProjection::datacard(TString datacardName, bool isChannel, bool is
 	
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 	
-		if(has("signal")) {
+		for (int j = 0; j < NumberBundlesSignal; j++) {
 		
-			for (int j = 0; j < NumberBundlesSignal; j++) {
-			
-				double contentSignalStat = getBinStat("signal", i, BundlesSignal[j]);		
-				double contentSignal = getBin("signal", i, BundlesSignal[j]);
-				if (contentSignal < 0.001) {contentSignal = 0.001;}				
-				double ratio = statFactor * contentSignalStat/contentSignal;
-				StatUncertainty[LoopIndex][LoopIndex] += ratio;
-				LoopIndex++;
-			}
+			double contentSignalStat = getBinStat("signal", i, BundlesSignal[j]);		
+			double contentSignal = getBin("signal", i, BundlesSignal[j]);
+			if (contentSignal < 0.001) {contentSignal = 0.001;}				
+			double ratio = statFactor * contentSignalStat/contentSignal;
+			StatUncertainty[LoopIndex][LoopIndex] += ratio;
+			LoopIndex++;
 		}
-		else {
-			perror("***Error: No Signal -> No variance***");
-		}
+		
 		for (int j = 0; j < NumberBundlesBackgrd; j++) {
 		
 			double contentBackgroundStat = getBinStat("background", i, BundlesBckgrd[j]);		
