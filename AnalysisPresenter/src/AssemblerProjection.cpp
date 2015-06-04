@@ -709,7 +709,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "bin\t";
+	datacard << "bin";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
@@ -722,7 +722,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	}
 	datacard << std::fixed << std::setprecision(3);
 	datacard << '\n';
-	datacard << "process\t";
+	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberBundlesSignal; j++) {
@@ -749,7 +749,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 			
 	}
 	datacard << '\n';
-	datacard << "process\t";
+	datacard << "process";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {	
 	
 		for (int j = 0; j < NumberBundlesSignal; j++) {
@@ -764,7 +764,7 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 		
 	}
 	datacard << '\n';
-	datacard << "rate\t";
+	datacard << "rate";
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
 		
 		for (int j = 0; j < NumberBundlesSignal; j++) {
