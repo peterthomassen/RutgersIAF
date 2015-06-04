@@ -1,10 +1,16 @@
 #ifndef ChannelCollection_h
 #define ChannelCollection_h
 
+#include <map>
 #include <set>
+#include <string>
 #include <vector>
 
+#include "TCanvas.h"
+#include "TF1.h"
+#include "THStack.h"
 #include "TROOT.h"
+
 
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
