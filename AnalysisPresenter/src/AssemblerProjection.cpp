@@ -714,11 +714,9 @@ void AssemblerProjection::datacard(TString datacardName, bool isData, double sta
 	
 		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
 			
-			if(isDistribution()==false) {
-				datacard << '\t' << m_name;
-			}
-			else {
-				datacard << '\t' << m_name << i;
+			datacard << '\t' << m_name;
+			if(isDistribution()) {
+			    datacard << "_" << i;
 			}
 		}
 	}
