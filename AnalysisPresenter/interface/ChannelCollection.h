@@ -18,7 +18,7 @@ public:
 	virtual ~ChannelCollection();
 	
 	bool addChannel(Channel* channel);
-	void datacard(TString filename) const;
+	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	std::set<Channel*> getChannels() const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
 	TString getName() const;
