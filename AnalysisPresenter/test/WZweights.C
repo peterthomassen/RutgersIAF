@@ -1,11 +1,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+#include "helperAnalysisPresenter.C"
+
 void WZweights() {
-	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
-	
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
@@ -31,6 +34,7 @@ void WZweights() {
 	setupBackgroundDD(assembler);
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
+	prepare(assembler);
 	assembler->process(varexp, selection);
 	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)

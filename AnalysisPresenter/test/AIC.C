@@ -1,18 +1,21 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+#include "helperAnalysisPresenter.C"
+
 void AIC() {
-	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
-	
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:(NGOODELECTRONS%2){0,1}:NGOODELECTRONS{0,3}:NGOODMUONS{0,3}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,200,8}:MLEPTONS*1{0,200,48}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,2}:(NGOODELECTRONS%2){0,2}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,200,8}:MLEPTONS*1{0,200,48}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
 	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
 	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
 	
@@ -34,6 +37,7 @@ void AIC() {
 	setupBackgroundDD(assembler, "noTaus");
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
+	prepare(assembler);
 	assembler->process(varexp, selection);
 	
 	

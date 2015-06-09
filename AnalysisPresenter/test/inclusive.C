@@ -1,11 +1,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+#include "helperAnalysisPresenter.C"
+
 void inclusive(TString ofname = "test.root") {
-	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
-	
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
@@ -15,13 +18,13 @@ void inclusive(TString ofname = "test.root") {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For inclusive table
-	//std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,4}:ST{0,1500,5}:MLEPTONS{70,110}";
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,120}:NOSSF{0,2}:NGOODTAUS{0,3}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,4}:ST{0,1500,5}:MLEPTONS{70,110}";
-	//std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,100,2}:MLEPTONS{70,110}";
+	//std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,4}:ST{0,1500,5}:MLEPTONS{70,110}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,120}:NOSSF{0,3}:NGOODTAUS{0,3}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,4}:ST{0,1500,5}:MLEPTONS{70,110}";
+	//std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,100,2}:MLEPTONS{70,110}";
 	varexp += ":NPROMPTTRACKS7{0,100,1}:OSSFMAXMLL{11,131,36}:OSSFMINMLL{11,131,36}";
 	varexp += ":MLIGHTLEPTONS{1,201,20}";
-	varexp += std::string(TString::Format(":(abs(MOSSF-%f)<%f){0,1,\"ONZ\"}", z, zWidth).Data());
-	varexp += std::string(TString::Format(":(NLEPTONS-NGOODTAUS == 3 && (abs(MOSSF-%f)>%f) && abs(MLIGHTLEPTONS-%f) < %f){0,1,\"AIC\"}", z, zWidth, 87.5, 12.5).Data());
+	varexp += std::string(TString::Format(":(abs(MOSSF-%f)<%f){0,2,\"ONZ\"}", z, zWidth).Data());
+	varexp += std::string(TString::Format(":(NLEPTONS-NGOODTAUS == 3 && (abs(MOSSF-%f)>%f) && abs(MLIGHTLEPTONS-%f) < %f){0,2,\"AIC\"}", z, zWidth, 87.5, 12.5).Data());
 	
 	// Global cuts, if desired
 	//TString selection = "NOTTRILEPTONONZ";
@@ -180,7 +183,7 @@ void inclusive(TString ofname = "test.root") {
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DY0Tau0B1HTgt200_MET.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B0HT0to200_MET.pdf");
@@ -193,7 +196,20 @@ void inclusive(TString ofname = "test.root") {
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET.pdf");
 cout << endl << endl << endl << endl << endl;
+cout << "This is L3DYz1Tau0B1HT0to200" << endl;
 	assembler->project("MET", true)->print();
+Bundle* prevBundle = assembler->getDefaultBundle();
+assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+assembler->setRange("MET", 0, 50, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET0to50.pdf");
+assembler->setRange("MET", 50, 100, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET50to100.pdf");
+assembler->setRange("MET", 100, 150, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET100to150.pdf");
+assembler->setRange("MET", 150, 200, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET150to200.pdf");
+assembler->setDefaultBundle(prevBundle);
+assembler->setRange("MET");
 cout << endl << endl << endl << endl << endl;
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HTgt200_MET.pdf");
@@ -207,23 +223,23 @@ cout << endl << endl << endl << endl << endl;
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200_MET.pdf");
 	assembler->project("MET", true)->print();
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HTgt200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HTgt200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NBJETSCSVM", 1);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B1HT0to200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B1HT0to200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B1HTgt200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B1HTgt200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 //assembler->setRange("OSSFMAXMLL");
@@ -271,7 +287,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DY0Tau1B1HTgt200_MET.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau1B0HT0to200_MET.pdf");
@@ -295,7 +311,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau1B0HT0to200_MET.pdf");
 	assembler->project("MET", true)->print();
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau1B0HT0to200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	assembler->setRange("HT", 200);
@@ -306,12 +322,12 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NBJETSCSVM", 1);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau1B1HT0to200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau1B1HT0to200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau1B1HTgt200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau1B1HTgt200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 //assembler->setRange("OSSFMAXMLL");
@@ -356,7 +372,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DY0Tau0B1HTgt200_MET.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYz1Tau0B0HT0to200_MET.pdf");
@@ -382,7 +398,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau0B1HTgt200_MET.pdf");
 	
 	assembler->setRange("NOSSF", 2);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYz2Tau0B0HT0to200_MET.pdf");
@@ -428,7 +444,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DY0Tau1B1HTgt200_MET.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYz1Tau1B0HT0to200_MET.pdf");
@@ -445,7 +461,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B0HT0to200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B0HT0to200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 assembler->setRange("ONZ");
@@ -457,23 +473,23 @@ assembler->setRange("MOSSF");
 assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B0HTgt200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B0HTgt200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NBJETSCSVM", 1);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B1HT0to200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B1HT0to200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B1HTgt200_MET.pdf");
-assembler->setRange("AIC", 1);
+assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L4DYn1Tau1B1HTgt200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
 	
 	assembler->setRange("NOSSF", 2);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L4DYz2Tau1B0HT0to200_MET.pdf");
@@ -516,7 +532,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->project("HT", true)->plot(true)->SaveAs("L3DY0Tau0B1_HT.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B0_MET.pdf");
 	assembler->project("HT", true)->plot(true)->SaveAs("L3DYz1Tau0B0_HT.pdf");
@@ -557,7 +573,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->project("HT", true)->plot(true)->SaveAs("L3DY0Tau0_HT.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0_MET.pdf");
 	assembler->project("HT", true)->plot(true)->SaveAs("L3DYz1Tau0_HT.pdf");
 	
@@ -577,7 +593,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NLEPTONS", 3, 3);
 	assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	
 	assembler->setRange("HT", 0, 200, false);
@@ -601,7 +617,7 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NLEPTONS", 3, 3);
 	assembler->setRange("MLEPTONS", z-zWidth, z+zWidth, false);
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("ONZ", 1);
+	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->print();
@@ -657,7 +673,7 @@ assembler->setRange("AIC", 0, 0);
 					cout << endl;
 					cout << "DYz1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
-					assembler->setRange("ONZ", 1);
+					assembler->setRange("ONZ", 1, 1);
 					assembler->project("MET", true)->print();
 					assembler->save("MET");
 					//assembler->save("MET", "L3Tau0DYz1B0HT0to200");
@@ -690,7 +706,7 @@ assembler->setRange("AIC", 0, 0);
 					cout << endl;
 					cout << "DYz1" << endl;
 					assembler->setRange("NOSSF", 1, 1);
-					assembler->setRange("ONZ", 1);
+					assembler->setRange("ONZ", 1, 1);
 					assembler->project("MET", true)->print();
 					
 					// DYn1
@@ -704,7 +720,7 @@ assembler->setRange("AIC", 0, 0);
 					cout << endl;
 					cout << "DYz2" << endl;
 					assembler->setRange("NOSSF", 2);
-					assembler->setRange("ONZ", 1);
+					assembler->setRange("ONZ", 1, 1);
 					assembler->project("MET", true)->print();
 					
 					// DYn2

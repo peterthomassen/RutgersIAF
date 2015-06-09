@@ -1,18 +1,21 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+#include "helperAnalysisPresenter.C"
+
 void ZZ() {
-	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
-	
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,400,20}:NGOODJETS{0,6}:NOTTRILEPTONONZ{0,1}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,400,20}:NGOODJETS{0,6}:NOTTRILEPTONONZ{0,2}";
 	
 	// Global cuts, if desired
 	TString selection = "";
@@ -25,9 +28,11 @@ void ZZ() {
 	init(assembler);
 	setupData(assembler);
 	setupBackgroundMC(assembler, false, false);
-	setupBackgroundDD(assembler, "justTracks");
+	//setupBackgroundDD(assembler, "justTracks");
+	setupBackgroundDD(assembler);
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
+	prepare(assembler);
 	assembler->process(varexp, selection);
 	
 	
@@ -61,8 +66,14 @@ void ZZ() {
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-0Taus.pdf");
 	
+	assembler->setRange("NGOODTAUS", 1, 1);
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-1Tau.pdf");
+	
 	assembler->setRange("NGOODTAUS", 1);
 	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-1orMoreTaus.pdf");
+	
+	assembler->setRange("NGOODTAUS", 2);
+	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-2orMoreTaus.pdf");
 	
 	assembler->setRange("NGOODTAUS");
 	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("ZZ_MLEPTONS_NOSSF1-0orMoreTaus.pdf");

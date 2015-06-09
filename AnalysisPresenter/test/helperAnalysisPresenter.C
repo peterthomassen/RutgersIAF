@@ -1,9 +1,19 @@
 #include <iostream>
 #include <TH1.h>
+
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+// Load library, see https://root.cern.ch/phpBB2/viewtopic.php?f=3&t=19471
+namespace {
+  int loadMyLibraryTriggerFunc() {
+    gSystem->Load("libRutgersIAFAnalysisPresenter.so");
+    return 0;
+  }
+  int loadMyLibraryTrigger = loadMyLibraryTriggerFunc();
+}
 
 void init(Assembler* assembler) {
 	TH1::AddDirectory(false);
@@ -22,16 +32,23 @@ void init(Assembler* assembler) {
 }
 
 void prepare(Assembler* assembler) {
-	std::vector<TString> bundleNames = {"Fakes", "Higgs", "Rare MC"};
-	
 	Bundle* presentationBundle = new Bundle("background", "presentationBundle");
-	for(const auto &bundleName : bundleNames) {
+	for(const auto &bundleName : {"Fakes", "Higgs", "Rare MC"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
 			presentationBundle->addComponent(bundle);
 		}
 	}
 	assembler->addBundle(presentationBundle);
+	
+	Bundle* fakePresentationBundle = new Bundle("background", "fakePresentationBundle");
+	for(const auto &bundleName : {"Higgs", "Rare MC"}) {
+		Bundle* bundle = assembler->getBundle(bundleName);
+		if(bundle->getComponents().size() > 0) {
+			fakePresentationBundle->addComponent(bundle);
+		}
+	}
+	assembler->addBundle(fakePresentationBundle);
 	
 	assembler->setDefaultBundle(presentationBundle);
 	assembler->getDefaultBundle()->print();
@@ -275,6 +292,7 @@ void setupFakeRates(Assembler* assembler) {
 		"(NGOODTAUS == 0) * ("
 			"0.0154" // "(NGOODMUONS[0]==1)*(0.01384 + -0.0003956*NPROMPTNONISOINCLUSIVETRACKS7[0]) + (NGOODMUONS[0]==3)*(0.01697 + -0.0001669*NPROMPTNONISOINCLUSIVETRACKS7[0])"
 			" * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
+			//" * ( (NGOODMUONS[0] == 1) * (0.01289 + 0.0186*Max$(BDISCCSVGOODJETS)) / 0.01289 + (NGOODMUONS[0] != 1) * (0.01683 + 0.02129*Max$(BDISCCSVGOODJETS)) / 0.01683 )"
 		")"
 	);
 	assembler->setFakeRate("nTrackFakeElectrons",
@@ -282,41 +300,9 @@ void setupFakeRates(Assembler* assembler) {
 			"((NLEPTONS[0]==3&&NGOODELECTRONS[0]==1)*(0.006771 + 0.005532*NPROMPTNONISOINCLUSIVETRACKS7[0]) + (NLEPTONS[0]==3&&NGOODELECTRONS[0]==3)*(0.009287 + -0.001487*NPROMPTNONISOINCLUSIVETRACKS7[0])"
 			"+ (NLEPTONS[0]!=3||!(NGOODELECTRONS[0]%2))*(0.007453 + 0.003052*NPROMPTNONISOINCLUSIVETRACKS7[0]))" // this is not the average of the above, but measured (because of relative fractions)
 			" * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
+			//" * ( (NGOODELECTRONS[0] == 1) * (0.01271 + 0.0008638*Max$(BDISCCSVGOODJETS)) / 0.01271 + (NGOODELECTRONS[0] != 1) * (0.01049 + -0.03112*Max$(BDISCCSVGOODJETS)) / 0.01049 )"
 		")"
 	);
-	
-/*	assembler->setFakeRate("nTauFakeTaus", 
-		"(fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15) * ("
-			"(NLEPTONS[0] == 3 && NGOODELECTRONS[0] == 2) * ( (NPROMPTNONISOINCLUSIVETRACKS7[0] == 0) * 0.0090"
-				" + (NPROMPTNONISOINCLUSIVETRACKS7[0] >= 1 && NPROMPTNONISOINCLUSIVETRACKS7[0] <= 3) * (0.0198891 + 0.00652005 * NPROMPTNONISOINCLUSIVETRACKS7[0]) "
-				" + (NPROMPTNONISOINCLUSIVETRACKS7[0] > 3) * (0.0424706 - 0.00225938 * NPROMPTNONISOINCLUSIVETRACKS7[0]) "
-			") * 1.2"
-			"+ (NLEPTONS[0] == 3 && NGOODMUONS[0] == 2) * ( (NPROMPTNONISOINCLUSIVETRACKS7[0] == 0) * 0.0093"
-				" + (NPROMPTNONISOINCLUSIVETRACKS7[0] >= 1 && NPROMPTNONISOINCLUSIVETRACKS7[0] <= 3) * (0.0255488 + 0.00560732 * NPROMPTNONISOINCLUSIVETRACKS7[0]) "
-				" + (NPROMPTNONISOINCLUSIVETRACKS7[0] > 3) * (0.0471066 - 0.00269566 * NPROMPTNONISOINCLUSIVETRACKS7[0]) "
-			") * 1.2"
-			// Now el-mu-tau and 4L with both light flavors. el-el-el-tau and mu-mu-mu-tau missing!
-			" + (NGOODELECTRONS[0] > 0 && NGOODMUONS[0] > 0) * ( (HT[0] < 200) * 0.022 + !(HT[0] < 200) * 0.019 )"
-		")"
-	);*/
-	
-/*
-	// mZ = 91 \pm 10
-	assembler->setFakeRate("nTauFakeTaus",
-		//"Alt$(fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15, 0) * (0.2395 - 0.0004384 * HT[0])" // w/o track/photon subtraction and with 30 binning
-		"Alt$(fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15, 0) * (" // w/o track/photon subtraction and with 200 binning
-			"(NBJETSCSVM == 0) * ("
-				"(NLEPTONS[0]==3&&NGOODMUONS[0]==0) * (0.2562 - 0.0003139 * HT[0])"
-				" + (NLEPTONS[0]==3&&NGOODMUONS[0]==2) * (0.2503 - 0.0002499 * HT[0])"
-				" + (NLEPTONS[0]!=3 || NGOODMUONS[0]==1) * (0.25325 - 0.0002819 * HT[0])"
-			") + (NBJETSCSVM > 0) * ("
-				"(NLEPTONS[0]==3&&NGOODMUONS[0]==0) * (0.2129 - 0.0003078 * HT[0])"
-				" + (NLEPTONS[0]==3&&NGOODMUONS[0]==2) * (0.2339 - 0.0002751 * HT[0])"
-				" + (NLEPTONS[0]!=3 || NGOODMUONS[0]==1) * (0.2234 - 0.00029145 * HT[0])"
-			")"
-		")"
-	);
-*/
 	
 	// mZ = 90 \pm 15
 	assembler->setFakeRate("nTauFakeTaus",
@@ -332,6 +318,7 @@ void setupFakeRates(Assembler* assembler) {
 				" + (NLEPTONS[0]!=3 || NGOODMUONS[0]==1) * (0.2227 - 0.0003039 * HT[0])"
 			")"
 		")"
+		" * (nTauFakeTaus[0] == 1)" // disable multiple fake taus (overprediction for 2l+2tau channels because of double-counting from 2L and from 3L seeds)
 	);
 	
 	// Photon fake rates for Asymmetric Internal Conversions (AIC)

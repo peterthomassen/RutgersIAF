@@ -1,17 +1,20 @@
 #include <unistd.h>
 
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+#include "helperAnalysisPresenter.C"
+
 void ttbarFudge() {
-	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
-	
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
 	
 	// Specify axes and bins of multidimensional histogram
 	// for ttbar 2L
-	std::string varexp = "PTGOODMUONS[0]{0,200,40}:NLEPTONS{0,4}:NGOODMUONS{0,4}:NBJETSCSVM{0,2}:HT{0,1000,20}:MET{0,500,10}:ST{0,2000,20}:NGOODJETS{0,6}";
+	std::string varexp = "PTGOODMUONS[0]{0,200,40}:NLEPTONS{0,4}:NGOODMUONS{0,4}:NBJETSCSVM{0,2}:HT{0,1000,20}:MET{0,500,10}:ST{0,2000,20}:NGOODJETS{0,6}:NGOODTRACKS{0,15}";
 	varexp += ":Alt$(RELISONONPROMPTMUONS[0], -999){-0.15,9.15,31,\"relIsoNonPromptMu\"}";
 	varexp += ":Alt$(PTGOODJETS[2], -999){0,100,10,\"PT3Jet\"}";
 	varexp += ":(QGOODMUONS[0] + QNONPROMPTMUONS[0] != 0){0,1,\"SS\"}";
@@ -78,16 +81,19 @@ void ttbarFudge() {
 	mkdir("ttbarFudge", 0755);
 	chdir("ttbarFudge");
 	
+	TF1* f = new TF1("f", "pol0", 81, 101);
+	
 	// We probably only need the muon cut, since getting and triggering (single-lepton) 
 	// on a 30 GeV muon from W is much more likely than getting and triggering on a 85 GeV electron
 	//assembler->setRange("PTGOODELECTRONS[0]", 85);
 	assembler->setRange("NLEPTONS", 2, 2);
-	assembler->setRange("OSOF", 1, 1);
+	assembler->setRange("OSOF", 1);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbarFudge_OSOF-noFake_NGOODJETS.pdf");
-	assembler->setRange("nonPromptMu", 1, 1);
+	assembler->setRange("nonPromptMu", 1);
 	assembler->project("PTGOODMUONS[0]", true)->plot(false)->SaveAs("ttbarFudge_OSOF_PTGOODMUONS.pdf");
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbarFudge_OSOF_NGOODJETS.pdf");
-	assembler->project("relIsoNonPromptMu", true)->plot(false, -0.15, 0.15)->SaveAs("ttbarFudge_OSOF_RELISONONPROMPTMUONS.pdf");
+	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbarFudge_OSOF_NGOODTRACKS.pdf");
+	assembler->project("relIsoNonPromptMu", true)->plot(false, f, -0.15, 0.15)->SaveAs("ttbarFudge_OSOF_RELISONONPROMPTMUONS.pdf");
 	assembler->project("relIsoNonPromptMu", true)->print();
 	
 	assembler->setRange();
@@ -105,14 +111,16 @@ void ttbarFudge() {
 	return;
 */	
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbarFudge_noFake_NGOODJETS.pdf");
-	assembler->setRange("nonPromptMu", 1, 1);
+	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbarFudge_noFake_NGOODTRACKS.pdf");
+	assembler->setRange("nonPromptMu", 1);
 	assembler->project("PTGOODMUONS[0]", true)->plot(false)->SaveAs("ttbarFudge_PTGOODMUONS.pdf");
 	assembler->project("PTGOODMUONS[0]", true)->print();
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbarFudge_NGOODJETS.pdf");
+	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbarFudge_NGOODTRACKS.pdf");
 	assembler->project("SS", true)->plot(false)->SaveAs("ttbarFudge_SS.pdf");
 	assembler->project("NGOODJETS", true)->print();
 	
-	assembler->project("relIsoNonPromptMu", true)->plot(false, -0.15, 0.15)->SaveAs("ttbarFudge_RELISONONPROMPTMUONS.pdf");
+	assembler->project("relIsoNonPromptMu", true)->plot(false, f, -0.15, 0.15)->SaveAs("ttbarFudge_RELISONONPROMPTMUONS.pdf");
 	assembler->project("relIsoNonPromptMu", true)->print();
 	
 	assembler->setRange("relIsoNonPromptMu", -0.15, 0.15);
@@ -125,17 +133,19 @@ void ttbarFudge() {
 	assembler->project("PTGOODMUONS[0]", true)->print();
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbarFudge_OS_NGOODJETS.pdf");
 	assembler->project("NGOODJETS", true)->print();
+	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbarFudge_OS_NGOODTRACKS.pdf");
 	
-	assembler->project("relIsoNonPromptMu", true)->plot(false, -0.15, 0.15)->SaveAs("ttbarFudge_OS_RELISONONPROMPTMUONS.pdf");
+	assembler->project("relIsoNonPromptMu", true)->plot(false, f, -0.15, 0.15)->SaveAs("ttbarFudge_OS_RELISONONPROMPTMUONS.pdf");
 	assembler->project("relIsoNonPromptMu", true)->print();
 	
-	assembler->setRange("SS", 1, 1);
+	assembler->setRange("SS", 1);
 	assembler->project("PTGOODMUONS[0]", true)->plot(false)->SaveAs("ttbarFudge_SS_PTGOODMUONS.pdf");
 	assembler->project("PTGOODMUONS[0]", true)->print();
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbarFudge_SS_NGOODJETS.pdf");
 	assembler->project("NGOODJETS", true)->print();
+	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbarFudge_SS_NGOODTRACKS.pdf");
 	
-	assembler->project("relIsoNonPromptMu", true)->plot(false, -0.15, 0.15)->SaveAs("ttbarFudge_SS_RELISONONPROMPTMUONS.pdf");
+	assembler->project("relIsoNonPromptMu", true)->plot(false, f, -0.15, 0.15)->SaveAs("ttbarFudge_SS_RELISONONPROMPTMUONS.pdf");
 	assembler->project("relIsoNonPromptMu", true)->print();
 	
 	delete assembler;
