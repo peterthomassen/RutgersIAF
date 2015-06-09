@@ -1,23 +1,9 @@
 #include "RutgersIAF/AnalysisPresenter/interface/ChannelCollection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
-#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
-#include "RutgersIAF/AnalysisPresenter/interface/AssemblerProjection.h"
-#include "RutgersIAF/AnalysisPresenter/interface/BaseBundleProjection.h"
-#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
-#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
-
-#include "Math/QuantFuncMathCore.h"
-#include "TLegend.h"
-#include "TLine.h"
-#include "TPad.h"
-#include "TPaveStats.h"
-#include "TStyle.h"
 
 #include <assert.h>
 #include <exception>
-#include <boost/bind.hpp>
-#include <boost/range/join.hpp>
-#include <cmath>
+
 
 #include <iostream>
 #include <fstream>
@@ -64,11 +50,79 @@ bool ChannelCollection::addChannel(Channel* channel) {
 	return true;
 }
 
+std::vector<TString> ChannelCollection::getCollectionBundleNames(TString type) const {
+	assert(CollectionHas(type));
+	std::vector<TString> bundleNames;
+	bundleNames.clear();
+	std::vector<TString> ChannelBundles;
+	for(auto &channel : getChannels()) {
+		ChannelBundles.clear();
+		ChannelBundles = channel->getChannelBundleNames(type);
+		for (int i = 0; i < abs(ChannelBundles.size()); i++) {
+			bool duplicateBundle = false;
+			for (int j = 0; j < abs(bundleNames.size()); j++) {
+				 if (bundleNames[j]==ChannelBundles[i]) {
+					 duplicateBundle = true;
+					 break;
+				 }
+					 
+			}
+			if (duplicateBundle == false) bundleNames.push_back(ChannelBundles[i]);
+		}
+	}
+	return bundleNames;
+}
+
+std::set<TString> ChannelCollection::getCollectionUncertainties() const {
+	std::set<TString> uncertaintyNames;
+	uncertaintyNames.clear();
+	std::set<TString> ChannelUncertainties;
+	for(auto &channel : getChannels()) {
+		ChannelUncertainties.clear();
+		ChannelUncertainties = channel->getChannelUncertainties();
+		for (auto &uncertainties : ChannelUncertainties) {
+			bool duplicateUncertainty = false;
+			for (std::set<TString>::iterator it2=uncertaintyNames.begin(); it2!=uncertaintyNames.end(); ++it2) {
+				 if (uncertainties==*it2) {
+					 duplicateUncertainty = true;
+					 break;
+				 }
+			}
+			if (duplicateUncertainty == false) uncertaintyNames.insert(uncertainties);
+		}	
+	}
+	return uncertaintyNames;
+}
+
+bool ChannelCollection::CollectionHas(TString type) const {
+	bool has = true;
+	
+	for(auto &channel : getChannels()) {
+		has = channel->ChannelHas(type);
+		
+		if (has==false) break;
+	}
+	
+	return has;
+}
+
+bool ChannelCollection::CollectionHas(TString type, TString bundleName) const {
+	bool has = true;
+	
+	for(auto &channel : getChannels()) {
+		has = channel->ChannelHas(type, bundleName);
+		
+		if (has==false) break;
+	}
+	
+	return has;	
+}
+
 void ChannelCollection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 
-	/*std::cout << "Creating datacard..." << std::endl;
+	std::cout << "Creating datacard..." << std::endl;
 	
-	if(!has("signal")) {
+	if(!CollectionHas("signal")) {
 		std::cout << "*** Error: No signal added -> BREAK! ***" << std::endl;
 		return;
 	}
@@ -77,15 +131,15 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	int NumberChannels = channels.size();
 	
 	std::vector<TString> BundlesSignal;
-	BundlesSignal = getBundleNames("signal");
+	BundlesSignal = getCollectionBundleNames("signal");
 	std::vector<TString> BundlesSignalName;
-	BundlesSignalName = getBundleNames("signal");
+	BundlesSignalName = getCollectionBundleNames("signal");
 	int NumberBundlesSignal = BundlesSignal.size();
 	
 	std::vector<TString> BundlesBckgrd;
-	BundlesBckgrd = getBundleNames("background");
+	BundlesBckgrd = getCollectionBundleNames("background");
 	std::vector<TString> BundlesBckgrdName;
-	BundlesBckgrdName = getBundleNames("background");
+	BundlesBckgrdName = getCollectionBundleNames("background");
 	int NumberBundlesBackgrd = BundlesBckgrd.size();
 
 	
@@ -102,8 +156,8 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
 	datacard.open(completeName);	
 	datacard << std::fixed << std::setprecision(0);
-	datacard << "#Datacard Version 1.1" << '\n' << "#May 2015" << '\n' << '\n';
-	datacard << "imax " << NumberChannels << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + NumberChannels*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
+	datacard << "#Datacard Version 2.0" << '\n' << "#Jun 2015" << '\n' << '\n';
+	datacard << "imax " << NumberChannels << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getCollectionUncertainties().size() + NumberChannels*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
 	
@@ -125,17 +179,16 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "bin";
+	datacard << "bin\t";
 	for(auto &channel : channels) {	
 	
 		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
-		
-			datacard << '\t' << channel;
+			datacard << '\t' << channel->getName();
 		}
 	}
 	datacard << std::fixed << std::setprecision(3);
 	datacard << '\n';
-	datacard << "process";
+	datacard << "process\t";
 	for(int i = 0; i < NumberChannels; i++) {	
 	
 		for (int j = 0; j < NumberBundlesSignal; j++) {
@@ -162,7 +215,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 			
 	}
 	datacard << '\n';
-	datacard << "process";
+	datacard << "process\t";
 	for(int i = 0; i < NumberChannels; i++) {	
 	
 		for (int j = 0; j < NumberBundlesSignal; j++) {
@@ -177,7 +230,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 		
 	}
 	datacard << '\n';
-	datacard << "rate";
+	datacard << "rate\t";
 	for(auto &channel : channels) {
 	
 		for (int j = 0; j < NumberBundlesSignal; j++) {
@@ -197,7 +250,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	
-	for (auto &uncertainty : getUncertaintyNames()) {
+	for (auto &uncertainty : getCollectionUncertainties()) {
 		
 		TString UncertaintyName = uncertainty;
 		UncertaintyName.ReplaceAll(" ", "_");
@@ -274,7 +327,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 		datacard << '\n';
 	}
 	
-	datacard.close();*/
+	datacard.close();
 }
 
 

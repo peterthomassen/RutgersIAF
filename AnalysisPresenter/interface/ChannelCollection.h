@@ -6,10 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "TCanvas.h"
-#include "TF1.h"
-#include "THStack.h"
-#include "TROOT.h"
 
 
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
@@ -24,6 +20,13 @@ public:
 	virtual ~ChannelCollection();
 	
 	bool addChannel(Channel* channel);
+	
+	std::set<TString> getCollectionUncertainties() const;
+	std::vector<TString> getCollectionBundleNames(TString type) const;
+	
+	bool CollectionHas(TString type) const;
+	bool CollectionHas(TString type, TString bundleName) const;
+	
 	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	std::set<Channel*> getChannels() const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
@@ -31,7 +34,7 @@ public:
 	void printMeta(TString type = "data") const;
 
 protected:
-
+	
 private:
 	std::set<Channel*> m_channels;
 	std::map<TString, std::set<PhysicsContribution::metadata_t>> m_meta;

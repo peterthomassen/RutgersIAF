@@ -1,18 +1,10 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/BaseBundleProjection.h"
 
 #include <assert.h>
-#include <boost/bind.hpp>
-#include <cmath>
 #include <exception>
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <stdio.h> 
-#include <unistd.h>
-#include <iomanip>
-#include <stdlib.h>
 
 #include "RutgersIAF/debug.h"
 
@@ -62,6 +54,22 @@ double Channel::getSyst(TString type, TString name) const {
 
 double Channel::getSyst(TString type, TString name, TString bundleName) const {
 	return getBinSyst(type, 1, name, bundleName);
+}
+
+std::vector<TString> Channel::getChannelBundleNames(TString type) const {
+	return getBundleNames(type);
+}
+
+std::set<TString> Channel::getChannelUncertainties() const {
+	return getUncertaintyNames();
+}
+
+bool Channel::ChannelHas(TString type) const {
+	return has(type);
+}
+
+bool Channel::ChannelHas(TString type, TString bundleName) const {
+	return has(type, bundleName);
 }
 
 AssemblerProjection* Channel::project(const char* name, const bool binForOverflow) {
