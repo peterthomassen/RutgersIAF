@@ -5,21 +5,23 @@
  * group in 2012.
 */
 
-void exampleAnalysisTree(const char* infile = "MC/WZJetsTo3LNu/results_mc_v1_1_1_lzt.root"
-	, TString pufile = "PU/WZJetsTo3LNu.pu.root" // change to an empty string "" to run without a pileup file
+#include "RutgersIAF/EventAnalyzer/interface/AnalysisTreeWriter.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/SkimTreeReader.h"
+
+// Initialization: load helpers (which will load library etc.)
+#include "helperEventAnalyzer.C"
+#include "helperTriggers.C"
+
+void exampleAnalysisTree(const char* infile = "/cms/matt/mwalker/Analysis/20140320_nftest/Simulation/WZJetsTo3LNu/results_mc_v1_1_1_lzt.root"
+	, TString pufile = "/cms/matt/mwalker/Analysis/20140320_nftest/PU/WZJetsTo3LNu.pu.root" // change to an empty string "" to run without a pileup file
 	, const char* outfile = "exampleAnalysisTree.root"
 	, int mode = 0
 	, const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
 	, Int_t iLo = 0	// change this to start running here
-	, Int_t iHi = 0	// change this to stop running here
+	, Int_t iHi = 1000	// change this to stop running here
 	, Bool_t isMC = true // change this to run over MC simulations
 ) {
-	// Initialization. Read library, set up include path, and load helpers.
-	gSystem->Load("libRutgersIAFEventAnalyzer.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperEventAnalyzer.C+");
-	gROOT->ProcessLine(".L helperTriggers.C");
-	
 	// Prepare input
 	TChain* tree = new TChain("SkimTree");
 	TString input = infile;
