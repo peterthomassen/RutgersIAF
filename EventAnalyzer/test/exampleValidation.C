@@ -4,22 +4,23 @@
  * Output is used for ValidationPlotMacro.C.
 */
 
+#include "RutgersIAF/EventAnalyzer/interface/AnalysisTreeWriter.h"
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/SkimTreeReader.h"
 
-void ValidationAnalysis(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC_53X/ZZJetsTo4L/All/results_mc_v1_1_*.root"
+// Initialization: load helpers (which will load library etc.)
+#include "helperValidation.C"
+#include "helperTriggers.C"
+#include "helperHistograms.C"
+
+void exampleValidation(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC_53X/ZZJetsTo4L/All/results_mc_v1_1_*.root"
 	, TString pufile="/cms/matt/mwalker/Analysis/20120920_newPU/histograms/ZZJetsTo4L.pu.root"
 	, const char* outfile = "validation_ZZ_1.root"
 	, int mode = 0
 	, Int_t iLo = 0	// change this to start running here
-	, Int_t iHi = 0	// change this to stop running here
+	, Int_t iHi = 1000	// change this to stop running here
 	, Bool_t isMCData = true // change this to run over MC simulations
 ) {
-	// Initialization. Read library, set up include path, and load helpers.
-	gSystem->Load("libRutgersIAFEventAnalyzer.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperValidation.C+");
-	gROOT->ProcessLine(".L helperTriggers.C");
-	gROOT->ProcessLine(".L helperHistograms.C+");
-	
 	// Prepare input
 	TChain* tree = new TChain("SkimTree");
 	TString input = infile;

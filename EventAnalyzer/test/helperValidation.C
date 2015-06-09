@@ -40,6 +40,15 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonMatchDeltaRCharge.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableSmearMET.h"
 
+// Load library, see https://root.cern.ch/phpBB2/viewtopic.php?f=3&t=19471
+namespace {
+  int loadMyLibraryTriggerFunc() {
+    gSystem->Load("libRutgersIAFEventAnalyzer.so");
+    return 0;
+  }
+  int loadMyLibraryTrigger = loadMyLibraryTriggerFunc();
+}
+
 void setupProducts(BaseHandler* handler)
 {
   //////////////////

@@ -5,20 +5,21 @@
  * group in 2012.
 */
 
+#include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
+#include "RutgersIAF/EventAnalyzer/interface/SkimTreeReader.h"
+
+// Initialization: load helpers (which will load library etc.)
+#include "helperEventAnalyzer.C"
+#include "helperTriggers.C"
+#include "helperHistograms.C"
+
 void exampleHistograms(const char* infile = "/cms/rcg/rcgray/2012/DataLinks2012/DoubleElectron_missing_runs_v1_32ipb_Run2012B_Nov30/All"
 	, const char* outfile = "exampleHistograms.root"
 	, int mode = 0
 	, const char* json = "/cms/thomassen/2013/tcH/RootC/Merged_190456-208686_8TeV_PromptReReco_Collisions12_19.490ifb.json"
 	, Int_t iLo = 0	// change this to start running here
-	, Int_t iHi = 0	// change this to stop running here
+	, Int_t iHi = 1000	// change this to stop running here
 ) {
-	// Initialization. Read library, set up include path, and load helpers.
-	gSystem->Load("libRutgersIAFEventAnalyzer.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperEventAnalyzer.C+");
-	gROOT->ProcessLine(".L helperTriggers.C");
-	gROOT->ProcessLine(".L helperHistograms.C+");
-	
 	// Prepare input
 	TChain* tree = new TChain("SkimTree");
 	TString input = infile;
