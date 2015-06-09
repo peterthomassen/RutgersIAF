@@ -344,16 +344,17 @@ TString PhysicsContribution::getSelectionString() const {
 		auto edgeLo = axis->GetBinLowEdge(lo);
 		auto edgeHi = axis->GetBinUpEdge(hi);
 		
-		bool oneBin = (edgeHi - edgeLo == 1);
+		// Check whether we have integer bins and unity width selection
+		bool oneBin = (edgeHi - edgeLo == 1 && fabs(floor(edgeHi + 0.5) - edgeHi) < 1e-6);
 		
 		const char* title = axis->GetTitle();
 		
 		if(hi < lo) {
 			continue;
-		} else if(oneBin) {
-			rangeString += TString::Format(" && %s == %.0f", title, axis->GetBinLowEdge(lo));
 		} else if(hi == axis->GetNbins() + 1) {
 			rangeString += TString::Format(" && %s >= %.0f", title, axis->GetBinLowEdge(lo));
+		} else if(oneBin) {
+			rangeString += TString::Format(" && %s == %.0f", title, axis->GetBinLowEdge(lo));
 		} else {
 			rangeString += TString::Format(" && %s >= %.0f && %s < %.0f", title, edgeLo, title, edgeHi);
 		}
