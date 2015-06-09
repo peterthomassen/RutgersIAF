@@ -1,22 +1,27 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+#include "helperAnalysisPresenter.C"
+
 void Z() {
-	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
-	
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
 	
 	// Specify axes and bins of multidimensional histogram
 	// For Z peak
-	std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,3}:NGOODMUONS{0,3}:NGOODELECTRONS%2{0,1,\"elFake\"}:NGOODMUONS%2{0,1,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLEPTONS{76,106}";
+	//std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLEPTONS{76,106}";
+	std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{12,132,40}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLEPTONS{76,106}";
 	varexp += ":NPROMPTTRACKS7{0,100,1}";
 	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
 	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
-	varexp += ":NOTTRILEPTONONZ{0,1}";
+	varexp += ":NOTTRILEPTONONZ{0,2}";
+	varexp += ":MOSSF*1{11,131,120,\"MOSSFfine\"}";
 //	varexp += ":PTGOODMUONS{-3,3,20}";
 //	varexp += ":ETAGOODMUONS{-3,3,20}";
 	
@@ -43,7 +48,10 @@ void Z() {
 	//setupBackgroundDD(assembler, "justTracks");
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
+	prepare(assembler);
 	assembler->process(varexp, selection);
+	
+	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	
 	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
@@ -77,6 +85,7 @@ void Z() {
 	
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSF.pdf");
+	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSFfine.pdf");
 	assembler->setRange("NOTTRILEPTONONZ", 1, 1);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_NOTTRILEPTONONZ_MOSSF.pdf");
 	assembler->setRange("NOTTRILEPTONONZ");
@@ -91,6 +100,7 @@ void Z() {
 	assembler->setRange("elFake", 1, 1);
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_elFake_MOSSF.pdf");
+	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_elFake_MOSSFfine.pdf");
 	assembler->setRange("NOTTRILEPTONONZ", 1, 1);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_elFake_NOTTRILEPTONONZ_MOSSF.pdf");
 	assembler->setRange("NOTTRILEPTONONZ");
@@ -120,6 +130,7 @@ void Z() {
 	assembler->setRange("muFake", 1, 1);
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_muFake_MOSSF.pdf");
+	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_muFake_MOSSFfine.pdf");
 	assembler->setRange("NOTTRILEPTONONZ", 1, 1);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_muFake_NOTTRILEPTONONZ_MOSSF.pdf");
 	assembler->setRange("NOTTRILEPTONONZ");

@@ -1,11 +1,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
+#include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
+
+#include "helperAnalysisPresenter.C"
+
 void WZ() {
-	gSystem->Load("libRutgersIAFAnalysisPresenter.so");
-	gROOT->ProcessLine(TString::Format(".include %s/src", getenv("CMSSW_BASE")));
-	gROOT->ProcessLine(".L helperAnalysisPresenter.C+");
-	
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
@@ -20,7 +23,28 @@ void WZ() {
 	// Global cuts, if desired
 	TString selection = "NOTTRILEPTONONZ";
 	//selection += " && NGOODELECTRONS == 3";
-	
+
+        PhysicsContribution* signalWW = new PhysicsContribution("signal", "/users/h2/heindl/simulation_tcH/histograms/JetMatch/tcH_ww.simulation.root", (2 * 0.01 * 245.8 * 0.231 * 0.3157 * 0.534196), "WW");
+        signalWW->addWeight("WEIGHT"); 
+        signalWW->addFlatUncertainty("lumi", 0.025);
+        
+        PhysicsContribution* signalZZ = new PhysicsContribution("signal", "/users/h2/heindl/simulation_tcH/histograms/JetMatch/tcH_zz.simulation.root", (2 * 0.01 * 245.8 * 0.0289 * 1.00 * 0.196389), "ZZ");
+        signalZZ->addWeight("WEIGHT");
+        signalZZ->addFlatUncertainty("lumi", 0.025);
+        
+        PhysicsContribution* signalTautau = new PhysicsContribution("signal", "/users/h2/heindl/simulation_tcH/histograms/JetMatch/tcH_tt.simulation.root", (2 * 0.01 * 245.8 * 0.0616 * 0.3157 * 1.00), "Tautau");
+        signalTautau->addWeight("WEIGHT");
+        signalTautau->addFlatUncertainty("lumi", 0.025);
+
+Bundle* signaltcH = new Bundle("signal", "tcH signal");
+signaltcH->addComponent(signalWW);
+signaltcH->addComponent(signalZZ);
+signaltcH->addComponent(signalTautau);
+
+Bundle* signalBundle = new Bundle("signal", "signalBundle");
+signalBundle->addComponent(signaltcH);
+
+
 	////////////////////////
 	// Initialize and run //
 	////////////////////////
@@ -30,8 +54,14 @@ void WZ() {
 	setupBackgroundMC(assembler, false, false);
 	//setupBackgroundMC(assembler, false, true);
 	//setupBackgroundMC(assembler);
-	setupBackgroundDD(assembler, "noTaus");
+//	setupBackgroundDD(assembler, "noTaus");
+	setupBackgroundDD(assembler, "noTaus", true);
 //	setupBackgroundDD(assembler, "justTracks");
+
+        assembler->addContribution(signalWW);
+        assembler->addContribution(signalZZ);
+        assembler->addContribution(signalTautau);
+
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	prepare(assembler);
@@ -59,9 +89,18 @@ assembler->project("NLEPTONS", true)->getMeta(); // printMeta();
 	assembler->setRange("MET", 50, 100, false);
 	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_MT.pdf");
 
+writeUncertainties(assembler->project("MET", true), "background");
+writeUncertainties(assembler->project("MET", true), "signal");
+//return;
+
 assembler->project("MT", true)->print();
 Channel* ch = assembler->channel("WZ");
 ch->print();
+ch->datacard("test");
+ch->bundle(assembler->getBundle("presentationBundle"))->datacard("bundleBkg");
+ch->bundle(signalBundle)->datacard("bundleSig");
+ch->bundle(assembler->getBundle("presentationBundle"))->bundle(signalBundle)->datacard("bundleBkgSig");
+ch->bundle(assembler->getBundle("presentationBundle"))->bundle(signalBundle)->datacard("bundleSigBkg");
 //ch->getMeta();
 ch->plot(false)->SaveAs("WZ_channel.pdf");
 cout << "number of events: " << ch->getHistogram("data")->GetEntries() << endl;
