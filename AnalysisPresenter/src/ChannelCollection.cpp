@@ -49,49 +49,6 @@ bool ChannelCollection::addChannel(Channel* channel) {
 	return true;
 }
 
-std::vector<TString> ChannelCollection::getBundleNames(TString type) const {
-	assert(has(type));
-	std::vector<TString> bundleNames;
-	for(auto &channel : getChannels()) {
-		for(auto &bundleName : channel->getBundleNames(type)) {
-			if(std::find(bundleNames.begin(), bundleNames.end(), bundleName) == bundleNames.end()) {
-				bundleNames.push_back(bundleName);
-			}
-		}
-	}
-	return bundleNames;
-}
-
-std::set<TString> ChannelCollection::getUncertaintyNames() const {
-	std::set<TString> uncertaintyNames;
-	for(auto &channel : getChannels()) {
-		for(auto &uncertaintyName : channel->getUncertaintyNames()) {
-			if(uncertaintyNames.find(uncertaintyName) == uncertaintyNames.end()) {
-				uncertaintyNames.insert(uncertaintyName);
-			}
-		}
-	}
-	return uncertaintyNames;
-}
-
-bool ChannelCollection::has(TString type) const {
-	for(auto &channel : getChannels()) {
-		if(!channel->has(type)) {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool ChannelCollection::has(TString type, TString bundleName) const {
-	for(auto &channel : getChannels()) {
-		if(!channel->has(type, bundleName)) {
-			return false;
-		}
-	}
-	return true;
-}
-
 void ChannelCollection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 	std::cout << "Creating datacard ..." << std::endl;
 	
@@ -241,6 +198,19 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	datacard.close();
 }
 
+std::vector<TString> ChannelCollection::getBundleNames(TString type) const {
+	assert(has(type));
+	std::vector<TString> bundleNames;
+	for(auto &channel : getChannels()) {
+		for(auto &bundleName : channel->getBundleNames(type)) {
+			if(std::find(bundleNames.begin(), bundleNames.end(), bundleName) == bundleNames.end()) {
+				bundleNames.push_back(bundleName);
+			}
+		}
+	}
+	return bundleNames;
+}
+
 std::set<Channel*> ChannelCollection::getChannels() const {
 	return m_channels;
 }
@@ -251,6 +221,36 @@ std::set<PhysicsContribution::metadata_t> ChannelCollection::getMeta(TString typ
 
 TString ChannelCollection::getName() const {
 	return m_name;
+}
+
+std::set<TString> ChannelCollection::getUncertaintyNames() const {
+	std::set<TString> uncertaintyNames;
+	for(auto &channel : getChannels()) {
+		for(auto &uncertaintyName : channel->getUncertaintyNames()) {
+			if(uncertaintyNames.find(uncertaintyName) == uncertaintyNames.end()) {
+				uncertaintyNames.insert(uncertaintyName);
+			}
+		}
+	}
+	return uncertaintyNames;
+}
+
+bool ChannelCollection::has(TString type) const {
+	for(auto &channel : getChannels()) {
+		if(!channel->has(type)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool ChannelCollection::has(TString type, TString bundleName) const {
+	for(auto &channel : getChannels()) {
+		if(!channel->has(type, bundleName)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void ChannelCollection::printMeta(TString type) const {

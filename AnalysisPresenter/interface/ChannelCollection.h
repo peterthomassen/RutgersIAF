@@ -18,17 +18,17 @@ public:
 	virtual ~ChannelCollection();
 	
 	bool addChannel(Channel* channel);
+	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	
+	std::set<Channel*> getChannels() const;
 	std::set<TString> getUncertaintyNames() const;
 	std::vector<TString> getBundleNames(TString type) const;
+	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
+	TString getName() const;
 	
 	bool has(TString type) const;
 	bool has(TString type, TString bundleName) const;
 	
-	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
-	std::set<Channel*> getChannels() const;
-	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
-	TString getName() const;
 	void printMeta(TString type = "data") const;
 
 protected:
