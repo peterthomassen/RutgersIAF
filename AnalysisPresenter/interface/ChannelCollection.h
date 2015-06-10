@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-
-
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
 class Channel;
@@ -21,11 +19,11 @@ public:
 	
 	bool addChannel(Channel* channel);
 	
-	std::set<TString> getCollectionUncertainties() const;
-	std::vector<TString> getCollectionBundleNames(TString type) const;
+	std::set<TString> getUncertaintyNames() const;
+	std::vector<TString> getBundleNames(TString type) const;
 	
-	bool CollectionHas(TString type) const;
-	bool CollectionHas(TString type, TString bundleName) const;
+	bool has(TString type) const;
+	bool has(TString type, TString bundleName) const;
 	
 	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	std::set<Channel*> getChannels() const;

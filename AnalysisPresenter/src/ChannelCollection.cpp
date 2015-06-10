@@ -4,7 +4,6 @@
 #include <assert.h>
 #include <exception>
 
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -50,98 +49,58 @@ bool ChannelCollection::addChannel(Channel* channel) {
 	return true;
 }
 
-std::vector<TString> ChannelCollection::getCollectionBundleNames(TString type) const {
-	assert(CollectionHas(type));
+std::vector<TString> ChannelCollection::getBundleNames(TString type) const {
+	assert(has(type));
 	std::vector<TString> bundleNames;
-	bundleNames.clear();
-	std::vector<TString> ChannelBundles;
 	for(auto &channel : getChannels()) {
-		ChannelBundles.clear();
-		ChannelBundles = channel->getChannelBundleNames(type);
-		for (int i = 0; i < abs(ChannelBundles.size()); i++) {
-			bool duplicateBundle = false;
-			for (int j = 0; j < abs(bundleNames.size()); j++) {
-				 if (bundleNames[j]==ChannelBundles[i]) {
-					 duplicateBundle = true;
-					 break;
-				 }
-					 
+		for(auto &bundleName : channel->getBundleNames(type)) {
+			if(std::find(bundleNames.begin(), bundleNames.end(), bundleName) == bundleNames.end()) {
+				bundleNames.push_back(bundleName);
 			}
-			if (duplicateBundle == false) bundleNames.push_back(ChannelBundles[i]);
 		}
 	}
 	return bundleNames;
 }
 
-std::set<TString> ChannelCollection::getCollectionUncertainties() const {
+std::set<TString> ChannelCollection::getUncertaintyNames() const {
 	std::set<TString> uncertaintyNames;
-	uncertaintyNames.clear();
-	std::set<TString> ChannelUncertainties;
 	for(auto &channel : getChannels()) {
-		ChannelUncertainties.clear();
-		ChannelUncertainties = channel->getChannelUncertainties();
-		for (auto &uncertainties : ChannelUncertainties) {
-			bool duplicateUncertainty = false;
-			for (std::set<TString>::iterator it2=uncertaintyNames.begin(); it2!=uncertaintyNames.end(); ++it2) {
-				 if (uncertainties==*it2) {
-					 duplicateUncertainty = true;
-					 break;
-				 }
+		for(auto &uncertaintyName : channel->getUncertaintyNames()) {
+			if(uncertaintyNames.find(uncertaintyName) == uncertaintyNames.end()) {
+				uncertaintyNames.insert(uncertaintyName);
 			}
-			if (duplicateUncertainty == false) uncertaintyNames.insert(uncertainties);
-		}	
+		}
 	}
 	return uncertaintyNames;
 }
 
-bool ChannelCollection::CollectionHas(TString type) const {
-	bool has = true;
-	
+bool ChannelCollection::has(TString type) const {
 	for(auto &channel : getChannels()) {
-		has = channel->ChannelHas(type);
-		
-		if (has==false) break;
+		if(!channel->has(type)) {
+			return false;
+		}
 	}
-	
-	return has;
+	return true;
 }
 
-bool ChannelCollection::CollectionHas(TString type, TString bundleName) const {
-	bool has = true;
-	
+bool ChannelCollection::has(TString type, TString bundleName) const {
 	for(auto &channel : getChannels()) {
-		has = channel->ChannelHas(type, bundleName);
-		
-		if (has==false) break;
+		if(!channel->has(type, bundleName)) {
+			return false;
+		}
 	}
-	
-	return has;	
+	return true;
 }
 
 void ChannelCollection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
-
-	std::cout << "Creating datacard..." << std::endl;
+	std::cout << "Creating datacard ..." << std::endl;
 	
-	if(!CollectionHas("signal")) {
-		std::cout << "*** Error: No signal added -> BREAK! ***" << std::endl;
-		return;
-	}
+	assert(has("signal"));
 	
-	auto channels = getChannels();
-	int NumberChannels = channels.size();
+	double minYield = 0.001;
 	
-	std::vector<TString> BundlesSignal;
-	BundlesSignal = getCollectionBundleNames("signal");
-	std::vector<TString> BundlesSignalName;
-	BundlesSignalName = getCollectionBundleNames("signal");
-	int NumberBundlesSignal = BundlesSignal.size();
-	
-	std::vector<TString> BundlesBckgrd;
-	BundlesBckgrd = getCollectionBundleNames("background");
-	std::vector<TString> BundlesBckgrdName;
-	BundlesBckgrdName = getCollectionBundleNames("background");
-	int NumberBundlesBackgrd = BundlesBckgrd.size();
-
+	std::vector<TString> bundleNamesSig = getBundleNames("signal");
+	std::vector<TString> bundleNamesBkg = getBundleNames("background");
 	
 	//Create datacard
 	ofstream datacard;
@@ -149,129 +108,90 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	TString endName = ".txt";
 	TString completeName = "";
 	TString directory = "";
+	
 	char buffer[1024]; 
-	if(getcwd(buffer, 1024) == NULL ) 
+	if(getcwd(buffer, 1024) == NULL) {
 		perror("***Directory Error***");  
+	}
 	directory = buffer;
 	completeName = directory + basicName + m_name + "_" + datacardName + endName;
-	datacard.open(completeName);	
+	
+	datacard.open(completeName);
 	datacard << std::fixed << std::setprecision(0);
+	
 	datacard << "#Datacard Version 2.0" << '\n' << "#Jun 2015" << '\n' << '\n';
-	datacard << "imax " << NumberChannels << " number of channels" << '\n' << "jmax " << NumberBundlesBackgrd+NumberBundlesSignal - 1 << " number of background" << '\n' << "kmax " << getCollectionUncertainties().size() + NumberChannels*(NumberBundlesBackgrd+NumberBundlesSignal) << " number nuisance parameters" << '\n';
+	datacard << "imax " << getChannels().size() << " number of channels" << '\n' << "jmax " << bundleNamesBkg.size() + bundleNamesSig.size() - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + getChannels().size() * (bundleNamesBkg.size() + bundleNamesSig.size()) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
 	
-	//Calculate values for datacard
-	if (isData) {
-	
-		for (auto &channel : channels) {
-		
-			double contentData = channel->get("data");
-			datacard << '\t' << contentData;
-		}
-	}
-	else {
-		for(auto &channel : channels) {	
-	
-			double contentData = channel->get("background");
-			datacard << '\t' << contentData;
-		}
+	// Calculate values for datacard
+	for(auto &channel : getChannels()) {
+		auto yield = isData ? channel->get("data") : channel->get("background");
+		datacard << '\t' << yield;
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
-	datacard << "bin\t";
-	for(auto &channel : channels) {	
 	
-		for (int j = 0; j < (NumberBundlesSignal + NumberBundlesBackgrd); j++) {
-			datacard << '\t' << channel->getName();
+	datacard << "bin\t";
+	for(auto &channel : getChannels()) {
+		for(size_t j = 0; j < bundleNamesSig.size() + bundleNamesBkg.size(); j++) {
+			datacard << '\t' << channel->getName().Copy().ReplaceAll(" ", "_");
 		}
 	}
 	datacard << std::fixed << std::setprecision(3);
 	datacard << '\n';
-	datacard << "process\t";
-	for(int i = 0; i < NumberChannels; i++) {	
 	
-		for (int j = 0; j < NumberBundlesSignal; j++) {
-		
-			if(BundlesSignal[j]=="") {
-				datacard << '\t' << "remain_signal";
-			}
-			else {
-				BundlesSignalName[j].ReplaceAll(" ", "_");
-				datacard << '\t' << "signal_" << BundlesSignalName[j];
-			}
+	datacard << "process\t";
+	for(size_t i = 0; i < getChannels().size(); i++) {
+		for(auto &bundleName : bundleNamesSig) {
+			datacard << '\t' << "sig_" << bundleName.Copy().ReplaceAll(" ", "_");
 		}
 		
-		for (int j = 0; j < NumberBundlesBackgrd; j++) {
-		
-			if(BundlesBckgrd[j]=="") {
-				datacard << '\t' << "remain_bckgrd";
-			}
-			else {
-				BundlesBckgrdName[j].ReplaceAll(" ", "_");
-				datacard << '\t' << "bckgrd_" << BundlesBckgrdName[j];
-			}
+		for(auto &bundleName : bundleNamesBkg) {
+			datacard << '\t' << "bkg_" << bundleName.Copy().ReplaceAll(" ", "_");
 		}
-			
 	}
 	datacard << '\n';
-	datacard << "process\t";
-	for(int i = 0; i < NumberChannels; i++) {	
 	
-		for (int j = 0; j < NumberBundlesSignal; j++) {
-		
-			datacard << '\t' << (NumberBundlesSignal - j)*(-1)+1;
+	datacard << "process\t";
+	for(size_t i = 0; i < getChannels().size(); i++) {
+		for(size_t j = 0; j < bundleNamesSig.size(); j++) {
+			datacard << '\t' << (bundleNamesSig.size() - j) * (-1) + 1;
 		}
 		
-		for (int j = 0; j < NumberBundlesBackgrd; j++) {
-		
+		for(size_t j = 0; j < bundleNamesBkg.size(); j++) {
 			datacard << '\t' << j + 1;
 		}
-		
 	}
 	datacard << '\n';
-	datacard << "rate\t";
-	for(auto &channel : channels) {
 	
-		for (int j = 0; j < NumberBundlesSignal; j++) {
-		
-			double contentSignal = channel->get("signal", BundlesSignal[j]);
-			if (contentSignal < 0.001) {contentSignal = 0.001;}				
-			datacard << '\t' << contentSignal;
+	datacard << "rate\t";
+	for(auto &channel : getChannels()) {
+		for(auto &bundleName : bundleNamesSig) {
+			datacard << '\t' << max(minYield, channel->get("signal", bundleName));
 		}
 		
-		for (int j = 0; j < NumberBundlesBackgrd; j++) {
-		
-			double contentBackground = channel->get("background", BundlesBckgrd[j]);
-			if (contentBackground < 0.001) {contentBackground = 0.001;}
-			datacard << '\t' << contentBackground;
+		for(auto &bundleName : bundleNamesBkg) {
+			datacard << '\t' << max(minYield, channel->get("background", bundleName));
 		}
 	}
 	datacard << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	
-	for (auto &uncertainty : getCollectionUncertainties()) {
+	for(auto &uncertaintyName : getUncertaintyNames()) {
+		datacard << uncertaintyName.Copy().ReplaceAll(" ", "_") << " lnN";
 		
-		TString UncertaintyName = uncertainty;
-		UncertaintyName.ReplaceAll(" ", "_");
-		datacard << UncertaintyName << " lnN";
-		
-		for(auto &channel : channels) {
-		
-			for (int j = 0; j < NumberBundlesSignal; j++) {
-			
-				double contentSignalSyst = channel->getSyst("signal", uncertainty, BundlesSignal[j]);		
-				double contentSignal = channel->get("signal", BundlesSignal[j]);
-				if (contentSignal < 0.001) {contentSignal = 0.001;}					
+		for(auto &channel : getChannels()) {
+			for(auto &bundleName : bundleNamesSig) {
+				double contentSignalSyst = channel->getSyst("signal", uncertaintyName, bundleName);
+				double contentSignal = max(minYield, channel->get("signal", bundleName));
 				double ratio = systFactor * contentSignalSyst/contentSignal;
 				datacard << '\t' << 1 + ratio;
 			}
-
-			for (int j = 0; j < NumberBundlesBackgrd; j++) {
 			
-				double contentBackgroundSyst = channel->getSyst("background", uncertainty, BundlesBckgrd[j]);		
-				double contentBackground = channel->get("background", BundlesBckgrd[j]);
-				if (contentBackground < 0.001) {contentBackground = 0.001;}				
+			for(auto &bundleName : bundleNamesBkg) {
+				double contentBackgroundSyst = channel->getSyst("background", uncertaintyName, bundleName);
+				double contentBackground = max(minYield, channel->get("background", bundleName));
 				double ratio = systFactor * contentBackgroundSyst/contentBackground;
 				datacard << '\t' << 1 + ratio;
 			}
@@ -279,49 +199,40 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 		datacard << '\n';
 	}
 		
-	int NumberBins = (NumberBundlesBackgrd + NumberBundlesSignal)*NumberChannels;
-	double StatUncertainty[NumberBins][NumberBins];
+	int nYields = (bundleNamesBkg.size() + bundleNamesSig.size()) * getChannels().size();
+	double statUncertainty[nYields][nYields];
 	
-	for (int n = 0; n < NumberBins; n++) {
-	
-		for (int m = 0; m < NumberBins; m++) {
-		
-			StatUncertainty[n][m] = 1;
+	for(int n = 0; n < nYields; n++) {
+		for(int m = 0; m < nYields; m++) {
+			statUncertainty[n][m] = 1;
 		}
 	}
 	
-	int LoopIndex = 0;
+	int loopIndex = 0;
 	
-	for(auto &channel : channels) {
-	
-		for (int j = 0; j < NumberBundlesSignal; j++) {
-		
-			double contentSignalStat = channel->getStat("signal", BundlesSignal[j]);		
-			double contentSignal = channel->get("signal", BundlesSignal[j]);
-			if (contentSignal < 0.001) {contentSignal = 0.001;}				
+	for(auto &channel : getChannels()) {
+		for(auto &bundleName : bundleNamesSig) {
+			double contentSignalStat = channel->getStat("signal", bundleName);
+			double contentSignal = max(minYield, channel->get("signal", bundleName));
 			double ratio = statFactor * contentSignalStat/contentSignal;
-			StatUncertainty[LoopIndex][LoopIndex] += ratio;
-			LoopIndex++;
+			statUncertainty[loopIndex][loopIndex] += ratio;
+			loopIndex++;
 		}
 		
-		for (int j = 0; j < NumberBundlesBackgrd; j++) {
-		
-			double contentBackgroundStat = channel->getStat("background", BundlesBckgrd[j]);		
-			double contentBackground = channel->get("background", BundlesBckgrd[j]);
-			if (contentBackground < 0.001) {contentBackground = 0.001;}
+		for(auto &bundleName : bundleNamesBkg) {
+			double contentBackgroundStat = channel->getStat("background", bundleName);
+			double contentBackground = max(minYield, channel->get("background", bundleName));
 			double ratio = statFactor * contentBackgroundStat/contentBackground;
-			StatUncertainty[LoopIndex][LoopIndex] += ratio;
-			LoopIndex++;
+			statUncertainty[loopIndex][loopIndex] += ratio;
+			loopIndex++;
 		}
 	}
 	
-	for (int n = 0; n < NumberBins; n++) {
-	
+	for(int n = 0; n < nYields; n++) {
 		datacard << "Stat" << n + 1 << " lnN";
 	
-		for (int m = 0; m < NumberBins; m++) {
-		
-			datacard << '\t' << StatUncertainty[n][m];
+		for(int m = 0; m < nYields; m++) {
+			datacard << '\t' << statUncertainty[n][m];
 		}
 		
 		datacard << '\n';
@@ -329,7 +240,6 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	
 	datacard.close();
 }
-
 
 std::set<Channel*> ChannelCollection::getChannels() const {
 	return m_channels;
