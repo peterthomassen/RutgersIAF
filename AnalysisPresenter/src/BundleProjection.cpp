@@ -50,7 +50,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	
 	for(auto &projection : projections) {
 		for(int i = 1; i <= m_histogram->GetNbinsX() + 1; ++i) {
-			if(histogramDummy->GetBinContent(i) > 0) {
+			if(histogramDummy->GetBinContent(i) != 0) {
 				// Avoid summing up zerostat uncertainties if there are non-zero contributions
 				if(projection->getHistogram()->GetBinContent(i) == 0) {
 					continue;
