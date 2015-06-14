@@ -338,7 +338,7 @@ TString PhysicsContribution::getSelectionString() const {
 	
 	auto ranges = getRanges();
 	if(ranges.size() > 0) {
-		rangeString = "(" + rangeString + ")";
+		rangeString = "(" + rangeString + ") * (";
 	}
 	
 	for(size_t i = 0; i < ranges.size(); ++i) {
@@ -356,13 +356,23 @@ TString PhysicsContribution::getSelectionString() const {
 		
 		if(hi < lo) {
 			continue;
-		} else if(hi == axis->GetNbins() + 1) {
-			rangeString += TString::Format(" && %s >= %.0f", title, axis->GetBinLowEdge(lo));
-		} else if(oneBin) {
-			rangeString += TString::Format(" && %s == %.0f", title, axis->GetBinLowEdge(lo));
-		} else {
-			rangeString += TString::Format(" && %s >= %.0f && %s < %.0f", title, edgeLo, title, edgeHi);
 		}
+		
+		if(i > 0) {
+			rangeString += " && ";
+		}
+		
+		if(hi == axis->GetNbins() + 1) {
+			rangeString += TString::Format("%s >= %.0f", title, axis->GetBinLowEdge(lo));
+		} else if(oneBin) {
+			rangeString += TString::Format("%s == %.0f", title, axis->GetBinLowEdge(lo));
+		} else {
+			rangeString += TString::Format("(%s >= %.0f && %s < %.0f)", title, edgeLo, title, edgeHi);
+		}
+	}
+	
+	if(ranges.size() > 0) {
+		rangeString += ")";
 	}
 	
 	return rangeString;
