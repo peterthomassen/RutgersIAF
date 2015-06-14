@@ -335,7 +335,12 @@ std::vector<std::pair<int, int>> PhysicsContribution::getRanges() const {
 
 TString PhysicsContribution::getSelectionString() const {
 	TString rangeString = m_selection;
+	
 	auto ranges = getRanges();
+	if(ranges.size() > 0) {
+		rangeString = "(" + rangeString + ")";
+	}
+	
 	for(size_t i = 0; i < ranges.size(); ++i) {
 		TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->At(i);
 		auto lo = ranges[i].first;
