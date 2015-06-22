@@ -13,7 +13,9 @@
 #include "helperTriggers.C"
 #include "helperHistograms.C"
 
-// Can be run for each event if added below. Event is skipped when returning false
+// Will be run for each event if added below using setHookFunction().
+// Arguments should not be changed. If the second argument is non-zero, then the event is a fake event with a proxy.
+// Event is skipped (i.e. not written to trees or histograms) when returning false.
 bool hookFunction(BaseHandler* handler, int incarnation) {
 	double MET;
 	if(handler->getVariable("MET", MET)) {
