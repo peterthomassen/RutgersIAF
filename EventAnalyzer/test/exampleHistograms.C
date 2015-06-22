@@ -13,6 +13,15 @@
 #include "helperTriggers.C"
 #include "helperHistograms.C"
 
+// Can be run for each event if added below. Event is skipped when returning false
+bool hookFunction(BaseHandler* handler, int incarnation) {
+	double MET;
+	if(handler->getVariable("MET", MET)) {
+		cout << "MET = " << MET << endl;
+	}
+	return (MET > 20);
+}
+
 void exampleHistograms(const char* infile = "/cms/rcg/rcgray/2012/DataLinks2012/DoubleElectron_missing_runs_v1_32ipb_Run2012B_Nov30/All"
 	, const char* outfile = "exampleHistograms.root"
 	, int mode = 0
@@ -53,6 +62,9 @@ void exampleHistograms(const char* infile = "/cms/rcg/rcgray/2012/DataLinks2012/
 	//setupSignatures(handler);
 	setupOnZSignatures(handler);
 	addHistograms(handler);
+
+	// Hook function for each event?
+	//handler->setHookFunction(&hookFunction);
 	
 	// And send it running ...
 	handler->initSignatures();

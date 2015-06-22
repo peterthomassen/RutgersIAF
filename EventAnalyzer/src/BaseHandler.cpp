@@ -259,6 +259,13 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 					if(!wellPrepared) {
 						continue;
 					}
+					
+					if(m_hookFunction && applyHandlerCuts()) {
+						if(!(*m_hookFunction)(this, incarnation)) {
+							continue;
+						}
+					}
+					
 					setVariable("fakeIncarnation", incarnation);
 					if(incarnation == 0) {
 						analyzeEvent();
@@ -1336,6 +1343,13 @@ void BaseHandler::addWeightVariable(TString varname)
     cerr<<"WARNING: weight variable with name: "<<varname<<" is already in list!"<<endl;
   }
   m_weight_variables.push_back(varname);
+}
+//-----------------------------------------
+//-----------------------------------------
+boolFunction BaseHandler::setHookFunction(boolFunction hookFunction) {
+	boolFunction prev = m_hookFunction;
+	m_hookFunction = hookFunction;
+	return prev;
 }
 //-----------------------------------------
 //-----------------------------------------

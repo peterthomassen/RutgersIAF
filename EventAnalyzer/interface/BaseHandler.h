@@ -30,6 +30,8 @@ class ObjectVariable;
 class PrintModule;
 class PrintModuleEverything;
 
+typedef bool (*boolFunction)(BaseHandler*, int);
+
 class BaseHandler : virtual public TObject {
  public:
   //default constructor
@@ -87,6 +89,7 @@ class BaseHandler : virtual public TObject {
   virtual void addObjectVariable(TString,ObjectVariable*,bool rename=true);
   ObjectVariable* getObjectVariable(TString);
 
+  boolFunction setHookFunction(boolFunction hookFunction);
   virtual void setVariable(TString,double);
   virtual void setVariable(TString,int);
   virtual void setVariable(TString,long);
@@ -215,6 +218,8 @@ class BaseHandler : virtual public TObject {
 
   double m_btagWeights[3];
   int m_bTagged;
+  
+  boolFunction m_hookFunction = 0;
   
   
  protected:
