@@ -25,12 +25,12 @@ public:
 	};
 	
 	PhysicsContribution();
-	PhysicsContribution(TString type, TString filename, double lumi, TString name, bool allowNegative = false, TString treeRname = "treeR", Int_t fillColor = -1, bool unordered = true);
+	PhysicsContribution(TString type, TString filename, double lumi, TString name, bool allowNegative = false, TString treeRname = "treeR", Int_t fillColor = -1, double minScale = 0.01, bool unordered = true);
 	virtual ~PhysicsContribution();
 	
 	void addFlatUncertainty(TString, double);
 	void addWeight(TString weight, double normalization = 1.0);
-	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, const double minScale = 0.1);
+	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0);
 	int findBinFromLowEdge(TAxis* axis, double x);
 	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
 	THnBase* getContent() const;
@@ -70,6 +70,7 @@ private:
 	double m_scale = 0;
 	TString m_selection;
 	TString m_treeRname;
+	double m_minScale;
 	bool m_unordered;
 	double m_weight = 0;
 	

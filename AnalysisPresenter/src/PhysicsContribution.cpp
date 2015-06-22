@@ -21,7 +21,7 @@ PhysicsContribution::PhysicsContribution() {
 	/* no-op */
 }
 
-PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, bool allowNegative, TString treeRname, Int_t fillColor, bool unordered) : BaseBundle(type, name, allowNegative, fillColor), m_filename(filename), m_treeRname(treeRname), m_unordered(unordered) {
+PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, bool allowNegative, TString treeRname, Int_t fillColor, double minScale, bool unordered) : BaseBundle(type, name, allowNegative, fillColor), m_filename(filename), m_treeRname(treeRname), m_minScale(minScale), m_unordered(unordered) {
 	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
@@ -125,7 +125,7 @@ void PhysicsContribution::applyUncertainty(TString name, THnBase* h) {
 	}
 }
 
-THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale, const double minScale) {
+THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale) {
 	delete m_hn;
 	
 	m_hn = (THnBase*)hn->Clone();
@@ -209,14 +209,14 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	int step = 10000;
 	int n = treeR->GetEntries();
-	// Limit reading of MC such that the scale factor is no less than minScale (default: 0.01) if the sample is randomly distributed (as given by m_unordered).
+	// Limit reading of MC such that the scale factor is no less than m_minScale if the sample is randomly distributed (as given by m_unordered).
 	// This means that we are skipping MC events beyond 100 times the data luminosity.
-	if(!isData() && m_unordered && scale < minScale && n > 0) {
+	if(!isData() && m_unordered && scale < m_minScale && n > 0) {
 		int nOld = n;
 		double scaleOld = scale;
-		n /= minScale / scale;
+		n /= m_minScale / scale;
 		scale *= (float)nOld / n;
-		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scaleOld << " --> " << scale << " (target scale: " << minScale << ")" << endl;
+		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scaleOld << " --> " << scale << " (target scale: " << m_minScale << ")" << endl;
 	}
 	m_scale = scale;
 	cout << "scale: " << m_scale << endl;
