@@ -34,6 +34,9 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 		}
 		projections.push_back(projection);
 	}
+	if(projections.size() == 0) {
+		cerr << "Error: no projections in " << bundle->getName() << " bundle" << endl;
+	}
 	assert(projections.size() > 0);
 	
 	m_histogram = (TH1D*)projections[0]->getHistogram()->Clone();
