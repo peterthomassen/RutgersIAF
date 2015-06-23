@@ -334,13 +334,9 @@ std::vector<std::pair<int, int>> PhysicsContribution::getRanges() const {
 }
 
 TString PhysicsContribution::getSelectionString() const {
-	TString rangeString = m_selection;
+	TString rangeString;
 	
 	auto ranges = getRanges();
-	if(ranges.size() > 0) {
-		rangeString = "(" + rangeString + ") * (";
-	}
-	
 	for(size_t i = 0; i < ranges.size(); ++i) {
 		TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->At(i);
 		auto lo = ranges[i].first;
@@ -358,7 +354,7 @@ TString PhysicsContribution::getSelectionString() const {
 			continue;
 		}
 		
-		if(i > 0) {
+		if(rangeString.Length()) {
 			rangeString += " && ";
 		}
 		
@@ -371,11 +367,13 @@ TString PhysicsContribution::getSelectionString() const {
 		}
 	}
 	
-	if(ranges.size() > 0) {
-		rangeString += ")";
+	if(rangeString.Length() == 0) {
+		return m_selection;
+	} else if(m_selection.Length() == 0) {
+		return rangeString;
 	}
 	
-	return rangeString;
+	return "(" + m_selection + ") * (" + rangeString + ")";
 }
 
 double PhysicsContribution::getWeight() {
