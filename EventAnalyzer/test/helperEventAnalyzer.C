@@ -501,8 +501,8 @@ void setupProducts(BaseHandler* handler)
 
 void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSample = false)
 {
-  const double mZ = 90; // 91
-  const double zWidth = 15; // 10
+  const double mZ = 91; // 90
+  const double zWidth = 10; // 15
   const double mW = 80.385;
   
   TString products[6] = {"posGoodMuons","negGoodMuons","posGoodElectrons","negGoodElectrons","posGoodTracks","negGoodTracks"};
