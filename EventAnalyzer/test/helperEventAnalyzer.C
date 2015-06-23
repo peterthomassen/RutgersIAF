@@ -13,6 +13,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOS.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariablePairMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariablePairMass2.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableProductAngle.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableReversed.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableSumPT.h"
@@ -697,6 +698,14 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   
   EventVariableMT* MT = new EventVariableMT("MT", mZ);
   handler->addEventVariable("MT",MT);
+
+  EventVariablePairMass2* mElecBjet = new EventVariablePairMass2("ELECBJETMASS", "goodElectrons", "ELECBJETMASS");
+  mElecBjet->addProduct("bJetsCSVM");
+  handler->addEventVariable("ELECBJETMASS", mElecBjet);
+  
+  EventVariablePairMass2* mMuonBjet = new EventVariablePairMass2("MUONBJETMASS", "goodMuons", "MUONBJETMASS");
+  mMuonBjet->addProduct("bJetsCSVM");
+  handler->addEventVariable("MUONBJETMASS", mMuonBjet);
 
   EventVariablePairMass* mWdijet = new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10);
   handler->addEventVariable("WDIJETMASS", mWdijet);
