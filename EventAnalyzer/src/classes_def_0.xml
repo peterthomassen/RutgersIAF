@@ -1,0 +1,416 @@
+<lcgdict>
+  <class name="AnalysisTreeWriter" ClassVersion="1">
+   <version ClassVersion="1" checksum="4137831349"/>
+  </class>
+  <class name="BaseHandler" ClassVersion="1">
+   <version ClassVersion="1" checksum="267697581"/>
+  </class>
+  <class name="BaseTreeReader" ClassVersion="1">
+   <version ClassVersion="1" checksum="3649614141"/>
+  </class>
+  <class name="BaseTreeWriter" ClassVersion="1">
+   <version ClassVersion="1" checksum="2294858753"/>
+  </class>
+  <class name="EventVariableAssociateVariableVector<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="4229088560"/>
+  </class>
+  <class name="EventVariableAssociateVariableVector<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="192186468"/>
+  </class>
+  <class name="EventVariableAssociateVariableVector<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="140277274"/>
+  </class>
+  <class name="EventVariableCombined" ClassVersion="1">
+   <version ClassVersion="1" checksum="834262289"/>
+  </class>
+  <class name="EventVariableConst<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1567023480"/>
+  </class>
+  <class name="EventVariableConst<long>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2707192374"/>
+  </class>
+  <class name="EventVariableConst<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2310356336"/>
+  </class>
+  <class name="EventVariableConst<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="724993216"/>
+  </class>
+  <class name="EventVariableConst<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2899153082"/>
+  </class>
+  <class name="EventVariableInRange<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="226637138"/>
+  </class>
+  <class name="EventVariableInRange<long>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2527069377"/>
+  </class>
+  <class name="EventVariableInRange<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="859982110"/>
+  </class>
+  <class name="EventVariableMT" ClassVersion="1">
+   <version ClassVersion="1" checksum="3769910047"/>
+  </class>
+  <class name="EventVariableMass" ClassVersion="1">
+   <version ClassVersion="1" checksum="2508245607"/>
+  </class>
+  <class name="EventVariableMixedPairMass" ClassVersion="1">
+   <version ClassVersion="1" checksum="1091222480"/>
+  </class>
+  <class name="EventVariableN" ClassVersion="1">
+   <version ClassVersion="1" checksum="3657294481"/>
+  </class>
+  <class name="EventVariableOSSF" ClassVersion="1">
+   <version ClassVersion="1" checksum="3020714107"/>
+  </class>
+  <class name="EventVariableOS" ClassVersion="1">
+   <version ClassVersion="1" checksum="3966592974"/>
+  </class>
+  <class name="EventVariableObjectVariableExtreme<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="4191873860"/>
+  </class>
+  <class name="EventVariableObjectVariableExtreme<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3134188152"/>
+  </class>
+  <class name="EventVariableObjectVariableMax<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="4227147676"/>
+  </class>
+  <class name="EventVariableObjectVariableMax<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3639565440"/>
+  </class>
+  <class name="EventVariableObjectVariableVector<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1631420414"/>
+  </class>
+  <class name="EventVariableObjectVariableVector<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1926058096"/>
+  </class>
+  <class name="EventVariableObjectVariableVector<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1161722714"/>
+  </class>
+  <class name="EventVariableObjectWeightPtTF1" ClassVersion="1">
+   <version ClassVersion="1" checksum="4010674176"/>
+  </class>
+  <class name="EventVariablePairMass" ClassVersion="1">
+   <version ClassVersion="1" checksum="1800433451"/>
+  </class>
+  <class name="EventVariableProductAngle" ClassVersion="1">
+   <version ClassVersion="1" checksum="39451578"/>
+  </class>
+  <class name="EventVariableReversed" ClassVersion="1">
+   <version ClassVersion="1" checksum="2599253540"/>
+  </class>
+  <class name="EventVariableSmearMET" ClassVersion="1">
+   <version ClassVersion="1" checksum="111924114"/>
+  </class>
+  <class name="EventVariableSumPT" ClassVersion="1">
+   <version ClassVersion="1" checksum="859484600"/>
+  </class>
+  <class name="EventVariableTF1<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2639863890"/>
+  </class>
+  <class name="EventVariableTF1<long>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3361783567"/>
+  </class>
+  <class name="EventVariableTF1<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2269471274"/>
+  </class>
+  <class name="EventVariableTH1<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1470535733"/>
+  </class>
+  <class name="EventVariableTH1<long>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2652084712"/>
+  </class>
+  <class name="EventVariableTH1<double>" ClassVersion="1">
+    <version ClassVersion="1" checksum="3902607097"/>
+  </class>
+  <class name="EventVariableThreshold" ClassVersion="1">
+   <version ClassVersion="1" checksum="497313382"/>
+  </class>
+  <class name="EventVariableTriggerWeight" ClassVersion="1">
+   <version ClassVersion="1" checksum="3313202292"/>
+  </class>
+  <class name="EventVariableValueInList<int>" ClassVersion="1">
+    <version ClassVersion="1" checksum="2866209816"/>
+  </class>
+  <class name="EventVariableValueInList<long>" ClassVersion="1">
+   <version ClassVersion="1" checksum="971524274"/>
+  </class>
+  <class name="EventVariableValueInList<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1640108446"/>
+  </class>
+  <class name="EventVariableValueInList<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="747093524"/>
+  </class>
+  <class name="EventVariableValueInList<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2878875706"/>
+  </class>
+  <class name="EventVariableValue<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="890053417"/>
+  </class>
+  <class name="EventVariableValue<long>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1184143803"/>
+  </class>
+  <class name="EventVariableValue<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3620906399"/>
+  </class>
+  <class name="EventVariableValue<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1019670333"/>
+  </class>
+  <class name="EventVariableValue<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3806869715"/>
+  </class>
+  <class name="EventVariable" ClassVersion="1">
+   <version ClassVersion="1" checksum="3300830608"/>
+  </class>
+  <class name="FlatTreeReader" ClassVersion="1">
+   <version ClassVersion="1" checksum="3307164530"/>
+  </class>
+  <class name="LHETreeReader" ClassVersion="1">
+   <version ClassVersion="1" checksum="1690087149"/>
+  </class>
+  <class name="ObjectComparisonDeltaR" ClassVersion="1">
+   <version ClassVersion="1" checksum="2535483897"/>
+  </class>
+  <class name="ObjectComparisonElectron" ClassVersion="1">
+   <version ClassVersion="1" checksum="2538195609"/>
+  </class>
+  <class name="ObjectComparisonMatchDeltaRCharge" ClassVersion="1">
+   <version ClassVersion="1" checksum="2229735354"/>
+  </class>
+  <class name="ObjectComparisonMatchDeltaR" ClassVersion="1">
+   <version ClassVersion="1" checksum="551597242"/>
+  </class>
+  <class name="ObjectComparisonMatchDisplacedDeltaRPtFrac" ClassVersion="1">
+   <version ClassVersion="1" checksum="2395892792"/>
+  </class>
+  <class name="ObjectComparisonMatchDisplacedDeltaR" ClassVersion="1">
+   <version ClassVersion="1" checksum="2467629213"/>
+  </class>
+  <class name="ObjectComparisonSkimRecoTracks" ClassVersion="1">
+   <version ClassVersion="1" checksum="507946908"/>
+  </class>
+  <class name="ObjectComparison" ClassVersion="1">
+   <version ClassVersion="1" checksum="2578069430"/>
+  </class>
+  <class name="ObjectVariableAssociateVariable<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3003580258"/>
+  </class>
+  <class name="ObjectVariableAssociateVariable<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2037910486"/>
+  </class>
+  <class name="ObjectVariableAssociateVariable<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2626045728"/>
+  </class>
+  <class name="ObjectVariableAssociateVariable<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3942757185"/>
+  </class>
+  <class name="ObjectVariableCombined" ClassVersion="1">
+   <version ClassVersion="1" checksum="1704130076"/>
+  </class>
+  <class name="ObjectVariableEffectiveAreaMiniIsolation" ClassVersion="1">
+   <version ClassVersion="1" checksum="1143706981"/>
+  </class>
+  <class name="ObjectVariableEffectiveArea" ClassVersion="1">
+   <version ClassVersion="1" checksum="3487356986"/>
+  </class>
+  <class name="ObjectVariableElectronTotalIso" ClassVersion="1">
+   <version ClassVersion="1" checksum="2075203882"/>
+  </class>
+  <class name="ObjectVariableEventVariable<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2888575082"/>
+  </class>
+  <class name="ObjectVariableEventVariable<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="929387638"/>
+  </class>
+  <class name="ObjectVariableEventVariable<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2136855540"/>
+  </class>
+  <class name="ObjectVariableEventVariable<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="4001081343"/>
+  </class>
+  <class name="ObjectVariableGenVertexR" ClassVersion="1">
+   <version ClassVersion="1" checksum="1564301011"/>
+  </class>
+  <class name="ObjectVariableInRange<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="381106305"/>
+  </class>
+  <class name="ObjectVariableInRange<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="4230546359"/>
+  </class>
+  <class name="ObjectVariableMethod" ClassVersion="1">
+   <version ClassVersion="1" checksum="4177713941"/>
+  </class>
+  <class name="ObjectVariableMuonTotalIso" ClassVersion="1">
+   <version ClassVersion="1" checksum="4266336765"/>
+  </class>
+  <class name="ObjectVariableRelIso" ClassVersion="1">
+   <version ClassVersion="1" checksum="369537378"/>
+  </class>
+  <class name="ObjectVariableRename<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="284645666"/>
+  </class>
+  <class name="ObjectVariableRename<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3206287234"/>
+  </class>
+  <class name="ObjectVariableRename<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="873745904"/>
+  </class>
+  <class name="ObjectVariableRename<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1725221845"/>
+  </class>
+  <class name="ObjectVariableReversed" ClassVersion="1">
+   <version ClassVersion="1" checksum="76774373"/>
+  </class>
+  <class name="ObjectVariableRhoCorrectedTotalIso" ClassVersion="1">
+   <version ClassVersion="1" checksum="2778041597"/>
+  </class>
+  <class name="ObjectVariableTauTotalIso" ClassVersion="1">
+   <version ClassVersion="1" checksum="3031059494"/>
+  </class>
+  <class name="ObjectVariableValueInList<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3329320071"/>
+  </class>
+  <class name="ObjectVariableValueInList<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="4071978073"/>
+  </class>
+  <class name="ObjectVariableValueInList<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3375591487"/>
+  </class>
+  <class name="ObjectVariableValueInList<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3214723927"/>
+  </class>
+  <class name="ObjectVariableValue<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3142382496"/>
+  </class>
+  <class name="ObjectVariableValue<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1889918164"/>
+  </class>
+  <class name="ObjectVariableValue<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3552786696"/>
+  </class>
+  <class name="ObjectVariableValue<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1197264010"/>
+  </class>
+  <class name="ObjectVariable" ClassVersion="1">
+   <version ClassVersion="1" checksum="2615633327"/>
+  </class>
+  <class name="PrintModuleEventVariables" ClassVersion="1">
+   <version ClassVersion="1" checksum="3445478139"/>
+  </class>
+  <class name="PrintModuleEverything" ClassVersion="1">
+   <version ClassVersion="1" checksum="3920651660"/>
+  </class>
+  <class name="PrintModuleProduct" ClassVersion="1">
+   <version ClassVersion="1" checksum="2830910031"/>
+  </class>
+  <class name="PrintModule" ClassVersion="1">
+   <version ClassVersion="1" checksum="2977787561"/>
+  </class>
+  <class name="SignatureObjectFlat" ClassVersion="1">
+   <version ClassVersion="1" checksum="514611384"/>
+  </class>
+  <class name="SignatureObject" ClassVersion="1">
+   <version ClassVersion="1" checksum="520069011"/>
+  </class>
+  <class name="SignatureTH1F_AssociateVariableDifference<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2502575546"/>
+  </class>
+  <class name="SignatureTH1F_AssociateVariableDifference<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3912233546"/>
+  </class>
+  <class name="SignatureTH1F_AssociateVariable<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2637050205"/>
+  </class>
+  <class name="SignatureTH1F_AssociateVariable<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2307172899"/>
+  </class>
+  <class name="SignatureTH1F_CountNoWeight" ClassVersion="1">
+   <version ClassVersion="1" checksum="3952920370"/>
+  </class>
+  <class name="SignatureTH1F_CountWeight" ClassVersion="1">
+   <version ClassVersion="1" checksum="2939268225"/>
+  </class>
+  <class name="SignatureTH1F_EventVariable<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2681918708"/>
+  </class>
+  <class name="SignatureTH1F_EventVariable<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3187664950"/>
+  </class>
+  <class name="SignatureTH1F" ClassVersion="1">
+    <version ClassVersion="1" checksum="3951656125"/>
+  </class>
+  <class name="SignatureTH1F_N" ClassVersion="1">
+   <version ClassVersion="1" checksum="3364982095"/>
+  </class>
+  <class name="SignatureTH1F_NearestVertexRank" ClassVersion="1">
+   <version ClassVersion="1" checksum="3100748348"/>
+  </class>
+  <class name="SignatureTH1F_ObjectVariable<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2091977472"/>
+  </class>
+  <class name="SignatureTH1F_ObjectVariable<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2450635040"/>
+  </class>
+  <class name="SignatureTH1F_TEST<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="4097959775"/>
+  </class>
+  <class name="SignatureTH1F_TEST<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="777582373"/>
+  </class>
+  <class name="SignatureTH1F_TriggerName" ClassVersion="1">
+   <version ClassVersion="1" checksum="338210940"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsEventVariable<double,double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2874170009"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsEventVariable<int,double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2476783087"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsEventVariable<double,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="673875557"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsEventVariable<int,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2249886151"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsObjectVariable<int,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1773612457"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsObjectVariable<double,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3971856813"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsObjectVariable<int,double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3884294823"/>
+  </class>
+  <class name="SignatureTH2F_EventVariableVsObjectVariable<double,double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3107350291"/>
+  </class>
+  <class name="SignatureTH2F" ClassVersion="1">
+   <version ClassVersion="1" checksum="3307296566"/>
+  </class>
+  <class name="SignatureTH2F_ObjectVariableVsObjectVariable<int,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3056122084"/>
+  </class>
+  <class name="SignatureTH2F_ObjectVariableVsObjectVariable<int,double>" ClassVersion="1">
+    <version ClassVersion="1" checksum="3074838036"/>
+  </class>
+  <class name="SignatureTH2F_ObjectVariableVsObjectVariable<double,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3524566998"/>
+  </class>
+  <class name="SignatureTH2F_ObjectVariableVsObjectVariable<double,double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2837948826"/>
+  </class>
+  <class name="SignatureTH3F" ClassVersion="1">
+   <version ClassVersion="1" checksum="1614510814"/>
+  </class>
+  <class name="SignatureTreeWriter" ClassVersion="1">
+   <version ClassVersion="1" checksum="2612245127"/>
+  </class>
+  <class name="SignatureWithBjets" ClassVersion="1">
+   <version ClassVersion="1" checksum="560005535"/>
+  </class>
+  <class name="Signature" ClassVersion="1">
+   <version ClassVersion="1" checksum="370188693"/>
+  </class>
+  <class name="SkimTreeReader" ClassVersion="1">
+   <version ClassVersion="1" checksum="2887245480"/>
+  </class>
+</lcgdict>
