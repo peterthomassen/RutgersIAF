@@ -16,7 +16,7 @@ class SignatureObject;
 
 class ObjectVariableRhoCorrectedTotalIso : public ObjectVariable {
  public:
-  ObjectVariableRhoCorrectedTotalIso(TString charged, TString neutral, TString photon, TString rho, TString area, TString name="TOTALISO"):ObjectVariable(name),m_chargedHadronName(charged),m_neutralHadronName(neutral),m_photonName(photon),m_rhoName(rho),m_areaName(area){}
+  ObjectVariableRhoCorrectedTotalIso(TString charged, TString neutral, TString photon, TString rho, TString area, TString name="TOTALISO",TString flagname=""):ObjectVariable(name),m_chargedHadronName(charged),m_neutralHadronName(neutral),m_photonName(photon),m_rhoName(rho),m_areaName(area),m_flagName(flagname){}
   virtual ~ObjectVariableRhoCorrectedTotalIso() {}
 
   virtual bool calculate(SignatureObject*);
@@ -27,6 +27,7 @@ class ObjectVariableRhoCorrectedTotalIso : public ObjectVariable {
   TString m_photonName;
   TString m_rhoName;
   TString m_areaName;
+  TString m_flagName;
 
   ClassDef(ObjectVariableRhoCorrectedTotalIso,1);
 

@@ -17,7 +17,7 @@ bool ObjectVariableEffectiveAreaMiniIsolation::calculate(SignatureObject* obj)
     if(eta < (*iter).first) area = (*iter).second;
   }
   if(area < 0)return false;
-  area *= pow(m_scale/cone,m_power);
+  area *= pow(cone/m_scale,m_power);
 
   obj->setVariable(getName(),area);
   return true;

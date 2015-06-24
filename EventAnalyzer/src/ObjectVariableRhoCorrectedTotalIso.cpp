@@ -8,6 +8,11 @@ using namespace std;
 
 bool ObjectVariableRhoCorrectedTotalIso::calculate(SignatureObject* sigObj)
 {
+  if(m_flagName != ""){
+    bool goodFlag = false;
+    bool isSet_flag = sigObj->getVariable(m_flagName, goodFlag);
+    if(!(isSet_flag && goodFlag))return false;
+  }
   double chargedHadronIso = 0;
   bool isSet_chargedHadronIso = sigObj->getVariable(m_chargedHadronName,chargedHadronIso);
   double neutralHadronIso = 0;
