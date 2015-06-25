@@ -213,7 +213,7 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 					if(getMode("trackFakeCombination") || getMode("photonFakeCombination") || getMode("tauFakeCombination")) {
 						cout << "E=" << event;
 						if((bool)m_trackFakeCombinationIndex + (bool)m_photonFakeCombinationIndex + (bool)m_tauFakeCombinationIndex > 1) {
-							cout << ", skipping (multiple)" << '\n';
+							cout << ", skipping (multiple fake proxy flavors)" << '\n';
 							continue;
 						}
 						if(getMode("trackFakeCombination")) {
@@ -637,6 +637,11 @@ bool BaseHandler::createProducts()
 							}
 							break;
 					}
+					// Limit ourselves to one proxy at a time. TODO? Make configurable
+					if(nTrackFakeElectrons + nTrackFakeMuons > 1) {
+						return false;
+					}
+					// Prepare next proxy candidate
 					comboIndex /= 3;
 					--index;
 				}
@@ -761,6 +766,11 @@ bool BaseHandler::createProducts()
 							++nPhotonFakeNegMuons;
 							break;
 					}
+					// Limit ourselves to one proxy at a time. TODO? Make configurable
+					if(nPhotonFakeElectrons + nPhotonFakeMuons > 1) {
+						return false;
+					}
+					// Prepare next proxy candidate
 					comboIndex /= 5;
 					--index;
 				}
@@ -806,6 +816,11 @@ bool BaseHandler::createProducts()
 							++nTauFakeTaus;
 							break;
 					}
+					// Limit ourselves to one proxy at a time. TODO? Make configurable
+					if(nTauFakeTaus > 1) {
+						return false;
+					}
+					// Prepare next proxy candidate
 					comboIndex /= 2;
 					--index;
 				}
