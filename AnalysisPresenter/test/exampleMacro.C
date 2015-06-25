@@ -45,6 +45,7 @@ void exampleMacro(TString ofname = "test.root") {
 	assembler->addContribution(signal); // It is important to add the signal before setting up the rake rates
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
+	prepare(assembler);
 	assembler->process(varexp, selection);
 	assembler->save();
 	
