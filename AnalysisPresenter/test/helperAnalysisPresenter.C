@@ -22,13 +22,28 @@ void init(Assembler* assembler) {
 	Bundle* fakeBundle = new Bundle("background", "Fakes");
 	assembler->addBundle(fakeBundle);
 	
-	Bundle* bundleHiggs = new Bundle("background", "Higgs");
-	assembler->addBundle(bundleHiggs);
+	Bundle* trackFakeBundle = new Bundle("background", "TrackFakes");
+	assembler->addBundle(trackFakeBundle);
+	fakeBundle->addComponent(trackFakeBundle);
 	
-	Bundle* rareBundle = new Bundle("background", "Rare MC");
-	assembler->addBundle(rareBundle);
+	Bundle* photonFakeBundle = new Bundle("background", "PhotonFakes");
+	assembler->addBundle(photonFakeBundle);
+	fakeBundle->addComponent(photonFakeBundle);
+	
+	Bundle* tauFakeBundle = new Bundle("background", "TauFakes");
+	assembler->addBundle(tauFakeBundle);
+	fakeBundle->addComponent(tauFakeBundle);
+	
+	assembler->addBundle(new Bundle("background", "Higgs"));
+	assembler->addBundle(new Bundle("background", "Rare MC"));
 	
 	//assembler->setMinScale(0.1);
+}
+
+std::string getDataFileName() {
+	//return "20150518_data";
+	//return "20150609_data";
+	return "20150623_data";
 }
 
 void prepare(Assembler* assembler) {
@@ -42,7 +57,7 @@ void prepare(Assembler* assembler) {
 	assembler->addBundle(presentationBundle);
 	
 	Bundle* fakePresentationBundle = new Bundle("background", "fakePresentationBundle");
-	for(const auto &bundleName : {"Higgs", "Rare MC"}) {
+	for(const auto &bundleName : {"TrackFakes", "PhotonFakes", "TauFakes", "Higgs", "Rare MC"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
 			fakePresentationBundle->addComponent(bundle);
@@ -54,14 +69,26 @@ void prepare(Assembler* assembler) {
 	assembler->getDefaultBundle()->print();
 }
 
-void setupData(Assembler* assembler, bool fake = false, bool dilep = false) {
+void setupData(Assembler* assembler, int fakeMode = 0, bool dilep = false) {
 	std::string prefix = "/cms/thomassen/2014/Analysis/data/histograms/";
 	std::string infix = dilep ? "" : ".3L";
+	std::string body = getDataFileName();
 	std::string suffix = ".root";
 	
-	PhysicsContribution* data = fake
-		? new PhysicsContribution("data", prefix + "20150518_data" + infix + suffix, 19500, "2012data", false, "treeRfakeTracks")
-		: new PhysicsContribution("data", prefix + "20150518_data" + infix + suffix, 19500, "2012data");
+	PhysicsContribution* data = 0;
+	
+	if(fakeMode == 0) {
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data");
+	} else if(fakeMode == 1) {
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data", false, "treeRfakeTracks");
+	} else if(fakeMode == 2) {
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data", false, "treeRfakePhotons");
+	} else if(fakeMode == 3) {
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data", false, "treeRfakeTaus");
+	} else {
+		cout << "unsure what to do";
+		exit(1);
+	}
 	
 	assembler->addContribution(data);
 }
@@ -96,6 +123,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	xsec_zz *= 0.97 * 1.028;
 	Double_t xsec_ttw = 0.23;
 	Double_t xsec_ttz = 0.208;
+	Double_t xsec_tbz_tqz = 0.0114 + 2 * 0.0114; // 0.0114 is tbZ, 2*0.0114 is fudge for missing tqZ
 	
 	// Peter's numbers
 	double xsec_ttbar_fullLep = 23.08;
@@ -130,6 +158,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
 	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWJets" + infix + suffix, xsec_ttw, "TTW"));
 	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTZJets" + infix + suffix, xsec_ttz, "TTZ"));
+	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TBLL" + infix + suffix, xsec_tbz_tqz, "TBZ + TQZ"));
 	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 0.08217, "WWW"));
 	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZJets" + infix + suffix, 0.0633, "WWZ"));
 	mc.push_back(wz);
@@ -155,29 +184,42 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		}
 		
 		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + ".3LonZ" + suffix, xsec_ttbar_fullLep, "TT_FullL");
-		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullL");
+		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullL", false, "treeR", -1, 0.1);
 		ttbarF->addWeight("1.2 - 0.04 * NPROMPTNONISOINCLUSIVETRACKS7[0]");
 		ttbarF->addWeight(nJetWeight);
-		//ttbarF->addWeight("nTrackFakeElectrons + nTrackFakeMuons == 0");
-		ttbarF->addWeight("1 + (NLEPTONS[0] >= 3) * 0.66");
+		ttbarF->addWeight("1 + (NLEPTONS[0] - NGOODTAUS[0] >= 3) * 0.66");
 //		ttbarF->addFlatUncertainty("xsec", 0.3);
 		ttbarF->addFlatUncertainty("fudge", 0.194);
 		mc.push_back(ttbarF);
 		bundleTTbar->addComponent(ttbarF);
 		
-		std::vector<PhysicsContribution*> ttbarFfake;
-		ttbarFfake.push_back(new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakeTracks"));
-		ttbarFfake.push_back(new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakePhotons"));
-		ttbarFfake.push_back(new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakeTaus"));
-		for(auto &contribution : ttbarFfake) {
-			contribution->addWeight("1.2 - 0.04 * NPROMPTNONISOINCLUSIVETRACKS7[0]");
-			contribution->addWeight(nJetWeight);
-			//ttbarFfake->addWeight("nTrackFakeElectrons + nTrackFakeMuons == 0");
-			contribution->addWeight("1 + (NLEPTONS[0] >= 3) * 0.66");
-//			ttbarFfake->addFlatUncertainty("xsec", 0.3);
-			contribution->addFlatUncertainty("fudge", 0.194);
-			mc.push_back(contribution);
-			assembler->getBundle("Fakes")->addComponent(contribution);
+		if(!dilep) {
+			std::vector<PhysicsContribution*> ttbarFfake;
+			
+			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakeTracks", -1, 0.1);
+			ttbarFfakeTracks->addWeight("1 + (NLEPTONS[0] - NGOODTAUS[0] >= 3) * 0.66");
+			ttbarFfakeTracks->addFlatUncertainty("fudge", 0.194);
+			ttbarFfake.push_back(ttbarFfakeTracks);
+			assembler->getBundle("TrackFakes")->addComponent(ttbarFfakeTracks);
+			
+			PhysicsContribution* ttbarFfakePhotons = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakePhotons", -1, 0.1);
+			ttbarFfake.push_back(ttbarFfakePhotons);
+			assembler->getBundle("PhotonFakes")->addComponent(ttbarFfakePhotons);
+			
+			PhysicsContribution* ttbarFfakeTaus = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakeTaus", -1, 0.1);
+			ttbarFfake.push_back(ttbarFfakeTaus);
+			assembler->getBundle("TauFakes")->addComponent(ttbarFfakeTaus);
+			
+			for(auto &contribution : ttbarFfake) {
+				contribution->addWeight("1.2 - 0.04 * NPROMPTNONISOINCLUSIVETRACKS7[0]");
+				contribution->addWeight(nJetWeight);
+				contribution->addWeight("nTrackFakeElectrons + nTrackFakeMuons + nPhotonFakeElectrons + nPhotonFakeMuons + nTauFakeTaus == 1");
+				//contribution->addWeight("nTauFakeTaus <= 1");
+				//contribution->addWeight("!(abs(MOSSF-90.000000)<15.000000) && !(MOSSF < (90-15))");
+	//			contribution->addWeight("!(abs(MOSSF-90.000000)<15.000000)");
+	//			contribution->addFlatUncertainty("xsec", 0.3);
+				mc.push_back(contribution);
+			}
 		}
 	}
 	
@@ -224,10 +266,12 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 }
 
 void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = false) {
-	Bundle* fakeBundle = assembler->getBundle("Fakes");
+	std::string prefix = "/cms/thomassen/2014/Analysis/data/histograms/";
+	std::string body = getDataFileName();
+	std::string suffix = ".root";
 	
 	////// Tracks
-	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
+	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
 /*	fakeTracks->addWeight(
 		"(Sum$(fakeRoleGOODELECTRONS) + Sum$(fakeRoleGOODMUONS) == 0)"
 		" + (Sum$(fakeRoleGOODELECTRONS) > 0)"
@@ -248,40 +292,40 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 		fakeTracks->addFlatUncertainty("trackFit", 0.17);
 	}
 	if(option != "noTracks" && option != "justTaus" && option != "justPhotons" && option != "fakeTaus2L") {
-		fakeBundle->addComponent(fakeTracks);
+		assembler->getBundle("TrackFakes")->addComponent(fakeTracks);
 		assembler->addContribution(fakeTracks);
 	}
 	
 	////// Taus
-	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakeTaus", false, "treeRfakeTaus");
-	fakeTaus->addWeight("fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15");
+	PhysicsContribution* fakeTaus = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakeTaus", false, "treeRfakeTaus");
+	//fakeTaus->addWeight("Sum$(fakeRoleGOODTAUS > 0 && abs(TOTALISOGOODTAUS - 10.5) > 4.5) == 0"); // taken care of in the fake rate definition
 	if(syst) {
-		fakeTaus->addFlatUncertainty("tauFit", 0.11); // for HT > 200 GeV, it is that high
+		fakeTaus->addFlatUncertainty("tauFit", 0.05); // for HT > 200 GeV, it is that high
 	}
 	if(option != "noTaus" && option != "justTracks" && option != "justPhotons" && option != "fakeTaus2L") {
-		fakeBundle->addComponent(fakeTaus);
+		assembler->getBundle("TauFakes")->addComponent(fakeTaus);
 		assembler->addContribution(fakeTaus);
 	}
 	
 	////// Taus (2L)
-	PhysicsContribution* fakeTaus2L = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.root", assembler->getLumi(), "fakeTaus2L", false, "treeRfakeTaus");
-	fakeTaus2L->addWeight("fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15");
+	PhysicsContribution* fakeTaus2L = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakeTaus2L", false, "treeRfakeTaus");
+	//fakeTaus2L->addWeight("Sum$(fakeRoleGOODTAUS > 0 && abs(TOTALISOGOODTAUS - 10.5) > 4.5) == 0"); // taken care of in the fake rate definition
 	if(syst) {
-		fakeTaus2L->addFlatUncertainty("tauFit", 0.11); // for HT > 200 GeV, it is that high
+		fakeTaus2L->addFlatUncertainty("tauFit", 0.05); // for HT > 200 GeV, it is that high
 	}
 	if(option == "fakeTaus2L") {
 		assembler->addContribution(fakeTaus2L);
 	}
 	
 	////// Photons
-	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", "/cms/thomassen/2014/Analysis/data/histograms/20150518_data.3L.root", assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
+	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
 	if(syst) {
 		fakePhotons->addFlatUncertainty("photonElFake", 0.15);
 		//fakePhotons->addFlatUncertainty("photonFudge", 0.25);
 		//fakePhotons->setEnsembleFakeRateParam(fakeTracks, "NPROMPTTRACKS7", "0*(x < [0]) + 1*(x > 2*[0]) + (x/[0] - 1)*(x >= [0] && x <= 2*[0])");
 	}
 	if(option != "noPhotons" && option != "justTracks" && option != "justTaus" && option != "fakeTaus2L") {
-		fakeBundle->addComponent(fakePhotons);
+		assembler->getBundle("PhotonFakes")->addComponent(fakePhotons);
 		assembler->addContribution(fakePhotons);
 	}
 }
@@ -290,24 +334,24 @@ void setupFakeRates(Assembler* assembler) {
 	// We found that NGOODJETS and HT binning does not work very well; NPROMPTINCLUSIVETRACK7 binning does a good job at least in 0b regions.
 	assembler->setFakeRate("nTrackFakeMuons",
 		"(NGOODTAUS == 0) * ("
-			"0.0154" // "(NGOODMUONS[0]==1)*(0.01384 + -0.0003956*NPROMPTNONISOINCLUSIVETRACKS7[0]) + (NGOODMUONS[0]==3)*(0.01697 + -0.0001669*NPROMPTNONISOINCLUSIVETRACKS7[0])"
-			" * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
-			//" * ( (NGOODMUONS[0] == 1) * (0.01289 + 0.0186*Max$(BDISCCSVGOODJETS)) / 0.01289 + (NGOODMUONS[0] != 1) * (0.01683 + 0.02129*Max$(BDISCCSVGOODJETS)) / 0.01683 )"
+			"0.0154"
+			" * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
 		")"
+		" * (nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 	assembler->setFakeRate("nTrackFakeElectrons",
 		"(NGOODTAUS == 0) * ("
 			"((NLEPTONS[0]==3&&NGOODELECTRONS[0]==1)*(0.006771 + 0.005532*NPROMPTNONISOINCLUSIVETRACKS7[0]) + (NLEPTONS[0]==3&&NGOODELECTRONS[0]==3)*(0.009287 + -0.001487*NPROMPTNONISOINCLUSIVETRACKS7[0])"
 			"+ (NLEPTONS[0]!=3||!(NGOODELECTRONS[0]%2))*(0.007453 + 0.003052*NPROMPTNONISOINCLUSIVETRACKS7[0]))" // this is not the average of the above, but measured (because of relative fractions)
-			" * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
-			//" * ( (NGOODELECTRONS[0] == 1) * (0.01271 + 0.0008638*Max$(BDISCCSVGOODJETS)) / 0.01271 + (NGOODELECTRONS[0] != 1) * (0.01049 + -0.03112*Max$(BDISCCSVGOODJETS)) / 0.01049 )"
+			" * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
 		")"
+		" * (nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 	
 	// mZ = 90 \pm 15
 	assembler->setFakeRate("nTauFakeTaus",
-		//"Alt$(fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15, 0) * (0.2395 - 0.0004384 * HT[0])" // w/o track/photon subtraction and with 30 binning
 		"Alt$(fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15, 0) * (" // w/o track/photon subtraction and with 200 binning
+		//"Alt$(Sum$(fakeRoleGOODTAUS > 0 && abs(TOTALISOGOODTAUS - 10.5) > 4.5) == 0, 0) * (" // w/o track/photon subtraction and with 200 binning
 			"(NBJETSCSVM == 0) * ("
 				"(NLEPTONS[0]==3&&NGOODMUONS[0]==0) * (0.2584 - 0.0003302 * HT[0])"
 				" + (NLEPTONS[0]==3&&NGOODMUONS[0]==2) * (0.2504 - 0.0002508 * HT[0])"
@@ -317,6 +361,7 @@ void setupFakeRates(Assembler* assembler) {
 				" + (NLEPTONS[0]==3&&NGOODMUONS[0]==2) * (0.2354 - 0.0002913 * HT[0])"
 				" + (NLEPTONS[0]!=3 || NGOODMUONS[0]==1) * (0.2227 - 0.0003039 * HT[0])"
 			")"
+			//"(HT[0] <= 200) * 0.2275 + (HT[0] > 200) * 0.15"
 		")"
 		" * (nTauFakeTaus[0] == 1)" // disable multiple fake taus (overprediction for 2l+2tau channels because of double-counting from 2L and from 3L seeds)
 	);
@@ -326,13 +371,15 @@ void setupFakeRates(Assembler* assembler) {
 	// Looking at the AIC control region, we find that we should adjust the fake rate outside MLEPTONS = 75..100.
 	assembler->setFakeRate("nPhotonFakeMuons",
 		"(NGOODTAUS == 0) * ("
-			"(NOSSF == 1 && !ONZ && MOSSF < 91) * 0.00295 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
+			"(NOSSF == 1 && !ONZ && MOSSF < 91) * 0.00295 / ( (1 + 0.5 * (MLIGHTLEPTONS[0] < 75 || MLIGHTLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
 		")"
+		" * (nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 	assembler->setFakeRate("nPhotonFakeElectrons",
 		"(NGOODTAUS == 0) * ("
-			"0.0088 / ( (1 + 0.5 * (MLEPTONS[0] < 75 || MLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.4 * (NBJETSCSVM[0] > 0))"
+			"0.0088 / ( (1 + 0.5 * (MLIGHTLEPTONS[0] < 75 || MLIGHTLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
 		")"
+		" * (nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 }
 
@@ -409,22 +456,6 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
 
   return c;
 
-}
-
-std::vector<double> getFirst(std::vector<std::pair<double, double> > list) {
-	std::vector<double> list2;
-	for(size_t i = 0; i < list.size(); ++i) {
-		list2.push_back(list[i].first);
-	}
-	return list2;
-}
-
-std::vector<double> getSecond(std::vector<std::pair<double, double> > list) {
-	std::vector<double> list2;
-	for(size_t i = 0; i < list.size(); ++i) {
-		list2.push_back(list[i].second);
-	}
-	return list2;
 }
 
 void writeUncertainties(AssemblerProjection* projection, TString type) {

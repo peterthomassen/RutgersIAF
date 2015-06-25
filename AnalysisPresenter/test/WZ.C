@@ -4,6 +4,7 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/ChannelCollection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
 #include "helperAnalysisPresenter.C"

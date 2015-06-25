@@ -100,16 +100,6 @@ void ttbarFudge() {
 	assembler->setRange("NLEPTONS", 1, 1);
 	assembler->setRange("PT3Jet", 40);
 	
-/*	std::vector<double> list1, list2;
-	list1 = getFirst(assembler->project("relIsoNonPromptMu", true)->getMeta());
-	list2 = getSecond(assembler->project("relIsoNonPromptMu", true)->getMeta());
-	cout << "data: " << list1.size() << endl;
-	for(size_t i = 0; i < list1.size(); ++i) {
-		cout << (long)list1[i] << " " << (long)list2[i] << endl;
-	}
-	
-	return;
-*/	
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbarFudge_noFake_NGOODJETS.pdf");
 	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbarFudge_noFake_NGOODTRACKS.pdf");
 	assembler->setRange("nonPromptMu", 1);

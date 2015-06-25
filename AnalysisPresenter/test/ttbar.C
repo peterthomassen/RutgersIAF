@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
@@ -14,7 +15,7 @@ void ttbar() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// for ttbar 2L
-	std::string varexp = "NBJETSCSVM{0,2}:HT{0,1000,20}:MET{0,500,10}:ST{0,2000,20}:NGOODJETS{0,6}:NPROMPTNONISOINCLUSIVETRACKS7{0,15}";
+	std::string varexp = "NBJETSCSVM{0,2}:HT{0,1000,20}:MET{0,500,10}:ST{0,2000,20}:NGOODJETS{0,6}:NPROMPTNONISOINCLUSIVETRACKS7{0,15}:NGOODTRACKS{0,15}";
 	
 	// Global cuts, if desired
 	TString selection = "NLEPTONS == 2 && NGOODTAUS == 0 && NPOSGOODELECTRONS == NNEGGOODMUONS && NNEGGOODELECTRONS == NPOSGOODMUONS";
@@ -50,6 +51,8 @@ void ttbar() {
 	assembler->project("MET", true)->plot(true)->SaveAs("ttbar_MET.pdf");
 	assembler->project("ST", true)->plot(true)->SaveAs("ttbar_ST.pdf");
 	assembler->project("NPROMPTNONISOINCLUSIVETRACKS7", true)->plot(true)->SaveAs("ttbar_NPROMPTNONISOINCLUSIVETRACKS7.pdf");
+	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbar_NGOODTRACKS.pdf");
+	assembler->project("NGOODTRACKS", true)->print();
 	
 	assembler->setRange("ST", 300);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbar_NGOODJETS_STgt300.pdf");
@@ -58,6 +61,9 @@ void ttbar() {
 	assembler->project("MET", true)->plot(true)->SaveAs("ttbar_MET_STgt300.pdf");
 	assembler->project("ST", true)->plot(true)->SaveAs("ttbar_ST_STgt300.pdf");
 	assembler->project("NPROMPTNONISOINCLUSIVETRACKS7", true)->plot(true)->SaveAs("ttbar_NPROMPTNONISOINCLUSIVETRACKS7_STgt300.pdf");
+	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbar_NGOODTRACKS_STgt300.pdf");
+	assembler->project("NGOODTRACKS", true)->print();
+	
 	assembler->setRange();
 	
 	delete assembler;

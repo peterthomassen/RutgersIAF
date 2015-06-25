@@ -13,13 +13,13 @@ void inclusive(TString ofname = "test.root") {
 	// Binning/selection //
 	///////////////////////
 	
-	//float z = 91; float zWidth = 10;
-	float z = 90; float zWidth = 15;
+	float z = 91; float zWidth = 10;
+	//float z = 90; float zWidth = 15;
 	
 	// Specify axes and bins of multidimensional histogram
 	// For inclusive table
 	//std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,4}:ST{0,1500,5}:MLEPTONS{70,110}";
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,120}:NOSSF{0,3}:NGOODTAUS{0,3}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,4}:ST{0,1500,5}:MLEPTONS{70,110}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,120}:NOSSF{0,3}:NGOODTAUS{0,3}:NBJETSCSVM{0,3}:HT{0,200,1}:MET{0,200,4}:ST{0,1500,5}";
 	//std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,100,2}:MLEPTONS{70,110}";
 	varexp += ":NPROMPTTRACKS7{0,100,1}:OSSFMAXMLL{11,131,36}:OSSFMINMLL{11,131,36}";
 	varexp += ":MLIGHTLEPTONS{1,201,20}";
@@ -64,6 +64,48 @@ void inclusive(TString ofname = "test.root") {
 	
 	mkdir("inclusive", 0755);
 	chdir("inclusive");
+	
+	Bundle* prevBundle = 0;
+	
+	assembler->setRange("NLEPTONS", 4);
+	assembler->setRange("NGOODTAUS", 2);
+	assembler->setRange("ONZ", 1, 1);
+
+	assembler->setRange("NBJETSCSVM", 0, 0);
+	assembler->setRange("HT", 0, 200, false);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4onZTau2B0HT0to200_MET.pdf");
+
+	assembler->setRange("NBJETSCSVM", 1);
+	assembler->setRange("HT", 0, 200, false);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4onZTau2B10HT0to200_MET.pdf");
+	
+	assembler->setRange("NBJETSCSVM", 0, 0);
+	assembler->setRange("HT", 200);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4onZTau2B0HTgt200_MET.pdf");
+
+	assembler->setRange("NBJETSCSVM", 1);
+	assembler->setRange("HT", 200);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4onZTau2B10HTgt200_MET.pdf");
+	
+	assembler->setRange("ONZ", 0, 0);
+
+	assembler->setRange("NBJETSCSVM", 0, 0);
+	assembler->setRange("HT", 0, 200, false);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4offZTau2B0HT0to200_MET.pdf");
+
+	assembler->setRange("NBJETSCSVM", 1);
+	assembler->setRange("HT", 0, 200, false);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4offZTau2B10HT0to200_MET.pdf");
+	
+	assembler->setRange("NBJETSCSVM", 0, 0);
+	assembler->setRange("HT", 200);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4offZTau2B0HTgt200_MET.pdf");
+
+	assembler->setRange("NBJETSCSVM", 1);
+	assembler->setRange("HT", 200);
+	assembler->project("MET", true)->plot(true)->SaveAs("L4offZTau2B10HTgt200_MET.pdf");
+	
+	assembler->setRange();
 	
 /*	assembler->setRange("NLEPTONS", 3, 3);
 	assembler->setRange("NGOODTAUS", 0, 0);
@@ -195,10 +237,11 @@ void inclusive(TString ofname = "test.root") {
 	assembler->setRange("NBJETSCSVM", 1);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET.pdf");
+
 cout << endl << endl << endl << endl << endl;
 cout << "This is L3DYz1Tau0B1HT0to200" << endl;
 	assembler->project("MET", true)->print();
-Bundle* prevBundle = assembler->getDefaultBundle();
+prevBundle = assembler->getDefaultBundle();
 assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 assembler->setRange("MET", 0, 50, false);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET0to50.pdf");
@@ -211,6 +254,7 @@ assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HT0to200_MET150
 assembler->setDefaultBundle(prevBundle);
 assembler->setRange("MET");
 cout << endl << endl << endl << endl << endl;
+
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYz1Tau0B1HTgt200_MET.pdf");
 	
@@ -223,6 +267,24 @@ cout << endl << endl << endl << endl << endl;
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200_MET.pdf");
 	assembler->project("MET", true)->print();
+
+cout << endl << endl << endl << endl << endl;
+cout << "This is L3DYl1Tau0B0HT0to200" << endl;
+	assembler->project("MET", true)->print();
+prevBundle = assembler->getDefaultBundle();
+assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+assembler->setRange("MET", 0, 50, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200_MET0to50.pdf");
+assembler->setRange("MET", 50, 100, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200_MET50to100.pdf");
+assembler->setRange("MET", 100, 150, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200_MET100to150.pdf");
+assembler->setRange("MET", 150, 200, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200_MET150to200.pdf");
+assembler->setDefaultBundle(prevBundle);
+assembler->setRange("MET");
+cout << endl << endl << endl << endl << endl;
+
 assembler->setRange("AIC", 1, 1);
 assembler->project("MET", true)->plot(true)->SaveAs("L3DYl1Tau0B0HT0to200AIC_MET.pdf");
 assembler->setRange("AIC", 0, 0);
@@ -253,6 +315,9 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau0B0HT0to200_MET.pdf");
+	cout << ".........................." << endl;
+	assembler->project("MET", true)->print();
+	cout << ".........................." << endl;
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau0B0HTgt200_MET.pdf");
 	assembler->setRange("NBJETSCSVM", 1);
@@ -283,6 +348,10 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NBJETSCSVM", 1);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DY0Tau1B1HT0to200_MET.pdf");
+assembler->setRange("NBJETSCSVM", 2);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DY0Tau1B2HT0to200_MET.pdf");
+assembler->setRange("NBJETSCSVM", 1);
+
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DY0Tau1B1HTgt200_MET.pdf");
 	
@@ -341,6 +410,24 @@ assembler->setRange("AIC", 0, 0);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau1B0HT0to200_MET.pdf");
+
+cout << endl << endl << endl << endl << endl;
+cout << "This is L3DYh1Tau1B0HT0to200" << endl;
+	assembler->project("MET", true)->print();
+prevBundle = assembler->getDefaultBundle();
+assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+assembler->setRange("MET", 0, 50, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau1B0HT0to200_MET0to50.pdf");
+assembler->setRange("MET", 50, 100, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau1B0HT0to200_MET50to100.pdf");
+assembler->setRange("MET", 100, 150, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau1B0HT0to200_MET100to150.pdf");
+assembler->setRange("MET", 150, 200, false);
+assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau1B0HT0to200_MET150to200.pdf");
+assembler->setDefaultBundle(prevBundle);
+assembler->setRange("MET");
+cout << endl << endl << endl << endl << endl;
+
 	assembler->setRange("HT", 200);
 	assembler->project("MET", true)->plot(true)->SaveAs("L3DYh1Tau1B0HTgt200_MET.pdf");
 	assembler->setRange("NBJETSCSVM", 1);
@@ -615,14 +702,14 @@ assembler->setRange("AIC", 0, 0);
 	cout << endl;
 	cout << "3L DYz1 with trileptons on Z" << endl;
 	assembler->setRange("NLEPTONS", 3, 3);
-	assembler->setRange("MLEPTONS", z-zWidth, z+zWidth, false);
+	assembler->setRange("MLIGHTLEPTONS", z-zWidth, z+zWidth, false);
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->print();
 	//assembler->project("MET", true)->plot()->SaveAs("test.pdf");
-	assembler->setRange("MLEPTONS");
+	assembler->setRange("MLIGHTLEPTONS");
 	
 	assembler->setRange();
 	assembler->setRange("NGOODTAUS", 0, 0);
