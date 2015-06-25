@@ -53,6 +53,14 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableEventVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRhoCorrectedTotalIso.h"
 
+namespace {
+  int loadMyLibraryTriggerFunc() {
+    gSystem->Load("libRutgersIAFEventAnalyzer.so");
+    return 0;
+  }
+  int loadMyLibraryTrigger = loadMyLibraryTriggerFunc();
+}
+
 void setupProducts(BaseHandler* handler)
 {
   handler->addObjectVariable("isPhoton",new ObjectVariableValue<TString>("INPUTTYPE","photon"));
@@ -241,8 +249,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("RHO", new ObjectVariableEventVariable<double>("rhoAll",handler));
   handler->addObjectVariable("ELECTRON_totalIso", new ObjectVariableRhoCorrectedTotalIso("sumChargedHadronPt","sumNeutralHadronEt","sumPhotonEt","RHO","ELECTRON_AREA","TOTALISO"),false);
   handler->addObjectVariable("MUON_totalIso", new ObjectVariableRhoCorrectedTotalIso("pfIsolationR03sumChargedHadronPt","pfIsolationR03sumNeutralHadronEt","pfIsolationR03sumPhotonEt","RHO","MUON_AREA","TOTALISO"),false);
-  handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO"),false);
-  handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO"),false);
+  handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO","isElectron"),false);
+  handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isMuon"),false);
   handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
   handler->addObjectVariable("MINIISO",new ObjectVariableRelIso("MINIISO","TOTALMINIISO"));
   handler->addObjectVariable("MINIISO0p40", new ObjectVariableInRange<double>("MINIISO",0,0.4));
@@ -790,15 +798,15 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("goodPhotons","goodTaus",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodTracks",deltaR0p1);
 
-  handler->addProductComparison("goodJetsNoCleaning","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodJetsNoCleaning","goodElectrons",deltaR0p4);
+  handler->addProductComparison("goodJetsNoCleaning","goodMuons",deltaR0p3);
+  handler->addProductComparison("goodJetsNoCleaning","goodElectrons",deltaR0p3);
   //handler->addProductComparison("goodJetsNoCleaning","MCELECTRONSFROMBOSON",deltaR0p4);
   //handler->addProductComparison("goodJetsNoCleaning","MCMUONSFROMBOSON",deltaR0p4);
 
-  handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
-  handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
-  handler->addProductComparison("goodJets","goodPhotons",deltaR0p4);
+  handler->addProductComparison("goodJets","goodMuons",deltaR0p3);
+  handler->addProductComparison("goodJets","goodElectrons",deltaR0p3);
+  handler->addProductComparison("goodJets","goodTaus",deltaR0p3);
+  handler->addProductComparison("goodJets","goodPhotons",deltaR0p3);
 
   handler->addProductComparison("goodElectronsMatched","MCELECTRONSFROMBOSON",mcMatch,false);
   handler->addProductComparison("goodMuonsMatched","MCMUONSFROMBOSON",mcMatch,false);
