@@ -32,7 +32,7 @@ public:
       std::vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
       for(int j = 0; j < (int)v.size(); j++){
 	T value;
-	bool isSet = v[i]->getVariable(m_varname,value);
+	bool isSet = v[j]->getVariable(m_varname,value);
 	if(isSet) dummy = TH1F::Fill(value,handler->getPhysicsWeight());
       }
     }
