@@ -680,11 +680,6 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   OSSFnoFake->addProduct("goodElectrons");
   handler->addEventVariable("OSSFnoFake",OSSFnoFake);
 
-  EventVariableMass* massLeptons = new EventVariableMass("MLEPTONS", "goodElectrons");
-  massLeptons->addProduct("goodMuons");
-  massLeptons->addProduct("goodTaus");
-  handler->addEventVariable("MLEPTONS", massLeptons);
-
   EventVariableMass* massLightLeptons = new EventVariableMass("MLIGHTLEPTONS", "goodElectrons");
   massLightLeptons->addProduct("goodMuons");
   handler->addEventVariable("MLIGHTLEPTONS", massLightLeptons);
@@ -721,23 +716,21 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   nLeptons->addProduct("goodTaus");
   handler->addEventVariable("NLEPTONS", nLeptons);
   
+  EventVariableN* nLightLeptons = new EventVariableN("NLIGHTLEPTONS", "goodElectrons");
+  nLeptons->addProduct("goodMuons");
+  handler->addEventVariable("NLIGHTLEPTONS", nLightLeptons);
+  
   EventVariableInRange<int>* el2 = new EventVariableInRange<int>("NGOODELECTRONS", 2, 2, "El2");
   handler->addEventVariable("El2", el2);
   
   EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
   handler->addEventVariable("DILEPTONS", dileptons);
   
-  EventVariableInRange<int>* trileptons = new EventVariableInRange<int>("NLEPTONS", 3, 1e6, "TRILEPTONS");
-  handler->addEventVariable("TRILEPTONS", trileptons);
+  EventVariableInRange<int>* threeLightLeptons = new EventVariableInRange<int>("NLIGHTLEPTONS", 3, 3, "THREELIGHTLEPTONS");
+  handler->addEventVariable("THREELIGHTLEPTONS", threeLightLeptons);
   
-  EventVariableInRange<double>* mLeptonsOnZ = new EventVariableInRange<double>("MLEPTONS", mZ-zWidth, mZ+zWidth, "MLEPTONSONZ");
-  handler->addEventVariable("MLEPTONSONZ", mLeptonsOnZ);
-
-  EventVariableInRange<double>* met0to50 = new EventVariableInRange<double>("MET", 0, 50, "MET0to50");
-  handler->addEventVariable("MET0to50", met0to50);
-
-  EventVariableInRange<double>* ht0to200 = new EventVariableInRange<double>("HT", 0, 200, "HT0to200");
-  handler->addEventVariable("HT0to200", ht0to200);
+  EventVariableInRange<double>* mLightLeptonsOnZ = new EventVariableInRange<double>("MLIGHTLEPTONS", mZ-zWidth, mZ+zWidth, "MLIGHTLEPTONSONZ");
+  handler->addEventVariable("MLIGHTLEPTONSONZ", mLightLeptonsOnZ);
 
   EventVariableReversed* offZ = new EventVariableReversed("ONZ", "OFFZ");
   handler->addEventVariable("OFFZ", offZ);
@@ -745,15 +738,10 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   EventVariableInRange<int>* NOSSFgt0 = new EventVariableInRange<int>("NOSSF", 1, 1e6, "NOSSFgt0");
   handler->addEventVariable("NOSSFgt0", NOSSFgt0);
 
-  EventVariableCombined* trileptonOnZcut = new EventVariableCombined("TRILEPTONS", "MLEPTONSONZ", true, "TRILEPTONONZ");
-  trileptonOnZcut->addVariable("MET0to50");
-  trileptonOnZcut->addVariable("HT0to200");
-  trileptonOnZcut->addVariable("NOSSFgt0");
-  trileptonOnZcut->addVariable("OFFZ");
-  handler->addEventVariable("TRILEPTONONZ", trileptonOnZcut);
-  
-  EventVariableReversed* notTrileptonOnZcut = new EventVariableReversed("TRILEPTONONZ", "NOTTRILEPTONONZ");
-  handler->addEventVariable("NOTTRILEPTONONZ", notTrileptonOnZcut);
+  EventVariableCombined* AIC = new EventVariableCombined("THREELIGHTLEPTONS", "MLIGHTLEPTONSONZ", true, "AIC");
+  AIC->addVariable("NOSSFgt0");
+  AIC->addVariable("OFFZ");
+  handler->addEventVariable("AIC", AIC);
   
   EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e7, "MLOWDYCUT");
   handler->addEventVariable("MLOWDYCUT", mLowDYcut);
