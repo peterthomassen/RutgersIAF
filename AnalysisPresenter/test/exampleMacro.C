@@ -20,7 +20,7 @@ void exampleMacro(TString ofname = "test.root") {
 	
 	// Global cuts, if desired
 	// Get rid of photon conversions
-	TString selection = "(NOSSF != 1 || NOTTRILEPTONONZ)";
+	TString selection = "";
 	// Cut down charge flips
 	// commented out because NPOSGOODMUONS etc. is not available in tcH ntuple
 	//selection += " && (NLEPTONS != 3 || (NGOODMUONS == 3 || NGOODELECTRONS == 3 || abs(NPOSGOODMUONS+NPOSGOODELECTRONS-NNEGGOODMUONS-NNEGGOODELECTRONS) != 3))";
