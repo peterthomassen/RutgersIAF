@@ -15,7 +15,7 @@ void exampleMacro(TString ofname = "test.root") {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For inclusive table
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,3}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,20}:LT{0,500,10}:MLEPTONS{81,101}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,3}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,200,20}:LT{0,500,10}:MLIGHTLEPTONS{81,101}";
 	varexp += ":OSSFMAXMLL{11,131,36}:OSSFMINMLL{11,131,36}";
 	
 	// Global cuts, if desired
