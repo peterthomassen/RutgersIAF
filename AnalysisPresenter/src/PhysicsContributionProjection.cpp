@@ -26,7 +26,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	}
 	int dim = contribution->getContent()->GetListOfAxes()->IndexOf(axis);
 	
-	m_histogram = contribution->getContent()->Projection(dim, "E");
+	m_histogram = contribution->getContent()->Projection(dim, "E O");
 	m_histogram->SetName(contribution->getName());
 	TString title = contribution->isData()
 		? contribution->getSelectionString()
