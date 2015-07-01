@@ -333,14 +333,14 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 void setupFakeRates(Assembler* assembler) {
 	// We found that NGOODJETS and HT binning does not work very well; NPROMPTINCLUSIVETRACK7 binning does a good job at least in 0b regions.
 	assembler->setFakeRate("nTrackFakeMuons",
-		"(NGOODTAUS == 0) * ("
+		"(NGOODTAUS[0] == 0) * ("
 			"0.0154"
 			" * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
 		")"
 		" * (nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 	assembler->setFakeRate("nTrackFakeElectrons",
-		"(NGOODTAUS == 0) * ("
+		"(NGOODTAUS[0] == 0) * ("
 			"((NLEPTONS[0]==3&&NGOODELECTRONS[0]==1)*(0.006771 + 0.005532*NPROMPTNONISOINCLUSIVETRACKS7[0]) + (NLEPTONS[0]==3&&NGOODELECTRONS[0]==3)*(0.009287 + -0.001487*NPROMPTNONISOINCLUSIVETRACKS7[0])"
 			"+ (NLEPTONS[0]!=3||!(NGOODELECTRONS[0]%2))*(0.007453 + 0.003052*NPROMPTNONISOINCLUSIVETRACKS7[0]))" // this is not the average of the above, but measured (because of relative fractions)
 			" * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
@@ -352,11 +352,11 @@ void setupFakeRates(Assembler* assembler) {
 	assembler->setFakeRate("nTauFakeTaus",
 		"Alt$(fakeRoleGOODTAUS > 0 && TOTALISOGOODTAUS > 6 && TOTALISOGOODTAUS < 15, 0) * (" // w/o track/photon subtraction and with 200 binning
 		//"Alt$(Sum$(fakeRoleGOODTAUS > 0 && abs(TOTALISOGOODTAUS - 10.5) > 4.5) == 0, 0) * (" // w/o track/photon subtraction and with 200 binning
-			"(NBJETSCSVM == 0) * ("
+			"(NBJETSCSVM[0] == 0) * ("
 				"(NLEPTONS[0]==3&&NGOODMUONS[0]==0) * (0.2584 - 0.0003302 * HT[0])"
 				" + (NLEPTONS[0]==3&&NGOODMUONS[0]==2) * (0.2504 - 0.0002508 * HT[0])"
 				" + (NLEPTONS[0]!=3 || NGOODMUONS[0]==1) * (0.2544 - 0.0002905 * HT[0])"
-			") + (NBJETSCSVM > 0) * ("
+			") + (NBJETSCSVM[0] > 0) * ("
 				"(NLEPTONS[0]==3&&NGOODMUONS[0]==0) * (0.2100 - 0.0003165 * HT[0])"
 				" + (NLEPTONS[0]==3&&NGOODMUONS[0]==2) * (0.2354 - 0.0002913 * HT[0])"
 				" + (NLEPTONS[0]!=3 || NGOODMUONS[0]==1) * (0.2227 - 0.0003039 * HT[0])"
@@ -370,13 +370,13 @@ void setupFakeRates(Assembler* assembler) {
 	// AIC reduces the pt of the emitting lepton, and can push on-Z pairs below the Z peak. This causes migration between on-Z/off-Z etc.
 	// Looking at the AIC control region, we find that we should adjust the fake rate outside MLEPTONS = 75..100.
 	assembler->setFakeRate("nPhotonFakeMuons",
-		"(NGOODTAUS == 0) * ("
+		"(NGOODTAUS[0] == 0) * ("
 			"(NOSSF == 1 && !ONZ && MOSSF < 91) * 0.00295 / ( (1 + 0.5 * (MLIGHTLEPTONS[0] < 75 || MLIGHTLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
 		")"
 		" * (nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 	assembler->setFakeRate("nPhotonFakeElectrons",
-		"(NGOODTAUS == 0) * ("
+		"(NGOODTAUS[0] == 0) * ("
 			"0.0088 / ( (1 + 0.5 * (MLIGHTLEPTONS[0] < 75 || MLIGHTLEPTONS[0] > 100) ) * (1 + ONZ) ) * (1 + 1.2 * (NBJETSCSVM[0] > 0))"
 		")"
 		" * (nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
