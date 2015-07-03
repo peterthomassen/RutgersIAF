@@ -49,6 +49,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 	std::vector<unsigned char> outBits;
 	
 	double n = 0;
+	bool first = true;
 	bool success = true;
 	bool weights = false;
 	
@@ -59,12 +60,13 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		TTree* curTree = (TTree*)(f->Get(treeName));
 		outfile->cd();
 		
-		if(i == 0) {
+		if(first && curTree->GetEntries() > 0) {
 			outTree->SetTitle(curTree->GetTitle());
 			weights = curTree->GetBranch("WEIGHT");
+			first = false;
 		}
 		
-		if(weights != (bool)(curTree->GetBranch("WEIGHT"))) {
+		if(curTree->GetEntries() > 0 && weights != (bool)(curTree->GetBranch("WEIGHT"))) {
 			cerr << endl << "Can't add events with weights and events without, aborting" << endl;
 			success = false;
 			break;
