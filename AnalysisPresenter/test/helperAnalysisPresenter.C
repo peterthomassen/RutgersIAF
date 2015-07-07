@@ -69,7 +69,7 @@ void prepare(Assembler* assembler) {
 	assembler->getDefaultBundle()->print();
 }
 
-void setupData(Assembler* assembler, int fakeMode = 0, bool dilep = false) {
+void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0) {
 	std::string prefix = "/cms/thomassen/2014/Analysis/data/histograms/";
 	std::string infix = dilep ? "" : ".3L";
 	std::string body = getDataFileName();
