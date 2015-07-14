@@ -251,6 +251,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("MUON_totalIso", new ObjectVariableRhoCorrectedTotalIso("pfIsolationR03sumChargedHadronPt","pfIsolationR03sumNeutralHadronEt","pfIsolationR03sumPhotonEt","RHO","MUON_AREA","TOTALISO"),false);
   handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO","isElectron"),false);
   handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isMuon"),false);
+  handler->addObjectVariable("TRACK_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isTrack"),false);
   handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
   handler->addObjectVariable("MINIISO",new ObjectVariableRelIso("MINIISO","TOTALMINIISO"));
   handler->addObjectVariable("MINIISO0p40", new ObjectVariableInRange<double>("MINIISO",0,0.4));
@@ -631,13 +632,13 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("basicTracksNoCleaning","ALLTRACKS");
   handler->addProductCut("basicTracksNoCleaning","PT10");
   handler->addProductCut("basicTracksNoCleaning","ETA2p4");
-  handler->addProductCut("basicTracksNoCleaning","trackHighPurity");
+//  handler->addProductCut("basicTracksNoCleaning","trackHighPurity");
   handler->addProductCut("basicTracksNoCleaning","MUON_dz");
 
   handler->addProduct("basicTracks","basicTracksNoCleaning");
 
   handler->addProduct("goodTracks","basicTracks");
-  handler->addProductCut("goodTracks","IREL0p15");
+  handler->addProductCut("goodTracks","MULTIISOL");
   handler->addProductCut("goodTracks","TRACK_PROMPT");
   
   handler->addProduct("goodTracksNoCleaning","basicTracksNoCleaning");
