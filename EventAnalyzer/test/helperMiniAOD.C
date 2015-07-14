@@ -498,10 +498,12 @@ void setupProducts(BaseHandler* handler)
   //handler->addObjectVariable("TAU_againstMuonTight3",new ObjectVariableValue<double>("againstMuonTight3",1.0));
   //handler->addObjectVariable("TAU_isoLoose", new ObjectVariableValue<double>("byLooseCombinedIsolationDeltaBetaCorr3Hits",1.0));
   handler->addObjectVariable("TAU_nonIso", new ObjectVariableReversed("byLooseCombinedIsolationDeltaBetaCorr3Hits"));
+  handler->addObjectVariable("TAU_dz", new ObjectVariableInRange<double>("dz",-0.2,0.2));
 
   handler->addProduct("basicTaus","ALLTAUS");
   handler->addProductCut("basicTaus","PT20");
   handler->addProductCut("basicTaus","ETA2p4");
+  handler->addProductCut("basicTaus","TAU_dz");
   handler->addProductCut("basicTaus","againstElectronTightMVA5");
   handler->addProductCut("basicTaus","againstMuonTight3");
   handler->addProductCut("basicTaus","decayModeFinding");
