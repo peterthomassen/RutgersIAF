@@ -112,11 +112,11 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	
 	datacard << "process\t";
 	for(size_t i = 0; i < getChannels().size(); i++) {
-		for(UInt_t j = 0; j < bundleNamesSig.size(); j++) {
-			datacard << '\t' << (bundleNamesSig.size() - j) * (-1) + 1;
+		for(Int_t j = 0; j < (Int_t)bundleNamesSig.size(); j++) {
+			datacard << '\t' << ((Int_t)bundleNamesSig.size() - j) * (-1) + 1;
 		}
 		
-		for(UInt_t j = 0; j < bundleNamesBkg.size(); j++) {
+		for(Int_t j = 0; j < (Int_t)bundleNamesBkg.size(); j++) {
 			datacard << '\t' << j + 1;
 		}
 	}
