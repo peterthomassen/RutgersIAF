@@ -5,4 +5,7 @@
   <class name="EventVariablePairMass2" ClassVersion="1">
    <version ClassVersion="1" checksum="3494816194"/>
   </class>
+  <class name="ObjectVariableDeltaBetaCorrectedTotalIso" ClassVersion="1">
+   <version ClassVersion="1" checksum="349618540"/>
+  </class>
 </lcgdict>

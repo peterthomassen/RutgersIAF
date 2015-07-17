@@ -52,6 +52,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableEffectiveAreaMiniIsolation.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableEventVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRhoCorrectedTotalIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableDeltaBetaCorrectedTotalIso.h"
 
 namespace {
   int loadMyLibraryTriggerFunc() {
@@ -252,6 +253,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO","isElectron"),false);
   handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isMuon"),false);
   handler->addObjectVariable("TRACK_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isTrack"),false);
+  handler->addObjectVariable("TAU_totalMiniIso", new ObjectVariableDeltaBetaCorrectedTotalIso("chargedHadronMiniIso","","photonMiniIso","puCorrPtSum","TOTALMINIISO","isTau"),false);
   handler->addObjectVariable("RELISO",new ObjectVariableRelIso("RELISO"));
   handler->addObjectVariable("MINIISO",new ObjectVariableRelIso("MINIISO","TOTALMINIISO"));
   handler->addObjectVariable("MINIISO0p40", new ObjectVariableInRange<double>("MINIISO",0,0.4));
@@ -512,12 +514,15 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("goodTaus","basicTaus");
   handler->addProductCut("goodTaus","byLooseCombinedIsolationDeltaBetaCorr3Hits"); 
 
-  handler->addProduct("sidebandTaus","ALLTAUS");
+  handler->addProduct("nonIsoTaus","ALLTAUS");
+  handler->addProductCut("nonIsoTaus","TAU_nonIso");
+
+/*  handler->addProduct("sidebandTaus","ALLTAUS");
   handler->addProductCut("sidebandTaus","TAU_nonIso");
 
   handler->addProduct("otherTaus","ALLTAUS");
   handler->addProductCut("otherTaus","TAU_nonIso");
-
+*/
 
   ////////
   ///MC///
@@ -789,8 +794,8 @@ void setupProducts(BaseHandler* handler)
 
   handler->addProductComparison("looseElectrons","looseMuons",deltaR0p05);
   //handler->addProductComparison("goodElectrons","goodMuons",deltaR0p1);
-  handler->addProductComparison("goodTaus","goodMuons",deltaR0p3);
-  handler->addProductComparison("goodTaus","goodElectrons",deltaR0p3);
+  handler->addProductComparison("goodTaus","looseMuons",deltaR0p3);
+  handler->addProductComparison("goodTaus","looseElectrons",deltaR0p3);
 
   handler->addProductComparison("basicTracks","goodMuons",deltaR0p3);
   handler->addProductComparison("basicTracks","goodElectrons",deltaR0p3);
