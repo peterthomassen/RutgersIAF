@@ -19,21 +19,10 @@ void init(Assembler* assembler) {
 	TH1::AddDirectory(false);
 	TH1::SetDefaultSumw2(true);
 	
-	Bundle* fakeBundle = new Bundle("background", "Fakes");
-	assembler->addBundle(fakeBundle);
-	
-	Bundle* trackFakeBundle = new Bundle("background", "TrackFakes");
-	assembler->addBundle(trackFakeBundle);
-	fakeBundle->addComponent(trackFakeBundle);
-	
-	Bundle* photonFakeBundle = new Bundle("background", "PhotonFakes");
-	assembler->addBundle(photonFakeBundle);
-	fakeBundle->addComponent(photonFakeBundle);
-	
-	Bundle* tauFakeBundle = new Bundle("background", "TauFakes");
-	assembler->addBundle(tauFakeBundle);
-	fakeBundle->addComponent(tauFakeBundle);
-	
+	assembler->addBundle(new Bundle("background", "Fakes"));
+	assembler->addBundle(new Bundle("background", "TrackFakes"));
+	assembler->addBundle(new Bundle("background", "PhotonFakes"));
+	assembler->addBundle(new Bundle("background", "TauFakes"));
 	assembler->addBundle(new Bundle("background", "Higgs"));
 	assembler->addBundle(new Bundle("background", "Rare MC"));
 	
@@ -41,12 +30,18 @@ void init(Assembler* assembler) {
 }
 
 std::string getDataFileName() {
-	//return "20150518_data";
-	//return "20150609_data";
-	return "20150623_data";
+	return "20150708_data";
 }
 
 void prepare(Assembler* assembler) {
+	Bundle* fakeBundle = assembler->getBundle("Fakes");
+	for(const auto &bundleName : {"TrackFakes", "PhotonFakes", "TauFakes"}) {
+		Bundle* bundle = assembler->getBundle(bundleName);
+		if(bundle->getComponents().size() > 0) {
+			fakeBundle->addComponent(bundle);
+		}
+	}
+	
 	Bundle* presentationBundle = new Bundle("background", "presentationBundle");
 	for(const auto &bundleName : {"Fakes", "Higgs", "Rare MC"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
@@ -145,8 +140,8 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	
 	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, xsec_wz, "WZ");
 	wz->addWeight("exp(-0.005 * PTMCZ[0]/sqrt(MMCZ[0]))", 1.038);
-	wz->addWeight("(NGOODJETS[0] == 0) * 1.06 + (NGOODJETS[0] == 1) * 0.89 + (NGOODJETS[0] == 2) * 1.18 + (NGOODJETS[0] > 2) * 1.32");
-	wz->addWeight("!(NGOODJETS > 1) + (NGOODJETS > 1) * Alt$((PTGOODJETS[0] < 70) * 0.75 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.16 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 0.88 + (PTGOODJETS[0] >= 150) * 1.26, 0)");
+	wz->addWeight("(NGOODJETS[0] == 0) * 1.053 + (NGOODJETS[0] == 1) * 0.85 + (NGOODJETS[0] == 2) * 1.15 + (NGOODJETS[0] > 2) * 1.19");
+	wz->addWeight("(NGOODJETS[0] <= 1) + (NGOODJETS[0] > 1) * (Alt$((PTGOODJETS[0] < 70) * 0.65 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.07 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 1.00 + (PTGOODJETS[0] >= 150) * 1.55, 0))");
 	//wz->addWeight("1 + (NBJETSCSVM > 0) * 0.0"); // look with more data whether MC gets number of b's right
 	wz->addFlatUncertainty("normalizationWZ", 0.05);
 	correlationBundle->addComponent(wz);
@@ -196,17 +191,17 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		if(!dilep) {
 			std::vector<PhysicsContribution*> ttbarFfake;
 			
-			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakeTracks", -1, 0.1);
+			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfakeTracks", true, "treeRfakeTracks", -1, 0.1);
 			ttbarFfakeTracks->addWeight("1 + (NLEPTONS[0] - NGOODTAUS[0] >= 3) * 0.66");
 			ttbarFfakeTracks->addFlatUncertainty("fudge", 0.194);
 			ttbarFfake.push_back(ttbarFfakeTracks);
 			assembler->getBundle("TrackFakes")->addComponent(ttbarFfakeTracks);
 			
-			PhysicsContribution* ttbarFfakePhotons = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakePhotons", -1, 0.1);
+			PhysicsContribution* ttbarFfakePhotons = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfakePhotons", true, "treeRfakePhotons", -1, 0.1);
 			ttbarFfake.push_back(ttbarFfakePhotons);
 			assembler->getBundle("PhotonFakes")->addComponent(ttbarFfakePhotons);
 			
-			PhysicsContribution* ttbarFfakeTaus = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfake", true, "treeRfakeTaus", -1, 0.1);
+			PhysicsContribution* ttbarFfakeTaus = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfakeTaus", true, "treeRfakeTaus", -1, 0.1);
 			ttbarFfake.push_back(ttbarFfakeTaus);
 			assembler->getBundle("TauFakes")->addComponent(ttbarFfakeTaus);
 			
