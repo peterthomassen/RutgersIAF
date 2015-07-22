@@ -107,9 +107,12 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ETA2p4",new ObjectVariableInRange<double>("ETA",-2.4,2.4));
   handler->addObjectVariable("ETA2p5",new ObjectVariableInRange<double>("ETA",-2.5,2.5,"ETA2p5"));
   handler->addObjectVariable("ETA0p8",new ObjectVariableInRange<double>("ETA",-0.8,0.8,"ETA0p8"));
+  handler->addObjectVariable("ETA4p7",new ObjectVariableInRange<double>("ETA",-4.7,4.7,"ETA4p7"));
   handler->addObjectVariable("ETA1p479",new ObjectVariableInRange<double>("ETA",-1.479,1.479,"ETA1p479"));
   handler->addObjectVariable("NOTETA0p8", new ObjectVariableReversed("ETA0p8"));
+  handler->addObjectVariable("NOTETA2p4", new ObjectVariableReversed("ETA2p4"));
   handler->addObjectVariable("ETA0p8to1p479", new ObjectVariableCombined("NOTETA0p8","ETA1p479",true,"ETA0p8to1p479"));
+  handler->addObjectVariable("ETA2p4to4p7", new ObjectVariableCombined("NOTETA2p4", "ETA4p7", true, "ETA2p4to4p7"));
   handler->addObjectVariable("BARREL",new ObjectVariableInRange<double>("ETA",-1.479,1.479,"barrelEta"));
   //handler->addObjectVariable("BARREL",new ObjectVariableInRange<double>("superClustereta",-1.5,1.5,"barrelEta"));
   handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL","endcapEta"));
@@ -723,18 +726,22 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("CSVM",new ObjectVariableInRange<double>("combinedInclusiveSecondaryVertexV2BJetTags",0.814,1000.0));
   handler->addObjectVariable("CSVL",new ObjectVariableInRange<double>("combinedInclusiveSecondaryVertexV2BJetTags",0.423,1000.0));
 
-  handler->addProduct("goodJetsNoCleaning","ALLJETS");
-  handler->addProductCut("goodJetsNoCleaning","PT20");
-  handler->addProductCut("goodJetsNoCleaning","ETA2p4");
-  handler->addProductCut("goodJetsNoCleaning","JET_NEUTRALHADRONFRACTION");
-  handler->addProductCut("goodJetsNoCleaning","JET_NEUTRALEMFRACTION");
-  handler->addProductCut("goodJetsNoCleaning","JET_NUMBEROFCONSTITUENTS");
-  handler->addProductCut("goodJetsNoCleaning","JET_CHARGEDHADRONFRACTION");
-  handler->addProductCut("goodJetsNoCleaning","JET_CHARGEDMULTIPLICITY");
-  handler->addProductCut("goodJetsNoCleaning","JET_CHARGEDEMFRACTION");
+  handler->addProduct("basicJetsNoCleaning","ALLJETS");
+  handler->addProductCut("basicJetsNoCleaning","PT20");
+  handler->addProductCut("basicJetsNoCleaning","JET_NEUTRALHADRONFRACTION");
+  handler->addProductCut("basicJetsNoCleaning","JET_NEUTRALEMFRACTION");
+  handler->addProductCut("basicJetsNoCleaning","JET_NUMBEROFCONSTITUENTS");
 
-  handler->addProduct("goodJets","goodJetsNoCleaning");
+  handler->addProduct("goodJets","basicJetsNoCleaning");
   handler->addProductCut("goodJets","PT30");
+  handler->addProductCut("goodJets","ETA2p4");
+  handler->addProductCut("goodJets","JET_CHARGEDHADRONFRACTION");
+  handler->addProductCut("goodJets","JET_CHARGEDMULTIPLICITY");
+  handler->addProductCut("goodJets","JET_CHARGEDEMFRACTION");
+
+  handler->addProduct("goodForwardJets", "basicJetsNoCleaning");
+  handler->addProductCut("goodForwardJets", "PT30");
+  handler->addProductCut("goodForwardJets", "ETA2p4to4p7");
 
   handler->addProduct("bJetsCSVM","goodJets");
   handler->addProductCut("bJetsCSVM","CSVM");
@@ -808,10 +815,10 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("goodPhotons","goodTaus",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodTracks",deltaR0p1);
 
-  handler->addProductComparison("goodJetsNoCleaning","goodMuons",deltaR0p3);
-  handler->addProductComparison("goodJetsNoCleaning","goodElectrons",deltaR0p3);
-  //handler->addProductComparison("goodJetsNoCleaning","MCELECTRONSFROMBOSON",deltaR0p4);
-  //handler->addProductComparison("goodJetsNoCleaning","MCMUONSFROMBOSON",deltaR0p4);
+  handler->addProductComparison("basicJetsNoCleaning","goodMuons",deltaR0p3);
+  handler->addProductComparison("basicJetsNoCleaning","goodElectrons",deltaR0p3);
+  //handler->addProductComparison("basicJetsNoCleaning","MCELECTRONSFROMBOSON",deltaR0p4);
+  //handler->addProductComparison("basicJetsNoCleaning","MCMUONSFROMBOSON",deltaR0p4);
 
   handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
   handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
