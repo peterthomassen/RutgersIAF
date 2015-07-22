@@ -640,7 +640,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("basicTracksNoCleaning","ALLTRACKS");
   handler->addProductCut("basicTracksNoCleaning","PT10");
   handler->addProductCut("basicTracksNoCleaning","ETA2p4");
-//  handler->addProductCut("basicTracksNoCleaning","trackHighPurity");
+  handler->addProductCut("basicTracksNoCleaning","trackHighPurity");
   handler->addProductCut("basicTracksNoCleaning","MUON_dz");
 
   handler->addProduct("basicTracks","basicTracksNoCleaning");
