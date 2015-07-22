@@ -1068,3 +1068,12 @@ void setupPrintRA7Sync(BaseHandler* handler)
   printLines->addVariable("MOSSF",ddd);
   handler->addPrintModule(printLines);
 }
+
+void setupMC2(BaseHandler* handler) {
+  TF1* dummyWeight = new TF1("dummy","1",1,10000);
+
+  handler->addEventVariable("DUMMYELWEIGHT",new EventVariableObjectWeightPtTF1("DUMMYELWEIGHT","goodElectrons",dummyWeight));
+  handler->addEventVariable("DUMMYMUWEIGHT",new EventVariableObjectWeightPtTF1("DUMMYMUWEIGHT","goodMuons",dummyWeight));
+  handler->addWeightVariable("DUMMYELWEIGHT");
+  handler->addWeightVariable("DUMMYMUWEIGHT");
+}
