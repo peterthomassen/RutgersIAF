@@ -114,7 +114,6 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ETA0p8to1p479", new ObjectVariableCombined("NOTETA0p8","ETA1p479",true,"ETA0p8to1p479"));
   handler->addObjectVariable("ETA2p4to4p7", new ObjectVariableCombined("NOTETA2p4", "ETA4p7", true, "ETA2p4to4p7"));
   handler->addObjectVariable("BARREL",new ObjectVariableInRange<double>("ETA",-1.479,1.479,"barrelEta"));
-  //handler->addObjectVariable("BARREL",new ObjectVariableInRange<double>("superClustereta",-1.5,1.5,"barrelEta"));
   handler->addObjectVariable("ENDCAP",new ObjectVariableReversed("BARREL","endcapEta"));
   handler->addObjectVariable("POSITIVE",new ObjectVariableInRange<int>("charge",0,10,"CHARGEPOS"));
   handler->addObjectVariable("NEGATIVE",new ObjectVariableInRange<int>("charge",-10,0,"CHARGENEG"));
@@ -132,16 +131,10 @@ void setupProducts(BaseHandler* handler)
   ///Muon Variables///
   ////////////////////
 
-  //handler->addObjectVariable("MUON_normalizedChi2",new ObjectVariableInRange<double>("normalizedChi2",0,10));
   handler->addObjectVariable("MUON_normalizedChi2",new ObjectVariableInRange<double>("normalizedChi2",0,3));
-  handler->addObjectVariable("MUON_numberOfValidMuonHits", new ObjectVariableInRange<int>("numberOfValidMuonHits",1,100000));
-  handler->addObjectVariable("MUON_numberOfMatchedStations",new ObjectVariableInRange<int>("numberOfMatchedStations",2,1000000));
-  //handler->addObjectVariable("MUON_dxy", new ObjectVariableInRange<double>("dxy",-0.2,0.2));
   handler->addObjectVariable("MUON_dxy", new ObjectVariableInRange<double>("dxy",-0.05,0.05));
   handler->addObjectVariable("MUON_nonprompt", new ObjectVariableReversed("MUON_dxy","MUON_nonprompt"));
   handler->addObjectVariable("MUON_dz", new ObjectVariableInRange<double>("dz",-0.1,0.1));
-  handler->addObjectVariable("MUON_numberOfValidPixelHits", new ObjectVariableInRange<int>("numberOfValidPixelHits",1,1000000));
-  handler->addObjectVariable("MUON_trackerLayersWithMeasurement", new ObjectVariableInRange<int>("trackerLayersWithMeasurement",6,1000000));
   handler->addObjectVariable("MUON_chi2LocalPosition", new ObjectVariableInRange<double>("chi2LocalPosition",0,12));
   handler->addObjectVariable("MUON_trkKink", new ObjectVariableInRange<double>("trkKink",0,20));
 
@@ -163,47 +156,18 @@ void setupProducts(BaseHandler* handler)
   ////////////////////////
   ///Electron Variables///
   ////////////////////////
-  handler->addObjectVariable("ELECTRON_BETA", new ObjectVariableRename<double>("sumPUPt","BETA"),false);
   handler->addObjectVariable("ELECTRON_INGAPPOS",new ObjectVariableInRange<double>("superClustereta",1.4442,1.566));
   handler->addObjectVariable("ELECTRON_INGAPNEG",new ObjectVariableInRange<double>("superClustereta",-1.566,-1.4442));
   ObjectVariableCombined* electron_ingap = new ObjectVariableCombined("ELECTRON_INGAPPOS","ELECTRON_INGAPNEG",false,"ELECTRON_INGAP");
   handler->addObjectVariable("ELECTRON_INGAP",electron_ingap);
   handler->addObjectVariable("ELECTRON_NOTGAP",new ObjectVariableReversed("ELECTRON_INGAP","ELECTRON_NOTGAP"));
   handler->addObjectVariable("ELECTRON_MISSINGHITS", new ObjectVariableValue<int>("numberOfLostHits",0));
-  handler->addObjectVariable("ELECTRON_BARREL_deltaEtaSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.004,0.004));
-  handler->addObjectVariable("ELECTRON_BARREL_deltaPhiSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.06,0.06));
-  handler->addObjectVariable("ELECTRON_ENDCAP_deltaEtaSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.007,0.007));
-  handler->addObjectVariable("ELECTRON_ENDCAP_deltaPhiSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.03,0.03));
-  handler->addObjectVariable("ELECTRON_BARREL_hadronicOverEm",new ObjectVariableInRange<double>("hadronicOverEm",0.0,0.12));
-  handler->addObjectVariable("ELECTRON_ENDCAP_hadronicOverEm",new ObjectVariableInRange<double>("hadronicOverEm",0.0,0.1));
-  handler->addObjectVariable("ELECTRON_BARREL_sigmaIetaIeta",new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.01));
-  handler->addObjectVariable("ELECTRON_ENDCAP_sigmaIetaIeta",new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.03));
-  handler->addObjectVariable("ELECTRON_BARREL_1oEm1oP", new ObjectVariableInRange<double>("1oEm1oP",0,0.05));
-  handler->addObjectVariable("ELECTRON_ENDCAP_1oEm1oP", new ObjectVariableInRange<double>("1oEm1oP",0,0.05));
   handler->addObjectVariable("ELECTRON_passConversionVeto",new ObjectVariableValue<bool>("passConversionVeto",true));
-  handler->addObjectVariable("ELECTRON_BARREL_dz", new ObjectVariableInRange<double>("dz",-0.1,0.1));
-  handler->addObjectVariable("ELECTRON_BARREL_dxy", new ObjectVariableInRange<double>("dxy",-0.05,0.05));
-  handler->addObjectVariable("ELECTRON_ENDCAP_dz", new ObjectVariableInRange<double>("dz",-0.1,0.1));
-  handler->addObjectVariable("ELECTRON_ENDCAP_dxy", new ObjectVariableInRange<double>("dxy",-0.05,0.05));
-  /*
-  handler->addObjectVariable("ELECTRON_BARREL_deltaEtaSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.0181,0.0181));
-  handler->addObjectVariable("ELECTRON_BARREL_deltaPhiSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.0936,0.0936));
-  handler->addObjectVariable("ELECTRON_ENDCAP_deltaEtaSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.0124,0.0124));
-  handler->addObjectVariable("ELECTRON_ENDCAP_deltaPhiSuperClusterTrackAtVtx", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.0642,0.0642));
-  handler->addObjectVariable("ELECTRON_BARREL_hadronicOverEm",new ObjectVariableInRange<double>("hadronicOverEm",0.0,0.141));
-  handler->addObjectVariable("ELECTRON_ENDCAP_hadronicOverEm",new ObjectVariableInRange<double>("hadronicOverEm",0.0,0.1115));
-  handler->addObjectVariable("ELECTRON_BARREL_sigmaIetaIeta",new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.0123));
-  handler->addObjectVariable("ELECTRON_ENDCAP_sigmaIetaIeta",new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.035));
-  handler->addObjectVariable("ELECTRON_BARREL_1oEm1oP", new ObjectVariableInRange<double>("1oEm1oP",0,0.1353));
-  handler->addObjectVariable("ELECTRON_ENDCAP_1oEm1oP", new ObjectVariableInRange<double>("1oEm1oP",0,0.1443));
-  handler->addObjectVariable("ELECTRON_passConversionVeto",new ObjectVariableValue<bool>("passConversionVeto",true));
-  handler->addObjectVariable("ELECTRON_BARREL_dz", new ObjectVariableInRange<double>("dz",-0.54342,0.54342));
-  handler->addObjectVariable("ELECTRON_BARREL_dxy", new ObjectVariableInRange<double>("dxy",-0.0166,0.0166));
-  handler->addObjectVariable("ELECTRON_ENDCAP_dz", new ObjectVariableInRange<double>("dz",-0.9187,0.9187));
-  handler->addObjectVariable("ELECTRON_ENDCAP_dxy", new ObjectVariableInRange<double>("dxy",-0.098,0.098));
-  */
-
+  handler->addObjectVariable("ELECTRON_dz", new ObjectVariableInRange<double>("dz",-0.1,0.1));
+  handler->addObjectVariable("ELECTRON_dxy", new ObjectVariableInRange<double>("dxy",-0.05,0.05));
   handler->addObjectVariable("ELECTRON_dz5", new ObjectVariableInRange<double>("dz",-5.0,5.0));
+  handler->addObjectVariable("ELECTRON_PROMPT", new ObjectVariableRename<bool>("ELECTRON_dxy", "ELECTRON_PROMPT"));
+  handler->addObjectVariable("ELECTRON_NONPROMPT",new ObjectVariableReversed("ELECTRON_PROMPT"));
 
   /////////////////////
   ///Track variables///
@@ -297,44 +261,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("IREL0p35",new ObjectVariableInRange<double>("RELISO",0,0.3529,"IREL0p35"));
   handler->addObjectVariable("IREL0p5",new ObjectVariableInRange<double>("RELISO",0,0.5,"IREL0p5"));
 
-  ObjectVariableCombined* electron_barrel = new ObjectVariableCombined("BARREL","ELECTRON_BARREL_hadronicOverEm",true,"electron_barrel_good");
-  electron_barrel->addVariable("ELECTRON_BARREL_sigmaIetaIeta");
-  electron_barrel->addVariable("ELECTRON_BARREL_deltaPhiSuperClusterTrackAtVtx");
-  electron_barrel->addVariable("ELECTRON_BARREL_deltaEtaSuperClusterTrackAtVtx");
-  electron_barrel->addVariable("ELECTRON_BARREL_dz");
-  //electron_barrel->addVariable("ELECTRON_BARREL_dxy");
-  electron_barrel->addVariable("ELECTRON_BARREL_1oEm1oP");
-  //electron_barrel->addVariable("IREL0p24");
-  handler->addObjectVariable("ELECTRON_BARREL",electron_barrel);
-
-  ObjectVariableCombined* electron_endcap = new ObjectVariableCombined("ENDCAP","ELECTRON_ENDCAP_hadronicOverEm",true,"electron_endcap_good");
-  electron_endcap->addVariable("ELECTRON_ENDCAP_sigmaIetaIeta");
-  electron_endcap->addVariable("ELECTRON_ENDCAP_deltaPhiSuperClusterTrackAtVtx");
-  electron_endcap->addVariable("ELECTRON_ENDCAP_deltaEtaSuperClusterTrackAtVtx");
-  electron_endcap->addVariable("ELECTRON_ENDCAP_dz");
-  //electron_endcap->addVariable("ELECTRON_ENDCAP_dxy");
-  electron_endcap->addVariable("ELECTRON_ENDCAP_1oEm1oP");
-  //electron_endcap->addVariable("IREL0p35");
-  handler->addObjectVariable("ELECTRON_ENDCAP",electron_endcap);
-
-  handler->addObjectVariable("ELECTRON_COMBINED",new ObjectVariableCombined("ELECTRON_BARREL","ELECTRON_ENDCAP",false,"ELECTRON_COMBINED"));
-
-  ObjectVariableCombined* electron_barrel_isolated = new ObjectVariableCombined("BARREL","IREL0p15",true,"electron_barrel_isolated");
-  ObjectVariableCombined* electron_endcap_isolated = new ObjectVariableCombined("ENDCAP","IREL0p15",true,"electron_endcap_isolated");
-  ObjectVariableCombined* electron_isolated = new ObjectVariableCombined("ELECTRON_BARREL_ISOLATED","ELECTRON_ENDCAP_ISOLATED",false,"ELECTRON_ISOLATED");
-  handler->addObjectVariable("ELECTRON_BARREL_ISOLATED",electron_barrel_isolated);
-  handler->addObjectVariable("ELECTRON_ENDCAP_ISOLATED",electron_endcap_isolated);
-  handler->addObjectVariable("ELECTRON_ISOLATED",electron_isolated);
+  handler->addObjectVariable("ELECTRON_ISOLATED", new ObjectVariableRename<bool>("MULTIISOM", "ELECTRON_ISOLATED"));
   handler->addObjectVariable("ELECTRON_NOTISOLATED",new ObjectVariableReversed("ELECTRON_ISOLATED"));
-
-  ObjectVariableCombined* electron_barrel_prompt = new ObjectVariableCombined("BARREL","ELECTRON_BARREL_dxy",true,"electron_barrel_prompt");
-  ObjectVariableCombined* electron_endcap_prompt = new ObjectVariableCombined("ENDCAP","ELECTRON_ENDCAP_dxy",true,"electron_endcap_prompt");
-  ObjectVariableCombined* electron_prompt = new ObjectVariableCombined("ELECTRON_BARREL_PROMPT","ELECTRON_ENDCAP_PROMPT",false,"ELECTRON_PROMPT");
-  handler->addObjectVariable("ELECTRON_BARREL_PROMPT",electron_barrel_prompt);
-  handler->addObjectVariable("ELECTRON_ENDCAP_PROMPT",electron_endcap_prompt);
-  handler->addObjectVariable("ELECTRON_PROMPT",electron_prompt);
-  handler->addObjectVariable("ELECTRON_NONPROMPT",new ObjectVariableReversed("ELECTRON_PROMPT"));
-
 
   handler->addObjectVariable("ELECTRON_MVA_0p35", new ObjectVariableInRange<double>("MVA",0.35,100000));
   handler->addObjectVariable("ELECTRON_MVA_0p73", new ObjectVariableInRange<double>("MVA",0.73,100000));
@@ -359,69 +287,24 @@ void setupProducts(BaseHandler* handler)
 
   handler->addObjectVariable("ELECTRON_MVA_LOOSE",electron_mva_loose);
   handler->addObjectVariable("ELECTRON_MVA_TIGHT",electron_mva_tight);
-
-  /*
-  ObjectVariableCombined* electron_good = new ObjectVariableCombined("ELECTRON_COMBINED","PT10",true,"ELECTRON_GOOD");
-  electron_good->addVariable("ETA2p4");
-  electron_good->addVariable("ELECTRON_passConversionVeto");
-  electron_good->addVariable("ELECTRON_MISSINGHITS");
-  electron_good->addVariable("ELECTRON_NOTGAP");
-  electron_good->addVariable("ELECTRON_ISOLATED");
-  electron_good->addVariable("ELECTRON_PROMPT");
-  electron_good->addVariable("SIP3D_4sigma");
-  //electron_good->addVariable("ELECTRON_1oEm1oP");
-  handler->addObjectVariable("ELECTRON_GOOD",electron_good);
-  */
-
-  ObjectVariableCombined* electron_loose = new ObjectVariableCombined("ELECTRON_MVA_LOOSE","PT7",true,"ELECTRON_LOOSE");
-  electron_loose->addVariable("ETA2p5");
-  electron_loose->addVariable("ELECTRON_BARREL_dxy");
-  electron_loose->addVariable("ELECTRON_BARREL_dz");
-  //electron_loose->addVariable("IREL0p5");
-  electron_loose->addVariable("MINIISO0p40");
-  electron_loose->addVariable("ELECTRON_passConversionVeto");
-  electron_loose->addVariable("ELECTRON_MISSINGHITS");
-
-  handler->addObjectVariable("ELECTRON_LOOSE",electron_loose);
-
-  ObjectVariableCombined* electron_tight = new ObjectVariableCombined("ELECTRON_MVA_TIGHT","SIP3D_4sigma",true,"ELECTRON_TIGHT");
-  //electron_tight->addVariable("IREL0p15");
-  electron_tight->addVariable("MULTIISOM");
-  electron_tight->addVariable("PT10");
-  handler->addObjectVariable("ELECTRON_TIGHT",electron_tight);
+    
 
   //////////////////
   ///Muon Product///
   //////////////////
 
   handler->addProduct("basicMuons","ALLMUONS");
-  handler->addProductCut("basicMuons","PT10");
+  handler->addProductCut("basicMuons","PT5");
   handler->addProductCut("basicMuons","ETA2p4");
-  handler->addProductCut("basicMuons","isGlobalMuon");
   handler->addProductCut("basicMuons","isPFMuon");
-  handler->addProductCut("basicMuons","MUON_normalizedChi2");
-  handler->addProductCut("basicMuons","MUON_numberOfValidMuonHits");
-  handler->addProductCut("basicMuons","MUON_numberOfMatchedStations");
+  handler->addProductCut("basicMuons","MUON_GLOBALORTRACKER");
   handler->addProductCut("basicMuons","MUON_dz");
-  handler->addProductCut("basicMuons","MUON_numberOfValidPixelHits");
-  handler->addProductCut("basicMuons","MUON_trackerLayersWithMeasurement");
 
-  handler->addProduct("looseMuons","ALLMUONS");
-  handler->addProductCut("looseMuons","PT5");
-  handler->addProductCut("looseMuons","ETA2p4");
-  handler->addProductCut("looseMuons","isPFMuon");
-  handler->addProductCut("looseMuons","MUON_GLOBALORTRACKER");
+  handler->addProduct("looseMuons","basicMuons");
   handler->addProductCut("looseMuons","MUON_dxy");
-  handler->addProductCut("looseMuons","MUON_dz");
   //handler->addProductCut("looseMuons","IREL0p5");
   handler->addProductCut("looseMuons","MINIISO0p40");
 
-  /*
-  handler->addProduct("goodMuons","basicMuons");
-  handler->addProductCut("goodMuons","IREL0p15");
-  handler->addProductCut("goodMuons","MUON_dxy");
-  handler->addProductCut("goodMuons","SIP3D_4sigma");
-  */
   handler->addProduct("goodMuons","looseMuons");
   handler->addProductCut("goodMuons","PT10");
   handler->addProductCut("goodMuons","MULTIISOL");
@@ -453,30 +336,28 @@ void setupProducts(BaseHandler* handler)
   //////////////
   ///Electron///
   //////////////
-
+  
+  // loose electrons according to RA7Coordination2015 TWiki, except for isolation and promptness
   handler->addProduct("basicElectrons","ALLELECTRONS");
-  handler->addProductCut("basicElectrons","PT10");
-  handler->addProductCut("basicElectrons","ETA2p4");
-  //handler->addProductCut("goodElectrons","IREL0p23");
-  handler->addProductCut("basicElectrons","ELECTRON_COMBINED");
-  //handler->addProductCut("goodElectrons","ELECTRON_dxy");
-  handler->addProductCut("basicElectrons","ELECTRON_passConversionVeto");
-  //handler->addProductCut("goodElectrons","ELECTRON_dz");
-  handler->addProductCut("basicElectrons","ELECTRON_NOTGAP");
-  handler->addProductCut("basicElectrons","ELECTRON_MISSINGHITS");
-  //handler->addProductCut("goodElectrons","ELECTRON_1oEm1oP");
+  handler->addProductCut("basicElectrons", "ELECTRON_MVA_LOOSE");
+  handler->addProductCut("basicElectrons", "PT7");
+  handler->addProductCut("basicElectrons", "ETA2p5");
+  handler->addProductCut("basicElectrons", "ELECTRON_dz");
+  handler->addProductCut("basicElectrons", "ELECTRON_passConversionVeto");
+  handler->addProductCut("basicElectrons", "ELECTRON_MISSINGHITS");
+  
+  // loose electrons according to RA7Coordination2015 TWiki
+  handler->addProduct("looseElectrons","basicElectrons");
+  handler->addProductCut("looseElectrons", "ELECTRON_PROMPT");
+  handler->addProductCut("looseElectrons", "MINIISO0p40");
 
-  handler->addProduct("looseElectrons","ALLELECTRONS");
-  handler->addProductCut("looseElectrons","ELECTRON_LOOSE");
-
+  // tight electrons according to RA7Coordination2015 TWiki
   handler->addProduct("goodElectrons","looseElectrons");
-  handler->addProductCut("goodElectrons","ELECTRON_TIGHT");
-  /*
-  handler->addProduct("goodElectrons","basicElectrons");
-  handler->addProductCut("goodElectrons","ELECTRON_ISOLATED");
-  handler->addProductCut("goodElectrons","ELECTRON_PROMPT");
-  handler->addProductCut("goodElectrons","SIP3D_4sigma");
-  */
+  handler->addProductCut("goodElectrons", "ELECTRON_MVA_TIGHT");
+  handler->addProductCut("goodElectrons", "SIP3D_4sigma");
+  handler->addProductCut("goodElectrons", "MULTIISOM");
+  handler->addProductCut("goodElectrons", "PT10");
+
   handler->addProduct("isoNonPromptElectrons","basicElectrons");
   handler->addProductCut("isoNonPromptElectrons","ELECTRON_ISOLATED");
   handler->addProductCut("isoNonPromptElectrons","ELECTRON_NONPROMPT");
