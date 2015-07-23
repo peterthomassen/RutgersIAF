@@ -1210,11 +1210,13 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addEventVariable("QGOODELECTRONS", new EventVariableObjectVariableVector<double>("CHARGE","goodElectrons"));
   handler->addEventVariable("PTGOODELECTRONS", new EventVariableObjectVariableVector<double>("PT","goodElectrons"));
   handler->addEventVariable("ETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("ETA","goodElectrons"));
+  handler->addEventVariable("fakeRoleGOODELECTRONS", new EventVariableObjectVariableVector<int>("fakeRole","goodElectrons"));
   
   handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
   handler->addEventVariable("QGOODMUONS", new EventVariableObjectVariableVector<double>("CHARGE","goodMuons"));
   handler->addEventVariable("PTGOODMUONS", new EventVariableObjectVariableVector<double>("PT","goodMuons"));
   handler->addEventVariable("ETAGOODMUONS", new EventVariableObjectVariableVector<double>("ETA","goodMuons"));
+  handler->addEventVariable("fakeRoleGOODMUONS", new EventVariableObjectVariableVector<int>("fakeRole","goodMuons"));
   
   handler->addEventVariable("NBASICTAUS", new EventVariableN("NBASICTAUS","basicTaus"));
   
@@ -1222,6 +1224,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addEventVariable("QGOODTAUS", new EventVariableObjectVariableVector<double>("CHARGE","goodTaus"));
   handler->addEventVariable("PTGOODTAUS", new EventVariableObjectVariableVector<double>("PT","goodTaus"));
   handler->addEventVariable("ETAGOODTAUS", new EventVariableObjectVariableVector<double>("ETA","goodTaus"));
+  handler->addEventVariable("fakeRoleGOODTAUS", new EventVariableObjectVariableVector<int>("fakeRole","goodTaus"));
   handler->addEventVariable("TOTALMINIISOGOODTAUS", new EventVariableObjectVariableVector<double>("TOTALMINIISO","goodTaus"));
   handler->addEventVariable("MINIISOGOODTAUS", new EventVariableObjectVariableVector<double>("MINIISO","goodTaus"));
   
