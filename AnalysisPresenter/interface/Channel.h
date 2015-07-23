@@ -16,8 +16,11 @@ class Channel : public AssemblerProjection {
 public:
 	Channel();
 	Channel(Assembler* assembler, TString name);
+	Channel(const Channel* parent, Bundle* bundle, TString missingName);
 	virtual ~Channel();
-
+	
+	Channel* bundle(Bundle* bundle, TString missingName = "") const;
+	
 	double get(TString type) const;
 	double get(TString type, TString bundleName) const;
 	TString getName() const;

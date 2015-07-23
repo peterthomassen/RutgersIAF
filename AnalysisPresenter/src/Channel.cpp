@@ -14,12 +14,20 @@ Channel::Channel(Assembler* assembler, TString name) : AssemblerProjection(assem
 	m_name = name; // needs to be specified here because inherited variable is not visible in initialization list
 }
 
+Channel::Channel(const Channel* parent, Bundle* bundle, TString missingName) : AssemblerProjection(parent, bundle, missingName) {
+}
+
 Channel::Channel() {
 	/* no-op */
 }
 
 Channel::~Channel() {
 	/* no-op */
+}
+
+Channel* Channel::bundle(Bundle* bundle, TString missingName) const {
+	assert(bundle);
+	return new Channel(this, bundle, missingName);
 }
 
 double Channel::get(TString type) const {

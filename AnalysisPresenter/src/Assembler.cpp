@@ -80,8 +80,18 @@ void Assembler::addBundle(Bundle* bundle) {
 	m_bundles.insert(make_pair(bundle->getName(), bundle));
 }
 
-Channel* Assembler::channel(const char* name) {
-	return new Channel(this, name);
+Channel* Assembler::channel(const char* name, Bundle* bundle) {
+	if(!bundle) {
+		bundle = getDefaultBundle();
+	}
+	
+	Channel* channel = new Channel(this, name);
+	
+	if(bundle) {
+		channel = channel->bundle(bundle);
+	}
+	
+	return channel;
 }
 
 Bundle* Assembler::getBundle(TString name) const {

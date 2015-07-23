@@ -27,7 +27,7 @@ public:
 	
 	void addContribution(PhysicsContribution* contribution);
 	void addBundle(Bundle* bundle);
-	Channel* channel(const char*);
+	Channel* channel(const char* name, Bundle* bundle = 0);
 	
 	Bundle* getBundle(TString name) const;
 	Bundle* getDefaultBundle() const;
@@ -38,7 +38,7 @@ public:
 	TString getSelection() const;
 	
 	void process(std::string, TString);
-	AssemblerProjection* project(const char*, const bool binForOverflow, Bundle* bundle = 0);
+	AssemblerProjection* project(const char* name, const bool binForOverflow, Bundle* bundle = 0);
 	void save();
 	void save(const char*, const bool binForOverflow = true);
 	
