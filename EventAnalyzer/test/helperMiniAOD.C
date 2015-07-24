@@ -1328,6 +1328,19 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addWeightVariable("FLATWEIGHT");
 
   //Trigger
+  handler->addObjectVariable("ETA3",new ObjectVariableInRange<double>("ETA",-3.0,3.0,"ETA3"));
+  
+  handler->addProduct("hltJets","goodJets");
+  handler->addProductCut("hltJets","PT40");
+  handler->addProductCut("hltJets","ETA3");
+
+  handler->addProduct("hltForwardJets", "goodForwardJets");
+  handler->addProductCut("hltForwardJets", "PT40");
+  
+  EventVariableSumPT* HLT_HT = new EventVariableSumPT("HLT_HT","hltJets");
+  HLT_HT->addProduct("hltForwardJets");
+  handler->addEventVariable("HLT_HT",HLT_HT);
+  
   handler->addObjectVariable("ACCEPT", new ObjectVariableRename<bool>("accept","ACCEPT"));
   handler->addObjectVariable("TRIGGERNAME", new ObjectVariableRename<TString>("triggerName","TRIGGERNAME"));
   
