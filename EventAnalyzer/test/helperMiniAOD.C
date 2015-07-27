@@ -305,13 +305,16 @@ void setupProducts(BaseHandler* handler)
   //handler->addProductCut("looseMuons","IREL0p5");
   handler->addProductCut("looseMuons","MINIISO0p40");
 
-  handler->addProduct("goodMuons","looseMuons");
-  handler->addProductCut("goodMuons","PT10");
-  handler->addProductCut("goodMuons","MULTIISOL");
+  handler->addProduct("goodMuonsLowPt","looseMuons");
+  handler->addProductCut("goodMuonsLowPt","MULTIISOL");
   //handler->addProductCut("goodMuons","IREL0p15");
-  handler->addProductCut("goodMuons","SIP3D_4sigma");
-  handler->addProductCut("goodMuons","MUON_GOODSEGCOM");
-  handler->addProductCut("goodMuons","MUON_validFraction");
+  handler->addProductCut("goodMuonsLowPt","SIP3D_4sigma");
+  handler->addProductCut("goodMuonsLowPt","MUON_GOODSEGCOM");
+  handler->addProductCut("goodMuonsLowPt","MUON_validFraction");
+
+
+  handler->addProduct("goodMuons","goodMuonsLowPt");
+  handler->addProductCut("goodMuons","PT10");
 
   handler->addProduct("isoNonPromptMuons","basicMuons");
   handler->addProductCut("isoNonPromptMuons","IREL0p15");
@@ -352,10 +355,12 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("looseElectrons", "MINIISO0p40");
 
   // tight electrons according to RA7Coordination2015 TWiki
-  handler->addProduct("goodElectrons","looseElectrons");
-  handler->addProductCut("goodElectrons", "ELECTRON_MVA_TIGHT");
-  handler->addProductCut("goodElectrons", "SIP3D_4sigma");
-  handler->addProductCut("goodElectrons", "MULTIISOM");
+  handler->addProduct("goodElectronsLowPt","looseElectrons");
+  handler->addProductCut("goodElectronsLowPt", "ELECTRON_MVA_TIGHT");
+  handler->addProductCut("goodElectronsLowPt", "SIP3D_4sigma");
+  handler->addProductCut("goodElectronsLowPt", "MULTIISOM");
+
+  handler->addProduct("goodElectrons","goodElectronsLowPt");
   handler->addProductCut("goodElectrons", "PT10");
 
   handler->addProduct("isoNonPromptElectrons","basicElectrons");
@@ -1114,6 +1119,19 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addEventVariable("PTGOODMUONS", new EventVariableObjectVariableVector<double>("PT","goodMuons"));
   handler->addEventVariable("ETAGOODMUONS", new EventVariableObjectVariableVector<double>("ETA","goodMuons"));
   handler->addEventVariable("fakeRoleGOODMUONS", new EventVariableObjectVariableVector<int>("fakeRole","goodMuons"));
+
+  handler->addEventVariable("NGOODELECTRONSLOWPT", new EventVariableN("NGOODELECTRONSLOWPT","goodElectronsLowPt"));
+  handler->addEventVariable("QGOODELECTRONSLOWPT", new EventVariableObjectVariableVector<double>("CHARGE","goodElectronsLowPt"));
+  handler->addEventVariable("PTGOODELECTRONSLOWPT", new EventVariableObjectVariableVector<double>("PT","goodElectronsLowPt"));
+  handler->addEventVariable("ETAGOODELECTRONSLOWPT", new EventVariableObjectVariableVector<double>("ETA","goodElectronsLowPt"));
+  handler->addEventVariable("fakeRoleGOODELECTRONSLOWPT", new EventVariableObjectVariableVector<int>("fakeRole","goodElectronsLowPt"));
+  
+  handler->addEventVariable("NGOODMUONSLOWPT",new EventVariableN("NGOODMUONSLOWPT","goodMuonsLowPt"));
+  handler->addEventVariable("QGOODMUONSLOWPT", new EventVariableObjectVariableVector<double>("CHARGE","goodMuonsLowPt"));
+  handler->addEventVariable("PTGOODMUONSLOWPT", new EventVariableObjectVariableVector<double>("PT","goodMuonsLowPt"));
+  handler->addEventVariable("ETAGOODMUONSLOWPT", new EventVariableObjectVariableVector<double>("ETA","goodMuonsLowPt"));
+  handler->addEventVariable("fakeRoleGOODMUONSLOWPT", new EventVariableObjectVariableVector<int>("fakeRole","goodMuonsLowPt"));
+
   
   handler->addEventVariable("NGOODTAUS", new EventVariableN("NGOODTAUS","goodTaus"));
   handler->addEventVariable("QGOODTAUS", new EventVariableObjectVariableVector<double>("CHARGE","goodTaus"));
