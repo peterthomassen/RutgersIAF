@@ -1211,6 +1211,10 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   EventVariableOS* mLowDY = new EventVariableOS("MLOWDY", "goodElectrons", "LOWDY");
   mLowDY->addProduct("goodMuons");
   handler->addEventVariable("MLOWDY", mLowDY);
+
+  EventVariableOS* mLowDYlo = new EventVariableOS("MLOWDY", "goodElectronsLowPt", "LOWDYLOWPT");
+  mLowDYlo->addProduct("goodMuonsLowPt");
+  handler->addEventVariable("MLOWDYLOWPT", mLowDYlo);
   
   EventVariableMT* MT = new EventVariableMT("MT", mZ,"","goodElectrons","goodMuons","");
   handler->addEventVariable("MT",MT);
@@ -1231,11 +1235,18 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   nLeptons->addProduct("goodTaus");
   handler->addEventVariable("NLEPTONS", nLeptons);
   
+  EventVariableN* nLeptonsLo = new EventVariableN("NLEPTONSLO","goodElectronsLowPt");
+  nLeptonsLo->addProduct("goodMuonsLowPt");
+  nLeptonsLo->addProduct("goodTaus");
+  handler->addEventVariable("NLEPTONSLOWPT",nLeptonsLo);
+
   EventVariableInRange<int>* el2 = new EventVariableInRange<int>("NGOODELECTRONS", 2, 2, "El2");
   handler->addEventVariable("El2", el2);
   
   EventVariableInRange<int>* dileptons = new EventVariableInRange<int>("NLEPTONS", 2, 1e6, "DILEPTONS");
   handler->addEventVariable("DILEPTONS", dileptons);
+
+  handler->addEventVariable("DILEPTONSLOWPT",new EventVariableInRange<int>("NLEPTONSLOWPT",2,1e6));
   
   EventVariableInRange<int>* threeLightLeptons = new EventVariableInRange<int>("NLIGHTLEPTONS", 3, 3, "THREELIGHTLEPTONS");
   handler->addEventVariable("THREELIGHTLEPTONS", threeLightLeptons);
@@ -1256,8 +1267,11 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   
   EventVariableInRange<double>* mLowDYcut = new EventVariableInRange<double>("LOWDYOSMINMLL", 12, 1e6, "MLOWDYCUT");
   handler->addEventVariable("MLOWDYCUT", mLowDYcut);
+
+  handler->addEventVariable("MLOWDYCUTLOWPT", new EventVariableInRange<double>("LOWDYLOWPTOSMINMLL",10,1e6));
   
-  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
+  //EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
+  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUTLOWPT", true, "WRITEEVENT");
 //  writeEvent->addVariable("NOTTRILEPTONONZ");
   handler->addEventVariable("WRITEEVENT", writeEvent);
 
