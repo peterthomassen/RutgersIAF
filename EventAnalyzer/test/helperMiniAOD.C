@@ -53,6 +53,8 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableEventVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRhoCorrectedTotalIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableDeltaBetaCorrectedTotalIso.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableRename.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableConst.h"
 
 namespace {
   int loadMyLibraryTriggerFunc() {
@@ -786,7 +788,6 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("N_bosons", new EventVariableN("N_bosons","BOSONS"));
   handler->addEventVariable("N_bJetsCSVM", new EventVariableN("N_bJetsCSVM","bJetsCSVM"));
   handler->addEventVariable("N_bJetsCSVL", new EventVariableN("N_bJetsCSVL","bJetsCSVL"));
-  handler->addEventVariable("WRITEEVENT", new EventVariableInRange<int>("N_bosons",0,10000));
 
   handler->addEventVariable("N_promptTracks",new EventVariableN("N_promptTracks","promptTracks"));
   handler->addEventVariable("N_nonPromptTracks",new EventVariableN("N_nonPromptTracks","nonPromptTracks"));
@@ -970,88 +971,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   const double zWidth = 10;
   const double mW = 80.385;
 
-  EventVariableThreshold* dieltrig = new EventVariableThreshold("dieltrig","goodElectrons");
-  dieltrig->addThreshold(26);
-  dieltrig->addThreshold(15);
-  handler->addEventVariable("DIELTRIGTHRESHOLD",dieltrig);
-
-  EventVariableThreshold* dimutrig = new EventVariableThreshold("dimutrig","goodMuons");
-  dimutrig->addThreshold(20);
-  dimutrig->addThreshold(11);
-  handler->addEventVariable("DIMUTRIGTHRESHOLD",dimutrig);
-
-  EventVariableThreshold* ellead = new EventVariableThreshold("ellead","goodElectrons");
-  ellead->addThreshold(26);
-  handler->addEventVariable("EGMULEADTHRESHOLD",ellead);
-
-  EventVariableThreshold* elsublead = new EventVariableThreshold("elsublead","goodElectrons");
-  elsublead->addThreshold(15);
-  handler->addEventVariable("MUEGSUBLEADTHRESHOLD",elsublead);
-
-  EventVariableThreshold* mulead = new EventVariableThreshold("mulead","goodMuons");
-  mulead->addThreshold(20);
-  handler->addEventVariable("MUEGLEADTHRESHOLD",mulead);
-
-  EventVariableThreshold* musublead = new EventVariableThreshold("musublead","goodMuons");
-  musublead->addThreshold(11);
-  handler->addEventVariable("EGMUSUBLEADTHRESHOLD",musublead);
-
-  handler->addEventVariable("MUEGTHRESHOLD",new EventVariableCombined("MUEGLEADTHRESHOLD","MUEGSUBLEADTHRESHOLD",true));
-  handler->addEventVariable("EGMUTHRESHOLD",new EventVariableCombined("EGMULEADTHRESHOLD","EGMUSUBLEADTHRESHOLD",true));
-
-  EventVariableThreshold* tauthresh = new EventVariableThreshold("tauthresh","goodTaus");
-  tauthresh->addThreshold(25);
-  handler->addEventVariable("TAUTHRESH",tauthresh);
-
-  EventVariableThreshold* eltauthresh = new EventVariableThreshold("eltauthresh","goodElectrons");
-  eltauthresh->addThreshold(25);
-  handler->addEventVariable("ELTAUTHRESH",eltauthresh);
-
-  handler->addEventVariable("ELTAUTHRESHOLD",new EventVariableCombined("ELTAUTHRESH","TAUTHRESH",true));
-
-  handler->addEventVariable("MUTAUTHRESHOLD",new EventVariableCombined("MUEGLEADTHRESHOLD","TAUTHRESH",true));
-
-  EventVariableThreshold* trimu = new EventVariableThreshold("trimuthresh","goodMuons");
-  trimu->addThreshold(15);
-  trimu->addThreshold(13);
-  trimu->addThreshold(10);
-  handler->addEventVariable("TRIMUTHRESHOLD",trimu);
-
-  EventVariableThreshold* triel = new EventVariableThreshold("trielthresh","goodElectrons");
-  triel->addThreshold(19);
-  triel->addThreshold(15);
-  triel->addThreshold(11);
-  handler->addEventVariable("TRIELTHRESHOLD",triel);
-
-  EventVariableThreshold* diel = new EventVariableThreshold("diel","goodElectrons");
-  diel->addThreshold(15);
-  diel->addThreshold(15);
-  handler->addEventVariable("DIELTHRESHOLD_FORTRI",diel);
-
-  EventVariableThreshold* mu10 = new EventVariableThreshold("mu10","goodMuons");
-  mu10->addThreshold(11);
-  handler->addEventVariable("MU11THRESHOLD_FORTRI",mu10);
-
-  EventVariableThreshold* dimu = new EventVariableThreshold("dimu","goodMuons");
-  dimu->addThreshold(12);
-  dimu->addThreshold(12);
-  handler->addEventVariable("DIMUTHRESHOLD_FORTRI",dimu);
-
-  EventVariableThreshold* el12 = new EventVariableThreshold("el12","goodElectrons");
-  el12->addThreshold(12);
-  handler->addEventVariable("EL12THRESHOLD_FORTRI",el12);
-
-  EventVariableCombined* Mu1El2Threshold = new EventVariableCombined("MU11THRESHOLD_FORTRI","DIELTHRESHOLD_FORTRI",true,"Mu1El2Threshold");
-  handler->addEventVariable("MU1EL2THRESHOLD",Mu1El2Threshold);
-
-  EventVariableCombined* Mu2El1Threshold = new EventVariableCombined("EL12THRESHOLD_FORTRI","DIMUTHRESHOLD_FORTRI",true,"Mu2El1Threshold");
-  handler->addEventVariable("MU2EL1THRESHOLD",Mu2El1Threshold);
-
-
-  EventVariableCombined* bestTriLepThresh = new EventVariableCombined("TRIMUTHRESHOLD","TRIELTHRESHOLD",false,"TRILEPTHRESH");
-  bestTriLepThresh->addVariable("MU1EL2THRESHOLD");
-  bestTriLepThresh->addVariable("MU2EL1THRESHOLD");
-  handler->addEventVariable("TRILEPTHRESHOLD",bestTriLepThresh);
+  handler->addEventVariable("ALWAYSTRUE", new EventVariableConst<bool>(true));
 
   EventVariableThreshold* pt201512 = new EventVariableThreshold("PT201512","goodElectrons");
   pt201512->addProduct("goodMuons");
@@ -1433,5 +1353,224 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addObjectVariable("isHLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
   handler->addProductCut("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1", "isHLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1");
   handler->addEventVariable("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1_N", new EventVariableN("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1_N", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
+
+  EventVariableThreshold* dieltrig = new EventVariableThreshold("dieltrig","goodElectrons");
+  dieltrig->addThreshold(26);
+  dieltrig->addThreshold(15);
+  handler->addEventVariable("DIELTRIGTHRESHOLD",dieltrig);
+
+  EventVariableThreshold* dimutrig = new EventVariableThreshold("dimutrig","goodMuons");
+  dimutrig->addThreshold(17);
+  dimutrig->addThreshold(8);
+  handler->addEventVariable("DIMUTRIGTHRESHOLD",dimutrig);
+
+  EventVariableThreshold* ellead = new EventVariableThreshold("ellead","goodElectrons");
+  ellead->addThreshold(28);
+  handler->addEventVariable("EGMULEADTHRESHOLD",ellead);
+
+  EventVariableThreshold* elsublead = new EventVariableThreshold("elsublead","goodElectrons");
+  elsublead->addThreshold(18);
+  handler->addEventVariable("MUEGSUBLEADTHRESHOLD",elsublead);
+
+  EventVariableThreshold* mulead = new EventVariableThreshold("mulead","goodMuons");
+  mulead->addThreshold(24);
+  handler->addEventVariable("MUEGLEADTHRESHOLD",mulead);
+
+  EventVariableThreshold* musublead = new EventVariableThreshold("musublead","goodMuons");
+  musublead->addThreshold(8);
+  handler->addEventVariable("EGMUSUBLEADTHRESHOLD",musublead);
+
+  handler->addEventVariable("MUEGTHRESHOLD",new EventVariableCombined("MUEGLEADTHRESHOLD","MUEGSUBLEADTHRESHOLD",true));
+  handler->addEventVariable("EGMUTHRESHOLD",new EventVariableCombined("EGMULEADTHRESHOLD","EGMUSUBLEADTHRESHOLD",true));
+
+  handler->addEventVariable("MUEGCOMBINEDTHRESHOLD", new EventVariableCombined("MUEGTHRESHOLD","EGMUTHRESHOLD"));
+
+  EventVariableThreshold* tauthresh = new EventVariableThreshold("tauthresh","goodTaus");
+  tauthresh->addThreshold(25);
+  handler->addEventVariable("TAUTHRESH",tauthresh);
+
+  EventVariableThreshold* eltauthresh = new EventVariableThreshold("eltauthresh","goodElectrons");
+  eltauthresh->addThreshold(25);
+  handler->addEventVariable("ELTAUTHRESH",eltauthresh);
+
+  handler->addEventVariable("ELTAUTHRESHOLD",new EventVariableCombined("ELTAUTHRESH","TAUTHRESH",true));
+
+  handler->addEventVariable("MUTAUTHRESHOLD",new EventVariableCombined("MUEGLEADTHRESHOLD","TAUTHRESH",true));
+
+  EventVariableThreshold* trimu = new EventVariableThreshold("trimuthresh","goodMuons");
+  trimu->addThreshold(13);
+  trimu->addThreshold(10);
+  trimu->addThreshold(8);
+  handler->addEventVariable("TRIMUTHRESHOLD",trimu);
+
+  EventVariableThreshold* triel = new EventVariableThreshold("trielthresh","goodElectrons");
+  triel->addThreshold(25);
+  triel->addThreshold(18);
+  triel->addThreshold(15);
+  handler->addEventVariable("TRIELTHRESHOLD",triel);
+
+  EventVariableThreshold* diel = new EventVariableThreshold("diel","goodElectrons");
+  diel->addThreshold(20);
+  diel->addThreshold(13);
+  handler->addEventVariable("DIELTHRESHOLD_FORTRI",diel);
+
+  EventVariableThreshold* mu10 = new EventVariableThreshold("mu10","goodMuons");
+  mu10->addThreshold(9);
+  handler->addEventVariable("MU11THRESHOLD_FORTRI",mu10);
+
+  EventVariableThreshold* dimu = new EventVariableThreshold("dimu","goodMuons");
+  dimu->addThreshold(10);
+  dimu->addThreshold(10);
+  handler->addEventVariable("DIMUTHRESHOLD_FORTRI",dimu);
+
+  EventVariableThreshold* el12 = new EventVariableThreshold("el12","goodElectrons");
+  el12->addThreshold(15);
+  handler->addEventVariable("EL12THRESHOLD_FORTRI",el12);
+
+  EventVariableCombined* Mu1El2Threshold = new EventVariableCombined("MU11THRESHOLD_FORTRI","DIELTHRESHOLD_FORTRI",true,"Mu1El2Threshold");
+  handler->addEventVariable("MU1EL2THRESHOLD",Mu1El2Threshold);
+
+  EventVariableCombined* Mu2El1Threshold = new EventVariableCombined("EL12THRESHOLD_FORTRI","DIMUTHRESHOLD_FORTRI",true,"Mu2El1Threshold");
+  handler->addEventVariable("MU2EL1THRESHOLD",Mu2El1Threshold);
+
+
+  EventVariableCombined* bestTriLepThresh = new EventVariableCombined("TRIMUTHRESHOLD","TRIELTHRESHOLD",false,"TRILEPTHRESH");
+  bestTriLepThresh->addVariable("MU1EL2THRESHOLD");
+  bestTriLepThresh->addVariable("MU2EL1THRESHOLD");
+  handler->addEventVariable("TRILEPTHRESHOLD",bestTriLepThresh);
+
+
+  handler->addEventVariable("HLTHT300",new EventVariableInRange<double>("HLT_HT",300,1000000));
+
+  EventVariableThreshold* dieltright = new EventVariableThreshold("dieltrig","goodElectrons");
+  dieltright->addThreshold(28);
+  dieltright->addThreshold(17);
+  handler->addEventVariable("DIELHTTRIGTHRESHOLD",dieltright);
+
+  EventVariableThreshold* dimutright = new EventVariableThreshold("dimutrig","goodMuons");
+  dimutright->addThreshold(10);
+  dimutright->addThreshold(8);
+  handler->addEventVariable("DIMUHTTRIGTHRESHOLD",dimutright);
+
+  EventVariableThreshold* elleadht = new EventVariableThreshold("ellead","goodElectrons");
+  elleadht->addThreshold(18);
+  handler->addEventVariable("MUEG_ELHTTHRESHOLD",elleadht);
+
+  EventVariableThreshold* muleadht = new EventVariableThreshold("mulead","goodMuons");
+  muleadht->addThreshold(8);
+  handler->addEventVariable("MUEG_MUHTTHRESHOLD",muleadht);
+
+  handler->addEventVariable("MUEGHTTHRESHOLD",new EventVariableCombined("MUEG_MUHTTHRESHOLD","MUEG_EGHTTHRESHOLD",true));
+
+  handler->addEventVariable("PASSMUEGHTTRIG",new EventVariableCombined("MUEGHTTHRESHOLD","HLTHT300",true));
+  handler->addEventVariable("PASSDIMUHTTRIG",new EventVariableCombined("DIMUHTTRIGTHRESHOLD","HLTHT300",true));
+  handler->addEventVariable("PASSDIELHTTRIG",new EventVariableCombined("DIELHTTRIGTHRESHOLD","HLTHT300",true));
+
+  /*
+  if(isMC){
+    handler->addEventVariable("WRITEEVENT", new EventVariableInRange<int>("N_bosons",0,10000));
+  }else{
+    handler->addEventVariable("WRITEEVENT", new EventVariableRename<bool>("ALWAYSTRUE"));
+  }
+  */
+
+}
+
+void setupTriggers(BaseHandler* handler,int mode){
+
+  ObjectVariableValueInList<TString>* isDoubleMuTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1");
+  isDoubleMuTrigger->addValue("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1");
+  handler->addObjectVariable("isDoubleMuTrigger",isDoubleMuTrigger);
+
+  ObjectVariableValueInList<TString>* isDoubleEGTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1");
+  handler->addObjectVariable("isDoubleEGTrigger",isDoubleEGTrigger);
+
+  ObjectVariableValueInList<TString>* isMuEGTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1");
+  isMuEGTrigger->addValue("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1");
+  handler->addObjectVariable("isMuEGTrigger",isMuEGTrigger);
+
+  ObjectVariableValueInList<TString>* isDoubleMuHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_DoubleMu8_Mass8_PFHT300_v1");
+  handler->addObjectVariable("isDoubleMuHTTrigger",isDoubleMuHTTrigger);
+
+  ObjectVariableValueInList<TString>* isDoubleEGHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1");
+  handler->addObjectVariable("isDoubleEGHTTrigger",isDoubleEGHTTrigger);
+
+  ObjectVariableValueInList<TString>* isMuEGHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1");
+  handler->addObjectVariable("isMuEGHTTrigger",isMuEGHTTrigger);
+
+  ObjectVariableValueInList<TString>* isTriMuTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_TripleMu_12_10_5_v1");
+  handler->addObjectVariable("isTriMuTrigger",isTriMuTrigger);
+
+  ObjectVariableValueInList<TString>* isDiMuElTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1");
+  handler->addObjectVariable("isDiMuElTrigger",isDiMuElTrigger);
+
+  ObjectVariableValueInList<TString>* isMuDiElTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1");
+  handler->addObjectVariable("isMuDiElTrigger",isMuDiElTrigger);
+
+  ObjectVariableValueInList<TString>* isTriElTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1");
+  handler->addObjectVariable("isTriElTrigger",isTriElTrigger);
+
+  ObjectVariableValueInList<TString>* isHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_PFHT800_v1");
+  handler->addObjectVariable("isHTTrigger",isHTTrigger);
+
+  vector<TString> triggers;
+  triggers.push_back("DoubleMuTrigger");
+  triggers.push_back("DoubleEGTrigger");
+  triggers.push_back("MuEGTrigger");
+  triggers.push_back("DoubleMuHTTrigger");
+  triggers.push_back("DoubleEGHTTrigger");
+  triggers.push_back("MuEGHTTrigger");
+  triggers.push_back("TriMuTrigger");
+  triggers.push_back("DiMuElTrigger");
+  triggers.push_back("MuDiElTrigger");
+  triggers.push_back("TriElTrigger");
+  triggers.push_back("HTTrigger");
+
+  vector<TString> thresholds;
+  thresholds.push_back("DIMUTRIGTHRESHOLD");
+  thresholds.push_back("DIELTRIGTHRESHOLD");
+  thresholds.push_back("MUEGCOMBINEDTHRESHOLD");
+  thresholds.push_back("PASSDIMUHTTRIG");
+  thresholds.push_back("PASSDIELHTTRIG");
+  thresholds.push_back("PASSMUEGHTTRIG");
+  thresholds.push_back("TRIMUTHRESHOLD");
+  thresholds.push_back("MU2El1THRESHOLD");
+  thresholds.push_back("MU1EL2THRESHOLD");
+  thresholds.push_back("TRIELTHRESHOLD");
+  thresholds.push_back("ALWAYSTRUE");
+
+  for(int i = 0; i < (int) triggers.size(); i++){
+    TString trigger = triggers[i];
+    handler->addProduct(trigger,"goodtriggers");
+    handler->addProductCut(trigger,TString::Format("is%s",trigger.Data()));
+    TString nname = TString::Format("N%s",trigger.Data());
+    handler->addEventVariable(nname,new EventVariableN(nname,trigger));
+    TString nnamege1  = TString::Format("N%sgt0",trigger.Data());
+    handler->addEventVariable(nnamege1,new EventVariableInRange<int>(nname,1,100000));
+    TString acceptname = TString::Format("ACCEPT_%s",trigger.Data());
+    handler->addEventVariable(acceptname,new EventVariableCombined(thresholds[i],nnamege1,true));
+    TString nacceptname = TString::Format("REJECT_%s",trigger.Data());
+    handler->addEventVariable(nacceptname,new EventVariableReversed(acceptname));
+  }
+
+  EventVariableCombined* trigaccept = NULL;
+  switch(mode){
+  case 1:
+    handler->addEventVariable("TRIGGERACCEPT",new EventVariableRename<bool>("ACCEPT_MuEGTrigger"));
+    break;
+  case 2:
+    handler->addEventVariable("TRIGGERACCEPT",new EventVariableCombined("ACCEPT_DoubleMuTrigger","REJECT_MuEGTrigger",true));
+    break;
+  case 3:
+    trigaccept = new EventVariableCombined("ACCEPT_DoubleEGTrigger","REJECT_DoubleMuTrigger",true);
+    trigaccept->addVariable("REJECT_MuEGTrigger");
+    handler->addEventVariable("TRIGGERACCEPT",trigaccept);
+    break;
+  default:
+    trigaccept = new EventVariableCombined("DIMUTRIGTHRESHOLD","DIELTRIGTHRESHOLD");
+    trigaccept->addVariable("MUEGCOMBINEDTHRESHOLD");
+    handler->addEventVariable("TRIGGERACCEPT",trigaccept);
+    break;
+  }
 
 }
