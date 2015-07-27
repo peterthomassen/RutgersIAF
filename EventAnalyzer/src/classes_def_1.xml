@@ -8,4 +8,16 @@
   <class name="ObjectVariableDeltaBetaCorrectedTotalIso" ClassVersion="1">
    <version ClassVersion="1" checksum="349618540"/>
   </class>
+  <class name="EventVariableRename<int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="199012079"/>
+  </class>
+  <class name="EventVariableRename<double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3511749917"/>
+  </class>
+  <class name="EventVariableRename<TString>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3847532409"/>
+  </class>
+  <class name="EventVariableRename<bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2841408838"/>
+  </class>
 </lcgdict>
