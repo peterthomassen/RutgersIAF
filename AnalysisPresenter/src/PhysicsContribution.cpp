@@ -33,7 +33,7 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 	}
 	TTree* treeR = (TTree*)f.Get(m_treeRname);
 	if(!treeR) {
-		cout << "was processing " << m_filename << endl;
+		cout << "was processing " << m_filename << ", looking for Rutgers tree " << m_treeRname << endl;
 		throw std::runtime_error("contribution root file does not contain treeR");
 	}
 	m_MC = treeR->GetBranch("WEIGHT");
