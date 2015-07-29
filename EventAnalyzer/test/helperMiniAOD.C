@@ -1235,6 +1235,10 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   nLeptons->addProduct("goodTaus");
   handler->addEventVariable("NLEPTONS", nLeptons);
   
+  EventVariableN* nLightLeptons = new EventVariableN("NLIGHTLEPTONS", "goodElectrons");
+  nLightLeptons->addProduct("goodMuons");
+  handler->addEventVariable("NLIGHTLEPTONS", nLightLeptons);
+  
   EventVariableN* nLeptonsLo = new EventVariableN("NLEPTONSLO","goodElectronsLowPt");
   nLeptonsLo->addProduct("goodMuonsLowPt");
   nLeptonsLo->addProduct("goodTaus");
