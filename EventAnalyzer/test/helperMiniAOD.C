@@ -1494,34 +1494,45 @@ void setupTriggers(BaseHandler* handler,int mode){
 
   ObjectVariableValueInList<TString>* isDoubleMuTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1");
   isDoubleMuTrigger->addValue("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1");
+  isDoubleMuTrigger->addValue("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2");
+  isDoubleMuTrigger->addValue("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2");
   handler->addObjectVariable("isDoubleMuTrigger",isDoubleMuTrigger);
 
   ObjectVariableValueInList<TString>* isDoubleEGTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1");
+  isDoubleEGTrigger->addValue("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2");
   handler->addObjectVariable("isDoubleEGTrigger",isDoubleEGTrigger);
 
   ObjectVariableValueInList<TString>* isMuEGTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1");
   isMuEGTrigger->addValue("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1");
+  isMuEGTrigger->addValue("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2");
+  isMuEGTrigger->addValue("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2");
   handler->addObjectVariable("isMuEGTrigger",isMuEGTrigger);
 
   ObjectVariableValueInList<TString>* isDoubleMuHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_DoubleMu8_Mass8_PFHT300_v1");
+  isDoubleMuHTTrigger->addValue("HLT_DoubleMu8_Mass8_PFHT300_v2");
   handler->addObjectVariable("isDoubleMuHTTrigger",isDoubleMuHTTrigger);
 
   ObjectVariableValueInList<TString>* isDoubleEGHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1");
+  isDoubleEGHTTrigger->addValue("HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v2");
   handler->addObjectVariable("isDoubleEGHTTrigger",isDoubleEGHTTrigger);
 
   ObjectVariableValueInList<TString>* isMuEGHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1");
+  isMuEGHTTrigger->addValue("HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v2");
   handler->addObjectVariable("isMuEGHTTrigger",isMuEGHTTrigger);
 
   ObjectVariableValueInList<TString>* isTriMuTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_TripleMu_12_10_5_v1");
   handler->addObjectVariable("isTriMuTrigger",isTriMuTrigger);
 
   ObjectVariableValueInList<TString>* isDiMuElTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1");
+  isDiMuElTrigger->addValue("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v2");
   handler->addObjectVariable("isDiMuElTrigger",isDiMuElTrigger);
 
   ObjectVariableValueInList<TString>* isMuDiElTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1");
+  isMuDiElTrigger->addValue("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v2");
   handler->addObjectVariable("isMuDiElTrigger",isMuDiElTrigger);
 
   ObjectVariableValueInList<TString>* isTriElTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1");
+  isTriElTrigger->addValue("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v2");
   handler->addObjectVariable("isTriElTrigger",isTriElTrigger);
 
   ObjectVariableValueInList<TString>* isHTTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_PFHT800_v1");
@@ -1571,19 +1582,23 @@ void setupTriggers(BaseHandler* handler,int mode){
   switch(mode){
   case 1:
     handler->addEventVariable("TRIGGERACCEPT",new EventVariableRename<bool>("ACCEPT_MuEGTrigger"));
+    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("MUEG")));
     break;
   case 2:
     handler->addEventVariable("TRIGGERACCEPT",new EventVariableCombined("ACCEPT_DoubleMuTrigger","REJECT_MuEGTrigger",true));
+    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DOUBLEMU")));
     break;
   case 3:
     trigaccept = new EventVariableCombined("ACCEPT_DoubleEGTrigger","REJECT_DoubleMuTrigger",true);
     trigaccept->addVariable("REJECT_MuEGTrigger");
     handler->addEventVariable("TRIGGERACCEPT",trigaccept);
+    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DOUBLEEG")));
     break;
   default:
     trigaccept = new EventVariableCombined("DIMUTRIGTHRESHOLD","DIELTRIGTHRESHOLD");
     trigaccept->addVariable("MUEGCOMBINEDTHRESHOLD");
     handler->addEventVariable("TRIGGERACCEPT",trigaccept);
+    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DEFAULT")));
     break;
   }
 
