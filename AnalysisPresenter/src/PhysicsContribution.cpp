@@ -77,7 +77,7 @@ void PhysicsContribution::addWeight(TString weight, double normalization) {
 	}
 	
 	if(isData()) {
-		cerr << "Warning: Applying " << m_weights.size() << " weight(s) to data" << endl;
+		cerr << "Warning: Applying weight " << weight << " to data" << endl;
 	}
 	
 	if(std::find(m_weights.begin(), m_weights.end(), weight) != m_weights.end()) {
