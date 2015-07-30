@@ -59,25 +59,15 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	std::vector<TString> bundleNamesSig = getBundleNames("signal");
 	std::vector<TString> bundleNamesBkg = getBundleNames("background");
 	
-	//Create datacard
+	// Create datacard
 	ofstream datacard;
-	TString basicName = "/datacard_";
-	TString endName = ".txt";
-	TString completeName = "";
-	TString directory = "";
-	
-	char buffer[1024]; 
-	if(getcwd(buffer, 1024) == NULL) {
-		perror("***Directory Error***");  
-	}
-	directory = buffer;
-	completeName = directory + basicName + m_name + "_" + datacardName + endName;
-	
-	datacard.open(completeName);
+	datacard.open(datacardName);
 	datacard << std::fixed << std::setprecision(0);
 	
-	datacard << "#Datacard Version 2.0" << '\n' << "#Jun 2015" << '\n' << '\n';
-	datacard << "imax " << getChannels().size() << " number of channels" << '\n' << "jmax " << bundleNamesBkg.size() + bundleNamesSig.size() - 1 << " number of background" << '\n' << "kmax " << getUncertaintyNames().size() + getChannels().size() * (bundleNamesBkg.size() + bundleNamesSig.size()) << " number nuisance parameters" << '\n';
+	datacard << "# Datacard " << datacardName << endl << endl;
+	datacard << "imax " << getChannels().size() << " number of channels" << endl;
+	datacard << "jmax " << bundleNamesBkg.size() + bundleNamesSig.size() - 1 << " number of backgrounds and signals - 1" << endl;
+	datacard << "kmax " << getUncertaintyNames().size() + getChannels().size() * (bundleNamesBkg.size() + bundleNamesSig.size()) << " number nuisance parameters" << '\n';
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
 	datacard << "Observation";
 	
