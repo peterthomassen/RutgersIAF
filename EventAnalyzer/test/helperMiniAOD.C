@@ -537,11 +537,20 @@ void setupProducts(BaseHandler* handler)
 
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL","PHOTON_ENDCAP",false,"PHOTON_COMBINED"));
 
-  handler->addProduct("goodPhotons","ALLPHOTONS");
-  handler->addProductCut("goodPhotons","PT15");
-  handler->addProductCut("goodPhotons","ETA2p4");
-  handler->addProductCut("goodPhotons","PHOTON_COMBINED");
+  handler->addProduct("basicPhotons","ALLPHOTONS");
+  handler->addProductCut("basicPhotons","PT15");
+  handler->addProductCut("basicPhotons","ETA2p4");
+  handler->addProductCut("basicPhotons","PHOTON_COMBINED");
 
+  handler->addProduct("goodPhotons","basicPhotons");
+  handler->addProductCut("goodPhotons","passTightId");
+
+  handler->addProduct("mediumPhotons","basicPhotons");
+  handler->addProductCut("mediumPhotons","passMediumId");
+
+  handler->addProduct("loosePhotons","basicPhotons");
+  handler->addProductCut("loosePhotons","passLooseId");
+  
   //////////////
   //Setup Jets//
   //////////////
@@ -954,6 +963,9 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addEventVariable("NGOODPHOTONS", new EventVariableN("NGOODPHOTONS","goodPhotons"));
   handler->addEventVariable("PTGOODPHOTONS", new EventVariableObjectVariableVector<double>("PT","goodPhotons"));
   handler->addEventVariable("ETAGOODPHOTONS", new EventVariableObjectVariableVector<double>("ETA","goodPhotons"));
+
+  handler->addEventVariable("NMEDIUMPHOTONS", new EventVariableN("NMEDIUMPHOTONS","mediumPhotons"));
+  handler->addEventVariable("NLOOSEPHOTONS", new EventVariableN("NLOOSEPHOTONS","loosePhotons"));
 
   handler->addEventVariable("nINPELECTRONS", new EventVariableN("nINPELECTRONS","isoNonPromptElectrons"));
   handler->addEventVariable("QINPELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","isoNonPromptElectrons"));
