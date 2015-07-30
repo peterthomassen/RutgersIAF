@@ -903,16 +903,19 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addEventVariable("MINIISOBASICELECTRONS", new EventVariableObjectVariableVector<double>("MINIISO","basicElectrons"));
   handler->addEventVariable("ptRatioBASICELECTRONS", new EventVariableObjectVariableVector<double>("ptRatio","basicElectrons"));
   handler->addEventVariable("ptRelBASICELECTRONS", new EventVariableObjectVariableVector<double>("ptRel","basicElectrons"));
+  handler->addEventVariable("PTBASICELECTRONS", new EventVariableObjectVariableVector<double>("PT","basicElectrons"));
   
   handler->addEventVariable("DXYBASICMUONS", new EventVariableObjectVariableVector<double>("dxy","basicMuons"));
   handler->addEventVariable("RELISOBASICMUONS", new EventVariableObjectVariableVector<double>("RELISO","basicMuons"));
   handler->addEventVariable("MINIISOBASICMUONS", new EventVariableObjectVariableVector<double>("MINIISO","basicMuons"));
   handler->addEventVariable("ptRatioBASICMUONS", new EventVariableObjectVariableVector<double>("ptRatio","basicMuons"));
   handler->addEventVariable("ptRelBASICMUONS", new EventVariableObjectVariableVector<double>("ptRel","basicMuons"));
+  handler->addEventVariable("PTBASICMUONS", new EventVariableObjectVariableVector<double>("PT","basicMuons"));
   
   handler->addEventVariable("NBASICTAUS", new EventVariableN("NBASICTAUS","basicTaus"));
   handler->addEventVariable("RELISOBASICTAUS", new EventVariableObjectVariableVector<double>("RELISO","basicTaus"));
   handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));
+  handler->addEventVariable("PTBASICTAUS", new EventVariableObjectVariableVector<double>("PT","basicTaus"));
 
   handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
   handler->addEventVariable("QGOODELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","goodElectrons"));
@@ -1001,6 +1004,12 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   handler->addEventVariable("NGOODINCLUSIVETRACKS", new EventVariableN("NGOODTRACKS","goodInclusiveTracks"));
   
   handler->addEventVariable("NINCLUSIVETRACKS", new EventVariableN("NINCLUSIVETRACKS","inclusiveTracks"));
+  handler->addEventVariable("RELISOINCLUSIVETRACKS", new EventVariableObjectVariableVector<double>("RELISO","inclusiveTracks"));
+  handler->addEventVariable("MINIISOINCLUSIVETRACKS", new EventVariableObjectVariableVector<double>("MINIISO","inclusiveTracks"));
+  handler->addEventVariable("ptRatioINCLUSIVETRACKS", new EventVariableObjectVariableVector<double>("ptRatio","inclusiveTracks"));
+  handler->addEventVariable("ptRelINCLUSIVETRACKS", new EventVariableObjectVariableVector<double>("ptRel","inclusiveTracks"));
+  handler->addEventVariable("PTINCLUSIVETRACKS", new EventVariableObjectVariableVector<double>("PT","inclusiveTracks"));
+  
   handler->addEventVariable("NISOINCLUSIVETRACKS", new EventVariableN("NISOINCLUSIVETRACKS","isoInclusiveTracks"));
   handler->addEventVariable("NPROMPTINCLUSIVETRACKS", new EventVariableN("NPROMPTINCLUSIVETRACKS","promptInclusiveTracks"));
   handler->addEventVariable("NISONONPROMPTINCLUSIVETRACKS", new EventVariableN("NISONONPROMPTINCLUSIVETRACKS","isoNonPromptInclusiveTracks"));
