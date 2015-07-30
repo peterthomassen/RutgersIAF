@@ -66,9 +66,9 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	
 	datacard << "# Datacard " << datacardName << endl << endl;
 	datacard << "imax " << getChannels().size() << " number of channels" << endl;
-	datacard << "jmax " << bundleNamesBkg.size() + bundleNamesSig.size() - 1 << " number of backgrounds and signals - 1" << endl;
-	datacard << "kmax " << getUncertaintyNames().size() + getChannels().size() * (bundleNamesBkg.size() + bundleNamesSig.size()) << " number nuisance parameters" << '\n';
-	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << "jmax " << bundleNamesBkg.size() + bundleNamesSig.size() - 1 << " number of backgrounds and signals minus 1" << endl;
+	datacard << "kmax " << getUncertaintyNames().size() + getChannels().size() * (bundleNamesBkg.size() + bundleNamesSig.size()) << " number nuisance parameters" << endl;
+	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	datacard << "Observation";
 	
 	// Calculate values for datacard
@@ -76,8 +76,8 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 		auto yield = isData ? channel->get("data") : channel->get("background");
 		datacard << '\t' << yield;
 	}
-	datacard << '\n';
-	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << endl;
+	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	
 	datacard << "bin\t";
 	for(auto &channel : getChannels()) {
@@ -86,7 +86,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 		}
 	}
 	datacard << std::fixed << std::setprecision(3);
-	datacard << '\n';
+	datacard << endl;
 	
 	datacard << "process\t";
 	for(size_t i = 0; i < getChannels().size(); i++) {
@@ -98,7 +98,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 			datacard << '\t' << "bkg_" << bundleName.Copy().ReplaceAll(" ", "_");
 		}
 	}
-	datacard << '\n';
+	datacard << endl;
 	
 	datacard << "process\t";
 
@@ -113,7 +113,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 			datacard << '\t' << l + 1;
 		}
 	}
-	datacard << '\n';
+	datacard << endl;
 	
 	datacard << "rate\t";
 	for(auto &channel : getChannels()) {
@@ -125,8 +125,8 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 			datacard << '\t' << max(minYield, channel->get("background", bundleName));
 		}
 	}
-	datacard << '\n';
-	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << '\n';
+	datacard << endl;
+	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	
 	for(auto &uncertaintyName : getUncertaintyNames()) {
 		datacard << uncertaintyName.Copy().ReplaceAll(" ", "_") << " lnN";
@@ -146,9 +146,9 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 				datacard << '\t' << 1 + ratio;
 			}
 		}
-		datacard << '\n';
+		datacard << endl;
 	}
-		
+	
 	int nYields = (bundleNamesBkg.size() + bundleNamesSig.size()) * getChannels().size();
 	double statUncertainty[nYields][nYields];
 	
@@ -185,7 +185,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 			datacard << '\t' << statUncertainty[n][m];
 		}
 		
-		datacard << '\n';
+		datacard << endl;
 	}
 	
 	datacard.close();
