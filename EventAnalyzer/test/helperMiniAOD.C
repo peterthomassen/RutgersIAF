@@ -1048,20 +1048,6 @@ void setupVariables2(BaseHandler* handler,bool isMC = false)
   
   handler->addEventVariable("NRECOVERTICES", new EventVariableN("NRECOVERTICES","ALLRECOVERTICES"));
 
-  if(isMC) {
-		handler->addEventVariable("NBOSONS",new EventVariableN("NBOSONS","BOSONS"));
-		handler->addEventVariable("N_McMuonsFromZ", new EventVariableN("N_McMuonsFromZ","MCMUONSFROMZ"));
-		handler->addEventVariable("N_McElectronsFromZ", new EventVariableN("N_McElectronsFromZ","MCELECTRONSFROMZ"));
-
-		handler->addEventVariable("N_McTausFromBoson", new EventVariableN("N_McTausFromBoson","MCTAUSFROMBOSON"));
-		handler->addEventVariable("N_McMuonsFromBoson", new EventVariableN("N_McMuonsFromBoson","MCMUONSFROMBOSON"));
-		handler->addEventVariable("N_McElectronsFromBoson", new EventVariableN("N_McElectronsFromBoson","MCELECTRONSFROMBOSON"));
-
-		handler->addEventVariable("NMCTAUS" , new EventVariableN("NMCTAUS","MCTAUS"));
-		handler->addEventVariable("NMCMUONS", new EventVariableN("NMCMUONS","MCMUONS"));
-		handler->addEventVariable("NMCELECTRONS",new EventVariableN("NMCELECTRONS","MCELECTRONS"));
-  }
-
   EventVariableSumPT* HT = new EventVariableSumPT("HT","goodJets");
   handler->addEventVariable("HT",HT);
 
