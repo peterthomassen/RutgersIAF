@@ -150,12 +150,10 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	}
 	
 	int nYields = (bundleNamesBkg.size() + bundleNamesSig.size()) * getChannels().size();
-	double statUncertainty[nYields][nYields];
+	double statUncertainty[nYields];
 	
 	for(int n = 0; n < nYields; n++) {
-		for(int m = 0; m < nYields; m++) {
-			statUncertainty[n][m] = 1;
-		}
+	  statUncertainty[n] = 1;
 	}
 	
 	int loopIndex = 0;
@@ -165,7 +163,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 			double contentSignalStat = channel->getStat("signal", bundleName);
 			double contentSignal = max(minYield, channel->get("signal", bundleName));
 			double ratio = statFactor * contentSignalStat/contentSignal;
-			statUncertainty[loopIndex][loopIndex] += ratio;
+			statUncertainty[loopIndex] += ratio;
 			loopIndex++;
 		}
 		
@@ -173,7 +171,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 			double contentBackgroundStat = channel->getStat("background", bundleName);
 			double contentBackground = max(minYield, channel->get("background", bundleName));
 			double ratio = statFactor * contentBackgroundStat/contentBackground;
-			statUncertainty[loopIndex][loopIndex] += ratio;
+			statUncertainty[loopIndex] += ratio;
 			loopIndex++;
 		}
 	}
@@ -182,7 +180,10 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 		datacard << "Stat" << n + 1 << " lnN";
 	
 		for(int m = 0; m < nYields; m++) {
-			datacard << '\t' << statUncertainty[n][m];
+		  if(n == m)
+			datacard << '\t' << statUncertainty[n];
+		  else 
+		    datacard << '\t' << 1;
 		}
 		
 		datacard << endl;
