@@ -1705,6 +1705,8 @@ void BaseHandler::setWriter(BaseTreeWriter* writer, TString fakeCombination) {
 	m_writers[fakeCombination] = writer;
 	if(fakeCombination == "") {
 		m_writer = writer;
+	} else {
+		setMode(fakeCombination.Data());
 	}
 }
 //-----------------------------------------
