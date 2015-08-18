@@ -37,17 +37,17 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 		throw std::runtime_error("contribution root file does not contain treeR");
 	}
 	//m_MC = treeR->GetBranch("WEIGHT");
-	m_MC = (type != "data");
+	m_MC = (type != "data" && type != "backgroundDD");
 	m_weight = treeR->GetWeight();
 	delete treeR;
 	f.Close();
 	
 	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
-		cout << "Warning: " << m_filename << " has WEIGHT branch, but is being used as " << m_type << endl;
+		cout << "Warning: " << m_filename << "#" << m_treeRname << " has WEIGHT branch, but is being used as " << m_type << endl;
 	}
 	if(!m_MC && (m_type == "signal" || m_type == "backgroundMC")) {
-		cout << "was processing " << m_filename << endl;
-		throw std::runtime_error("MC file does not have a WEIGHT branch");
+		cout << "was processing " << m_filename << "#" << m_treeRname << endl;
+		throw std::runtime_error("MC tree does not have a WEIGHT branch");
 	}
 	
 	m_lumi = isMC()
