@@ -393,7 +393,7 @@ void setupProducts(BaseHandler* handler)
 
   handler->addProduct("basicTaus","ALLTAUS");
   handler->addProductCut("basicTaus","PT20");
-  handler->addProductCut("basicTaus","ETA2p4");
+  handler->addProductCut("basicTaus","ETA2p3");
   handler->addProductCut("basicTaus","TAU_dz");
   handler->addProductCut("basicTaus","againstElectronTightMVA5");
   handler->addProductCut("basicTaus","againstMuonTight3");
