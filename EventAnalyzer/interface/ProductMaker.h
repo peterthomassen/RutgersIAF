@@ -16,6 +16,10 @@ class ProductMaker : public TObject{
   ProductMaker(TString,TString);
   virtual ~ProductMaker() {}
 
+  TString getName(){return m_name;}
+  void setName(TString name){m_name = name;}
+
+
   virtual std::vector<SignatureObject*> makeProduct(BaseHandler*);
   void addCut(TString);
   void addComparison(TString, ObjectComparison*);
@@ -31,7 +35,7 @@ class ProductMaker : public TObject{
   virtual std::vector<SignatureObject*> applySeparations(std::vector<SignatureObject*>);
 
   std::pair<SignatureObject*,SignatureObject*> findMin(std::map<SignatureObject*,std::map<SignatureObject*,double> >);
-  void cleanMap(std::pair<SignatureObject*,SignatureObject*>,std::map<SignatureObject*,std::map<SignatureObject*,double> >);
+  void cleanMap(std::pair<SignatureObject*,SignatureObject*>,std::map<SignatureObject*,std::map<SignatureObject*,double> >&);
 
   std::vector<TString> m_cuts;
   std::map<TString,ObjectComparison*> m_comparisons;

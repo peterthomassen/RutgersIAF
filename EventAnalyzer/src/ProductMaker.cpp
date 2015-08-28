@@ -66,18 +66,18 @@ vector<SignatureObject*> ProductMaker::applySeparations(std::vector<SignatureObj
 {
   vector<SignatureObject*> product;
   map<TString,ObjectComparison*>::iterator pcIter;
-  for(pcIter = m_comparisons.begin(); pcIter != m_comparisons.end(); pcIter++){
-    TString cname = (*pcIter).first;
-    ObjectComparison* comparison = (*pcIter).second;
-    vector<SignatureObject*> comp_product = m_handler->getProduct(cname);
-    for(int k = 0; k < (int)source.size(); k++){
-      bool passed = true;
-      for(int j = 0; j < (int)comp_product.size(); j++){
-	  bool pass = comparison->passCut(source[k],comp_product[j]);
-	  passed = pass && passed;
+  for(int k = 0; k < (int)source.size(); k++){
+    bool passed = true;
+    for(pcIter = m_comparisons.begin(); pcIter != m_comparisons.end() && passed; pcIter++){
+      TString cname = (*pcIter).first;
+      ObjectComparison* comparison = (*pcIter).second;
+      vector<SignatureObject*> comp_product = m_handler->getProduct(cname);
+      for(int j = 0; j < (int)comp_product.size() && passed; j++){
+	bool pass = comparison->passCut(source[k],comp_product[j]);
+	passed = pass && passed;
       }
-      if(passed)product.push_back(source[k]);
     }
+    if(passed)product.push_back(source[k]);
   }
   return product;
 }
@@ -210,10 +210,12 @@ pair<SignatureObject*,SignatureObject*> ProductMaker::findMin(map<SignatureObjec
   return retv;
 }
 
-void ProductMaker::cleanMap(pair<SignatureObject*,SignatureObject*> pair2rm,map<SignatureObject*,map<SignatureObject*,double> > cmap)
+void ProductMaker::cleanMap(pair<SignatureObject*,SignatureObject*> pair2rm,map<SignatureObject*,map<SignatureObject*,double> >& cmap)
 {
-  cmap.erase(pair2rm.first);
   map<SignatureObject*,map<SignatureObject*,double> >::iterator iter;
+  iter = cmap.find(pair2rm.first);
+  if(iter == cmap.end())cout<<"    so not found"<<endl;
+  cmap.erase(iter);
   for(iter = cmap.begin(); iter != cmap.end(); iter++){
     (*iter).second.erase(pair2rm.second);
   }
