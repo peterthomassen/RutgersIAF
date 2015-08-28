@@ -10,9 +10,11 @@ class TTree;
 class TString;
 class SignatureObject;
 class BaseHandler;
+class AdvancedHandler;
 
 class BaseTreeReader : public TObject{
   friend class BaseHandler;
+  friend class AdvancedHandler;
 
  public:
   BaseTreeReader(TTree*);

@@ -20,4 +20,31 @@
   <class name="EventVariableRename<bool>" ClassVersion="1">
    <version ClassVersion="1" checksum="2841408838"/>
   </class>
+  <class name="AdvancedHandler" ClassVersion="1">
+   <version ClassVersion="1" checksum="3011507228"/>
+  </class>
+  <class name="ProductMaker" ClassVersion="1">
+   <version ClassVersion="1" checksum="2202667028"/>
+  </class>
+  <class name="ObjectAssociation" ClassVersion="1">
+   <version ClassVersion="1" checksum="1721857516"/>
+  </class>
+  <class name="ObjectAssociationDeltaR" ClassVersion="1">
+   <version ClassVersion="1" checksum="3213689299"/>
+  </class>
+  <class name="ObjectAssociationDeltaRCharge" ClassVersion="1">
+   <version ClassVersion="1" checksum="406210059"/>
+  </class>
+  <class name="ObjectAssociationDisplacedDeltaR" ClassVersion="1">
+   <version ClassVersion="1" checksum="2613467662"/>
+  </class>
+  <class name="ObjectAssociationDisplacedDeltaRPtFrac" ClassVersion="1">
+   <version ClassVersion="1" checksum="3821378972"/>
+  </class>
+  <class name="ObjectAssociationVertex" ClassVersion="1">
+   <version ClassVersion="1" checksum="105437516"/>
+  </class>
+  <class name="ProductMakerUnion" ClassVersion="1">
+   <version ClassVersion="1" checksum="2704555085"/>
+  </class>
 </lcgdict>
