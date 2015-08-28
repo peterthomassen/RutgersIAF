@@ -58,7 +58,7 @@ class AdvancedHandler :  public BaseHandler {
   /////////////////////////////
 
 
-  void setWriter(BaseTreeWriter* writer, TString fakeCombination = "");
+  //void setWriter(BaseTreeWriter* writer, TString fakeCombination = "");
 
   //////////////////////
   //Product Management//
