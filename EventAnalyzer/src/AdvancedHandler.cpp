@@ -338,7 +338,7 @@ void AdvancedHandler::analyzeEvent()
 void AdvancedHandler::addProduct(TString pname, ProductMaker* pm)
 {
   map<TString,ProductMaker*>::iterator iter = m_product_maker_map.find(pname);
-  if(iter == m_product_maker_map.end()){
+  if(iter != m_product_maker_map.end()){
     cerr<<"WARNING replacing product maker for product: "<<pname<<endl;
   }
   m_product_maker_map[pname] = pm;
