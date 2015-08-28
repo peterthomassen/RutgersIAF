@@ -341,6 +341,7 @@ void AdvancedHandler::addProduct(TString pname, ProductMaker* pm)
   if(iter != m_product_maker_map.end()){
     cerr<<"WARNING replacing product maker for product: "<<pname<<endl;
   }
+  m_product_names.push_back(pname);
   m_product_maker_map[pname] = pm;
 }
 //-----------------------------------------
