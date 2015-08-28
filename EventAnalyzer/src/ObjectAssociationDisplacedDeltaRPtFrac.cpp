@@ -1,0 +1,3 @@
+#include "RutgersIAF/EventAnalyzer/interface/ObjectAssociationDisplacedDeltaRPtFrac.h"
+
+ClassImp(ObjectAssociationDisplacedDeltaRPtFrac)
