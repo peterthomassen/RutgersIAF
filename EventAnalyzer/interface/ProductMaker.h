@@ -23,7 +23,7 @@ class ProductMaker : public TObject{
   virtual std::vector<SignatureObject*> makeProduct(BaseHandler*);
   void addCut(TString);
   void addComparison(TString, ObjectComparison*);
-  void addAssociation(TString, ObjectAssociation*);
+  void addAssociation(TString, ObjectAssociation*,bool allowMultiple=false);
   void addSelfComparison(ObjectComparison*);
   void addAssociateVariable(TString, ObjectVariable*,bool rename=true);  
 
@@ -35,11 +35,11 @@ class ProductMaker : public TObject{
   virtual std::vector<SignatureObject*> applySeparations(std::vector<SignatureObject*>);
 
   std::pair<SignatureObject*,SignatureObject*> findMin(std::map<SignatureObject*,std::map<SignatureObject*,double> >);
-  void cleanMap(std::pair<SignatureObject*,SignatureObject*>,std::map<SignatureObject*,std::map<SignatureObject*,double> >&);
+  void cleanMap(std::pair<SignatureObject*,SignatureObject*>,std::map<SignatureObject*,std::map<SignatureObject*,double> >&,bool);
 
   std::vector<TString> m_cuts;
   std::map<TString,ObjectComparison*> m_comparisons;
-  std::map<TString,ObjectAssociation*> m_associations;
+  std::map<TString,std::pair<ObjectAssociation*,bool> > m_associations;
   std::vector<ObjectComparison*> m_selfcomparisons;
   std::map<TString,ObjectVariable*> m_associateVariables;
   std::vector<SignatureObject*> m_source;

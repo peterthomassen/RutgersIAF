@@ -364,14 +364,14 @@ void AdvancedHandler::addProductCut(TString pname, TString cut)
 }
 //-----------------------------------------
 //-----------------------------------------
-void AdvancedHandler::addProductAssociation(TString pname1,TString pname2, ObjectAssociation* association)
+void AdvancedHandler::addProductAssociation(TString pname1,TString pname2, ObjectAssociation* association,bool allowMultiple)
 {
   map<TString,ProductMaker*>::iterator iter = m_product_maker_map.find(pname1);
   if(iter == m_product_maker_map.end()){
     cerr<<"WARNING attempting to add product association to unknown product: "<<pname1<<endl;
     return;
   }
-  (*iter).second->addAssociation(pname2,association);
+  (*iter).second->addAssociation(pname2,association,allowMultiple);
 }
 //-----------------------------------------
 //-----------------------------------------

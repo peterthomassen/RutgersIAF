@@ -90,7 +90,7 @@ vector<SignatureObject*> ProductMaker::doAssociations(std::vector<SignatureObjec
   for(int k = 0; k < (int)source.size(); k++){
     accepts[source[k]] = false;
   }
-  map<TString,ObjectAssociation*>::iterator pcIter;
+  map<TString,pair<ObjectAssociation*,bool> >::iterator pcIter;
 
   //Loop over each association - we'll accept any object that has any association
   for(pcIter = m_associations.begin(); pcIter != m_associations.end(); pcIter++){
@@ -98,7 +98,8 @@ vector<SignatureObject*> ProductMaker::doAssociations(std::vector<SignatureObjec
     map<SignatureObject*,map<SignatureObject*,double> > results;
     map<SignatureObject*,map<SignatureObject*,double> > reverse_results;
     TString cname = (*pcIter).first;
-    ObjectAssociation* comparison = (*pcIter).second;
+    ObjectAssociation* comparison = (*pcIter).second.first;
+    bool allowMultiple = (*pcIter).second.second;
     vector<SignatureObject*> comp_product = m_handler->getProduct(cname);
 
     //loop over all objects in the source product
@@ -139,7 +140,7 @@ vector<SignatureObject*> ProductMaker::doAssociations(std::vector<SignatureObjec
       minPair.first->setVariable(TString::Format("hasAssociate_%s",comparison->getName().Data()),true);
       accepts[minPair.first] = true;
       keepGoing = true;
-      cleanMap(minPair,copy_results);
+      cleanMap(minPair,copy_results,allowMultiple);
     }
   }
 
@@ -172,9 +173,9 @@ void ProductMaker::addComparison(TString pname, ObjectComparison* comparison)
   m_comparisons[pname] = comparison;
 }
 
-void ProductMaker::addAssociation(TString pname, ObjectAssociation* association)
+void ProductMaker::addAssociation(TString pname, ObjectAssociation* association,bool allowMultiple)
 {
-  m_associations[pname] = association;
+  m_associations[pname] = make_pair(association,allowMultiple);
 }
 
 void ProductMaker::addSelfComparison(ObjectComparison* comparison)
@@ -210,13 +211,15 @@ pair<SignatureObject*,SignatureObject*> ProductMaker::findMin(map<SignatureObjec
   return retv;
 }
 
-void ProductMaker::cleanMap(pair<SignatureObject*,SignatureObject*> pair2rm,map<SignatureObject*,map<SignatureObject*,double> >& cmap)
+void ProductMaker::cleanMap(pair<SignatureObject*,SignatureObject*> pair2rm,map<SignatureObject*,map<SignatureObject*,double> >& cmap, bool allowMultiple)
 {
   map<SignatureObject*,map<SignatureObject*,double> >::iterator iter;
   iter = cmap.find(pair2rm.first);
   if(iter == cmap.end())cout<<"    so not found"<<endl;
   cmap.erase(iter);
-  for(iter = cmap.begin(); iter != cmap.end(); iter++){
-    (*iter).second.erase(pair2rm.second);
+  if(!allowMultiple){
+    for(iter = cmap.begin(); iter != cmap.end(); iter++){
+      (*iter).second.erase(pair2rm.second);
+    }
   }
 }

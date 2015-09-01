@@ -69,7 +69,7 @@ class AdvancedHandler :  public BaseHandler {
 
   virtual void addProductComparison(TString,TString,ObjectComparison*,bool doAnd=true);
   virtual void addProductSelfComparison(TString,ObjectComparison*,bool doAnd=true);
-  virtual void addProductAssociation(TString,TString,ObjectAssociation*);
+  virtual void addProductAssociation(TString,TString,ObjectAssociation*,bool allowMultiple=false);
   virtual void addAssociateVariable(TString,TString,ObjectVariable*,bool rename=true);
 
  protected:
