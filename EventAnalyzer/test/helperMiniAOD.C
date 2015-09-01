@@ -621,7 +621,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductSelfComparison("inclusiveTracks7",deltaR0p005);
   */
 
-  handler->addProductSelfComparison("ALLVERTICES",deltaR0p05);
+  //handler->addProductSelfComparison("ALLVERTICES",deltaR0p05);
   handler->addProductSelfComparison("goodRecoVertices",deltaR0p05);
 
   handler->addProductComparison("looseElectrons","looseMuons",deltaR0p05);
@@ -1624,3 +1624,4 @@ void setupMCvariables(BaseHandler* handler) {
 	handler->addWeightVariable("FLATWEIGHT");
 
 }
+
