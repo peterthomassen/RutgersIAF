@@ -852,12 +852,7 @@ void setupPrintRA7Sync(BaseHandler* handler)
 }
 
 
-void setupVariables2(BaseHandler* handler,bool isMC = false)
-{
-  const double mZ = 91;
-  const double zWidth = 10;
-  const double mW = 80.385;
-
+void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
   handler->addEventVariable("ALWAYSTRUE", new EventVariableConst<bool>(true));
 
   EventVariableThreshold* pt201512 = new EventVariableThreshold("PT201512","goodElectrons");
