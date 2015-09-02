@@ -596,7 +596,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("VERTEX_NOTFAKE",new ObjectVariableReversed("isFake"));
   handler->addObjectVariable("VERTEX_RHO",new ObjectVariableInRange<double>("rho",-4,4));
 
-  handler->addProduct("goodRecoVertices","ALLVERTICES");
+  handler->addProduct("goodRecoVertices","ALLRECOVERTICES");
   handler->addProductCut("goodRecoVertices","VERTEX_NDOF");
   handler->addProductCut("goodRecoVertices","VERTEX_Z");
   handler->addProductCut("goodRecoVertices","VERTEX_NOTFAKE");
@@ -622,8 +622,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductSelfComparison("inclusiveTracks7",deltaR0p005);
   */
 
-  //handler->addProductSelfComparison("ALLVERTICES",deltaR0p05);
-  handler->addProductSelfComparison("goodRecoVertices",deltaR0p05);
+  handler->addProductSelfComparison("ALLRECOVERTICES",deltaR0p05);
 
   handler->addProductComparison("looseElectrons","looseMuons",deltaR0p05);
   //handler->addProductComparison("goodElectrons","goodMuons",deltaR0p1);
