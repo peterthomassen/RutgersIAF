@@ -16,10 +16,10 @@
 
 using namespace std;
 
-void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttbarS/validation_ttbarS.root") {
+void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spring15/WZTo3LNu/AnalysisTree/allResults.simulation.root") {
 	
-	TString sample = "ttbar_semileptonic";
-	TString energy = "8 TeV";
+	TString sample = "WZTo3LNu";
+	TString energy = "13 TeV";
 	
 	TFile *ValFile = TFile::Open(inputFile);
 	TTree* treeR = (TTree*)ValFile->Get("treeR");
@@ -33,7 +33,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	std::vector<TString> lableZ;
 	
 	//electrons
-	variables.push_back("ValMCelectronsPT");	
+	variables.push_back("ValMCELECTRONSPT");	
 	titles.push_back("Generator Electrons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
@@ -43,7 +43,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsPhi");
+	variables.push_back("ValMCELECTRONSPhi");
 	titles.push_back("Generator Electrons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
@@ -53,7 +53,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsEta");
+	variables.push_back("ValMCELECTRONSEta");
 	titles.push_back("Generator Electrons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
@@ -63,7 +63,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsN");
+	variables.push_back("ValMCELECTRONSN");
 	titles.push_back("Number of Generator Electrons");		
 	lableX.push_back("N");
 	lableY.push_back("");
@@ -73,7 +73,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsM");
+	variables.push_back("ValMCELECTRONSM");
 	titles.push_back("Generator Electrons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -84,7 +84,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableY.push_back("");
 	lableZ.push_back("");
 	
-	/*variables.push_back("ValMatchingElectronsPT");	
+	variables.push_back("ValMatchingElectronsPT");	
 	titles.push_back("Matching Electrons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
@@ -110,34 +110,60 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableY.push_back("");
 	lableZ.push_back("");
 	
-	variables.push_back("ValMCelectronsFromZPT");	
+	variables.push_back("ValMCELECTRONSFromZPT");	
 	titles.push_back("Electrons from Z PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsFromZPhi");
+	variables.push_back("ValMCELECTRONSFromZPhi");
 	titles.push_back("Electrons from Z Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsFromZEta");
+	variables.push_back("ValMCELECTRONSFromZEta");
 	titles.push_back("Electrons from Z Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsFromZN");
+	variables.push_back("ValMCELECTRONSFromZN");
 	titles.push_back("Number of Electrons from Z");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCelectronsFromZM");
+	variables.push_back("ValMCELECTRONSFromZM");
+	titles.push_back("Electrons from Z Mass");		
+	lableX.push_back("M");
+	lableY.push_back("");
+	lableZ.push_back("");
+	
+	variables.push_back("ValMCELECTRONSFromWPT");	
+	titles.push_back("Electrons from Z PT");		
+	lableX.push_back("PT");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCELECTRONSFromWPhi");
+	titles.push_back("Electrons from Z Phi");		
+	lableX.push_back("Phi");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCELECTRONSFromWEta");
+	titles.push_back("Electrons from Z Eta");		
+	lableX.push_back("Eta");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCELECTRONSFromWN");
+	titles.push_back("Number of Electrons from Z");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCELECTRONSFromWM");
 	titles.push_back("Electrons from Z Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 
 	//muons
-	variables.push_back("ValMCmuonsPT");	
+	variables.push_back("ValMCMUONSPT");	
 	titles.push_back("Generator Muons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
@@ -147,7 +173,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsPhi");
+	variables.push_back("ValMCMUONSPhi");
 	titles.push_back("Generator Muons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
@@ -157,7 +183,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsEta");
+	variables.push_back("ValMCMUONSEta");
 	titles.push_back("Generator Muons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
@@ -167,7 +193,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsN");
+	variables.push_back("ValMCMUONSN");
 	titles.push_back("Number of Generator Muons");		
 	lableX.push_back("N");
 	lableY.push_back("");
@@ -177,7 +203,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsM");
+	variables.push_back("ValMCMUONSM");
 	titles.push_back("Generator Muons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -214,34 +240,60 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableY.push_back("");
 	lableZ.push_back("");
 	
-	variables.push_back("ValMCmuonsFromZPT");	
+	variables.push_back("ValMCMUONSFromZPT");	
 	titles.push_back("Muons from Z PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsFromZPhi");
+	variables.push_back("ValMCMUONSFromZPhi");
 	titles.push_back("Muons from Z Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsFromZEta");
+	variables.push_back("ValMCMUONSFromZEta");
 	titles.push_back("Muons from Z Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsFromZN");
+	variables.push_back("ValMCMUONSFromZN");
 	titles.push_back("Number of Muons from Z");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCmuonsFromZM");
+	variables.push_back("ValMCMUONSFromZM");
+	titles.push_back("Muons from Z Mass");		
+	lableX.push_back("M");
+	lableY.push_back("");
+	lableZ.push_back("");
+	
+	variables.push_back("ValMCMUONSFromWPT");	
+	titles.push_back("Muons from Z PT");		
+	lableX.push_back("PT");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCMUONSFromWPhi");
+	titles.push_back("Muons from Z Phi");		
+	lableX.push_back("Phi");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCMUONSFromWEta");
+	titles.push_back("Muons from Z Eta");		
+	lableX.push_back("Eta");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCMUONSFromWN");
+	titles.push_back("Number of Muons from Z");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCMUONSFromWM");
 	titles.push_back("Muons from Z Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	
 	//taus
-	variables.push_back("ValMCtausPT");	
+	variables.push_back("ValMCTAUSPT");	
 	titles.push_back("Generator Taus PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
@@ -251,7 +303,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausPhi");
+	variables.push_back("ValMCTAUSPhi");
 	titles.push_back("Generator Taus Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
@@ -261,7 +313,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausEta");
+	variables.push_back("ValMCTAUSEta");
 	titles.push_back("Generator Taus Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
@@ -271,7 +323,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausN");
+	variables.push_back("ValMCTAUSN");
 	titles.push_back("Number of Generator Taus");		
 	lableX.push_back("N");
 	lableY.push_back("");
@@ -281,7 +333,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausM");
+	variables.push_back("ValMCTAUSM");
 	titles.push_back("Generator Taus Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -318,27 +370,53 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	lableY.push_back("");
 	lableZ.push_back("");
 	
-	variables.push_back("ValMCtausFromZPT");	
+	variables.push_back("ValMCTAUSFromZPT");	
 	titles.push_back("Taus from Z PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausFromZPhi");
+	variables.push_back("ValMCTAUSFromZPhi");
 	titles.push_back("Taus from Z Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausFromZEta");
+	variables.push_back("ValMCTAUSFromZEta");
 	titles.push_back("Taus from Z Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausFromZN");
+	variables.push_back("ValMCTAUSFromZN");
 	titles.push_back("Number of Taus from Z");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
-	variables.push_back("ValMCtausFromZM");
+	variables.push_back("ValMCTAUSFromZM");
+	titles.push_back("Taus from Z Mass");		
+	lableX.push_back("M");
+	lableY.push_back("");
+	lableZ.push_back("");
+	
+	variables.push_back("ValMCTAUSFromWPT");	
+	titles.push_back("Taus from Z PT");		
+	lableX.push_back("PT");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCTAUSFromWPhi");
+	titles.push_back("Taus from Z Phi");		
+	lableX.push_back("Phi");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCTAUSFromWEta");
+	titles.push_back("Taus from Z Eta");		
+	lableX.push_back("Eta");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCTAUSFromWN");
+	titles.push_back("Number of Taus from Z");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValMCTAUSFromWM");
 	titles.push_back("Taus from Z Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -517,27 +595,27 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 	titles.push_back("MT");		
 	lableX.push_back("MT");
 	lableY.push_back("");
-	lableZ.push_back("");*/
+	lableZ.push_back("");
 	
 	
 	//your own plots, e.g:
 	//2D:
-	variables.push_back("ValMCtausEta:ValMCtausPhi");
+	/*variables.push_back("ValMCTAUSEta:ValMCTAUSPhi");
 	titles.push_back("Generator Taus Eta vs Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
 	lableZ.push_back("");
 	//3D:
-	variables.push_back("ValMCtausPT:ValMCtausEta:ValMCtausPhi");
+	variables.push_back("ValMCTAUSPT:ValMCTAUSEta:ValMCTAUSPhi");
 	titles.push_back("Generator Taus PT vs Eta && Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
-	lableZ.push_back("PT");
+	lableZ.push_back("PT");*/
 	
 	//Nice plots layout	
-	gStyle->SetFrameBorderMode(0);
+	//gStyle->SetFrameBorderMode(0);
 	gStyle->SetCanvasBorderMode(0);
-	gStyle->SetPadBorderMode(0);
+	//gStyle->SetPadBorderMode(0);
 	gStyle->SetPadColor(0);
 	gStyle->SetCanvasColor(0);
 	gStyle->SetStatColor(0);
@@ -595,9 +673,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp1->GetXaxis()->SetTitle(lableX[i]);
 					htemp1->GetYaxis()->SetTitle(lableY[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
@@ -616,9 +694,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp2->GetYaxis()->SetTitle(lableY[i]);
 					htemp2->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
@@ -637,9 +715,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp3->GetYaxis()->SetTitle(lableY[i]);
 					htemp3->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
@@ -661,9 +739,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp1->GetXaxis()->SetTitle(lableX[i]);
 					htemp1->GetYaxis()->SetTitle(lableY[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
@@ -682,9 +760,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp2->GetYaxis()->SetTitle(lableY[i]);
 					htemp2->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
@@ -703,9 +781,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp3->GetYaxis()->SetTitle(lableY[i]);
 					htemp3->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
@@ -728,9 +806,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp1->GetXaxis()->SetTitle(lableX[i]);
 					htemp1->GetYaxis()->SetTitle(lableY[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
@@ -749,9 +827,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp2->GetYaxis()->SetTitle(lableY[i]);
 					htemp2->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
@@ -770,9 +848,9 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/Validation/ttb
 					htemp3->GetYaxis()->SetTitle(lableY[i]);
 					htemp3->GetZaxis()->SetTitle(lableZ[i]);
 					
-					TPaveText *Info=new TPaveText(0.75,0.75,1,1,"nbNDC");
+					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " " + energy);
+					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
 					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
