@@ -1,0 +1,3 @@
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_AssociateVariableDeltaR.h"
+
+ClassImp(SignatureTH1F_AssociateVariableDeltaR)
