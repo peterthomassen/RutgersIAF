@@ -317,6 +317,12 @@
   <class name="SignatureTH1F_AssociateVariableDifference<double>" ClassVersion="1">
    <version ClassVersion="1" checksum="3912233546"/>
   </class>
+  <class name="SignatureTH1F_AssociateVariableRecoil" ClassVersion="1">
+   <version ClassVersion="1" checksum="997794983"/>
+  </class>
+  <class name="SignatureTH1F_AssociateVariableDeltaR" ClassVersion="1">
+   <version ClassVersion="1" checksum="1816214419"/>
+  </class>
   <class name="SignatureTH1F_AssociateVariable<int>" ClassVersion="1">
    <version ClassVersion="1" checksum="2637050205"/>
   </class>

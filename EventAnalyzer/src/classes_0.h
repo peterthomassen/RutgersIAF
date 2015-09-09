@@ -63,6 +63,8 @@
 #include "RutgersIAF/EventAnalyzer/interface/SignatureObjectFlat.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureObject.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_AssociateVariableDifference.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_AssociateVariableRecoil.h"
+#include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_AssociateVariableDeltaR.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_AssociateVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_CountNoWeight.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_CountWeight.h"
