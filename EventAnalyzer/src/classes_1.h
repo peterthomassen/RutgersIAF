@@ -14,3 +14,4 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateDeltaR.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateAngles.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectAssociationVariableMatch.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableDRvector.h"

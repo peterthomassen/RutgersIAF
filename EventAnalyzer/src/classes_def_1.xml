@@ -65,4 +65,7 @@
   <class name="ObjectAssociationVariableMatch<TString>" ClassVersion="1">
    <version ClassVersion="1" checksum="3819940933"/>
   </class>
+  <class name="EventVariableDRvector" ClassVersion="1">
+   <version ClassVersion="1" checksum="1806975260"/>
+  </class>
 </lcgdict>
