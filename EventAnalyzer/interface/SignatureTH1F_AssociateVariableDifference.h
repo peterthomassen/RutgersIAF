@@ -31,12 +31,12 @@ public:
     for(int i = 0; i < (int)m_productnames.size(); i++){
       std::vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
       for(int j = 0; j < (int)v.size(); j++){
-	SignatureObject* associate = v[i]->getAssociate(m_associatename);
+	SignatureObject* associate = v[j]->getAssociate(m_associatename);
 	if(!associate)continue;
 	T valueAssociate = 0;
 	bool isSetAssociate = associate->getVariable(m_varname,valueAssociate);
 	T valueObject = 0;
-	bool isSetObject = v[i]->getVariable(m_varname,valueObject);
+	bool isSetObject = v[j]->getVariable(m_varname,valueObject);
 	if(isSetAssociate && isSetObject){
 	  switch (m_doFractionalMode){
 	  case 0:
