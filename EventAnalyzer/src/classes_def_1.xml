@@ -24,7 +24,7 @@
    <version ClassVersion="1" checksum="3011507228"/>
   </class>
   <class name="ProductMaker" ClassVersion="1">
-   <version ClassVersion="1" checksum="2202667028"/>
+   <version ClassVersion="1" checksum="2846330462"/>
   </class>
   <class name="ObjectAssociation" ClassVersion="1">
    <version ClassVersion="1" checksum="1721857516"/>
@@ -45,10 +45,13 @@
    <version ClassVersion="1" checksum="105437516"/>
   </class>
   <class name="ProductMakerUnion" ClassVersion="1">
-   <version ClassVersion="1" checksum="2704555085"/>
+   <version ClassVersion="1" checksum="1443132247"/>
   </class>
   <class name="ObjectVariableAssociateDeltaR" ClassVersion="1">
    <version ClassVersion="1" checksum="1473034384"/>
+  </class>
+  <class name="ObjectVariableAssociateRecoil" ClassVersion="1">
+   <version ClassVersion="1" checksum="1630683044"/>
   </class>
   <class name="ObjectVariableAssociateAngles" ClassVersion="1">
    <version ClassVersion="1" checksum="308416426"/>

@@ -12,5 +12,6 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectAssociationVertex.h"
 #include "RutgersIAF/EventAnalyzer/interface/ProductMakerUnion.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateDeltaR.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateRecoil.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateAngles.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectAssociationVariableMatch.h"
