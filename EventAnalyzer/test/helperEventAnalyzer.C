@@ -717,7 +717,7 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("NLEPTONS", nLeptons);
   
   EventVariableN* nLightLeptons = new EventVariableN("NLIGHTLEPTONS", "goodElectrons");
-  nLeptons->addProduct("goodMuons");
+  nLightLeptons->addProduct("goodMuons");
   handler->addEventVariable("NLIGHTLEPTONS", nLightLeptons);
   
   EventVariableInRange<int>* el2 = new EventVariableInRange<int>("NGOODELECTRONS", 2, 2, "El2");

@@ -57,45 +57,39 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true) {
 	//create Phi variable
 	handler->addObjectVariable("PHI",new ObjectVariableMethod("PHI", &SignatureObject::Phi));
 	
-	//create Status variable and status3, status2, status1
+	//create Status variable
 	handler->addEventVariable("STATUS", new EventVariableObjectVariableVector<int>("status","ALLMC"));
-	ObjectVariableValueInList<int>* status3 = new ObjectVariableValueInList<int>("status", 3);
-	handler->addObjectVariable("STATUS3", status3);
-	ObjectVariableValueInList<int>* status2 = new ObjectVariableValueInList<int>("status", 2);
-	handler->addObjectVariable("STATUS2", status2);
-	ObjectVariableValueInList<int>* status1 = new ObjectVariableValueInList<int>("status", 1);
-	handler->addObjectVariable("STATUS1", status1);
 	
 	//MC-Leptons: PT, Eta, N
 	ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
 	handler->addProductSelfComparison("MCELECTRONS",deltaR0p1);
-	handler->addEventVariable("ValMCelectronsPT", new EventVariableObjectVariableVector<double>("PT","MCELECTRONS"));
-	handler->addEventVariable("ValMCelectronsEta", new EventVariableObjectVariableVector<double>("ETA","MCELECTRONS"));
-	handler->addEventVariable("ValMCelectronsPhi", new EventVariableObjectVariableVector<double>("PHI","MCELECTRONS"));
-	handler->addEventVariable("ValMCelectronsN", new EventVariableN("ValMCelectronsN","MCELECTRONS"));
-	handler->addEventVariable("ValMCelectronsM", new EventVariableObjectVariableVector<double>("M","MCELECTRONS"));
-	handler->addEventVariable("Mother_MCelectrons", new EventVariableObjectVariableVector<int>("motherpdgId","MCELECTRONS"));
+	handler->addEventVariable("ValMCELECTRONSPT", new EventVariableObjectVariableVector<double>("PT","MCELECTRONS"));
+	handler->addEventVariable("ValMCELECTRONSEta", new EventVariableObjectVariableVector<double>("ETA","MCELECTRONS"));
+	handler->addEventVariable("ValMCELECTRONSPhi", new EventVariableObjectVariableVector<double>("PHI","MCELECTRONS"));
+	handler->addEventVariable("ValMCELECTRONSN", new EventVariableN("ValMCELECTRONSN","MCELECTRONS"));
+	handler->addEventVariable("ValMCELECTRONSM", new EventVariableObjectVariableVector<double>("M","MCELECTRONS"));
+	handler->addEventVariable("Mother_MCELECTRONS", new EventVariableObjectVariableVector<int>("motherpdgId","MCELECTRONS"));
 
 	handler->addProductSelfComparison("MCMUONS",deltaR0p1);
-	handler->addEventVariable("ValMCmuonsPT", new EventVariableObjectVariableVector<double>("PT","MCMUONS"));
-	handler->addEventVariable("ValMCmuonsEta", new EventVariableObjectVariableVector<double>("ETA","MCMUONS"));
-	handler->addEventVariable("ValMCmuonsPhi", new EventVariableObjectVariableVector<double>("PHI","MCMUONS"));
-	handler->addEventVariable("ValMCmuonsN", new EventVariableN("ValMCmuonsN","MCMUONS"));
-	handler->addEventVariable("ValMCmuonsM", new EventVariableObjectVariableVector<double>("M","MCMUONS"));
-	handler->addEventVariable("Mother_MCmuons", new EventVariableObjectVariableVector<int>("motherpdgId","MCMUONS"));
+	handler->addEventVariable("ValMCMUONSPT", new EventVariableObjectVariableVector<double>("PT","MCMUONS"));
+	handler->addEventVariable("ValMCMUONSEta", new EventVariableObjectVariableVector<double>("ETA","MCMUONS"));
+	handler->addEventVariable("ValMCMUONSPhi", new EventVariableObjectVariableVector<double>("PHI","MCMUONS"));
+	handler->addEventVariable("ValMCMUONSN", new EventVariableN("ValMCMUONSN","MCMUONS"));
+	handler->addEventVariable("ValMCMUONSM", new EventVariableObjectVariableVector<double>("M","MCMUONS"));
+	handler->addEventVariable("Mother_MCMUONS", new EventVariableObjectVariableVector<int>("motherpdgId","MCMUONS"));
 	
 	ObjectVariableValueInList<int>* pdgidTau = new ObjectVariableValueInList<int>("pdgId",15);
 	pdgidTau->addValue(-15);
 	handler->addObjectVariable("PDGIDtau",pdgidTau);
-	handler->addProduct("MCtaus", "ALLMC");
-	handler->addProductCut("MCtaus", "PDGIDtau");
-	handler->addProductSelfComparison("MCtaus",deltaR0p1);
-	handler->addEventVariable("ValMCtausPT", new EventVariableObjectVariableVector<double>("PT","MCtaus"));
-	handler->addEventVariable("ValMCtausEta", new EventVariableObjectVariableVector<double>("ETA","MCtaus"));
-	handler->addEventVariable("ValMCtausPhi", new EventVariableObjectVariableVector<double>("PHI","MCtaus"));
-	handler->addEventVariable("ValMCtausN", new EventVariableN("ValMCtausN","MCtaus"));
-	handler->addEventVariable("ValMCtausM", new EventVariableObjectVariableVector<double>("M","MCtaus"));
-	handler->addEventVariable("Mother_MCtaus", new EventVariableObjectVariableVector<int>("motherpdgId","MCtaus"));
+	handler->addProduct("MCTAUS", "ALLMC");
+	handler->addProductCut("MCTAUS", "PDGIDtau");
+	handler->addProductSelfComparison("MCTAUS",deltaR0p1);
+	handler->addEventVariable("ValMCTAUSPT", new EventVariableObjectVariableVector<double>("PT","MCTAUS"));
+	handler->addEventVariable("ValMCTAUSEta", new EventVariableObjectVariableVector<double>("ETA","MCTAUS"));
+	handler->addEventVariable("ValMCTAUSPhi", new EventVariableObjectVariableVector<double>("PHI","MCTAUS"));
+	handler->addEventVariable("ValMCTAUSN", new EventVariableN("ValMCTAUSN","MCTAUS"));
+	handler->addEventVariable("ValMCTAUSM", new EventVariableObjectVariableVector<double>("M","MCTAUS"));
+	handler->addEventVariable("Mother_MCTAUS", new EventVariableObjectVariableVector<int>("motherpdgId","MCTAUS"));
 	
 	//reconstructed Leptons: PT, Eta, N, Mass
 	handler->addEventVariable("ValRecElectronsPT", new EventVariableObjectVariableVector<double>("PT","goodElectrons"));
@@ -136,7 +130,7 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true) {
 		handler->addEventVariable("ValMatchingMuonsM", new EventVariableObjectVariableVector<double>("M","ValMatchingMuons"));
 		
 		handler->addProduct("ValMatchingTaus", "goodTaus");
-		handler->addProductComparison("ValMatchingTaus", "MCtaus", mcMatchComparison1, false);
+		handler->addProductComparison("ValMatchingTaus", "MCTAUS", mcMatchComparison1, false);
 		handler->addEventVariable("ValMatchingTausPT", new EventVariableObjectVariableVector<double>("PT","ValMatchingTaus"));
 		handler->addEventVariable("ValMatchingTausEta", new EventVariableObjectVariableVector<double>("ETA","ValMatchingTaus"));
 		handler->addEventVariable("ValMatchingTausN", new EventVariableN("ValMatchingTausN","ValMatchingTaus"));
@@ -156,11 +150,10 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true) {
 	handler->addEventVariable("ValTopM", new EventVariableObjectVariableVector<double>("M","ValTOP"));
 	handler->addEventVariable("ValTopN", new EventVariableN("ValTopN","ValTOP"));
 	
-	//bottom quark: PT, Eta, Mass; bottom with status 3
+	//bottom quark: PT, Eta, Mass
 	ObjectVariableValueInList<int>* pdgidBottom = new ObjectVariableValueInList<int>("pdgId",5);
 	pdgidBottom->addValue(-5);
 	handler->addObjectVariable("PDGIDb",pdgidBottom);
-	
 	handler->addProduct("ValBOTTOM", "ALLMC");
 	handler->addProductCut("ValBOTTOM", "PDGIDb");
 	handler->addEventVariable("ValBottomPT", new EventVariableObjectVariableVector<double>("PT","ValBOTTOM"));
@@ -231,33 +224,64 @@ void setupMCValidation(BaseHandler* handler, bool doMatching = true) {
 	ObjectVariableValueInList<int>* ValMotherZ = new ObjectVariableValueInList<int>("motherpdgId",23);
 	handler->addObjectVariable("ValMOTHERZ",ValMotherZ);
 
-	handler->addProduct("ValMCelectronsFromZ","MCELECTRONS");
-	handler->addProductCut("ValMCelectronsFromZ","ValMOTHERZ");
-	handler->addProductSelfComparison("ValMCelectronsFromZ",deltaR0p1);
-	handler->addEventVariable("ValMCelectronsFromZM", new EventVariableObjectVariableVector<double>("M","ValMCelectronsFromZ"));
-	handler->addEventVariable("ValMCelectronsFromZN", new EventVariableN("ValMCelectronsFromZN","ValMCelectronsFromZ"));
-	handler->addEventVariable("ValMCelectronsFromZPT", new EventVariableObjectVariableVector<double>("PT","ValMCelectronsFromZ"));
-	handler->addEventVariable("ValMCelectronsFromZEta", new EventVariableObjectVariableVector<double>("ETA","ValMCelectronsFromZ"));
-	handler->addEventVariable("ValMCelectronsFromZPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCelectronsFromZ"));
+	handler->addProduct("ValMCELECTRONSFromZ","MCELECTRONS");
+	handler->addProductCut("ValMCELECTRONSFromZ","ValMOTHERZ");
+	handler->addProductSelfComparison("ValMCELECTRONSFromZ",deltaR0p1);
+	handler->addEventVariable("ValMCELECTRONSFromZM", new EventVariableObjectVariableVector<double>("M","ValMCELECTRONSFromZ"));
+	handler->addEventVariable("ValMCELECTRONSFromZN", new EventVariableN("ValMCELECTRONSFromZN","ValMCELECTRONSFromZ"));
+	handler->addEventVariable("ValMCELECTRONSFromZPT", new EventVariableObjectVariableVector<double>("PT","ValMCELECTRONSFromZ"));
+	handler->addEventVariable("ValMCELECTRONSFromZEta", new EventVariableObjectVariableVector<double>("ETA","ValMCELECTRONSFromZ"));
+	handler->addEventVariable("ValMCELECTRONSFromZPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCELECTRONSFromZ"));
 
-	handler->addProduct("ValMCmuonsFromZ","MCMUONS");
-	handler->addProductCut("ValMCmuonsFromZ","ValMOTHERZ");
-	handler->addProductSelfComparison("ValMCmuonsFromZ",deltaR0p1);
-	handler->addEventVariable("ValMCmuonsFromZM", new EventVariableObjectVariableVector<double>("M","ValMCmuonsFromZ"));
-	handler->addEventVariable("ValMCmuonsFromZN", new EventVariableN("ValMCmuonsFromZN","ValMCmuonsFromZ"));
-	handler->addEventVariable("ValMCmuonsFromZPT", new EventVariableObjectVariableVector<double>("PT","ValMCmuonsFromZ"));
-	handler->addEventVariable("ValMCmuonsFromZEta", new EventVariableObjectVariableVector<double>("ETA","ValMCmuonsFromZ"));
-	handler->addEventVariable("ValMCmuonsFromZPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCmuonsFromZ"));
+	handler->addProduct("ValMCMUONSFromZ","MCMUONS");
+	handler->addProductCut("ValMCMUONSFromZ","ValMOTHERZ");
+	handler->addProductSelfComparison("ValMCMUONSFromZ",deltaR0p1);
+	handler->addEventVariable("ValMCMUONSFromZM", new EventVariableObjectVariableVector<double>("M","ValMCMUONSFromZ"));
+	handler->addEventVariable("ValMCMUONSFromZN", new EventVariableN("ValMCMUONSFromZN","ValMCMUONSFromZ"));
+	handler->addEventVariable("ValMCMUONSFromZPT", new EventVariableObjectVariableVector<double>("PT","ValMCMUONSFromZ"));
+	handler->addEventVariable("ValMCMUONSFromZEta", new EventVariableObjectVariableVector<double>("ETA","ValMCMUONSFromZ"));
+	handler->addEventVariable("ValMCMUONSFromZPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCMUONSFromZ"));
 	
-	handler->addProduct("ValMCtausFromZ","MCtaus");
-	handler->addProductCut("ValMCtausFromZ","ValMOTHERZ");
-	handler->addProductSelfComparison("ValMCtausFromZ",deltaR0p1);
-	handler->addEventVariable("ValMCtausFromZM", new EventVariableObjectVariableVector<double>("M","ValMCtausFromZ"));
-	handler->addEventVariable("ValMCtausFromZN", new EventVariableN("ValMCtausFromZN","ValMCtausFromZ"));
-	handler->addEventVariable("ValMCtausFromZPT", new EventVariableObjectVariableVector<double>("PT","ValMCtausFromZ"));
-	handler->addEventVariable("ValMCtausFromZEta", new EventVariableObjectVariableVector<double>("ETA","ValMCtausFromZ"));
-	handler->addEventVariable("ValMCtausFromZPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCtausFromZ"));	
+	handler->addProduct("ValMCTAUSFromZ","MCTAUS");
+	handler->addProductCut("ValMCTAUSFromZ","ValMOTHERZ");
+	handler->addProductSelfComparison("ValMCTAUSFromZ",deltaR0p1);
+	handler->addEventVariable("ValMCTAUSFromZM", new EventVariableObjectVariableVector<double>("M","ValMCTAUSFromZ"));
+	handler->addEventVariable("ValMCTAUSFromZN", new EventVariableN("ValMCTAUSFromZN","ValMCTAUSFromZ"));
+	handler->addEventVariable("ValMCTAUSFromZPT", new EventVariableObjectVariableVector<double>("PT","ValMCTAUSFromZ"));
+	handler->addEventVariable("ValMCTAUSFromZEta", new EventVariableObjectVariableVector<double>("ETA","ValMCTAUSFromZ"));
+	handler->addEventVariable("ValMCTAUSFromZPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCTAUSFromZ"));	
 	
+	//Mother W
+	ObjectVariableValueInList<int>* ValMotherW = new ObjectVariableValueInList<int>("motherpdgId",24);
+	ValMotherW->addValue(-24);
+	handler->addObjectVariable("ValMOTHERW",ValMotherW);
+
+	handler->addProduct("ValMCELECTRONSFromW","MCELECTRONS");
+	handler->addProductCut("ValMCELECTRONSFromW","ValMOTHERW");
+	handler->addProductSelfComparison("ValMCELECTRONSFromW",deltaR0p1);
+	handler->addEventVariable("ValMCELECTRONSFromWM", new EventVariableObjectVariableVector<double>("M","ValMCELECTRONSFromW"));
+	handler->addEventVariable("ValMCELECTRONSFromWN", new EventVariableN("ValMCELECTRONSFromWN","ValMCELECTRONSFromW"));
+	handler->addEventVariable("ValMCELECTRONSFromWPT", new EventVariableObjectVariableVector<double>("PT","ValMCELECTRONSFromW"));
+	handler->addEventVariable("ValMCELECTRONSFromWEta", new EventVariableObjectVariableVector<double>("ETA","ValMCELECTRONSFromW"));
+	handler->addEventVariable("ValMCELECTRONSFromWPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCELECTRONSFromW"));
+
+	handler->addProduct("ValMCMUONSFromW","MCMUONS");
+	handler->addProductCut("ValMCMUONSFromW","ValMOTHERW");
+	handler->addProductSelfComparison("ValMCMUONSFromW",deltaR0p1);
+	handler->addEventVariable("ValMCMUONSFromWM", new EventVariableObjectVariableVector<double>("M","ValMCMUONSFromW"));
+	handler->addEventVariable("ValMCMUONSFromWN", new EventVariableN("ValMCMUONSFromWN","ValMCMUONSFromW"));
+	handler->addEventVariable("ValMCMUONSFromWPT", new EventVariableObjectVariableVector<double>("PT","ValMCMUONSFromW"));
+	handler->addEventVariable("ValMCMUONSFromWEta", new EventVariableObjectVariableVector<double>("ETA","ValMCMUONSFromW"));
+	handler->addEventVariable("ValMCMUONSFromWPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCMUONSFromW"));
+	
+	handler->addProduct("ValMCTAUSFromW","MCTAUS");
+	handler->addProductCut("ValMCTAUSFromW","ValMOTHERW");
+	handler->addProductSelfComparison("ValMCTAUSFromW",deltaR0p1);
+	handler->addEventVariable("ValMCTAUSFromWM", new EventVariableObjectVariableVector<double>("M","ValMCTAUSFromW"));
+	handler->addEventVariable("ValMCTAUSFromWN", new EventVariableN("ValMCTAUSFromWN","ValMCTAUSFromW"));
+	handler->addEventVariable("ValMCTAUSFromWPT", new EventVariableObjectVariableVector<double>("PT","ValMCTAUSFromW"));
+	handler->addEventVariable("ValMCTAUSFromWEta", new EventVariableObjectVariableVector<double>("ETA","ValMCTAUSFromW"));
+	handler->addEventVariable("ValMCTAUSFromWPhi", new EventVariableObjectVariableVector<double>("PHI","ValMCTAUSFromW"));	
 }
 
 
