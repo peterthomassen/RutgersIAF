@@ -17,6 +17,7 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 	double minMass = 1e6;
 	double maxMass = 0;
 	double zPT = 0;
+	double zPTlow = 0;
 	int nOSSF = 0;
 	double bestMass = 1e6;
 	double bestMassLow = 1e6;
@@ -49,10 +50,13 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 					if(mass < minMass) minMass = mass;
 					if(mass > maxMass) maxMass = mass;
 					if(fabs(m_zmass - mass) < fabs(m_zmass - bestMass)){
-					  bestMass = mass;
-					  zPT = (TLorentzVector(*v[k])+TLorentzVector(*v[j])).Pt();
+						bestMass = mass;
+						zPT = (TLorentzVector(*v[k])+TLorentzVector(*v[j])).Pt();
 					}
-					if(mass < m_zmass && fabs(m_zmass - mass) < fabs(m_zmass - bestMassLow)) bestMassLow = mass;
+					if(mass < m_zmass && fabs(m_zmass - mass) < fabs(m_zmass - bestMassLow)) {
+						bestMassLow = mass;
+						zPTlow = (TLorentzVector(*v[k])+TLorentzVector(*v[j])).Pt();
+					}
 				}
 			}
 		}
@@ -62,6 +66,7 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 	double closeMass = bestMass;
 	if(!onZ && bestMassLow < bestMass) {
 		bestMass = bestMassLow;
+		zPT = zPTlow;
 	}
 	
 	handler->setVariable(TString::Format("%sNOSSF",m_prefix.Data()),nOSSF);
