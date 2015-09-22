@@ -16,6 +16,7 @@ void EventVariableOSSF::addProduct(TString pname) {
 bool EventVariableOSSF::calculate(BaseHandler* handler) {
 	double minMass = 1e6;
 	double maxMass = 0;
+	double zPT = 0;
 	int nOSSF = 0;
 	double bestMass = 1e6;
 	double bestMassLow = 1e6;
@@ -47,7 +48,10 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 					double mass = (TLorentzVector(*v[k])+TLorentzVector(*v[j])).M();
 					if(mass < minMass) minMass = mass;
 					if(mass > maxMass) maxMass = mass;
-					if(fabs(m_zmass - mass) < fabs(m_zmass - bestMass)) bestMass = mass;
+					if(fabs(m_zmass - mass) < fabs(m_zmass - bestMass)){
+					  bestMass = mass;
+					  zPT = (TLorentzVector(*v[k])+TLorentzVector(*v[j])).Pt();
+					}
 					if(mass < m_zmass && fabs(m_zmass - mass) < fabs(m_zmass - bestMassLow)) bestMassLow = mass;
 				}
 			}
@@ -69,6 +73,7 @@ bool EventVariableOSSF::calculate(BaseHandler* handler) {
 	handler->setVariable(TString::Format("%sOSSFCLOSEMLL",m_prefix.Data()),closeMass);
 	handler->setVariable(TString::Format("%sOSSFMAXMLL",m_prefix.Data()),maxMass);
 	handler->setVariable(TString::Format("%sMOSSF",m_prefix.Data()),bestMass);
+	handler->setVariable(TString::Format("%sPTOSSF",m_prefix.Data()),zPT);
 	
 	// TODO add vector of all OSSF pair masses
 	
