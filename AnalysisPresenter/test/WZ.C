@@ -16,36 +16,15 @@ void WZ() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For WZ
-	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{76,106,9}:MT{0,300,30}:NGOODJETS{0,6}:ST{0,1000,100}";
+	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MT{0,300,30}:NGOODJETS{0,6}:ST{0,1000,100}";
 	varexp += ":NGOODMUONS{0,4}:NGOODELECTRONS{0,4}";
 	varexp += ":NGOODMUONS%2{0,2}";
 	//varexp += ":MINJETPT{0,400,40}:MAXJETPT{0,400,40}";
 	
 	// Global cuts, if desired
-	TString selection = "NOTTRILEPTONONZ";
+	TString selection = ""; // "!(AIC && MET < 50 && HT < 200)";
 	//selection += " && NGOODELECTRONS == 3";
-
-        PhysicsContribution* signalWW = new PhysicsContribution("signal", "/users/h2/heindl/simulation_tcH/histograms/JetMatch/tcH_ww.simulation.root", (2 * 0.01 * 245.8 * 0.231 * 0.3157 * 0.534196), "WW");
-        signalWW->addWeight("WEIGHT"); 
-        signalWW->addFlatUncertainty("lumi", 0.025);
-        
-        PhysicsContribution* signalZZ = new PhysicsContribution("signal", "/users/h2/heindl/simulation_tcH/histograms/JetMatch/tcH_zz.simulation.root", (2 * 0.01 * 245.8 * 0.0289 * 1.00 * 0.196389), "ZZ");
-        signalZZ->addWeight("WEIGHT");
-        signalZZ->addFlatUncertainty("lumi", 0.025);
-        
-        PhysicsContribution* signalTautau = new PhysicsContribution("signal", "/users/h2/heindl/simulation_tcH/histograms/JetMatch/tcH_tt.simulation.root", (2 * 0.01 * 245.8 * 0.0616 * 0.3157 * 1.00), "Tautau");
-        signalTautau->addWeight("WEIGHT");
-        signalTautau->addFlatUncertainty("lumi", 0.025);
-
-Bundle* signaltcH = new Bundle("signal", "tcH signal");
-signaltcH->addComponent(signalWW);
-signaltcH->addComponent(signalZZ);
-signaltcH->addComponent(signalTautau);
-
-Bundle* signalBundle = new Bundle("signal", "signalBundle");
-signalBundle->addComponent(signaltcH);
-
-
+	
 	////////////////////////
 	// Initialize and run //
 	////////////////////////
@@ -53,16 +32,7 @@ signalBundle->addComponent(signaltcH);
 	init(assembler);
 	setupData(assembler);
 	setupBackgroundMC(assembler, false, false);
-	//setupBackgroundMC(assembler, false, true);
-	//setupBackgroundMC(assembler);
-//	setupBackgroundDD(assembler, "noTaus");
 	setupBackgroundDD(assembler, "noTaus", true);
-//	setupBackgroundDD(assembler, "justTracks");
-
-        assembler->addContribution(signalWW);
-        assembler->addContribution(signalZZ);
-        assembler->addContribution(signalTautau);
-
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	prepare(assembler);
@@ -75,93 +45,22 @@ signalBundle->addComponent(signaltcH);
 	
 	// Check for duplicate events
 	
-	assembler->project("NLEPTONS", true)->getMeta(); // printMeta();
-	assembler->project("NLEPTONS", true)->print();
+//	assembler->project("NLEPTONS", true)->getMeta(); // printMeta();
+	//assembler->project("NLEPTONS", true)->print();
 	
 	// WZ control plot
 	assembler->setRange("NLEPTONS", 3, 3);
 	assembler->setRange("NGOODTAUS", 0, 0);
-cout << "check again" << endl;
-assembler->project("NLEPTONS", true)->getMeta(); // printMeta();
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	
 	assembler->setRange("MET", 50, 100, false);
 	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_MT.pdf");
-
-writeUncertainties(assembler->project("MET", true), "background");
-writeUncertainties(assembler->project("MET", true), "signal");
-//return;
-
-assembler->project("MT", true)->print();
-Channel* ch = assembler->channel("WZ");
-ch->print();
-ch->datacard("test");
-ch->bundle(assembler->getBundle("presentationBundle"))->datacard("bundleBkg");
-ch->bundle(signalBundle)->datacard("bundleSig");
-ch->bundle(assembler->getBundle("presentationBundle"))->bundle(signalBundle)->datacard("bundleBkgSig");
-ch->bundle(assembler->getBundle("presentationBundle"))->bundle(signalBundle)->datacard("bundleSigBkg");
-//ch->getMeta();
-ch->plot(false)->SaveAs("WZ_channel.pdf");
-cout << "number of events: " << ch->getHistogram("data")->GetEntries() << endl;
-//ch->printMeta();
-
-/*cout << "=========" << endl;
-
-cout << ch->get("data") << endl;
-cout << ch->get("background") << endl;
-
-cout << ch->getStat("background") << endl;
-cout << ch->getSyst("background") << endl;
-cout << ch->getSyst("background", "normalizationWZ") << endl;
-
-cout << "wz correlation class" << endl;
-cout << ch->getStat("background", "wz") << endl;
-cout << ch->getSyst("background", "normalizationWZ", "wz") << endl;
-
-cout << "empty correlation class" << endl;
-cout << ch->getStat("background", "") << endl;
-cout << ch->getSyst("background", "normalizationWZ", "") << endl;
-
-std::vector<TString> classes = ch->getCorrelationClasses("background");
-
-cout << classes.size() << " correlation classes" << endl;
-for(size_t i = 0; i < classes.size(); ++i) {
-	cout << classes[i] << endl;
-}
-*/
-assembler->setRange("MT", 50);
-
-//ch->project("HT", true)->plot(false)->SaveAs("WZ_channel_HT.pdf");
-//assembler->project("HT", true)->plot(false)->SaveAs("WZ_MET50to100MT50to100_HT.pdf");
-
-/*assembler->setRanges(ch->getRanges());
-std::vector<std::pair<int, int>> ranges = ch->getRanges();
-cout << "ranges size: " << ranges.size() << endl;
-*/
-ChannelCollection* cc = new ChannelCollection("SR");
-cc->addChannel(ch);
-cc->addChannel(ch);
-
-Channel* ch2 = assembler->channel("WZ_MT");
-cout << "number of events: " << ch2->getHistogram("data")->GetEntries() << endl;
-ch2->printMeta();
-cc->addChannel(ch2);
-cc->addChannel(ch2);
-
-cc->getChannels();
-
-//return;
+//makeNicePlot(assembler->project("MT", true)->plot(false), "MT [GeV]")->SaveAs("../20150730/WZ_MET50to100_MT.pdf");
 	assembler->setRange("NGOODMUONS%2", 0, 0);
-/*cout << "creating projection" << endl;
-AssemblerProjection* projection = assembler->project("MT", true);
-cout << "calling delete" << endl;
-delete projection;
-cout << "called delete" << endl;
-return;
-*/	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_evenMuon_MT.pdf");
-	assembler->setRange("NGOODMUONS%2", 1);
+	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_evenMuon_MT.pdf");
+	assembler->setRange("NGOODMUONS%2", 1, 1);
 	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_oddMuon_MT.pdf");
 	assembler->setRange("NGOODMUONS%2");
 	

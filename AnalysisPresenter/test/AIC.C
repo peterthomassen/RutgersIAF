@@ -15,15 +15,15 @@ void AIC() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,2}:(NGOODELECTRONS%2){0,2}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,200,8}:MLEPTONS*1{0,200,48}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,2}:(NGOODELECTRONS%2){0,2}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{0,200,8}:MLIGHTLEPTONS*1{0,200,48}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
 	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
 	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
 	
 	// Global cuts, if desired
-	//TString selection = "NOTTRILEPTONONZ";
+	//TString selection = "!AIC";
 	TString selection = "MOSSF < 81 && NGOODTAUS == 0";
 	//TString selection = "NPROMPTINCLUSIVETRACKS >= 6";
-	//TString selection = "!(MLEPTONS > 76 && MLEPTONS < 106)";
+	//TString selection = "!(MLIGHTLEPTONS > 76 && MLIGHTLEPTONS < 106)";
 	
 	
 	////////////////////////
@@ -32,9 +32,10 @@ void AIC() {
 	Assembler* assembler = new Assembler();
 	init(assembler);
 	setupData(assembler);
-	//setupBackgroundMC(assembler);
-	setupBackgroundMC(assembler, false, false);
-	setupBackgroundDD(assembler, "noTaus");
+	setupBackgroundMC(assembler);
+	//setupBackgroundMC(assembler, false, false);
+	//setupBackgroundDD(assembler, "noTaus");
+	setupBackgroundDD(assembler);
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	prepare(assembler);
@@ -56,18 +57,19 @@ void AIC() {
 	assembler->setRange("HT", 0, 200, false);
 	assembler->setRange("MET", 0, 50, false);
 	
-	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS.pdf");
-	assembler->project("MT", true)->plot(false)->SaveAs("AIC_MLEPTONS_MT-OFFZ.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_fine.pdf");
+	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS.pdf");
+//makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "trilepton mass [GeV]")->SaveAs("../20150730/AIC_MLIGHTLEPTONS.pdf");
+	assembler->project("MT", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_MT-OFFZ.pdf");
+	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_fine.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS-ONZ.pdf");
-	assembler->project("MT", true)->plot(false)->SaveAs("AIC_MLEPTONS_MT-ONZ.pdf");
+	assembler->project("MT", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_MT-ONZ.pdf");
 	assembler->setRange("ONZ", 0, 0);
 	
 	assembler->setRange("NGOODMUONS", 3, 3);
-	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_3mu.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_3mu_fine.pdf");
+	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_3mu.pdf");
+	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_3mu_fine.pdf");
 	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("AIC_MINMUONPT_3mu.pdf");
 	assembler->project("MAXMUONPT", true)->plot(false)->SaveAs("AIC_MAXMUONPT_3mu.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3mu-OFFZ.pdf");
@@ -77,8 +79,8 @@ void AIC() {
 	assembler->setRange("NGOODMUONS");
 	
 	assembler->setRange("NGOODMUONS", 1, 1);
-	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_2el1mu.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_2el1mu_fine.pdf");
+	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_2el1mu.pdf");
+	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_2el1mu_fine.pdf");
 	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("AIC_MINMUONPT_2el1mu.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_2el1mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
@@ -87,8 +89,8 @@ void AIC() {
 	assembler->setRange("NGOODMUONS");
 	
 	assembler->setRange("NGOODELECTRONS", 3, 3);
-	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_3el.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_3el_fine.pdf");
+	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_3el.pdf");
+	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_3el_fine.pdf");
 	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("AIC_MINELECTRONPT_3el.pdf");
 	assembler->project("MAXELECTRONPT", true)->plot(false)->SaveAs("AIC_MAXELECTRONPT_3el.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_3el-OFFZ.pdf");
@@ -98,8 +100,8 @@ void AIC() {
 	assembler->setRange("NGOODELECTRONS");
 	
 	assembler->setRange("NGOODELECTRONS", 1, 1);
-	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_1el2mu.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_1el2mu_fine.pdf");
+	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_1el2mu.pdf");
+	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_1el2mu_fine.pdf");
 	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("AIC_MINELECTRONPT_1el2mu.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_1el2mu-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
@@ -108,8 +110,8 @@ void AIC() {
 	assembler->setRange("NGOODELECTRONS");
 	
 	assembler->setRange("(NGOODELECTRONS%2)", 1, 1);
-	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_elFake.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_elFake_fine.pdf");
+	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_elFake.pdf");
+	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_elFake_fine.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_elFake-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_elFake-ONZ.pdf");
@@ -117,8 +119,8 @@ void AIC() {
 	assembler->setRange("(NGOODELECTRONS%2)");
 	
 	assembler->setRange("(NGOODELECTRONS%2)", 0, 0);
-	assembler->project("MLEPTONS", true)->plot(false)->SaveAs("AIC_MLEPTONS_muFake.pdf");
-	assembler->project("MLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLEPTONS_muFake_fine.pdf");
+	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_muFake.pdf");
+	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_muFake_fine.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_muFake-OFFZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS_muFake-ONZ.pdf");

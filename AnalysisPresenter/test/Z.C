@@ -15,25 +15,25 @@ void Z() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For Z peak
-	//std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLEPTONS{76,106}";
-	std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLEPTONS{76,106}";
+	//std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{76,106}";
+	std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{76,106}";
 	varexp += ":NPROMPTTRACKS7{0,100,1}";
 	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
 	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
-	varexp += ":NOTTRILEPTONONZ{0,2}";
+	varexp += ":AIC{0,2}";
 	varexp += ":MOSSF*1{11,131,120,\"MOSSFfine\"}";
 //	varexp += ":PTGOODMUONS{-3,3,20}";
 //	varexp += ":ETAGOODMUONS{-3,3,20}";
 	
 	// Global cuts, if desired
-	//TString selection = "NOTTRILEPTONONZ";
+	//TString selection = "!AIC";
 	TString selection = "1";
-//	selection += " && !(MLEPTONS > 81 && MLEPTONS < 101)";
+//	selection += " && !(MLIGHTLEPTONS > 81 && MLIGHTLEPTONS < 101)";
 	// for Zpeak
 	selection += " && NLEPTONS == 3";
 	//selection += " && ONZ";
 //	selection += " && fakeRoleGOODMUONS > 0";
-	//selection += " && !(MLEPTONS > 76 && MLEPTONS < 106)";
+	//selection += " && !(MLIGHTLEPTONS > 76 && MLIGHTLEPTONS < 106)";
 	
 	
 	////////////////////////
@@ -80,15 +80,18 @@ void Z() {
 	assembler->setRange("HT");
 	assembler->project("HT", true)->plot(true)->SaveAs("Z_HT.pdf");
 
-	assembler->setRange("MET", 0, 30, false);
+	//assembler->setRange("MET", 0, 30, false);
 	assembler->setRange("HT", -10, 200, false);
 	
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSF.pdf");
+
+//makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF pair mass [GeV]")->SaveAs("../20150730/Z_L3MET0to50HT0to200MT0to50_MOSSF.pdf");
+
 	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSFfine.pdf");
-	assembler->setRange("NOTTRILEPTONONZ", 1, 1);
-	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_NOTTRILEPTONONZ_MOSSF.pdf");
-	assembler->setRange("NOTTRILEPTONONZ");
+	assembler->setRange("AIC", 0, 0);
+	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_noAIC_MOSSF.pdf");
+	assembler->setRange("AIC");
 	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_ONZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("Z_MINMUONPT.pdf");
@@ -101,9 +104,9 @@ void Z() {
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_elFake_MOSSF.pdf");
 	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_elFake_MOSSFfine.pdf");
-	assembler->setRange("NOTTRILEPTONONZ", 1, 1);
-	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_elFake_NOTTRILEPTONONZ_MOSSF.pdf");
-	assembler->setRange("NOTTRILEPTONONZ");
+	assembler->setRange("AIC", 0, 0);
+	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_elFake_noAIC_MOSSF.pdf");
+	assembler->setRange("AIC");
 	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_elFake_ONZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("Z_elFake_MINELECTRONPT.pdf");
@@ -131,9 +134,9 @@ void Z() {
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_muFake_MOSSF.pdf");
 	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_muFake_MOSSFfine.pdf");
-	assembler->setRange("NOTTRILEPTONONZ", 1, 1);
-	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_muFake_NOTTRILEPTONONZ_MOSSF.pdf");
-	assembler->setRange("NOTTRILEPTONONZ");
+	assembler->setRange("AIC", 0, 0);
+	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_muFake_noAIC_MOSSF.pdf");
+	assembler->setRange("AIC");
 	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_muFake_ONZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("Z_muFake_MINMUONPT.pdf");

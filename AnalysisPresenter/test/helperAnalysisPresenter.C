@@ -25,12 +25,10 @@ void init(Assembler* assembler) {
 	assembler->addBundle(new Bundle("background", "TauFakes"));
 	assembler->addBundle(new Bundle("background", "Higgs"));
 	assembler->addBundle(new Bundle("background", "Rare MC"));
-	
-	//assembler->setMinScale(0.1);
 }
 
 std::string getDataFileName() {
-	return "20150708_data";
+	return "20150924_data";
 }
 
 void prepare(Assembler* assembler) {
@@ -60,12 +58,13 @@ void prepare(Assembler* assembler) {
 	}
 	assembler->addBundle(fakePresentationBundle);
 	
-	assembler->setDefaultBundle(presentationBundle);
-	assembler->getDefaultBundle()->print();
+//	assembler->setDefaultBundle(presentationBundle);
+//	assembler->getDefaultBundle()->print();
 }
 
 void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0) {
-	std::string prefix = "/cms/thomassen/2014/Analysis/data/histograms/";
+	dilep = true;
+	std::string prefix = "/cms/thomassen/2015/Analysis/data/results/";
 	std::string infix = dilep ? "" : ".3L";
 	std::string body = getDataFileName();
 	std::string suffix = ".root";
@@ -73,14 +72,15 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0) {
 	PhysicsContribution* data = 0;
 	
 	if(fakeMode == 0) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data");
-	} else if(fakeMode == 1) {
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 15.47, "15.47/pb@13TeV");
+		data->addWeight("TRIGGERACCEPT");
+/*	} else if(fakeMode == 1) {
 		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data", false, "treeRfakeTracks");
 	} else if(fakeMode == 2) {
 		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data", false, "treeRfakePhotons");
 	} else if(fakeMode == 3) {
 		data = new PhysicsContribution("data", prefix + body + infix + suffix, 19500, "2012data", false, "treeRfakeTaus");
-	} else {
+*/	} else {
 		cout << "unsure what to do";
 		exit(1);
 	}
@@ -101,35 +101,22 @@ void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false
 }
 
 void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = true, bool onlyTTF = false) {
-	std::string prefix = "/cms/thomassen/2014/Analysis/simulation/histograms/";
+	dilep = true;
+	std::string prefix = "/cms/thomassen/2015/Analysis/simulation/results/";
 	std::string infix = dilep ? "" : ".3L";
 	std::string suffix = ".simulation.root";
 	
-	// Richard's numbers
-	// Branching ratios
-//	Double_t WtoLNu = 0.3203;
-//	Double_t Wto2J = (1.0-0.3203);
-	// Cross sections [pb]
-//	Double_t xsec_ttbar = 225.0;
-//	Double_t xsec_ttbar_fullLep = pow(WtoLNu,2)*xsec_ttbar;
-//	Double_t xsec_ttbar_semiLep = 2.0*WtoLNu*Wto2J*xsec_ttbar;
-//	Double_t xsec_wz = 32.3*(0.3257*0.10095)*1.20;
-	Double_t xsec_zz = 0.92*17.7*(0.10095*0.10095)*1.08;
-	xsec_zz *= 0.97 * 1.028;
-	Double_t xsec_ttw = 0.23;
-	Double_t xsec_ttz = 0.208;
-	Double_t xsec_tbz_tqz = 0.0114 + 2 * 0.0114; // 0.0114 is tbZ, 2*0.0114 is fudge for missing tqZ
-	
-	// Peter's numbers
-	double xsec_ttbar_fullLep = 23.08;
-	double xsec_ttbar_semiLep = 97.97 * 1.32;
-	double xsec_wz = 1.2451;
-	xsec_wz *= 0.957;
-//	double xsec_zz = 0.181;
-//	double xsec_ttw = 0.2149;
-//	double xsec_ttz = 0.208;
-	
-	//ttbar = false;
+	double xsec_dy10to50 = 18610.;
+	double xsec_dy50 = 6025.2;
+		double dxsec_dy50 = sqrt(pow(39.6, 2) + pow(225, 2));
+	// double xsec_ttS = 0; // MCM * BR: 670.3 * 0.322;
+	double xsec_ttF = 87.31; // MCM * BR: 670.3 * 0.105;
+		double dxsec_ttF = sqrt(pow(3.07, 2) + pow(3.68, 2));
+		double xsec_ttF_fudge = 0.822;
+	double xsec_wz = 4.42965; // PHYS14: 43.871*(0.3257*0.10095);
+	double xsec_zz = 1.191; // from MCM; // PHYS14: 1.218;
+	double xsec_ttw = 0.2043; // PHYS14: 2.232
+	double xsec_ttz = 0.2529; // PHYS14: 1.152
 	
 	std::vector<PhysicsContribution*> mc;
 	std::vector<PhysicsContribution*> mcH;
@@ -138,57 +125,64 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	Bundle* correlationBundle = new Bundle("background", "correlationBundle");
 	assembler->addBundle(correlationBundle);
 	
-	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZJetsTo3LNu" + infix + suffix, xsec_wz, "WZ");
-	wz->addWeight("exp(-0.005 * PTMCZ[0]/sqrt(MMCZ[0]))", 1.038);
-	wz->addWeight("(NGOODJETS[0] == 0) * 1.053 + (NGOODJETS[0] == 1) * 0.85 + (NGOODJETS[0] == 2) * 1.15 + (NGOODJETS[0] > 2) * 1.19");
-	wz->addWeight("(NGOODJETS[0] <= 1) + (NGOODJETS[0] > 1) * (Alt$((PTGOODJETS[0] < 70) * 0.65 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.07 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 1.00 + (PTGOODJETS[0] >= 150) * 1.55, 0))");
+	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZTo3LNu" + infix + suffix, xsec_wz, "WZ", false, "treeR", 39);
+	//wz->addWeight("exp(-0.005 * PTMCZ[0]/sqrt(MMCZ[0]))", 1.038);
+	//wz->addWeight("(NGOODJETS[0] == 0) * 1.053 + (NGOODJETS[0] == 1) * 0.85 + (NGOODJETS[0] == 2) * 1.15 + (NGOODJETS[0] > 2) * 1.19");
+	//wz->addWeight("(NGOODJETS[0] <= 1) + (NGOODJETS[0] > 1) * (Alt$((PTGOODJETS[0] < 70) * 0.65 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.07 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 1.00 + (PTGOODJETS[0] >= 150) * 1.55, 0))");
 	//wz->addWeight("1 + (NBJETSCSVM > 0) * 0.0"); // look with more data whether MC gets number of b's right
-	wz->addFlatUncertainty("normalizationWZ", 0.05);
+	//wz->addFlatUncertainty("normalizationWZ", 0.05);
 	correlationBundle->addComponent(wz);
-	
-	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZJetsTo4L" + infix + suffix, xsec_zz, "ZZ");
-	zz->addWeight("(NGOODJETS[0] == 0) * 1.084 + (NGOODJETS[0] == 1) * 0.75 + (NGOODJETS[0] == 2) * 0.333 + (NGOODJETS[0] > 2) * 1");
-	correlationBundle->addComponent(zz);
-	
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWJets" + infix + suffix, xsec_ttw, "TTW"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTZJets" + infix + suffix, xsec_ttz, "TTZ"));
-	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TBLL" + infix + suffix, xsec_tbz_tqz, "TBZ + TQZ"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 0.08217, "WWW"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZJets" + infix + suffix, 0.0633, "WWZ"));
 	mc.push_back(wz);
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 0.019, "WZZ"));
-	mc.push_back(zz);
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
 	
-	TString nJetWeight = "1 + (NGOODJETS[0] >= 4) * 0.05"; // Peter's numbers
+	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30);
+	//zz->addWeight("(NGOODJETS[0] == 0) * 1.084 + (NGOODJETS[0] == 1) * 0.75 + (NGOODJETS[0] == 2) * 0.333 + (NGOODJETS[0] > 2) * 1");
+	correlationBundle->addComponent(zz);
+	mc.push_back(zz);
+	
+//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-100To250" + infix + suffix, 28730000*0.1178, "QCD_HT-100To250"));
+//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-250To500" + infix + suffix, 670500*0.1685, "QCD_HT-250To500"));
+//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-500To1000" + infix + suffix, 26740*0.2103, "QCD_HT-500To1000"));
+//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-1000ToInf" + infix + suffix, 769.7*0.2358, "QCD_HT-1000ToInf"));
+	
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWJetsToLNu" + infix + suffix, xsec_ttw, "TTW"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTZToLLNuNu" + infix + suffix, xsec_ttz, "TTZ"));
+//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TBLL" + infix + suffix, xsec_tbz_tqz, "TBZ + TQZ"));
+//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
+//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 0.08217, "WWW"));
+//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZJets" + infix + suffix, 0.0633, "WWZ"));
+//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 0.019, "WZZ"));
+//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
+	
+	//TString nJetWeight = "1 + (NGOODJETS[0] >= 4) * 0.05"; // Peter's numbers
+	TString nJetWeight = "1";
 	
 	Bundle* bundleTTbar = new Bundle("background", "ttbar");
 	assembler->addBundle(bundleTTbar);
 	
 	if(ttbar) {
-		if(dilep) {
+/*		if(dilep) {
 			PhysicsContribution* ttbarS = new PhysicsContribution("backgroundMC", prefix + "TTJetsSemiLeptonic" + infix + suffix, xsec_ttbar_semiLep, "TT_SemiL");
 			ttbarS->addWeight(nJetWeight);
 			mc.push_back(ttbarS);
 			bundleTTbar->addComponent(ttbarS);
-		}
+		}*/
 		
 		if(onlyTTF) {
 			mc.clear();
 		}
 		
 		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + ".3LonZ" + suffix, xsec_ttbar_fullLep, "TT_FullL");
-		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullL", false, "treeR", -1, 0.1);
-		ttbarF->addWeight("1.2 - 0.04 * NPROMPTNONISOINCLUSIVETRACKS7[0]");
-		ttbarF->addWeight(nJetWeight);
-		ttbarF->addWeight("1 + (NLEPTONS[0] - NGOODTAUS[0] >= 3) * 0.66");
-//		ttbarF->addFlatUncertainty("xsec", 0.3);
-		ttbarF->addFlatUncertainty("fudge", 0.194);
+		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJets" + infix + suffix, xsec_tt, "TT", false, "treeR", -1, 0.1);
+		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF * xsec_ttF_fudge, "ttF", false);
+//		ttbarF->addWeight("1.2 - 0.04 * NPROMPTNONISOINCLUSIVETRACKS7[0]");
+//		ttbarF->addWeight(nJetWeight);
+//		ttbarF->addWeight("1 + (NLEPTONS[0] - NGOODTAUS[0] >= 3) * 0.66");
+		ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
+//		ttbarF->addFlatUncertainty("fudge", 0.194);
 		mc.push_back(ttbarF);
 		bundleTTbar->addComponent(ttbarF);
 		
-		if(!dilep) {
+/*		if(!dilep) {
 			std::vector<PhysicsContribution*> ttbarFfake;
 			
 			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTJetsFullLeptonic" + infix + suffix, xsec_ttbar_fullLep, "TT_FullLfakeTracks", true, "treeRfakeTracks", -1, 0.1);
@@ -215,19 +209,26 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	//			contribution->addFlatUncertainty("xsec", 0.3);
 				mc.push_back(contribution);
 			}
-		}
+		}*/
 	}
 	
 	correlationBundle->addComponent(bundleTTbar);
 	
 	if(dilep) {
-//		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10To50" + infix + suffix, 762.45, "DY10to50"));
-//		mc.push_back(new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, 2950.0, "DYgt50"));
+		PhysicsContribution* c = 0;
+		
+		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10to50" + infix + suffix, xsec_dy10to50, "DY10to50", false, "treeR", 46);
+		mc.push_back(c);
+		
+		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dy50, "DY50", false, "treeR", 46);
+		c->addFlatUncertainty("xsec_dy50", dxsec_dy50 / xsec_dy50);
+		mc.push_back(c);
 	}
 	
 	
 	for(auto &contribution : mc) {
 		contribution->addWeight("WEIGHT[0]");
+//		contribution->addWeight("TRIGGERACCEPT");
 		assembler->addContribution(contribution);
 	}
 	
@@ -237,10 +238,12 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	
 	for(auto &contribution : mcRare) {
 		contribution->addWeight("WEIGHT[0]");
+//		contribution->addWeight("TRIGGERACCEPT");
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
 	}
 	
+/*
 //	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
 //	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
 	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToZZTo4L" + infix + suffix, 0.0053, "GluGluToHToZZTo4L"));
@@ -253,14 +256,19 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	for(auto &contribution : mcH) {
 		contribution->addFlatUncertainty("xsecH", 0.5); // TODO correlations?
 		contribution->addWeight("WEIGHT[0]");
+		contribution->addWeight("TRIGGERACCEPT[0]");
 		assembler->addContribution(contribution);
 		assembler->getBundle("Higgs")->addComponent(contribution);
 	}
 	
 	correlationBundle->addComponent(assembler->getBundle("Higgs"));
+*/
 }
 
 void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = false) {
+	cout << "NOTICE: Data-driven background samples currently unavailable" << endl;
+	return;
+	
 	std::string prefix = "/cms/thomassen/2014/Analysis/data/histograms/";
 	std::string body = getDataFileName();
 	std::string suffix = ".root";
@@ -326,6 +334,9 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 }
 
 void setupFakeRates(Assembler* assembler) {
+	cout << "NOTICE: Fake rates currently unavailable" << endl;
+	return;
+	
 	// We found that NGOODJETS and HT binning does not work very well; NPROMPTINCLUSIVETRACK7 binning does a good job at least in 0b regions.
 	assembler->setFakeRate("nTrackFakeMuons",
 		"(NGOODTAUS[0] == 0) * ("
@@ -439,11 +450,11 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   latex->SetNDC();
   latex->SetTextFont(61);
   latex->SetTextSize(0.04);
-  latex->DrawLatex(0.16,0.915,"CMS Simulation");
+  latex->DrawLatex(0.16,0.915,"CMS Preliminary");
 
   latex->SetTextSize(0.03);
   latex->SetTextFont(42);
-  latex->DrawLatex(0.75,0.97,"20 fb^{-1} (13 TeV)");
+  latex->DrawLatex(0.75,0.97,"15.47 pb^{-1} (13 TeV)");
 
   c->Update();
   pad1->Update();
