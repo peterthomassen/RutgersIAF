@@ -1372,7 +1372,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
 }
 
 void setupTriggers(BaseHandler* handler,int mode){
-
+if(mode > 0) {
   ObjectVariableValueInList<TString>* isDoubleMuTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1");
   isDoubleMuTrigger->addValue("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1");
   isDoubleMuTrigger->addValue("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2");
@@ -1458,7 +1458,7 @@ void setupTriggers(BaseHandler* handler,int mode){
     TString nacceptname = TString::Format("REJECT_%s",trigger.Data());
     handler->addEventVariable(nacceptname,new EventVariableReversed(acceptname));
   }
-
+}
   EventVariableCombined* trigaccept = NULL;
   switch(mode){
   case 1:
