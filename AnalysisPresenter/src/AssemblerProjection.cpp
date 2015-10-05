@@ -53,6 +53,9 @@ AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, boo
 }
 
 AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, TString missingName) : m_assembler(parent->m_assembler), m_binForOverflow(parent->m_binForOverflow), m_bundle(bundle), m_isDistribution(parent->m_isDistribution), m_name(parent->m_name), m_parent(parent), m_ranges(parent->m_ranges), m_title(parent->m_title) {
+	auto ranges = m_assembler->getRanges();
+	m_assembler->setRanges(m_ranges);
+	
 	for(auto &parentTypeProjection : m_parent->m_typeProjections) {
 		TString type = parentTypeProjection.first;
 		
@@ -65,7 +68,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		
 		std::set<const PhysicsContribution*> contributions;
 		for(auto &component : bundle->getComponents()) {
-			auto projection = component->project(isDistribution() ? m_name : "_", m_binForOverflow);
+			BaseBundleProjection* projection = component->project(isDistribution() ? m_name : "_", m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			
 			size_t oldSize = contributions.size();
@@ -103,6 +106,8 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 			assert(contributions.size() == oldSize + projectionContributions.size());
 		}
 	}
+	
+	m_assembler->setRanges(ranges);
 	
 	prepareStacks();
 }
