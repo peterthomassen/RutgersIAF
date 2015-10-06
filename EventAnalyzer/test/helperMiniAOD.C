@@ -69,6 +69,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("isPhoton",new ObjectVariableValue<TString>("INPUTTYPE","photon"));
   handler->addObjectVariable("isVertex",new ObjectVariableValue<TString>("INPUTTYPE","vertex"));
   handler->addObjectVariable("isMET", new ObjectVariableValue<TString>("INPUTTYPE","met"));
+  handler->addObjectVariable("uncertaintyNoShift", new ObjectVariableValue<TString>("uncertainty","NoShift"));
+  handler->addObjectVariable("levelType1", new ObjectVariableValue<TString>("level","Type1"));
 
   handler->addProduct("ALLMUONS","ALL");
   handler->addProductCut("ALLMUONS","isMuon");
@@ -96,6 +98,8 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("ALLMET","isMET");
 
   handler->addProduct("MET","ALLMET");
+  handler->addProductCut("MET", "uncertaintyNoShift");
+  handler->addProductCut("MET", "levelType1");
 
 
   ///Some variables///
