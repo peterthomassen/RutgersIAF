@@ -185,38 +185,42 @@ void setupProducts(BaseHandler* handler)
   ////Variables////
   /////////////////  
   ObjectVariableEffectiveArea* areaEl = new ObjectVariableEffectiveArea("ELECTRON_AREA");
-  areaEl->addArea(0.8,0.1013);
-  areaEl->addArea(1.3,0.0988);
-  areaEl->addArea(2.0,0.0572);
-  areaEl->addArea(2.2,0.0842);
-  areaEl->addArea(2.5,0.1530);
+  areaEl->addArea(1, 0.1752);
+  areaEl->addArea(1.479, 0.1862);
+  areaEl->addArea(2.0, 0.1411);
+  areaEl->addArea(2.2, 0.1534);
+  areaEl->addArea(2.3, 0.1903);
+  areaEl->addArea(2.4, 0.2243);
+  areaEl->addArea(2.5, 0.2687);
   handler->addObjectVariable("ELECTRON_AREA", areaEl);
 
   ObjectVariableEffectiveAreaMiniIsolation* areaElmi = new ObjectVariableEffectiveAreaMiniIsolation("miniIsoCone",0.3,2,"ELECTRON_AREA_MINIISO");
-  areaElmi->addArea(0.8,0.1013);
-  areaElmi->addArea(1.3,0.0988);
-  areaElmi->addArea(2.0,0.0572);
-  areaElmi->addArea(2.2,0.0842);
-  areaElmi->addArea(2.5,0.1530);
+  areaElmi->addArea(1, 0.1752);
+  areaElmi->addArea(1.479, 0.1862);
+  areaElmi->addArea(2.0, 0.1411);
+  areaElmi->addArea(2.2, 0.1534);
+  areaElmi->addArea(2.3, 0.1903);
+  areaElmi->addArea(2.4, 0.2243);
+  areaElmi->addArea(2.5, 0.2687);
   handler->addObjectVariable("ELECTRON_AREA_MINIISO", areaElmi);
 
   ObjectVariableEffectiveArea* areaMu = new ObjectVariableEffectiveArea("MUON_AREA");
-  areaMu->addArea(0.8,0.0913);
-  areaMu->addArea(1.3,0.0765);
-  areaMu->addArea(2.0,0.0546);
-  areaMu->addArea(2.2,0.0728);
-  areaMu->addArea(2.5,0.1177);
+  areaMu->addArea(0.8,0.0735);
+  areaMu->addArea(1.3,0.0619);
+  areaMu->addArea(2.0,0.0465);
+  areaMu->addArea(2.2,0.0433);
+  areaMu->addArea(2.5,0.0577);
   handler->addObjectVariable("MUON_AREA", areaMu);
 
   ObjectVariableEffectiveAreaMiniIsolation* areaMumi = new ObjectVariableEffectiveAreaMiniIsolation("miniIsoCone",0.3,2,"MUON_AREA_MINIISO");
-  areaMumi->addArea(0.8,0.0913);
-  areaMumi->addArea(1.3,0.0765);
-  areaMumi->addArea(2.0,0.0546);
-  areaMumi->addArea(2.2,0.0728);
-  areaMumi->addArea(2.5,0.1177);
+  areaMumi->addArea(0.8,0.0735);
+  areaMumi->addArea(1.3,0.0619);
+  areaMumi->addArea(2.0,0.0465);
+  areaMumi->addArea(2.2,0.0433);
+  areaMumi->addArea(2.5,0.0577);
   handler->addObjectVariable("MUON_AREA_MINIISO", areaMumi);
 
-  handler->addObjectVariable("RHO", new ObjectVariableEventVariable<double>("rhoAll",handler));
+  handler->addObjectVariable("RHO", new ObjectVariableEventVariable<double>("rhoNeutral",handler));
   handler->addObjectVariable("ELECTRON_totalIso", new ObjectVariableRhoCorrectedTotalIso("sumChargedHadronPt","sumNeutralHadronEt","sumPhotonEt","RHO","ELECTRON_AREA","TOTALISO"),false);
   handler->addObjectVariable("MUON_totalIso", new ObjectVariableRhoCorrectedTotalIso("pfIsolationR03sumChargedHadronPt","pfIsolationR03sumNeutralHadronEt","pfIsolationR03sumPhotonEt","RHO","MUON_AREA","TOTALISO"),false);
   handler->addObjectVariable("TRACK_totalIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronIsoFromPF","neutralHadronIsoFromPF","neutralPhotonIsoFromPF","RHO","MUON_AREA","TOTALISO","isTrack"),false);
