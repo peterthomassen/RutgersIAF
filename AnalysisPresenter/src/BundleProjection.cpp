@@ -44,32 +44,42 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	m_histogram->SetTitle(bundle->getName());
 	
 	// Use this histogram to find for which bins we need zerostat
-	TH1D* histogramDummy = (TH1D*)projections[0]->getHistogram()->Clone();
-	histogramDummy->Reset();
+	TH1D* histogramSum = (TH1D*)projections[0]->getHistogram()->Clone();
+	histogramSum->Reset();
 	
 	for(auto &projection : projections) {
-		histogramDummy->Add(projection->getHistogram());
+		histogramSum->Add(projection->getHistogram());
 	}
 	
-	for(auto &projection : projections) {
-		for(int i = 1; i <= m_histogram->GetNbinsX() + 1; ++i) {
-			if(histogramDummy->GetBinContent(i) != 0) {
-				// Avoid summing up zerostat uncertainties if there are non-zero contributions
-				if(projection->getHistogram()->GetBinContent(i) == 0) {
-					continue;
+	for(int i = 1; i <= m_histogram->GetNbinsX() + 1; ++i) {
+		double zerostat = 0;
+		
+		for(auto &projection : projections) {
+			// Zerostat
+			if(histogramSum->GetBinContent(i) == 0) {
+				if(zerostat == 0 || zerostat > projection->getHistogram()->GetBinError(i)) {
+					zerostat = projection->getHistogram()->GetBinError(i);
 				}
-				
-				double value = m_histogram->GetBinContent(i);
-				value += projection->getHistogram()->GetBinContent(i);
-				m_histogram->SetBinContent(i, value);
+				continue;
 			}
 			
-			// Sum up zerostat uncertainties
-			double value = m_histogram->GetBinError(i);
-			value = sqrt(value*value + pow(projection->getHistogram()->GetBinError(i), 2));
-			m_histogram->SetBinError(i, value);
+			if(projection->getHistogram()->GetBinContent(i) == 0) {
+				continue;
+			}
+			
+			double content = m_histogram->GetBinContent(i);
+			content += projection->getHistogram()->GetBinContent(i);
+			m_histogram->SetBinContent(i, content);
 		}
 		
+		if(zerostat > 0) {
+			m_histogram->SetBinError(i, zerostat);
+		}
+	}
+	
+	delete histogramSum;
+	
+	for(auto &projection : projections) {
 		for(auto &uncertainty : projection->getUncertainties()) {
 			if(m_uncertainties.find(uncertainty.first) == m_uncertainties.end()) {
 				m_uncertainties.insert(make_pair(uncertainty.first, (TH1D*)uncertainty.second->Clone()));
@@ -82,8 +92,6 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 			}
 		}
 	}
-	
-	delete histogramDummy;
 	
 	if(!m_source->isData()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
