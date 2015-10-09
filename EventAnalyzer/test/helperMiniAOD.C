@@ -1160,7 +1160,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("MLOWDYCUTLOWPT", new EventVariableInRange<double>("LOWDYLOWPTOSMINMLL",10,1e6));
   
   //EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
-  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUTLOWPT", true, "WRITEEVENT");
+  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUT", true, "WRITEEVENT");
 //  writeEvent->addVariable("NOTTRILEPTONONZ");
   handler->addEventVariable("WRITEEVENT", writeEvent);
 
