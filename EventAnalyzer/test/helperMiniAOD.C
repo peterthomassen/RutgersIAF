@@ -209,6 +209,33 @@ void setupProducts(BaseHandler* handler)
 
   handler->addObjectVariable("ELECTRON_IDISOemu", new ObjectVariableCombined("ELECTRON_IDemu","ELECTRON_ISOemu",true));
   
+  handler->addObjectVariable("ELECTRON_MVA_m0p92", new ObjectVariableInRange<double>("MVA",-0.92,100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p83", new ObjectVariableInRange<double>("MVA",-0.83,100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p70", new ObjectVariableInRange<double>("MVA",-0.70,100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p52", new ObjectVariableInRange<double>("MVA",-0.52,100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p05",  new ObjectVariableInRange<double>("MVA", 0.05,100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p20",  new ObjectVariableInRange<double>("MVA", 0.20,100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p35",  new ObjectVariableInRange<double>("MVA", 0.35,100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p57",  new ObjectVariableInRange<double>("MVA", 0.57,100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p73",  new ObjectVariableInRange<double>("MVA", 0.73,100000));
+
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_LOOSE",new ObjectVariableCombined("ETA0p8","ELECTRON_MVA_m0p70",true,"ELECTRON_MVA_ETA0p8_LOOSE"));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_TIGHT",new ObjectVariableCombined("ETA0p8","ELECTRON_MVA_0p87",true,"ELECTRON_MVA_ETA0p8_TIGHT"));
+
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_LOOSE",new ObjectVariableCombined("ETA0p8to1p479","ELECTRON_MVA_m0p83",true));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_TIGHT",new ObjectVariableCombined("ETA0p8to1p479","ELECTRON_MVA_0p60",true));
+
+  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_LOOSE", new ObjectVariableCombined("ENDCAP","ELECTRON_MVA_m0p92",true));
+  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_TIGHT", new ObjectVariableCombined("ENDCAP","ELECTRON_MVA_0p17",true));
+
+  ObjectVariableCombined* electron_mva_loose = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_LOOSE","ELECTRON_MVA_ETA0p8to1p479_LOOSE",false);
+  electron_mva_loose->addVariable("ELECTRON_MVA_ENDCAP_LOOSE");
+  ObjectVariableCombined* electron_mva_tight = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_TIGHT","ELECTRON_MVA_ETA0p8to1p479_TIGHT",false);
+  electron_mva_tight->addVariable("ELECTRON_MVA_ENDCAP_TIGHT");
+
+  handler->addObjectVariable("ELECTRON_MVA_LOOSE",electron_mva_loose);
+  handler->addObjectVariable("ELECTRON_MVA_TIGHT",electron_mva_tight);
+
   /////////////////////
   ///Track variables///
   /////////////////////
@@ -307,30 +334,6 @@ void setupProducts(BaseHandler* handler)
 
   handler->addObjectVariable("ELECTRON_ISOLATED", new ObjectVariableRename<bool>("MULTIISOM", "ELECTRON_ISOLATED"));
   handler->addObjectVariable("ELECTRON_NOTISOLATED",new ObjectVariableReversed("ELECTRON_ISOLATED"));
-
-  handler->addObjectVariable("ELECTRON_MVA_0p35", new ObjectVariableInRange<double>("MVA",0.35,100000));
-  handler->addObjectVariable("ELECTRON_MVA_0p73", new ObjectVariableInRange<double>("MVA",0.73,100000));
-  handler->addObjectVariable("ELECTRON_MVA_0p20", new ObjectVariableInRange<double>("MVA",0.20,100000));
-  handler->addObjectVariable("ELECTRON_MVA_0p57", new ObjectVariableInRange<double>("MVA",0.57,100000));
-  handler->addObjectVariable("ELECTRON_MVA_m0p52", new ObjectVariableInRange<double>("MVA",-0.52,100000));
-  handler->addObjectVariable("ELECTRON_MVA_0p05", new ObjectVariableInRange<double>("MVA",0.05,100000));
-
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_LOOSE",new ObjectVariableCombined("ETA0p8","ELECTRON_MVA_0p35",true,"ELECTRON_MVA_ETA0p8_LOOSE"));
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_TIGHT",new ObjectVariableCombined("ETA0p8","ELECTRON_MVA_0p73",true,"ELECTRON_MVA_ETA0p8_TIGHT"));
-
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_LOOSE",new ObjectVariableCombined("ETA0p8to1p479","ELECTRON_MVA_0p20",true));
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_TIGHT",new ObjectVariableCombined("ETA0p8to1p479","ELECTRON_MVA_0p57",true));
-
-  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_LOOSE", new ObjectVariableCombined("ENDCAP","ELECTRON_MVA_m0p52",true));
-  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_TIGHT", new ObjectVariableCombined("ENDCAP","ELECTRON_MVA_0p05",true));
-
-  ObjectVariableCombined* electron_mva_loose = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_LOOSE","ELECTRON_MVA_ETA0p8to1p479_LOOSE",false);
-  electron_mva_loose->addVariable("ELECTRON_MVA_ENDCAP_LOOSE");
-  ObjectVariableCombined* electron_mva_tight = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_TIGHT","ELECTRON_MVA_ETA0p8to1p479_TIGHT",false);
-  electron_mva_tight->addVariable("ELECTRON_MVA_ENDCAP_TIGHT");
-
-  handler->addObjectVariable("ELECTRON_MVA_LOOSE",electron_mva_loose);
-  handler->addObjectVariable("ELECTRON_MVA_TIGHT",electron_mva_tight);
     
 
   //////////////////
