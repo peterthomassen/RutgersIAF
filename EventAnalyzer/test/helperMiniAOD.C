@@ -171,6 +171,44 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("ELECTRON_PROMPT", new ObjectVariableRename<bool>("ELECTRON_dxy", "ELECTRON_PROMPT"));
   handler->addObjectVariable("ELECTRON_NONPROMPT",new ObjectVariableReversed("ELECTRON_PROMPT"));
 
+  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p011", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.011));
+  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p031", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.031));
+  handler->addObjectVariable("ELECTRON_hcalOverEcal_0p08", new ObjectVariableInRange<double>("hcalOverEcal",0,0.08));
+  handler->addObjectVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01", new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.01,0.01));
+  handler->addObjectVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p04", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.04,0.04));
+  handler->addObjectVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p08", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.08,0.08));
+  handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p01", new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.01,0.01));
+  
+  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso", new ObjectVariableRelIso("ELECTRON_RelIso_EcalPFClusterIso","EcalPFClusterIso"));
+  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso", new ObjectVariableRelIso("ELECTRON_RelIso_HcalPFClusterIso","HcalPFClusterIso"));
+  handler->addObjectVariable("ELECTRON_RelIso_TrackIso", new ObjectVariableRelIso("ELECTRON_RelIso_TrackIso","TrackIso"));
+  
+  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso_0p45", new ObjectVariableInRange<double>("ELECTRON_RelIso_EcalPFClusterIso",0,0.45));
+  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso_0p25", new ObjectVariableInRange<double>("ELECTRON_RelIso_HcalPFClusterIso",0,0.25));
+  handler->addObjectVariable("ELECTRON_RelIso_TrackIso_0p45", new ObjectVariableInRange<double>("ELECTRON_RelIso_TrackIso",0,0.2));
+  
+  ObjectVariableCombined* electron_IDemu_barrel = new ObjectVariableCombined("BARREL","ELECTRON_full5x5_sigmaIetaIeta_0p011",true);
+  electron_IDemu_barrel->addVariable("ELECTRON_hcalOverEcal_0p08");
+  electron_IDemu_barrel->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
+  electron_IDemu_barrel->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p04");
+  electron_IDemu_barrel->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
+  handler->addObjectVariable("ELECTRON_IDemu_ENDCAP", electron_IDemu_barrel);
+  
+  ObjectVariableCombined* electron_IDemu_endcap = new ObjectVariableCombined("ENDCAP","ELECTRON_full5x5_sigmaIetaIeta_0p031",true);
+  electron_IDemu_endcap->addVariable("ELECTRON_hcalOverEcal_0p08");
+  electron_IDemu_endcap->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
+  electron_IDemu_endcap->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p08");
+  electron_IDemu_endcap->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
+  handler->addObjectVariable("ELECTRON_IDemu_ENDCAP", electron_IDemu_endcap);
+
+  handler->addObjectVariable("ELECTRON_IDemu", new ObjectVariableCombined("ELECTRON_IDemu_BARREL","ELECTRON_IDemu_ENDCAP",true));
+  
+  ObjectVariableCombined* electron_ISOemu = new ObjectVariableCombined("ELECTRON_RelIso_EcalPFClusterIso_0p45","ELECTRON_RelIso_HcalPFClusterIso_0p25",true);
+  electron_ISOemu->addVariable("ELECTRON_RelIso_TrackIso_0p45");
+  handler->addObjectVariable("ELECTRON_ISOemu", electron_ISOemu);
+
+  handler->addObjectVariable("ELECTRON_IDISOemu", new ObjectVariableCombined("ELECTRON_IDemu","ELECTRON_ISOemu",true));
+  
   /////////////////////
   ///Track variables///
   /////////////////////
