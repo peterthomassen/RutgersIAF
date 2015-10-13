@@ -606,7 +606,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("JET_NEUTRALHADRONFRACTION", new ObjectVariableInRange<double>("neutralHadronEnergyFraction",0,0.99));
   handler->addObjectVariable("JET_NEUTRALEMFRACTION", new ObjectVariableInRange<double>("neutralEmEnergyFraction", 0,0.99));
   handler->addObjectVariable("JET_NUMBEROFCONSTITUENTS", new ObjectVariableInRange<int>("numberOfConstituents",2,100000));
-  handler->addObjectVariable("JET_MUONFRACTION", new ObjectVariableInRange<double>("muonEnergyFraction",0,0.8));
+  //handler->addObjectVariable("JET_MUONFRACTION", new ObjectVariableInRange<double>("muonEnergyFraction",0,0.8));
   handler->addObjectVariable("JET_CHARGEDHADRONFRACTION", new ObjectVariableInRange<double>("chargedHadronEnergyFraction",1e-6,1000));
   handler->addObjectVariable("JET_CHARGEDMULTIPLICITY", new ObjectVariableInRange<int>("chargedMultiplicity",1,1e6));
   handler->addObjectVariable("JET_CHARGEDEMFRACTION", new ObjectVariableInRange<double>("chargedEmEnergyFraction",0,0.99));
@@ -618,7 +618,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("basicJetsNoCleaning","JET_NEUTRALHADRONFRACTION");
   handler->addProductCut("basicJetsNoCleaning","JET_NEUTRALEMFRACTION");
   handler->addProductCut("basicJetsNoCleaning","JET_NUMBEROFCONSTITUENTS");
-  handler->addProductCut("basicJetsNoCleaning","JET_MUONFRACTION");
+  //handler->addProductCut("basicJetsNoCleaning","JET_MUONFRACTION"); // not part of 13 TeV recommendation
 
   handler->addProduct("goodJets","basicJetsNoCleaning");
   handler->addProductCut("goodJets","PT30");
