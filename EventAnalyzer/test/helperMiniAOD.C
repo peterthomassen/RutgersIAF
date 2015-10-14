@@ -1506,7 +1506,7 @@ void setupTriggers(BaseHandler* handler,int mode){
     isSingleElTrigger->addValue("HLT_Ele23_WPLoose_Gsf_v3");
     handler->addObjectVariable("isSingleElTrigger",isSingleElTrigger);
 
-    ObjectVariableValueInList<TString>* isSingleMuTrigger = new ObjectVaraibleValueInList<TString>("TRIGGERNAME","HLT_IsoMu20_v1");
+    ObjectVariableValueInList<TString>* isSingleMuTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_IsoMu20_v1");
     isSingleMuTrigger->addValue("HLT_IsoMu20_v2");
     isSingleMuTrigger->addValue("HLT_IsoMu20_v3");
     isSingleMuTrigger->addValue("HLT_IsoMu20_v4");
