@@ -16,9 +16,9 @@
 
 using namespace std;
 
-void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spring15/WZTo3LNu/AnalysisTree/allResults.simulation.root") {
+void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spring15/TTZToLLNuNu/AnalysisTree/allResults.simulation.root") {
 	
-	TString sample = "WZTo3LNu";
+	TString sample = "TTZToLLNuNu";
 	TString energy = "13 TeV";
 	
 	TFile *ValFile = TFile::Open(inputFile);
@@ -459,6 +459,11 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
+	variables.push_back("ValBottomPhi:STATUS");
+	titles.push_back("Bottom-Quark Phi");		
+	lableX.push_back("STATUS");
+	lableY.push_back("Phi");
+	lableZ.push_back("");
 	variables.push_back("ValBottomEta");
 	titles.push_back("Bottom-Quark Eta");		
 	lableX.push_back("Eta");
@@ -501,6 +506,11 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 	titles.push_back("Z-Boson Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
+	lableZ.push_back("");
+	variables.push_back("ValZPhi:STATUS");
+	titles.push_back("Z-Boson Phi");		
+	lableX.push_back("STATUS");
+	lableY.push_back("Phi");
 	lableZ.push_back("");
 	variables.push_back("ValZEta");
 	titles.push_back("Z-Boson Eta");		
@@ -600,13 +610,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 	
 	//your own plots, e.g:
 	//2D:
-	/*variables.push_back("ValMCTAUSEta:ValMCTAUSPhi");
+	/*variables.push_back("ValMCTAUSEta:ValMCtausPhi");
 	titles.push_back("Generator Taus Eta vs Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
 	lableZ.push_back("");
 	//3D:
-	variables.push_back("ValMCTAUSPT:ValMCTAUSEta:ValMCTAUSPhi");
+	variables.push_back("ValMCtausPT:ValMCtausEta:ValMCtausPhi");
 	titles.push_back("Generator Taus PT vs Eta && Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
@@ -646,32 +656,47 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 	TCanvas* canvas = new TCanvas("canvas");
 	canvas->Divide(2,2);
 	int n_plot = 0;
-	int fullPages = variables.size()/4;
-	if (variables.size()%4==0) {fullPages--;}
 	
+	std::vector<TString> variablesFiltered;
+	std::vector<TString> titlesFiltered;
+	std::vector<TString> lableXFiltered;
+	std::vector<TString> lableYFiltered;
+	std::vector<TString> lableZFiltered;
 	
-	for(size_t i = 0; i < variables.size(); ++i) {
+	cout << "Filtering events with no entries..." << endl;
+	for(size_t k = 0; k < variables.size(); k++) {
+		if (treeR->GetEntries(variables[k])==0) {cout << "Histogram with no entries (" << variables[k] << ") -> not drawn" << endl; continue;}
+		variablesFiltered.push_back(variables[k]);
+		titlesFiltered.push_back(titles[k]);
+		lableXFiltered.push_back(lableX[k]);
+		lableYFiltered.push_back(lableY[k]);
+		lableZFiltered.push_back(lableZ[k]);
+	}
+	
+	int fullPages = variablesFiltered.size()/4;
+	if (variablesFiltered.size()%4==0) {fullPages--;}	
+	
+	for(size_t i = 0; i < variablesFiltered.size(); ++i) {
 		char colon = ':';
 		int i_colon = colon;
-		int n_dim = variables[i].CountChar(i_colon);
+		int n_dim = variablesFiltered[i].CountChar(i_colon);
 		
 		
-		cout << "Histogram " << i+1 << "/" << variables.size() << endl;
-		if (n_dim<0 || n_dim>2) {cout << "*** Hist " << variables[i] << " error: wrong dimensions for Hist ***" << endl; continue;}
-		if (treeR->GetEntries(variables[i])==0) {cout << "Histogram with no entries (" << variables[i] << ") -> not drawn..." << endl; continue;}
+		cout << "Histogram " << i+1 << "/" << variablesFiltered.size() << endl;
+		if (n_dim<0 || n_dim>2) {cout << "*** Hist " << variablesFiltered[i] << " error: wrong dimensions for Hist ***" << endl; break;}
 		
 		//begin pdf
 		if (i<4) {
 			if (n_dim==0) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i]); 
+				treeR->Draw(variablesFiltered[i]); 
 				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
 				if(htemp1) {
 					htemp1->Draw();
-					htemp1->SetTitle(titles[i]);
-					htemp1->GetXaxis()->SetTitle(lableX[i]);
-					htemp1->GetYaxis()->SetTitle(lableY[i]);
+					htemp1->SetTitle(titlesFiltered[i]);
+					htemp1->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp1->GetYaxis()->SetTitle(lableYFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
@@ -680,19 +705,19 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
 				} 
-				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp1 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 			if (n_dim==1) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i],"","COLZ"); 
+				treeR->Draw(variablesFiltered[i],"","COLZ"); 
 				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
 				if(htemp2) {
 					htemp2->Draw("COLZ");
-					htemp2->SetTitle(titles[i]);
-					htemp2->GetXaxis()->SetTitle(lableX[i]);
-					htemp2->GetYaxis()->SetTitle(lableY[i]);
-					htemp2->GetZaxis()->SetTitle(lableZ[i]);
+					htemp2->SetTitle(titlesFiltered[i]);
+					htemp2->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp2->GetYaxis()->SetTitle(lableYFiltered[i]);
+					htemp2->GetZaxis()->SetTitle(lableZFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
@@ -701,19 +726,19 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
 				} 
-				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp2 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 			if (n_dim==2) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i],"","ISO"); 
+				treeR->Draw(variablesFiltered[i],"","ISO"); 
 				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
 				if(htemp3) {
 					htemp3->Draw("ISO");
-					htemp3->SetTitle(titles[i]);
-					htemp3->GetXaxis()->SetTitle(lableX[i]);
-					htemp3->GetYaxis()->SetTitle(lableY[i]);
-					htemp3->GetZaxis()->SetTitle(lableZ[i]);
+					htemp3->SetTitle(titlesFiltered[i]);
+					htemp3->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp3->GetYaxis()->SetTitle(lableYFiltered[i]);
+					htemp3->GetZaxis()->SetTitle(lableZFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
@@ -722,7 +747,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf("); n_plot=0;}
 				} 
-				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp3 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 		}
 		
@@ -731,13 +756,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 			if (n_dim==0) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i]); 
+				treeR->Draw(variablesFiltered[i]); 
 				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
 				if(htemp1) {
 					htemp1->Draw();
-					htemp1->SetTitle(titles[i]);
-					htemp1->GetXaxis()->SetTitle(lableX[i]);
-					htemp1->GetYaxis()->SetTitle(lableY[i]);
+					htemp1->SetTitle(titlesFiltered[i]);
+					htemp1->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp1->GetYaxis()->SetTitle(lableYFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
@@ -746,19 +771,19 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
 				} 
-				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp1 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 			if (n_dim==1) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i],"","COLZ"); 
+				treeR->Draw(variablesFiltered[i],"","COLZ"); 
 				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
 				if(htemp2) {
 					htemp2->Draw("COLZ");
-					htemp2->SetTitle(titles[i]);
-					htemp2->GetXaxis()->SetTitle(lableX[i]);
-					htemp2->GetYaxis()->SetTitle(lableY[i]);
-					htemp2->GetZaxis()->SetTitle(lableZ[i]);
+					htemp2->SetTitle(titlesFiltered[i]);
+					htemp2->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp2->GetYaxis()->SetTitle(lableYFiltered[i]);
+					htemp2->GetZaxis()->SetTitle(lableZFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
@@ -767,19 +792,19 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
 				} 
-				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp2 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 			if (n_dim==2) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i],"","ISO"); 
+				treeR->Draw(variablesFiltered[i],"","ISO"); 
 				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
 				if(htemp3) {
 					htemp3->Draw("ISO");
-					htemp3->SetTitle(titles[i]);
-					htemp3->GetXaxis()->SetTitle(lableX[i]);
-					htemp3->GetYaxis()->SetTitle(lableY[i]);
-					htemp3->GetZaxis()->SetTitle(lableZ[i]);
+					htemp3->SetTitle(titlesFiltered[i]);
+					htemp3->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp3->GetYaxis()->SetTitle(lableYFiltered[i]);
+					htemp3->GetZaxis()->SetTitle(lableZFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
@@ -788,7 +813,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 					
 					if (n_plot==4) {canvas->Print("validation_" + sample + ".pdf"); n_plot=0;}
 				} 
-				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp3 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 		}
 		
@@ -798,64 +823,64 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/MC_samples_Spr
 			if (n_dim==0) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i]); 
+				treeR->Draw(variablesFiltered[i]); 
 				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
 				if(htemp1) {
 					htemp1->Draw();
-					htemp1->SetTitle(titles[i]);
-					htemp1->GetXaxis()->SetTitle(lableX[i]);
-					htemp1->GetYaxis()->SetTitle(lableY[i]);
+					htemp1->SetTitle(titlesFiltered[i]);
+					htemp1->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp1->GetYaxis()->SetTitle(lableYFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
-					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
+					if (i==variablesFiltered.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
 				} 
-				else {cout << "*** htemp1 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp1 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 			if (n_dim==1) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i],"","COLZ"); 
+				treeR->Draw(variablesFiltered[i],"","COLZ"); 
 				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
 				if(htemp2) {
 					htemp2->Draw("COLZ");
-					htemp2->SetTitle(titles[i]);
-					htemp2->GetXaxis()->SetTitle(lableX[i]);
-					htemp2->GetYaxis()->SetTitle(lableY[i]);
-					htemp2->GetZaxis()->SetTitle(lableZ[i]);
+					htemp2->SetTitle(titlesFiltered[i]);
+					htemp2->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp2->GetYaxis()->SetTitle(lableYFiltered[i]);
+					htemp2->GetZaxis()->SetTitle(lableZFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
-					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
+					if (i==variablesFiltered.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
 				} 
-				else {cout << "*** htemp2 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp2 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 			if (n_dim==2) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variables[i],"","ISO"); 
+				treeR->Draw(variablesFiltered[i],"","ISO"); 
 				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
 				if(htemp3) {
 					htemp3->Draw("ISO");
-					htemp3->SetTitle(titles[i]);
-					htemp3->GetXaxis()->SetTitle(lableX[i]);
-					htemp3->GetYaxis()->SetTitle(lableY[i]);
-					htemp3->GetZaxis()->SetTitle(lableZ[i]);
+					htemp3->SetTitle(titlesFiltered[i]);
+					htemp3->GetXaxis()->SetTitle(lableXFiltered[i]);
+					htemp3->GetYaxis()->SetTitle(lableYFiltered[i]);
+					htemp3->GetZaxis()->SetTitle(lableZFiltered[i]);
 					
 					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
 					Info->Draw();
 					
-					if (i==variables.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
+					if (i==variablesFiltered.size()-1) {canvas->Print("validation_" + sample + ".pdf)");}
 				} 
-				else {cout << "*** htemp3 error: " << variables[i] << " ***" << endl;}
+				else {cout << "*** htemp3 error: " << variablesFiltered[i] << " ***" << endl;}
 			}
 		}
 		
