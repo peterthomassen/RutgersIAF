@@ -71,6 +71,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("isMET", new ObjectVariableValue<TString>("INPUTTYPE","met"));
   handler->addObjectVariable("uncertaintyNoShift", new ObjectVariableValue<TString>("uncertainty","NoShift"));
   handler->addObjectVariable("levelType1", new ObjectVariableValue<TString>("level","Type1"));
+  handler->addObjectVariable("INPUTTAGslimmedMETs", new ObjectVariableValue<TString>("INPUTTAG","slimmedMETs"));
 
   handler->addProduct("ALLMUONS","ALL");
   handler->addProductCut("ALLMUONS","isMuon");
@@ -100,6 +101,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("MET","ALLMET");
   handler->addProductCut("MET", "uncertaintyNoShift");
   handler->addProductCut("MET", "levelType1");
+  handler->addProductCut("MET", "INPUTTAGslimmedMETs");
 
 
   ///Some variables///
