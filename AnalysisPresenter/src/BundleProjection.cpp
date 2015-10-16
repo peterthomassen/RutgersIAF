@@ -43,41 +43,26 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	m_histogram->Reset();
 	m_histogram->SetTitle(bundle->getName());
 	
-	// Use this histogram to find for which bins we need zerostat
-	TH1D* histogramSum = (TH1D*)projections[0]->getHistogram()->Clone();
-	histogramSum->Reset();
-	
-	for(auto &projection : projections) {
-		histogramSum->Add(projection->getHistogram());
-	}
-	
 	for(int i = 1; i <= m_histogram->GetNbinsX() + 1; ++i) {
 		double zerostat = 0;
+		double stat2 = 0;
 		
 		for(auto &projection : projections) {
-			// Zerostat
-			if(histogramSum->GetBinContent(i) == 0) {
-				if(zerostat == 0 || zerostat > projection->getHistogram()->GetBinError(i)) {
-					zerostat = projection->getHistogram()->GetBinError(i);
+			double projectionContent = projection->getHistogram()->GetBinContent(i);
+			double projectionError = projection->getHistogram()->GetBinError(i);
+			
+			if(projectionContent == 0) {
+				if(zerostat == 0 || zerostat > projectionError) {
+					zerostat = projectionError;
 				}
-				continue;
+			} else {
+				m_histogram->SetBinContent(i, m_histogram->GetBinContent(i) + projectionContent);
+				stat2 += pow(projectionError, 2);
 			}
-			
-			if(projection->getHistogram()->GetBinContent(i) == 0) {
-				continue;
-			}
-			
-			double content = m_histogram->GetBinContent(i);
-			content += projection->getHistogram()->GetBinContent(i);
-			m_histogram->SetBinContent(i, content);
 		}
 		
-		if(zerostat > 0) {
-			m_histogram->SetBinError(i, zerostat);
-		}
+		m_histogram->SetBinError(i, (m_histogram->GetBinContent(i) == 0) ? zerostat : sqrt(stat2));
 	}
-	
-	delete histogramSum;
 	
 	for(auto &projection : projections) {
 		for(auto &uncertainty : projection->getUncertainties()) {
