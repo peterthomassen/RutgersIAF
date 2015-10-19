@@ -311,16 +311,20 @@ double PhysicsContribution::getLumi() const {
 
 std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 	std::set<PhysicsContribution::metadata_t> s;
+	unsigned int nDuplicates = 0;
+	
 	for(auto &bin : getBins()) {
 		for(auto &metadata : m_metadata[bin]) {
 			auto ins = s.insert(metadata);
 			if(!ins.second) {
 				cout << "Warning: duplicate event in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+				++nDuplicates;
 			}
-			//assert(ins.second);
 		}
 	}
-	cout << "meta: " << s.size() << " events" << endl;
+	
+	assert(nDuplicates == 0);
+	
 	return s;
 }
 
