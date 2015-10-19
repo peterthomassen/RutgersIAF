@@ -33,6 +33,7 @@ public:
 	Bundle* getDefaultBundle() const;
 	std::vector<PhysicsContribution*> getPhysicsContributions(TString type) const;
 	double getLumi() const;
+	std::vector<std::pair<int, int>> getRanges() const;
 	TString getVarExp() const;
 	TString getVarName(TString name) const;
 	TString getSelection() const;
@@ -52,7 +53,6 @@ public:
 	void setRanges(std::vector<std::pair<int, int>> ranges);
 
 protected:
-	std::vector<std::pair<int, int>> getRanges() const;
 
 private:
 	TFile* m_outfile = 0;
