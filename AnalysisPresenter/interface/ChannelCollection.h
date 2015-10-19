@@ -17,7 +17,7 @@ public:
 	ChannelCollection(TString name);
 	virtual ~ChannelCollection();
 	
-	bool addChannel(Channel* channel);
+	bool addChannel(Channel* channel, bool allowDuplicates = false);
 	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	
 	std::set<Channel*> getChannels() const;

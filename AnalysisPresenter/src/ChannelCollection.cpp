@@ -29,7 +29,7 @@ ChannelCollection::~ChannelCollection() {
 	/* no-op */
 }
 
-bool ChannelCollection::addChannel(Channel* channel) {
+bool ChannelCollection::addChannel(Channel* channel, bool allowDuplicates) {
 	auto ins = m_channels.insert(channel);
 	if(!ins.second) {
 		cout << "ChannelCollection " << getName() << ": not adding channel " << channel->getName() << " twice" << endl;
@@ -42,10 +42,15 @@ bool ChannelCollection::addChannel(Channel* channel) {
 	for(auto &metadata : meta) {
 		auto insEvent = m_meta["data"].insert(metadata);
 		if(!insEvent.second) {
-			cout << "Warning: duplicate event in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+			cout << "Warning: Channel " << channel->getName() << " introduces duplicate event into ChannelCollection " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
 			++nDuplicates;
 		}
 	}
+	
+	if(!allowDuplicates) {
+		assert(nDuplicates == 0);
+	}
+	
 	return true;
 }
 
