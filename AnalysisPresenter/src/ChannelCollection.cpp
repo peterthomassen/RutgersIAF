@@ -57,6 +57,7 @@ bool ChannelCollection::addChannel(Channel* channel, bool allowDuplicates) {
 void ChannelCollection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
 	std::cout << "Creating datacard ..." << std::endl;
 	
+	assert(getChannels().size() > 0);
 	assert(has("signal"));
 	
 	double minYield = 0.001;
