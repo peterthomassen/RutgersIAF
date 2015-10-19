@@ -30,11 +30,12 @@ ChannelCollection::~ChannelCollection() {
 }
 
 bool ChannelCollection::addChannel(Channel* channel, bool allowDuplicates) {
-	auto ins = m_channels.insert(channel);
-	if(!ins.second) {
+	if(std::find(m_channels.begin(), m_channels.end(), channel) != m_channels.end()) {
 		cout << "ChannelCollection " << getName() << ": not adding channel " << channel->getName() << " twice" << endl;
 		return false;
 	}
+	
+	m_channels.push_back(channel);
 	
 	unsigned int nDuplicates = 0;
 	
@@ -55,7 +56,7 @@ bool ChannelCollection::addChannel(Channel* channel, bool allowDuplicates) {
 }
 
 void ChannelCollection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
-	std::cout << "Creating datacard ..." << std::endl;
+	std::cout << "Creating datacard " << datacardName << " ..." << std::endl;
 	
 	assert(getChannels().size() > 0);
 	assert(has("signal"));
@@ -211,7 +212,7 @@ std::vector<TString> ChannelCollection::getBundleNames(TString type) const {
 	return bundleNames;
 }
 
-std::set<Channel*> ChannelCollection::getChannels() const {
+std::vector<Channel*> ChannelCollection::getChannels() const {
 	return m_channels;
 }
 

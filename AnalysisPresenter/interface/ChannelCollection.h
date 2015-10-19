@@ -20,7 +20,7 @@ public:
 	bool addChannel(Channel* channel, bool allowDuplicates = false);
 	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	
-	std::set<Channel*> getChannels() const;
+	std::vector<Channel*> getChannels() const;
 	std::set<TString> getUncertaintyNames() const;
 	std::vector<TString> getBundleNames(TString type) const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
@@ -34,7 +34,7 @@ public:
 protected:
 	
 private:
-	std::set<Channel*> m_channels;
+	std::vector<Channel*> m_channels;
 	std::map<TString, std::set<PhysicsContribution::metadata_t>> m_meta;
 	TString m_name;
 	
