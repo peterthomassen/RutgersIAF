@@ -21,6 +21,7 @@ BundleProjection::BundleProjection() {
 }
 
 BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : BaseBundleProjection(bundle, varName) {
+	// Prepare projections of all the bundle components
 	std::vector<BaseBundleProjection*> projections;
 	for(auto &component : bundle->getComponents()) {
 		// Don't make overflow bin visible; this is handled by the code that called us (it will call includeOverflow() on our histogram)
@@ -39,10 +40,12 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	}
 	assert(projections.size() > 0);
 	
+	// Prepare main histogram
 	m_histogram = (TH1D*)projections[0]->getHistogram()->Clone();
 	m_histogram->Reset();
 	m_histogram->SetTitle(bundle->getName());
 	
+	// Sum up main histogram, w/ statistical uncertainties
 	for(int i = 1; i <= m_histogram->GetNbinsX() + 1; ++i) {
 		double zerostat = 0;
 		double stat2 = 0;
@@ -64,6 +67,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 		m_histogram->SetBinError(i, (m_histogram->GetBinContent(i) == 0) ? zerostat : sqrt(stat2));
 	}
 	
+	// Sum up systematic uncertainties
 	for(auto &projection : projections) {
 		for(auto &uncertainty : projection->getUncertainties()) {
 			if(m_uncertainties.find(uncertainty.first) == m_uncertainties.end()) {
@@ -78,11 +82,14 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 		}
 	}
 	
-	if(!m_source->isData()) {
+	// If desired, set negative bins to 0 (this can happen due to fake subtraction etc.)
+	if(!m_source->isData() && !m_source->getAllowNegative()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
-			// Set negative bins to 0 (this can happen due to fake subtraction etc.)
-			if(!m_source->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {
+			if(m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
+				for(auto &uncertainty : getUncertainties()) {
+					uncertainty.second->SetBinContent(i, 0);
+				}
 			}
 		}
 	}
