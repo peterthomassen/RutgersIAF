@@ -462,7 +462,7 @@ bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	}
 	
 	if(first > last) {
-		cerr << "Error: attempt to set " << name << " upper boundary below lower boundary boundary." << endl;
+		cerr << "Error: attempt to set " << name << " upper boundary below lower boundary." << endl;
 		throw std::runtime_error("invalid axis range");
 	}
 	
