@@ -82,19 +82,14 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 		}
 	}
 	
-	if(!m_source->isData()) {
+	// If desired, set negative bins to 0 (this can happen due to fake subtraction etc.)
+	if(!m_source->getAllowNegative() && !m_source->isData()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
-			// If desired, set negative bins to 0 (this can happen due to fake subtraction etc.)
-			if(!m_source->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {
+			if(m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
 				for(auto &uncertainty : getUncertainties()) {
 					uncertainty.second->SetBinContent(i, 0);
 				}
-			}
-			
-			// Truncate negative uncertainties at -100% (logNormal constraint)
-			for(auto &uncertainty : getUncertainties()) {
-				uncertainty.second->SetBinContent(i, max(uncertainty.second->GetBinContent(i), -m_histogram->GetBinContent(i)));
 			}
 		}
 	}

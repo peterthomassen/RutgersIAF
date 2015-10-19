@@ -143,14 +143,14 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 				double contentSignalSyst = channel->getSyst("signal", uncertaintyName, bundleName);
 				double contentSignal = max(minYield, channel->get("signal", bundleName));
 				double ratio = systFactor * contentSignalSyst/contentSignal;
-				datacard << '\t' << 1 + ratio;
+				datacard << '\t' << max(0., 1 + ratio);
 			}
 			
 			for(auto &bundleName : bundleNamesBkg) {
 				double contentBackgroundSyst = channel->getSyst("background", uncertaintyName, bundleName);
 				double contentBackground = max(minYield, channel->get("background", bundleName));
 				double ratio = systFactor * contentBackgroundSyst/contentBackground;
-				datacard << '\t' << 1 + ratio;
+				datacard << '\t' << max(0., 1 + ratio);
 			}
 		}
 		datacard << endl;
