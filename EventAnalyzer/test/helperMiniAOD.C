@@ -194,7 +194,7 @@ void setupProducts(BaseHandler* handler)
   electron_IDemu_barrel->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
   electron_IDemu_barrel->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p04");
   electron_IDemu_barrel->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
-  handler->addObjectVariable("ELECTRON_IDemu_ENDCAP", electron_IDemu_barrel);
+  handler->addObjectVariable("ELECTRON_IDemu_BARREL", electron_IDemu_barrel);
   
   ObjectVariableCombined* electron_IDemu_endcap = new ObjectVariableCombined("ENDCAP","ELECTRON_full5x5_sigmaIetaIeta_0p031",true);
   electron_IDemu_endcap->addVariable("ELECTRON_hcalOverEcal_0p08");
@@ -203,7 +203,7 @@ void setupProducts(BaseHandler* handler)
   electron_IDemu_endcap->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
   handler->addObjectVariable("ELECTRON_IDemu_ENDCAP", electron_IDemu_endcap);
 
-  handler->addObjectVariable("ELECTRON_IDemu", new ObjectVariableCombined("ELECTRON_IDemu_BARREL","ELECTRON_IDemu_ENDCAP",true));
+  handler->addObjectVariable("ELECTRON_IDemu", new ObjectVariableCombined("ELECTRON_IDemu_BARREL","ELECTRON_IDemu_ENDCAP",false));
   
   ObjectVariableCombined* electron_ISOemu = new ObjectVariableCombined("ELECTRON_RelIso_EcalPFClusterIso_0p45","ELECTRON_RelIso_HcalPFClusterIso_0p25",true);
   electron_ISOemu->addVariable("ELECTRON_RelIso_TrackIso_0p45");
@@ -211,29 +211,38 @@ void setupProducts(BaseHandler* handler)
 
   handler->addObjectVariable("ELECTRON_IDISOemu", new ObjectVariableCombined("ELECTRON_IDemu","ELECTRON_ISOemu",true));
   
-  handler->addObjectVariable("ELECTRON_MVA_m0p92", new ObjectVariableInRange<double>("MVA",-0.92,100000));
-  handler->addObjectVariable("ELECTRON_MVA_m0p83", new ObjectVariableInRange<double>("MVA",-0.83,100000));
-  handler->addObjectVariable("ELECTRON_MVA_m0p70", new ObjectVariableInRange<double>("MVA",-0.70,100000));
-  handler->addObjectVariable("ELECTRON_MVA_0p17",  new ObjectVariableInRange<double>("MVA", 0.17,100000));
-  handler->addObjectVariable("ELECTRON_MVA_0p60",  new ObjectVariableInRange<double>("MVA", 0.60,100000));
-  handler->addObjectVariable("ELECTRON_MVA_0p87",  new ObjectVariableInRange<double>("MVA", 0.87,100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p92",  new ObjectVariableInRange<double>("MVA", -0.92,  100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p83",  new ObjectVariableInRange<double>("MVA", -0.83,  100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p76",  new ObjectVariableInRange<double>("MVA", -0.76,  100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p70",  new ObjectVariableInRange<double>("MVA", -0.70,  100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p56",  new ObjectVariableInRange<double>("MVA", -0.56,  100000));
+  handler->addObjectVariable("ELECTRON_MVA_m0p155", new ObjectVariableInRange<double>("MVA", -0.155, 100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p17",   new ObjectVariableInRange<double>("MVA",  0.17,  100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p60",   new ObjectVariableInRange<double>("MVA",  0.60,  100000));
+  handler->addObjectVariable("ELECTRON_MVA_0p87",   new ObjectVariableInRange<double>("MVA",  0.87,  100000));
 
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_LOOSE",new ObjectVariableCombined("ETA0p8","ELECTRON_MVA_m0p70",true,"ELECTRON_MVA_ETA0p8_LOOSE"));
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_TIGHT",new ObjectVariableCombined("ETA0p8","ELECTRON_MVA_0p87",true,"ELECTRON_MVA_ETA0p8_TIGHT"));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_LOOSE",new ObjectVariableCombined("ETA0p8", "ELECTRON_MVA_m0p70",  true));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_RA7FO",new ObjectVariableCombined("ETA0p8", "ELECTRON_MVA_m0p166", true));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8_TIGHT",new ObjectVariableCombined("ETA0p8", "ELECTRON_MVA_0p87",   true));
 
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_LOOSE",new ObjectVariableCombined("ETA0p8to1p479","ELECTRON_MVA_m0p83",true));
-  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_TIGHT",new ObjectVariableCombined("ETA0p8to1p479","ELECTRON_MVA_0p60",true));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_LOOSE",new ObjectVariableCombined("ETA0p8to1p479", "ELECTRON_MVA_m0p83", true));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_RA7FO",new ObjectVariableCombined("ETA0p8to1p479", "ELECTRON_MVA_m0p56", true));
+  handler->addObjectVariable("ELECTRON_MVA_ETA0p8to1p479_TIGHT",new ObjectVariableCombined("ETA0p8to1p479", "ELECTRON_MVA_0p60",  true));
 
-  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_LOOSE", new ObjectVariableCombined("ENDCAP","ELECTRON_MVA_m0p92",true));
-  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_TIGHT", new ObjectVariableCombined("ENDCAP","ELECTRON_MVA_0p17",true));
+  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_LOOSE", new ObjectVariableCombined("ENDCAP", "ELECTRON_MVA_m0p92", true));
+  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_RA7FO", new ObjectVariableCombined("ENDCAP", "ELECTRON_MVA_m0p76", true));
+  handler->addObjectVariable("ELECTRON_MVA_ENDCAP_TIGHT", new ObjectVariableCombined("ENDCAP", "ELECTRON_MVA_0p17",  true));
 
-  ObjectVariableCombined* electron_mva_loose = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_LOOSE","ELECTRON_MVA_ETA0p8to1p479_LOOSE",false);
+  ObjectVariableCombined* electron_mva_loose = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_LOOSE", "ELECTRON_MVA_ETA0p8to1p479_LOOSE", false);
   electron_mva_loose->addVariable("ELECTRON_MVA_ENDCAP_LOOSE");
-  ObjectVariableCombined* electron_mva_tight = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_TIGHT","ELECTRON_MVA_ETA0p8to1p479_TIGHT",false);
+  ObjectVariableCombined* electron_mva_RA7FO = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_RA7FO", "ELECTRON_MVA_ETA0p8to1p479_RA7FO", false);
+  electron_mva_loose->addVariable("ELECTRON_MVA_ENDCAP_RA7FO");
+  ObjectVariableCombined* electron_mva_tight = new ObjectVariableCombined("ELECTRON_MVA_ETA0p8_TIGHT", "ELECTRON_MVA_ETA0p8to1p479_TIGHT", false);
   electron_mva_tight->addVariable("ELECTRON_MVA_ENDCAP_TIGHT");
 
-  handler->addObjectVariable("ELECTRON_MVA_LOOSE",electron_mva_loose);
-  handler->addObjectVariable("ELECTRON_MVA_TIGHT",electron_mva_tight);
+  handler->addObjectVariable("ELECTRON_MVA_LOOSE", electron_mva_loose);
+  handler->addObjectVariable("ELECTRON_MVA_RA7FO", electron_mva_RA7FO);
+  handler->addObjectVariable("ELECTRON_MVA_TIGHT", electron_mva_tight);
 
   /////////////////////
   ///Track variables///
@@ -394,6 +403,9 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("basicElectrons", "ELECTRON_dz");
   handler->addProductCut("basicElectrons", "ELECTRON_passConversionVeto");
   handler->addProductCut("basicElectrons", "ELECTRON_MISSINGHITS");
+  if(handler->getMode("RA7") && handler->getMode("MC")) {
+    handler->addProductCut("basicElectrons", "ELECTRON_IDISOemu");
+  }
   
   // loose electrons according to RA7Coordination2015 TWiki
   handler->addProduct("looseElectrons","basicElectrons");
@@ -408,6 +420,12 @@ void setupProducts(BaseHandler* handler)
 
   handler->addProduct("goodElectrons","goodElectronsLowPt");
   handler->addProductCut("goodElectrons", "PT10");
+
+  handler->addProduct("RA7FOElectrons","looseElectrons");
+  handler->addProductCut("RA7FOElectrons", "ELECTRON_MVA_RA7FO");
+  handler->addProductCut("RA7FOElectrons", "SIP3D_4sigma");
+  handler->addProductCut("RA7FOElectrons", "MULTIISOM");
+  handler->addProductCut("RA7FOElectrons", "PT10");
 
   handler->addProduct("isoNonPromptElectrons","basicElectrons");
   handler->addProductCut("isoNonPromptElectrons","ELECTRON_ISOLATED");
@@ -626,7 +644,12 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodRA7Jets","JET_CHARGEDMULTIPLICITY");
   handler->addProductCut("goodRA7Jets","JET_CHARGEDEMFRACTION");
 
-  handler->addProduct("goodJets","goodRA7Jets"); // only difference is separation
+  handler->addProduct("goodJets","basicJetsNoCleaning");
+  handler->addProductCut("goodJets","PT30");
+  handler->addProductCut("goodJets","ETA2p4");
+  handler->addProductCut("goodJets","JET_CHARGEDHADRONFRACTION");
+  handler->addProductCut("goodJets","JET_CHARGEDMULTIPLICITY");
+  handler->addProductCut("goodJets","JET_CHARGEDEMFRACTION");
 
   handler->addProduct("goodForwardJets", "basicJetsNoCleaning");
   handler->addProductCut("goodForwardJets", "PT30");
@@ -700,8 +723,10 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("basicJetsNoCleaning","goodElectrons",deltaR0p3);
 
   handler->addProductComparison("goodRA7Jets","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodRA7Jets","goodElectrons",deltaR0p4);
+  handler->addProductComparison("goodRA7Jets","RA7FOElectrons",deltaR0p4);
   
+  handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
+  handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
   handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
 //  handler->addProductComparison("goodJets","goodPhotons",deltaR0p3);
 
@@ -772,6 +797,9 @@ void setupVariables(BaseHandler* handler)
   handler->addEventVariable("N_goodVertices", new EventVariableN("N_goodVertices","goodRecoVertices"));
 
   handler->addEventVariable("HT", new EventVariableSumPT("HT","goodJets"));
+  if(handler->getMode("RA7")) {
+    handler->addEventVariable("RA7HT", new EventVariableSumPT("RA7HT","goodRA7Jets"));
+  }
   handler->addEventVariable("SumPromptTrackPt", new EventVariableSumPT("SumPromptTrackPt","promptTracks"));
   handler->addEventVariable("SumNonPromptTrackPt", new EventVariableSumPT("SumNonPromptTrackPt","nonPromptTracks"));
   handler->addEventVariable("SumBasicTrackPt", new EventVariableSumPT("SumBasicTrackPt","basicTracks"));
@@ -1625,6 +1653,8 @@ void setupTriggers(BaseHandler* handler,int mode){
 }
 
 void setupMCproducts(BaseHandler* handler) {
+	handler->setMode("MC");
+	
 	handler->addObjectVariable("isMC",new ObjectVariableValue<TString>("INPUTTYPE","mc"));
 
 	handler->addProduct("ALLMC","ALL");
