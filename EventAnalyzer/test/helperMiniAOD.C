@@ -619,16 +619,26 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("basicJetsNoCleaning","JET_NUMBEROFCONSTITUENTS");
   //handler->addProductCut("basicJetsNoCleaning","JET_MUONFRACTION"); // not part of 13 TeV recommendation
 
-  handler->addProduct("goodJets","basicJetsNoCleaning");
-  handler->addProductCut("goodJets","PT30");
-  handler->addProductCut("goodJets","ETA2p4");
-  handler->addProductCut("goodJets","JET_CHARGEDHADRONFRACTION");
-  handler->addProductCut("goodJets","JET_CHARGEDMULTIPLICITY");
-  handler->addProductCut("goodJets","JET_CHARGEDEMFRACTION");
+  handler->addProduct("goodRA7Jets","basicJetsNoCleaning");
+  handler->addProductCut("goodRA7Jets","PT30");
+  handler->addProductCut("goodRA7Jets","ETA2p4");
+  handler->addProductCut("goodRA7Jets","JET_CHARGEDHADRONFRACTION");
+  handler->addProductCut("goodRA7Jets","JET_CHARGEDMULTIPLICITY");
+  handler->addProductCut("goodRA7Jets","JET_CHARGEDEMFRACTION");
+
+  handler->addProduct("goodJets","goodRA7Jets"); // only difference is separation
 
   handler->addProduct("goodForwardJets", "basicJetsNoCleaning");
   handler->addProductCut("goodForwardJets", "PT30");
   handler->addProductCut("goodForwardJets", "ETA2p4to4p7");
+
+  if(handler->getMode("RA7")) {
+    handler->addProduct("RA7bJetsCSVM","goodRA7Jets");
+    handler->addProductCut("RA7bJetsCSVM","CSVM");
+
+    handler->addProduct("RA7bJetsCSVL","goodRA7Jets");
+    handler->addProductCut("RA7bJetsCSVL","CSVL");
+  }
 
   handler->addProduct("bJetsCSVM","goodJets");
   handler->addProductCut("bJetsCSVM","CSVM");
@@ -689,10 +699,15 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("basicJetsNoCleaning","goodMuons",deltaR0p3);
   handler->addProductComparison("basicJetsNoCleaning","goodElectrons",deltaR0p3);
 
-  handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
+  handler->addProductComparison("goodRA7Jets","goodMuons",deltaR0p4);
+  handler->addProductComparison("goodRA7Jets","goodElectrons",deltaR0p4);
+  
   handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
 //  handler->addProductComparison("goodJets","goodPhotons",deltaR0p3);
+
+  handler->addProductComparison("goodForwardJets","goodMuons",deltaR0p4);
+  handler->addProductComparison("goodForwardJets","goodElectrons",deltaR0p4);
+  handler->addProductComparison("goodForwardJets","goodTaus",deltaR0p4);
 
   //////////////////////
   ///Derived Products////
@@ -884,17 +899,17 @@ void setupPrintRA7Sync(BaseHandler* handler)
   printLines->addVariable("NGOODELECTRONS",iii);
   printLines->addVariable("NGOODMUONS",iii);
   printLines->addVariable("NGOODTAUS",iii);
-  printLines->addVariable("NGOODJETS",iii);
-  printLines->addVariable("NBJETSCSVM",iii);
-  printLines->addVariable("NBJETSCSVL",iii);
+  printLines->addVariable("NGOODRA7JETS",iii);
+  printLines->addVariable("NRA7BJETSCSVM",iii);
+  printLines->addVariable("NRA7BJETSCSVL",iii);
   printLines->addVariable("MET",ddd);
   printLines->addVariable("MLL",ddd);
   printLines->addVariable("MT",ddd);
-  printLines->addVariable("ONZ",bbb);
+  printLines->addVariable("RA7ONZ",bbb);
   printLines->addVariable("NGOODRECOVERTICES",iii);
   printLines->addVariable("OSSFMAXMLL",ddd);
   printLines->addVariable("OSSFMINMLL",ddd);
-  printLines->addVariable("MOSSF",ddd);
+  printLines->addVariable("RA7MOSSF",ddd);
   handler->addPrintModule(printLines);
 }
 
@@ -1001,6 +1016,10 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
   handler->addEventVariable("PTGOODJETS", new EventVariableObjectVariableVector<double>("PT","goodJets"));
   handler->addEventVariable("ETAGOODJETS", new EventVariableObjectVariableVector<double>("ETA","goodJets"));
+
+  if(handler->getMode("RA7")) {
+    handler->addEventVariable("NGOODRA7JETS", new EventVariableN("NGOODRA7JETS","goodRA7Jets"));
+  }
 
   handler->addEventVariable("NGOODFORWARDJETS", new EventVariableN("NGOODFORWARDJETS","goodForwardJets"));
   handler->addEventVariable("PTGOODFORWARDJETS", new EventVariableObjectVariableVector<double>("PT","goodForwardJets"));
@@ -1124,6 +1143,12 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,zWidth);
   OSSF->addProduct("goodElectrons");
   handler->addEventVariable("OSSF",OSSF);
+  
+  if(handler->getMode("RA7")) {
+    EventVariableOSSF* RA7OSSF = new EventVariableOSSF("RA7OSSF", "goodMuons", "RA7", 91, 15);
+    RA7OSSF->addProduct("goodElectrons");
+    handler->addEventVariable("RA7OSSF", RA7OSSF);
+  }
 
   EventVariableMass* massLeptons = new EventVariableMass("MLEPTONS", "goodElectrons");
   massLeptons->addProduct("goodMuons");
@@ -1134,8 +1159,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   massLightLeptons->addProduct("goodMuons");
   handler->addEventVariable("MLIGHTLEPTONS", massLightLeptons);
 
-  EventVariableMass* massPhotons = new EventVariableMass("MPHOTONS", "goodPhotons");
-  handler->addEventVariable("MPHOTONS", massPhotons);
+  handler->addEventVariable("MPHOTONS", new EventVariableMass("MPHOTONS", "goodPhotons"));
 
   EventVariableOS* mLowDY = new EventVariableOS("MLOWDY", "goodElectrons", "LOWDY");
   mLowDY->addProduct("goodMuons");
@@ -1145,17 +1169,17 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   mLowDYlo->addProduct("goodMuonsLowPt");
   handler->addEventVariable("MLOWDYLOWPT", mLowDYlo);
   
-  EventVariableMT* MT = new EventVariableMT("MT", mZ,"","goodElectrons","goodMuons","");
-  handler->addEventVariable("MT",MT);
+  handler->addEventVariable("MT", new EventVariableMT("MT", mZ,"","goodElectrons","goodMuons",""));
 
-  EventVariablePairMass* mWdijet = new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10);
-  handler->addEventVariable("WDIJETMASS", mWdijet);
+  handler->addEventVariable("WDIJETMASS", new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10));
   
-  EventVariableN* nbJetsCSVM = new EventVariableN("NBJETSCSVM", "bJetsCSVM");
-  handler->addEventVariable("NBJETSCSVM", nbJetsCSVM);
-  
-  EventVariableN* nbJetsCSVL = new EventVariableN("NBJETSCSVL", "bJetsCSVL");
-  handler->addEventVariable("NBJETSCSVL", nbJetsCSVL);
+  handler->addEventVariable("NBJETSCSVM", new EventVariableN("NBJETSCSVM", "bJetsCSVM"));
+  handler->addEventVariable("NBJETSCSVL", new EventVariableN("NBJETSCSVL", "bJetsCSVL"));
+
+  if(handler->getMode("RA7")) {
+    handler->addEventVariable("NRA7BJETSCSVM", new EventVariableN("NRA7BJETSCSVM", "RA7bJetsCSVM"));
+    handler->addEventVariable("NRA7BJETSCSVL", new EventVariableN("NRA7BJETSCSVL", "RA7bJetsCSVL"));
+  }
 
   handler->addEventVariable("NGOODRECOVERTICES", new EventVariableN("NGOODRECOVERTICES","goodRecoVertices"));
   
@@ -1203,9 +1227,9 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
 
   handler->addEventVariable("MLOWDYCUTLOWPT", new EventVariableInRange<double>("LOWDYLOWPTOSMINMLL",10,1e6));
   
-  //EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONS", "MLOWDYCUT", true, "WRITEEVENT");
-  EventVariableCombined* writeEvent = new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUT", true, "WRITEEVENT");
-//  writeEvent->addVariable("NOTTRILEPTONONZ");
+  EventVariableCombined* writeEvent = handler->getMode("RA7")
+    ? new EventVariableCombined("MLOWDYCUT", "MLOWDYCUT", true, "WRITEEVENT")
+    : new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUT", true, "WRITEEVENT");
   handler->addEventVariable("WRITEEVENT", writeEvent);
 
   //Trigger
