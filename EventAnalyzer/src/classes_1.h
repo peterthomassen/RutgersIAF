@@ -15,4 +15,5 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateRecoil.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateAngles.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectAssociationVariableMatch.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRichardPhotonIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableDvector.h"

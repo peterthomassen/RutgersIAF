@@ -30,6 +30,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableMuonTotalIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRelIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableReversed.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRichardPhotonIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableTauTotalIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableValue.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_EventVariable.h"
@@ -378,25 +379,32 @@ void setupProducts(BaseHandler* handler)
   
   ObjectVariableCombined* photon_barrel = new ObjectVariableCombined("BARREL", "PHOTON_BARREL_SIGMAIETAIETA", true, "photon_barrel_good");
   photon_barrel->addVariable("PHOTON_BARREL_HADOVEREM");
-  photon_barrel->addVariable("PHOTON_BARREL_IRELCHARGEDHADRONISO");
-  photon_barrel->addVariable("PHOTON_BARREL_IRELNEUTRALHADRONISO");
-  photon_barrel->addVariable("PHOTON_BARREL_IRELPHOTONISO");
+//  photon_barrel->addVariable("PHOTON_BARREL_IRELCHARGEDHADRONISO");
+//  photon_barrel->addVariable("PHOTON_BARREL_IRELNEUTRALHADRONISO");
+//  photon_barrel->addVariable("PHOTON_BARREL_IRELPHOTONISO");
   handler->addObjectVariable("PHOTON_BARREL", photon_barrel);
   
   ObjectVariableCombined* photon_endcap = new ObjectVariableCombined("ENDCAP", "PHOTON_ENDCAP_SIGMAIETAIETA", true, "photon_endcap_good");
   photon_barrel->addVariable("PHOTON_ENDCAP_HADOVEREM");
-  photon_barrel->addVariable("PHOTON_ENDCAP_IRELCHARGEDHADRONISO");
-  photon_barrel->addVariable("PHOTON_ENDCAP_IRELNEUTRALHADRONISO");
-  photon_barrel->addVariable("PHOTON_ENDCAP_IRELPHOTONISO");
+//  photon_barrel->addVariable("PHOTON_ENDCAP_IRELCHARGEDHADRONISO");
+//  photon_barrel->addVariable("PHOTON_ENDCAP_IRELNEUTRALHADRONISO");
+//  photon_barrel->addVariable("PHOTON_ENDCAP_IRELPHOTONISO");
   handler->addObjectVariable("PHOTON_ENDCAP", photon_endcap);
   
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL", "PHOTON_ENDCAP", false, "PHOTON_COMBINED"));
+
+  handler->addObjectVariable("RICHARD_NEUTRALISO", new ObjectVariableRichardPhotonIso("RICHARD_NEUTRALISO", "NEUTRALHADRONISO", "PHOTONISO"));
+  handler->addObjectVariable("PHOTON_RICHARD_CHARGEDHADRONISO", new ObjectVariableInRange<double>("CHARGEDHADRONISO", 0, 1e6));
+  handler->addObjectVariable("PHOTON_RICHARD_NEUTRALISO", new ObjectVariableInRange<double>("RICHARD_NEUTRALISO", 0, 0.1));
+
   
-  handler->addProduct("goodPhotons", "ALLPHOTONS");
+/*  handler->addProduct("goodPhotons", "ALLPHOTONS");
   handler->addProductCut("goodPhotons", "PT10");
   handler->addProductCut("goodPhotons", "ETA2p4");
   handler->addProductCut("goodPhotons", "PHOTON_COMBINED");
-  
+handler->addProductCut("goodPhotons", "PHOTON_RICHARD_CHARGEDHADRONISO");
+handler->addProductCut("goodPhotons", "PHOTON_RICHARD_NEUTRALISO");
+*/  
   //////////////
   ///Jet Cuts///
   /////////////
@@ -421,6 +429,14 @@ void setupProducts(BaseHandler* handler)
 
   handler->addObjectVariable("BJET_CSVL", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.244,1000.0));
   handler->addObjectVariable("BJET_CSVM", new ObjectVariableInRange<double>("BDISCPOS_COMBINEDSECONDARYVERTEXBJETTAGS",0.679,1000.0));
+
+// Add photons here so that we can separate them from jets
+  handler->addProduct("goodPhotons", "ALLPHOTONS");
+  handler->addProductCut("goodPhotons", "PT10");
+  handler->addProductCut("goodPhotons", "ETA2p4");
+  handler->addProductCut("goodPhotons", "PHOTON_COMBINED");
+handler->addProductCut("goodPhotons", "PHOTON_RICHARD_CHARGEDHADRONISO");
+handler->addProductCut("goodPhotons", "PHOTON_RICHARD_NEUTRALISO");
 
   //////////////////
   //Threshold cuts//
@@ -461,15 +477,15 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("basicTracks7","goodElectrons",deltaR0p1);
   handler->addProductComparison("basicTracks7","goodTaus",deltaR0p3);
 
+  handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
+  handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
+  handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
+
   handler->addProductComparison("goodPhotons","goodMuons",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodElectrons",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodTaus",deltaR0p1);
   handler->addProductComparison("goodPhotons","goodTracks",deltaR0p1);
-
-  handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
-  handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
-  handler->addProductComparison("goodJets","goodPhotons",deltaR0p3);
+  handler->addProductComparison("goodPhotons","goodJets",deltaR0p3);
 
 
   //////////////////////////
@@ -517,12 +533,18 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("PTGOODELECTRONS", new EventVariableObjectVariableVector<double>("PT","goodElectrons"));
   handler->addEventVariable("ETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("ETA","goodElectrons"));
   handler->addEventVariable("fakeRoleGOODELECTRONS", new EventVariableObjectVariableVector<int>("fakeRole","goodElectrons"));
+  handler->addEventVariable("goodElectronsDgoodPhotons", new EventVariableDvector("goodElectrons", "goodPhotons"));
+  handler->addEventVariable("goodElectronsDgoodJets", new EventVariableDvector("goodElectrons", "goodJets"));
+  handler->addEventVariable("goodElectronsDgoodLeptons", new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   
   handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
   handler->addEventVariable("QGOODMUONS", new EventVariableObjectVariableVector<int>("CHARGE","goodMuons"));
   handler->addEventVariable("PTGOODMUONS", new EventVariableObjectVariableVector<double>("PT","goodMuons"));
   handler->addEventVariable("ETAGOODMUONS", new EventVariableObjectVariableVector<double>("ETA","goodMuons"));
   handler->addEventVariable("fakeRoleGOODMUONS", new EventVariableObjectVariableVector<int>("fakeRole","goodMuons"));
+  handler->addEventVariable("goodMuonsDgoodPhotons", new EventVariableDvector("goodMuons", "goodPhotons"));
+  handler->addEventVariable("goodMuonsDgoodJets", new EventVariableDvector("goodMuons", "goodJets"));
+  handler->addEventVariable("goodMuonsDgoodLeptons", new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
 
   handler->addEventVariable("QNONPROMPTELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","nonPromptElectrons"));
   handler->addEventVariable("PTNONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("PT","nonPromptElectrons"));
@@ -566,6 +588,13 @@ void setupVariables(BaseHandler* handler, bool isMC = false, bool singleLeptonSa
   handler->addEventVariable("NGOODPHOTONS", new EventVariableN("NGOODPHOTONS","goodPhotons"));
   handler->addEventVariable("PTGOODPHOTONS", new EventVariableObjectVariableVector<double>("PT","goodPhotons"));
   handler->addEventVariable("ETAGOODPHOTONS", new EventVariableObjectVariableVector<double>("ETA","goodPhotons"));
+  handler->addEventVariable("goodPhotonsNEUTRALHADRONISO", new EventVariableObjectVariableVector<double>("NEUTRALHADRONISO","goodPhotons"));
+  handler->addEventVariable("goodPhotonsPHOTONISO", new EventVariableObjectVariableVector<double>("PHOTONISO","goodPhotons"));
+  handler->addEventVariable("goodPhotonsCHARGEDHADRONISO", new EventVariableObjectVariableVector<double>("CHARGEDHADRONISO","goodPhotons"));
+  handler->addEventVariable("goodPhotonsDgoodJets", new EventVariableDvector("goodPhotons", "goodJets"));
+  handler->addEventVariable("goodPhotonsDgoodTaus", new EventVariableDvector("goodPhotons", "goodTaus"));
+  handler->addEventVariable("goodPhotonsDgoodElectrons", new EventVariableDvector("goodPhotons", "goodElectrons"));
+  handler->addEventVariable("goodPhotonsDgoodMuons", new EventVariableDvector("goodPhotons", "goodMuons"));
 
   handler->addEventVariable("nINPELECTRONS", new EventVariableN("nINPELECTRONS","isoNonPromptElectrons"));
   handler->addEventVariable("QINPELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","isoNonPromptElectrons"));

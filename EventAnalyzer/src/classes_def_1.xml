@@ -68,6 +68,9 @@
   <class name="ObjectAssociationVariableMatch<TString>" ClassVersion="1">
    <version ClassVersion="1" checksum="3819940933"/>
   </class>
+  <class name="ObjectVariableRichardPhotonIso" ClassVersion="1">
+   <version ClassVersion="1" checksum="3772020402"/>
+  </class>
   <class name="EventVariableDvector" ClassVersion="1">
    <version ClassVersion="1" checksum="3563230538"/>
   </class>
