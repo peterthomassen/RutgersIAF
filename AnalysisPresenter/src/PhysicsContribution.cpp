@@ -324,10 +324,10 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 	}
 	
 	//assert(nDuplicates == 0);
-	if(nDuplicates > 0) {
+	/*if(nDuplicates > 0) {
 		cout << "Press any key to continue" << flush;
 		system("read");
-	}
+	}*/
 	
 	return s;
 }

@@ -200,6 +200,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
 		contribution->fillContent(hs, varexp, selection, scale);
+		contribution->getMeta();
 	}
 	delete hs;
 }
