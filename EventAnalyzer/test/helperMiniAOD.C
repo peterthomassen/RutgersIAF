@@ -409,9 +409,6 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("basicElectrons", "ELECTRON_dz");
   handler->addProductCut("basicElectrons", "ELECTRON_passConversionVeto");
   handler->addProductCut("basicElectrons", "ELECTRON_MISSINGHITS");
-  if(handler->getMode("RA7") && handler->getMode("MC")) {
-    handler->addProductCut("basicElectrons", "ELECTRON_IDISOemu");
-  }
   
   // loose electrons according to RA7Coordination2015 TWiki
   handler->addProduct("looseElectrons","basicElectrons");
@@ -423,6 +420,9 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodElectronsLowPt", "ELECTRON_MVA_TIGHT");
   handler->addProductCut("goodElectronsLowPt", "SIP3D_4sigma");
   handler->addProductCut("goodElectronsLowPt", "MULTIISOM");
+  if(handler->getMode("RA7") && handler->getMode("MC")) {
+    handler->addProductCut("goodElectronsLowPt", "ELECTRON_IDISOemu");
+  }
 
   handler->addProduct("goodElectrons","goodElectronsLowPt");
   handler->addProductCut("goodElectrons", "PT10");
@@ -433,6 +433,7 @@ void setupProducts(BaseHandler* handler)
     handler->addProductCut("RA7FOElectrons", "SIP3D_4sigma");
     handler->addProductCut("RA7FOElectrons", "MULTIISOM");
     handler->addProductCut("RA7FOElectrons", "PT10");
+    handler->addProductCut("RA7FOElectrons", "ELECTRON_IDemu");
   }
 
   handler->addProduct("isoNonPromptElectrons","basicElectrons");
