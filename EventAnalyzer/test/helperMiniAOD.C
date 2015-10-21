@@ -367,9 +367,15 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodMuonsLowPt","MUON_GOODSEGCOM");
   handler->addProductCut("goodMuonsLowPt","MUON_validFraction");
 
-
   handler->addProduct("goodMuons","goodMuonsLowPt");
   handler->addProductCut("goodMuons","PT10");
+
+  if(handler->getMode("RA7")) {
+    handler->addProduct("RA7FOMuons","looseMuons");
+    handler->addProductCut("RA7FOMuons","SIP3D_4sigma");
+    handler->addProductCut("RA7FOMuons","MUON_GOODSEGCOM");
+    handler->addProductCut("RA7FOMuons","MUON_validFraction");  
+  }
 
   handler->addProduct("isoNonPromptMuons","basicMuons");
   handler->addProductCut("isoNonPromptMuons","IREL0p15");
@@ -421,11 +427,13 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("goodElectrons","goodElectronsLowPt");
   handler->addProductCut("goodElectrons", "PT10");
 
-  handler->addProduct("RA7FOElectrons","looseElectrons");
-  handler->addProductCut("RA7FOElectrons", "ELECTRON_MVA_RA7FO");
-  handler->addProductCut("RA7FOElectrons", "SIP3D_4sigma");
-  handler->addProductCut("RA7FOElectrons", "MULTIISOM");
-  handler->addProductCut("RA7FOElectrons", "PT10");
+  if(handler->getMode("RA7")) {
+    handler->addProduct("RA7FOElectrons","looseElectrons");
+    handler->addProductCut("RA7FOElectrons", "ELECTRON_MVA_RA7FO");
+    handler->addProductCut("RA7FOElectrons", "SIP3D_4sigma");
+    handler->addProductCut("RA7FOElectrons", "MULTIISOM");
+    handler->addProductCut("RA7FOElectrons", "PT10");
+  }
 
   handler->addProduct("isoNonPromptElectrons","basicElectrons");
   handler->addProductCut("isoNonPromptElectrons","ELECTRON_ISOLATED");
@@ -637,12 +645,20 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("basicJetsNoCleaning","JET_NUMBEROFCONSTITUENTS");
   //handler->addProductCut("basicJetsNoCleaning","JET_MUONFRACTION"); // not part of 13 TeV recommendation
 
-  handler->addProduct("goodRA7Jets","basicJetsNoCleaning");
-  handler->addProductCut("goodRA7Jets","PT30");
-  handler->addProductCut("goodRA7Jets","ETA2p4");
-  handler->addProductCut("goodRA7Jets","JET_CHARGEDHADRONFRACTION");
-  handler->addProductCut("goodRA7Jets","JET_CHARGEDMULTIPLICITY");
-  handler->addProductCut("goodRA7Jets","JET_CHARGEDEMFRACTION");
+  if(handler->getMode("RA7")) {
+    handler->addProduct("goodRA7Jets","basicJetsNoCleaning");
+    handler->addProductCut("goodRA7Jets","PT30");
+    handler->addProductCut("goodRA7Jets","ETA2p4");
+    handler->addProductCut("goodRA7Jets","JET_CHARGEDHADRONFRACTION");
+    handler->addProductCut("goodRA7Jets","JET_CHARGEDMULTIPLICITY");
+    handler->addProductCut("goodRA7Jets","JET_CHARGEDEMFRACTION");
+
+    handler->addProduct("RA7bJetsCSVM","goodRA7Jets");
+    handler->addProductCut("RA7bJetsCSVM","CSVM");
+
+    handler->addProduct("RA7bJetsCSVL","goodRA7Jets");
+    handler->addProductCut("RA7bJetsCSVL","CSVL");
+  }
 
   handler->addProduct("goodJets","basicJetsNoCleaning");
   handler->addProductCut("goodJets","PT30");
@@ -654,14 +670,6 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("goodForwardJets", "basicJetsNoCleaning");
   handler->addProductCut("goodForwardJets", "PT30");
   handler->addProductCut("goodForwardJets", "ETA2p4to4p7");
-
-  if(handler->getMode("RA7")) {
-    handler->addProduct("RA7bJetsCSVM","goodRA7Jets");
-    handler->addProductCut("RA7bJetsCSVM","CSVM");
-
-    handler->addProduct("RA7bJetsCSVL","goodRA7Jets");
-    handler->addProductCut("RA7bJetsCSVL","CSVL");
-  }
 
   handler->addProduct("bJetsCSVM","goodJets");
   handler->addProductCut("bJetsCSVM","CSVM");
@@ -722,9 +730,11 @@ void setupProducts(BaseHandler* handler)
   handler->addProductComparison("basicJetsNoCleaning","goodMuons",deltaR0p3);
   handler->addProductComparison("basicJetsNoCleaning","goodElectrons",deltaR0p3);
 
-  handler->addProductComparison("goodRA7Jets","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodRA7Jets","RA7FOElectrons",deltaR0p4);
-  
+  if(handler->getMode("RA7")) {
+    handler->addProductComparison("goodRA7Jets","RA7FOMuons",deltaR0p4);
+    handler->addProductComparison("goodRA7Jets","RA7FOElectrons",deltaR0p4);
+  }
+
   handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
   handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
   handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
