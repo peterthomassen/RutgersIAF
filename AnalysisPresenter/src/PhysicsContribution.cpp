@@ -210,6 +210,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	int step = 10000;
 	int n = treeR->GetEntries();
+	
 	// Limit reading of MC such that the scale factor is no less than m_minScale if the sample is randomly distributed (as given by m_unordered).
 	// This means that we are skipping MC events beyond 100 times the data luminosity.
 	if(!isData() && m_unordered && scale < m_minScale && n > 0) {
@@ -221,11 +222,22 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	}
 	m_scale = scale;
 	cout << "scale: " << m_scale << endl;
+	
 	Double_t x[m_hn->GetNdimensions()];
 	std::string varexpIncarnation = treeR->GetListOfBranches()->FindObject("fakeIncarnation")
 		? "fakeIncarnation[0]"
 		: ((m_type == "backgroundDD") ? "Entry$" : "0");
+	
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s", varexp.c_str(), varexpIncarnation.c_str());
+	
+	bool nominalWeight = (m_nominalWeightBranch.Length() > 0);
+	if(nominalWeight) {
+		varexpFull += TString(":") + m_nominalWeightBranch;
+	}
+	
+	double nominalWeightSumAbs = 0;
+	double nominalWeightSumSgn = 0;
+	
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
 			cout << (int)(10*k/n) << flush;
@@ -235,20 +247,23 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		if(k + step > n) {
 			step = n - k;
 		}
+		
 		// PT 20141009: I checked that step refers to TTree entries, not entry instances. So we're good even when looping over collections, and always get full events counted properly.
 		long nSelected = treeR->Draw(varexpFull.Data(), selection.Data(), "goff candle", step, k);
 		if(nSelected < 0) {
 			throw std::runtime_error("error selecting events");
 		}
+		
 		for(int i = 0; i < nSelected; ++i) {
 			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
 				x[j] = treeR->GetVal(j)[i];
 			}
 			Long64_t bin = m_hn->Fill(x, treeR->GetW()[i]);
+			
+			// Write down event and run number, lumi section and fake incartion
 			if(bin >= (Long64_t)m_metadata.size()) {
 				m_metadata.push_back(std::vector<metadata_t>());
 			}
-			// Write down event and run number, lumi section and fake incartion
 			metadata_t metadata = {
 				  (long)(treeR->GetVal(m_hn->GetNdimensions() + 0)[i] + 0.5)
 				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 1)[i] + 0.5)
@@ -256,7 +271,20 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5)
 			};
 			m_metadata[bin].push_back(metadata);
+			
+			if(nominalWeight) {
+				nominalWeightSumAbs += treeR->GetW()[i];
+				nominalWeightSumSgn += treeR->GetW()[i]
+					* ( (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] > 0) - (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] < 0) )
+				;
+			}
 		}
+	}
+	
+	if(nominalWeight) {
+		double nominalWeightScale = nominalWeightSumSgn / nominalWeightSumAbs;
+		cout << "Scaling by nominal weight " << nominalWeightScale << endl;
+		m_scale *= nominalWeightScale;
 	}
 	
 	delete treeR;
@@ -449,6 +477,14 @@ void PhysicsContribution::setFakeRate(TString name, TString f) {
 	} else {
 		m_fakerateMap.insert(make_pair(name, f));
 	}
+}
+
+void PhysicsContribution::setNominalWeightBranch(TString nominalWeightBranch) {
+	if(!isMC()) {
+		throw std::runtime_error("Nominal weight branch can only be set for MC contributions");
+	}
+	
+	m_nominalWeightBranch = nominalWeightBranch;
 }
 
 bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {

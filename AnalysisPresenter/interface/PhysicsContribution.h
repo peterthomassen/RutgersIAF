@@ -48,6 +48,7 @@ public:
 	bool setDebug(bool);
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
+	void setNominalWeightBranch(TString);
 
 protected:
 	void applyRelativeUncertainty(THnBase*, TString);
@@ -72,6 +73,8 @@ private:
 	TString m_treeRname;
 	double m_minScale;
 	bool m_unordered;
+	
+	TString m_nominalWeightBranch;
 	double m_weight = 0;
 	
 	THnBase* m_hn = 0;
