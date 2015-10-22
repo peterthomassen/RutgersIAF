@@ -130,6 +130,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	delete m_hn;
 	
 	m_hn = (THnBase*)hn->Clone();
+	THnBase* hnAbs = (THnBase*)hn->Clone();
+	hnAbs->Reset();
 	
 	cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
 	TFile f(m_filename);
@@ -235,9 +237,6 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		varexpFull += TString(":") + m_nominalWeightBranch;
 	}
 	
-	double nominalWeightSumAbs = 0;
-	double nominalWeightSumSgn = 0;
-	
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
 			cout << (int)(10*k/n) << flush;
@@ -258,7 +257,15 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
 				x[j] = treeR->GetVal(j)[i];
 			}
-			Long64_t bin = m_hn->Fill(x, treeR->GetW()[i]);
+			
+			double weight = treeR->GetW()[i];
+			if(nominalWeight) {
+				hnAbs->Fill(x, weight);
+				
+				// This is the sgn function
+				weight *= (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] > 0) - (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] < 0);
+			}
+			Long64_t bin = m_hn->Fill(x, weight);
 			
 			// Write down event and run number, lumi section and fake incartion
 			if(bin >= (Long64_t)m_metadata.size()) {
@@ -271,21 +278,17 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5)
 			};
 			m_metadata[bin].push_back(metadata);
-			
-			if(nominalWeight) {
-				nominalWeightSumAbs += treeR->GetW()[i];
-				nominalWeightSumSgn += treeR->GetW()[i]
-					* ( (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] > 0) - (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] < 0) )
-				;
-			}
 		}
 	}
 	
 	if(nominalWeight) {
-		double nominalWeightScale = nominalWeightSumSgn / nominalWeightSumAbs;
-		cout << "Scaling by nominal weight " << nominalWeightScale << endl;
-		m_scale *= nominalWeightScale;
+		for(const auto &bin : getBins()) {
+			double nominalWeightScale = m_hn->GetBinContent(bin) / hnAbs->GetBinContent(bin);
+			m_hn->SetBinError2(bin, pow(nominalWeightScale, 2) * m_hn->GetBinError2(bin));
+		}
 	}
+	
+	delete hnAbs;
 	
 	delete treeR;
 	f.Close();
@@ -341,7 +344,7 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 	std::set<PhysicsContribution::metadata_t> s;
 	unsigned int nDuplicates = 0;
 	
-	for(auto &bin : getBins()) {
+	for(const auto &bin : getBins()) {
 		for(auto &metadata : m_metadata[bin]) {
 			auto ins = s.insert(metadata);
 			if(!ins.second) {

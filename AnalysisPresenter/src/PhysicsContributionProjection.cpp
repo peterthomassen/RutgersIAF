@@ -41,7 +41,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 			}
 			
 			// Zerostat uncertainty for background and signal samples
-			if(zerostat >= 0 && m_histogram->GetBinContent(i) == 0) {
+			if(m_histogram->GetBinContent(i) == 0 && (m_histogram->GetBinError(i) == 0 || zerostat < m_histogram->GetBinError(i))) {
 				m_histogram->SetBinError(i, zerostat);
 			}
 		}
