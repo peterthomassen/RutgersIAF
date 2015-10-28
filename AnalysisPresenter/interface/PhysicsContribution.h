@@ -33,7 +33,7 @@ public:
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0);
 	int findBinFromLowEdge(TAxis* axis, double x);
 	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
-	THnBase* getContent() const;
+	THnBase* getContent(bool absoluteWeights = false) const;
 	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	double getLumi() const;
 	std::set<PhysicsContribution::metadata_t> getMeta() const;
@@ -48,7 +48,7 @@ public:
 	bool setDebug(bool);
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
-	void setNominalWeightBranch(TString);
+	void setNominalWeight(TString);
 
 protected:
 	void applyRelativeUncertainty(THnBase*, TString);
@@ -74,10 +74,11 @@ private:
 	double m_minScale;
 	bool m_unordered;
 	
-	TString m_nominalWeightBranch;
+	TString m_nominalWeight;
 	double m_weight = 0;
 	
 	THnBase* m_hn = 0;
+	THnBase* m_hnAbs = 0;
 	std::map<TString, THnBase*> m_hProjectionUncertainties;
 	std::vector<std::vector<metadata_t>> m_metadata;
 	

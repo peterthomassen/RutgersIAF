@@ -27,6 +27,18 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	int dim = contribution->getContent()->GetListOfAxes()->IndexOf(axis);
 	
 	m_histogram = contribution->getContent()->Projection(dim, "E O");
+	
+	if(contribution->getContent(true)) {
+		TH1D* histogramAbs = contribution->getContent(true)->Projection(dim, "E O");
+		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
+			if(histogramAbs->GetBinContent(i) == 0) {
+				continue;
+			}
+			double nominalWeightScale = abs(m_histogram->GetBinContent(i) / histogramAbs->GetBinContent(i));
+			m_histogram->SetBinError(i, nominalWeightScale * m_histogram->GetBinError(i));
+		}
+	}
+	
 	m_histogram->SetName(contribution->getName());
 	TString title = contribution->isData()
 		? contribution->getSelectionString()
@@ -35,7 +47,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	
 	if(!m_source->isData()) {
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
-			// Set negative bins to 0 (this can happen due to fake subtraction etc.)
+			// Set negative bins to 0 (this can happen due to fake subtraction, negative MC weights etc.)
 			if(!m_source->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
 			}
