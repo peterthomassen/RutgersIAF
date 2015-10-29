@@ -637,8 +637,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("JET_CHARGEDHADRONFRACTION", new ObjectVariableInRange<double>("chargedHadronEnergyFraction",1e-6,1000));
   handler->addObjectVariable("JET_CHARGEDMULTIPLICITY", new ObjectVariableInRange<int>("chargedMultiplicity",1,1e6));
   handler->addObjectVariable("JET_CHARGEDEMFRACTION", new ObjectVariableInRange<double>("chargedEmEnergyFraction",0,0.99));
-  handler->addObjectVariable("CSVM",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.814,1000.0));
-  handler->addObjectVariable("CSVL",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.423,1000.0));
+  handler->addObjectVariable("CSVM",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.89,1000.0));
+  handler->addObjectVariable("CSVL",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.605,1000.0));
 
   handler->addProduct("basicJetsNoCleaning","ALLJETS");
   handler->addProductCut("basicJetsNoCleaning","PT20");
