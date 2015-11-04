@@ -120,6 +120,13 @@ std::vector<std::pair<int, int>> Assembler::getRanges() const {
 	return m_contributions.at("data")[0]->getRanges();
 }
 
+bool Assembler::getMode(TString name) const {
+	auto it = m_modes.find(name);
+	return (it != m_modes.end())
+		? it->second
+		: false;
+}
+
 TString Assembler::getVarExp() const {
 	return m_varexp;
 }
@@ -267,6 +274,12 @@ void Assembler::setFakeRate(TString name, TString f) {
 	for(auto &contribution : boost::join(m_contributions["data"], m_contributions["signal"])) {
 		contribution->setFakeRate(name, "0");
 	}
+}
+
+bool Assembler::setMode(TString name, bool value) {
+	bool oldValue = getMode(name);
+	m_modes[name] = value;
+	return oldValue;
 }
 
 void Assembler::setRange(const char* name, double lo, double hi, bool includeLast) {

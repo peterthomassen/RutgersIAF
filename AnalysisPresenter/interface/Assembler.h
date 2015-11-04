@@ -31,8 +31,9 @@ public:
 	
 	Bundle* getBundle(TString name) const;
 	Bundle* getDefaultBundle() const;
-	std::vector<PhysicsContribution*> getPhysicsContributions(TString type) const;
 	double getLumi() const;
+	bool getMode(TString name) const;
+	std::vector<PhysicsContribution*> getPhysicsContributions(TString type) const;
 	std::vector<std::pair<int, int>> getRanges() const;
 	TString getVarExp() const;
 	TString getVarName(TString name) const;
@@ -46,6 +47,7 @@ public:
 	void setDebug(bool);
 	Bundle* setDefaultBundle(Bundle* bundle);
 	void setFakeRate(TString, TString);
+	bool setMode(TString name, bool value = true);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
@@ -59,6 +61,7 @@ private:
 	
 	std::map<TString, std::vector<PhysicsContribution*>> m_contributions;
 	std::map<TString, Bundle*> m_bundles;
+	std::map<TString, bool> m_modes;
 	
 	Bundle* m_defaultBundle = 0;
 	AssemblerProjection* m_projection = 0;
