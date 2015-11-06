@@ -22,17 +22,17 @@ class SignatureObject : public TLorentzVector {
   friend std::ostream& operator<<(std::ostream& os, const SignatureObject& so);
   friend class SignatureObjectFlat;
 
-  bool getVariable(TString,int&);
+  bool getVariable(TString,int&) const;
   void setVariable(TString, int, bool overwrite = true);
-  bool getVariable(TString,bool&);
+  bool getVariable(TString,bool&) const;
   void setVariable(TString, bool, bool overwrite = true);
-  bool getVariable(TString,double&);
+  bool getVariable(TString,double&) const;
   void setVariable(TString, double, bool overwrite = true);
-  bool getVariable(TString,TString&);
+  bool getVariable(TString,TString&) const;
   void setVariable(TString, TString, bool overwrite = true);
   void setVariable(TString, std::string, bool overwrite = true);
 
-  SignatureObject* getAssociate(TString);
+  SignatureObject* getAssociate(TString) const;
   void setAssociate(TString,SignatureObject*);
   std::map<TString,SignatureObject*> getAssociates(){return m_association_map;}
   void setAssociates(std::map<TString,SignatureObject*> c){m_association_map = c;}
@@ -63,7 +63,7 @@ inline bool SignatureObject::operator<(SignatureObject &s)
   return Pt() < s.Pt();
 }
 
-inline SignatureObject* SignatureObject::getAssociate(TString name)
+inline SignatureObject* SignatureObject::getAssociate(TString name) const
 {
   std::map<TString,SignatureObject*>::const_iterator iter=m_association_map.find(name);
   if(iter != m_association_map.end())return (*iter).second;
@@ -91,7 +91,7 @@ inline void SignatureObject::setVariable(TString name, int val, bool overwrite) 
 	m_variableMapInt[name] = val;
 }
 
-inline bool SignatureObject::getVariable(TString name, int &val)
+inline bool SignatureObject::getVariable(TString name, int &val) const
 {
   std::map<TString,int>::const_iterator iter = m_variableMapInt.find(name);
   if(iter != m_variableMapInt.end()){
@@ -109,7 +109,7 @@ inline void SignatureObject::setVariable(TString name, TString val, bool overwri
 inline void SignatureObject::setVariable(TString name, std::string val, bool overwrite) {
 	setVariable(name, TString(val), overwrite);
 }
-inline bool SignatureObject::getVariable(TString name, TString &val)
+inline bool SignatureObject::getVariable(TString name, TString &val) const
 {
   std::map<TString,TString>::const_iterator iter = m_variableMapTString.find(name);
   if(iter != m_variableMapTString.end()){
@@ -125,7 +125,7 @@ inline void SignatureObject::setVariable(TString name, bool val, bool overwrite)
 	m_variableMapBool[name] = val;
 }
 
-inline bool SignatureObject::getVariable(TString name, bool &val)
+inline bool SignatureObject::getVariable(TString name, bool &val) const
 {
   std::map<TString,bool>::const_iterator iter = m_variableMapBool.find(name);
   if(iter != m_variableMapBool.end()){
@@ -141,7 +141,7 @@ inline void SignatureObject::setVariable(TString name, double val, bool overwrit
 	m_variableMapDouble[name] = val;
 }
 
-inline bool SignatureObject::getVariable(TString name, double &val)
+inline bool SignatureObject::getVariable(TString name, double &val) const
 {
   std::map<TString,double>::const_iterator iter = m_variableMapDouble.find(name);
   if(iter != m_variableMapDouble.end()){
