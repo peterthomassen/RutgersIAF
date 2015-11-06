@@ -57,6 +57,7 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 
 PhysicsContribution::~PhysicsContribution() {
 	delete m_hn;
+	delete m_hnAbs;
 }
 
 void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
@@ -128,10 +129,13 @@ void PhysicsContribution::applyUncertainty(TString name, THnBase* h) {
 
 THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale) {
 	delete m_hn;
+	delete m_hnAbs;
 	
 	m_hn = (THnBase*)hn->Clone();
-	THnBase* hnAbs = (THnBase*)hn->Clone();
-	hnAbs->Reset();
+	if(m_nominalWeight.Length() > 0) {
+		m_hnAbs = (THnBase*)hn->Clone();
+		m_hnAbs->Reset();
+	}
 	
 	cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
 	TFile f(m_filename);
@@ -232,9 +236,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s", varexp.c_str(), varexpIncarnation.c_str());
 	
-	bool nominalWeight = (m_nominalWeightBranch.Length() > 0);
-	if(nominalWeight) {
-		varexpFull += TString(":") + m_nominalWeightBranch;
+	if(m_hnAbs) {
+		varexpFull += TString(":") + m_nominalWeight;
 	}
 	
 	for(int k = 0; k < n; k += step) {
@@ -259,8 +262,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			}
 			
 			double weight = treeR->GetW()[i];
-			if(nominalWeight) {
-				hnAbs->Fill(x, weight);
+			if(m_hnAbs) {
+				m_hnAbs->Fill(x, weight);
 				
 				// This is the sgn function
 				weight *= (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] > 0) - (treeR->GetVal(m_hn->GetNdimensions() + 4)[i] < 0);
@@ -280,15 +283,6 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			m_metadata[bin].push_back(metadata);
 		}
 	}
-	
-	if(nominalWeight) {
-		for(const auto &bin : getBins()) {
-			double nominalWeightScale = m_hn->GetBinContent(bin) / hnAbs->GetBinContent(bin);
-			m_hn->SetBinError2(bin, pow(nominalWeightScale, 2) * m_hn->GetBinError2(bin));
-		}
-	}
-	
-	delete hnAbs;
 	
 	delete treeR;
 	f.Close();
@@ -328,8 +322,8 @@ std::set<Long64_t> PhysicsContribution::getBins() const {
 	return bins;
 }
 
-THnBase* PhysicsContribution::getContent() const {
-	return m_hn;
+THnBase* PhysicsContribution::getContent(bool absoluteWeights) const {
+	return absoluteWeights ? m_hnAbs : m_hn;
 }
 
 std::map<PhysicsContribution*, std::map<TString, TString>> PhysicsContribution::getEnsembleFakeRateParams() const {
@@ -482,12 +476,12 @@ void PhysicsContribution::setFakeRate(TString name, TString f) {
 	}
 }
 
-void PhysicsContribution::setNominalWeightBranch(TString nominalWeightBranch) {
+void PhysicsContribution::setNominalWeight(TString nominalWeight) {
 	if(!isMC()) {
 		throw std::runtime_error("Nominal weight branch can only be set for MC contributions");
 	}
 	
-	m_nominalWeightBranch = nominalWeightBranch;
+	m_nominalWeight = nominalWeight;
 }
 
 bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool includeLast) {
@@ -514,6 +508,9 @@ bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 	}
 	
 	axis->SetRange(first, last);
+	if(m_hnAbs) {
+		((TAxis*)m_hnAbs->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+	}
 	for(auto &uncertainty : m_uncertaintyMap) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
@@ -530,7 +527,11 @@ bool PhysicsContribution::setRange(const char* name, double lo) {
 	axis->SetRange();
 	Int_t first = findBinFromLowEdge(axis, lo);
 	Int_t last  = axis->GetNbins() + 1;
+	
 	axis->SetRange(first, last);
+	if(m_hnAbs) {
+		((TAxis*)m_hnAbs->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+	}
 	for(auto &uncertainty : m_uncertaintyMap) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
@@ -544,7 +545,11 @@ bool PhysicsContribution::setRange(const char* name) {
 		cerr << "setRange: Could not find axis " << name << endl;
 		return false;
 	}
+	
 	axis->SetRange();
+	if(m_hnAbs) {
+		((TAxis*)m_hnAbs->GetListOfAxes()->FindObject(name))->SetRange();
+	}
 	for(auto &uncertainty : m_uncertaintyMap) {
 		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
@@ -554,6 +559,9 @@ bool PhysicsContribution::setRange(const char* name) {
 
 bool PhysicsContribution::setRange() {
 	m_hn->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
+	if(m_hnAbs) {
+		m_hnAbs->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
+	}
 	for(auto &uncertainty : m_uncertaintyMap) {
 		uncertainty.second->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
 	}
@@ -562,13 +570,18 @@ bool PhysicsContribution::setRange() {
 }
 
 void PhysicsContribution::setRanges(std::vector<std::pair<int, int>> ranges) {
-	assert((int)ranges.size() == m_hn->GetListOfAxes()->GetLast() + 1);
-	for(size_t i = 0; i < ranges.size(); ++i) {
-		TAxis* axis = (TAxis*)m_hn->GetListOfAxes()->At(i);
-		axis->SetRange(ranges[i].first, ranges[i].second);
-		for(auto &uncertainty : m_uncertaintyMap) {
-			axis = (TAxis*)uncertainty.second->GetListOfAxes()->At(i);
+	for(auto &hn : {m_hn, m_hnAbs}) {
+		if(!hn) {
+			continue;
+		}
+		assert((int)ranges.size() == hn->GetListOfAxes()->GetLast() + 1);
+		for(size_t i = 0; i < ranges.size(); ++i) {
+			TAxis* axis = (TAxis*)hn->GetListOfAxes()->At(i);
 			axis->SetRange(ranges[i].first, ranges[i].second);
+			for(auto &uncertainty : m_uncertaintyMap) {
+				axis = (TAxis*)uncertainty.second->GetListOfAxes()->At(i);
+				axis->SetRange(ranges[i].first, ranges[i].second);
+			}
 		}
 	}
 }

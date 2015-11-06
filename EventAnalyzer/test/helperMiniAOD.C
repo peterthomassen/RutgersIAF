@@ -55,6 +55,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableDeltaBetaCorrectedTotalIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableRename.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableConst.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableDvector.h"
 
 namespace {
   int loadMyLibraryTriggerFunc() {
@@ -636,8 +637,8 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("JET_CHARGEDHADRONFRACTION", new ObjectVariableInRange<double>("chargedHadronEnergyFraction",1e-6,1000));
   handler->addObjectVariable("JET_CHARGEDMULTIPLICITY", new ObjectVariableInRange<int>("chargedMultiplicity",1,1e6));
   handler->addObjectVariable("JET_CHARGEDEMFRACTION", new ObjectVariableInRange<double>("chargedEmEnergyFraction",0,0.99));
-  handler->addObjectVariable("CSVM",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.814,1000.0));
-  handler->addObjectVariable("CSVL",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.423,1000.0));
+  handler->addObjectVariable("CSVM",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.89,1000.0));
+  handler->addObjectVariable("CSVL",new ObjectVariableInRange<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags",0.605,1000.0));
 
   handler->addProduct("basicJetsNoCleaning","ALLJETS");
   handler->addProductCut("basicJetsNoCleaning","PT20");
@@ -1019,12 +1020,18 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("PTGOODELECTRONS", new EventVariableObjectVariableVector<double>("PT","goodElectrons"));
   handler->addEventVariable("ETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("ETA","goodElectrons"));
   handler->addEventVariable("fakeRoleGOODELECTRONS", new EventVariableObjectVariableVector<int>("fakeRole","goodElectrons"));
+  handler->addEventVariable("goodElectronsDgoodPhotons", new EventVariableDvector("goodElectrons", "goodPhotons"));
+  handler->addEventVariable("goodElectronsDgoodJets", new EventVariableDvector("goodElectrons", "goodJets"));
+  handler->addEventVariable("goodElectronsDgoodLeptons", new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   
   handler->addEventVariable("NGOODMUONS",new EventVariableN("NGOODMUONS","goodMuons"));
   handler->addEventVariable("QGOODMUONS", new EventVariableObjectVariableVector<int>("CHARGE","goodMuons"));
   handler->addEventVariable("PTGOODMUONS", new EventVariableObjectVariableVector<double>("PT","goodMuons"));
   handler->addEventVariable("ETAGOODMUONS", new EventVariableObjectVariableVector<double>("ETA","goodMuons"));
   handler->addEventVariable("fakeRoleGOODMUONS", new EventVariableObjectVariableVector<int>("fakeRole","goodMuons"));
+  handler->addEventVariable("goodMuonsDgoodPhotons", new EventVariableDvector("goodMuons", "goodPhotons"));
+  handler->addEventVariable("goodMuonsDgoodJets", new EventVariableDvector("goodMuons", "goodJets"));
+  handler->addEventVariable("goodMuonsDgoodLeptons", new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
 
   handler->addEventVariable("NGOODELECTRONSLOWPT", new EventVariableN("NGOODELECTRONSLOWPT","goodElectronsLowPt"));
   handler->addEventVariable("QGOODELECTRONSLOWPT", new EventVariableObjectVariableVector<int>("CHARGE","goodElectronsLowPt"));
@@ -1067,6 +1074,10 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("NGOODPHOTONS", new EventVariableN("NGOODPHOTONS","goodPhotons"));
   handler->addEventVariable("PTGOODPHOTONS", new EventVariableObjectVariableVector<double>("PT","goodPhotons"));
   handler->addEventVariable("ETAGOODPHOTONS", new EventVariableObjectVariableVector<double>("ETA","goodPhotons"));
+  handler->addEventVariable("goodPhotonsDgoodJets", new EventVariableDvector("goodPhotons", "goodJets"));
+  handler->addEventVariable("goodPhotonsDgoodTaus", new EventVariableDvector("goodPhotons", "goodTaus"));
+  handler->addEventVariable("goodPhotonsDgoodElectrons", new EventVariableDvector("goodPhotons", "goodElectrons"));
+  handler->addEventVariable("goodPhotonsDgoodMuons", new EventVariableDvector("goodPhotons", "goodMuons"));
 
   handler->addEventVariable("NMEDIUMPHOTONS", new EventVariableN("NMEDIUMPHOTONS","mediumPhotons"));
   handler->addEventVariable("NLOOSEPHOTONS", new EventVariableN("NLOOSEPHOTONS","loosePhotons"));

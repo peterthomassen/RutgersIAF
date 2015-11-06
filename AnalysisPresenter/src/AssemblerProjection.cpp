@@ -292,10 +292,11 @@ bool AssemblerProjection::isDistribution() const {
 
 TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xmaxFit) {
 	bool hasBackground = has("background");
-	m_canvas = new TCanvas("c1", "c1", 700, hasBackground ? 700 : 490);
+	bool doRatio = hasBackground && !m_assembler->getMode("noRatioPlot");
+	m_canvas = new TCanvas("c1", "c1", 700, doRatio ? 700 : 490);
 	
-	TPad *pad1 = new TPad("pad1", "pad1", 0, hasBackground ? 0.3 : 0, 1, 1);
-	if(hasBackground) {
+	TPad *pad1 = new TPad("pad1", "pad1", 0, doRatio ? 0.3 : 0, 1, 1);
+	if(doRatio) {
 		pad1->SetBottomMargin(0.025);
 	}
 	pad1->Draw();
@@ -381,7 +382,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->GetXaxis()->SetTitle(title);
 	hData->SetLineColor(kRed);
 	
-	if(hasBackground) {
+	if(doRatio) {
 		hData->GetXaxis()->SetLabelFont(43);
 		hData->GetXaxis()->SetLabelSize(0);
 	}
@@ -414,8 +415,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	
+	double ratio = 0;
 	if(hasBackground) {
-		double ratio = hData->Integral() / hBackground->Integral();
+		ratio = hData->Integral() / hBackground->Integral();
 		
 		TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
 		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
@@ -426,13 +428,15 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		}
 		delete iter;
 		legend->Draw();
-		
-		m_canvas->cd();
-		TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
-		pad2->SetTopMargin(0.025);
-		pad2->Draw();
-		pad2->cd();
-		
+	}
+	
+	m_canvas->cd();
+	TPad *pad2 = new TPad("pad2", "pad2", 0, 0, 1, doRatio ? 0.3 : 0);
+	pad2->SetTopMargin(0.025);
+	pad2->Draw();
+	pad2->cd();
+	
+	if(doRatio) {
 		TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
 		TLine* line2 = new TLine(hData->GetBinLowEdge(1), ratio, hData->GetBinLowEdge(hData->GetNbinsX()+1), ratio);
 		line2->SetLineColor(kRed);
