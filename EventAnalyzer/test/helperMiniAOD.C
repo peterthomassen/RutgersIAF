@@ -1604,8 +1604,8 @@ void setupTriggers(BaseHandler* handler,int mode){
     thresholds.push_back("MU2El1THRESHOLD");
     thresholds.push_back("MU1EL2THRESHOLD");
     thresholds.push_back("TRIELTHRESHOLD");
-    thresholds.push_back("SINGELTHRESHOLD");
-    thresholds.push_back("SINGMUTHRESHOLD");
+    thresholds.push_back("SINGELTRIGTHRESHOLD");
+    thresholds.push_back("SINGMUTRIGTHRESHOLD");
     thresholds.push_back("ALWAYSTRUE");
     
     for(int i = 0; i < (int) triggers.size(); i++){
