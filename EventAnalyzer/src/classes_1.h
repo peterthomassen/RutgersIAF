@@ -17,3 +17,4 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectAssociationVariableMatch.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRichardPhotonIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableDvector.h"
+#include "RutgersIAF/EventAnalyzer/interface/ProductMakerLeading.h"
