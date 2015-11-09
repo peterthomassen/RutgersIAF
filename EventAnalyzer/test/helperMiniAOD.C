@@ -614,7 +614,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL","PHOTON_ENDCAP",false,"PHOTON_COMBINED"));
 
   handler->addProduct("basicPhotons","ALLPHOTONS");
-  handler->addProductCut("basicPhotons","PT15");
+  handler->addProductCut("basicPhotons","PT10");
   handler->addProductCut("basicPhotons","ETA2p4");
   handler->addProductCut("basicPhotons","PHOTON_COMBINED");
 
