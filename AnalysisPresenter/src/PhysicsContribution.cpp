@@ -79,13 +79,18 @@ void PhysicsContribution::addWeight(TString weight, double normalization) {
 	}
 	
 	if(isData()) {
-		cerr << "Warning: Applying weight " << weight << " to data" << endl;
+		cerr << "Notice: Applying weight " << weight << " to data" << endl;
 	}
 	
 	if(std::find(m_weights.begin(), m_weights.end(), weight) != m_weights.end()) {
 		cout << "Warning: Adding weight " << weight << " repeatedly" << endl;
 	}
 	m_weights.push_back(weight);
+}
+
+bool PhysicsContribution::addVetoEvent(std::string vetoString) {
+	auto result = m_vetoEvents.insert(vetoString);
+	return result.second;
 }
 
 void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
@@ -240,6 +245,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		varexpFull += TString(":") + m_nominalWeight;
 	}
 	
+	if(m_vetoEvents.size() > 0) {
+		cout << "Notice: " << m_vetoEvents.size() << " events in veto list" << endl;
+	}
+	
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
 			cout << (int)(10*k/n) << flush;
@@ -257,11 +266,26 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		}
 		
 		for(int i = 0; i < nSelected; ++i) {
-			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
-				x[j] = treeR->GetVal(j)[i];
+			// Extract metadata
+			long event = treeR->GetVal(m_hn->GetNdimensions() + 0)[i] + 0.5;
+			int run = treeR->GetVal(m_hn->GetNdimensions() + 1)[i] + 0.5;
+			int lumi = treeR->GetVal(m_hn->GetNdimensions() + 2)[i] + 0.5;
+			int fakeIncarnation = treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5;
+			
+			// Skip vetoed events
+			std::string vetoString = TString::Format("%ld:%d:%d", event, run, lumi).Data();
+			if(m_vetoEvents.find(vetoString) != m_vetoEvents.end()) {
+				cout << "Skipping vetoed event e=" << event << " r=" << run << " l=" << lumi << endl;
+				continue;
 			}
 			
+			// Get variable values and weight
+			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
+				x[j] = treeR->GetVal(j)[i];
+			} 
 			double weight = treeR->GetW()[i];
+			
+			// Fill histograms
 			if(m_hnAbs) {
 				m_hnAbs->Fill(x, weight);
 				
@@ -274,13 +298,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			if(bin >= (Long64_t)m_metadata.size()) {
 				m_metadata.push_back(std::vector<metadata_t>());
 			}
-			metadata_t metadata = {
-				  (long)(treeR->GetVal(m_hn->GetNdimensions() + 0)[i] + 0.5)
-				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 1)[i] + 0.5)
-				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 2)[i] + 0.5)
-				, (int) (treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5)
-			};
-			m_metadata[bin].push_back(metadata);
+			m_metadata[bin].push_back({event, run, lumi, fakeIncarnation});
 		}
 	}
 	
@@ -302,10 +320,10 @@ int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
 	double lo = axis->GetBinLowEdge(bin);
 	double hi = axis->GetBinUpEdge(bin);
 	if(x < lo) {
-		cerr << "Warning: " << x << " seems to be in the underflow bin of " << axis->GetName() << " axis; please rebin" << endl;
+		cerr << "Error: " << x << " seems to be in the underflow bin of " << axis->GetName() << " axis; please rebin" << endl;
 		throw std::runtime_error("binning error");
 	} else if(x > lo + width / 100 && x < hi - width / 100) {
-		cerr << "Warning: " << x << " is not a bin boundary for " << axis->GetName() << " axis (considered boundaries: " << lo << " and " << hi << ")" << endl;
+		cerr << "Error: " << x << " is not a bin boundary for " << axis->GetName() << " axis (considered boundaries: " << lo << " and " << hi << ")" << endl;
 		throw std::runtime_error("binning error");
 	}
 	return bin;
@@ -343,7 +361,7 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 			auto ins = s.insert(metadata);
 			if(!ins.second) {
 				if(nDuplicates < 10) {
-					cout << "Warning: duplicate entry in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+					cout << "Notice: duplicate entry in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
 				}
 				++nDuplicates;
 			}
@@ -351,7 +369,7 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 	}
 	
 	if(nDuplicates > 0) {
-		cout << "Warning: " << nDuplicates << " duplicate entries in " << getName() << " (showing no more than 10)" << endl;
+		cout << "Notice: " << nDuplicates << " duplicate entries in " << getName() << " (showing no more than 10)" << endl;
 	}
 	
 	//assert(nDuplicates == 0);
@@ -470,7 +488,7 @@ void PhysicsContribution::setEnsembleFakeRateParam(PhysicsContribution* contribu
 
 void PhysicsContribution::setFakeRate(TString name, TString f) {
 	if(isData() && f != "0") {
-		cerr << "Warning: Ignoring request to apply fake rate to data sample\n";
+		cerr << "Notice: Ignoring request to apply fake rate to data sample\n";
 		f = "0";
 	}
 	
