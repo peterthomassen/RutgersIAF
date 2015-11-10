@@ -342,10 +342,16 @@ std::set<PhysicsContribution::metadata_t> PhysicsContribution::getMeta() const {
 		for(auto &metadata : m_metadata[bin]) {
 			auto ins = s.insert(metadata);
 			if(!ins.second) {
-				cout << "Warning: duplicate event in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+				if(nDuplicates < 10) {
+					cout << "Warning: duplicate entry in " << getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+				}
 				++nDuplicates;
 			}
 		}
+	}
+	
+	if(nDuplicates > 0) {
+		cout << "Warning: " << nDuplicates << " duplicate entries in " << getName() << " (showing no more than 10)" << endl;
 	}
 	
 	//assert(nDuplicates == 0);
