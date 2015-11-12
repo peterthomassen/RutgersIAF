@@ -80,7 +80,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	
 	// Calculate values for datacard
 	for(auto &channel : getChannels()) {
-		auto yield = isData ? channel->get("data") : channel->get("background");
+		int yield = channel->get(isData ? "data" : "background") + 0.5;
 		datacard << '\t' << yield;
 	}
 	datacard << endl;
