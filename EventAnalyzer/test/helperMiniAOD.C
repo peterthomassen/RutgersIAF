@@ -1809,5 +1809,6 @@ void setupMCvariables(BaseHandler* handler) {
 	handler->addEventVariable("FLATWEIGHT",new EventVariableTF1<int>("FLATWEIGHT","RUN",flatWeight));
 	handler->addWeightVariable("FLATWEIGHT");
 
+	handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractions","TrueNumInteractions","",50,0,50));
 }
 
