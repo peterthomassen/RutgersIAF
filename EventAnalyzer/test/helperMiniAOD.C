@@ -953,6 +953,30 @@ void setupPrintRA7Sync(BaseHandler* handler)
   handler->addPrintModule(printLines);
 }
 
+void setupMET(BaseHandler* handler, bool isMC) {
+	if(isMC){
+		handler->addEventVariable("NVERTICES",new EventVariableN("NVERTICES","ALLVERTICES"));
+		EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NVERTICES",2.68,4.14,3.48,2.68,5.10,3.48);
+		MET->setSeed(3141592654);
+		handler->addEventVariable("MET",MET);
+		
+		handler->addObjectVariable("PX",new ObjectVariableMethod("PX",&SignatureObject::Px));
+		handler->addObjectVariable("PY",new ObjectVariableMethod("PY",&SignatureObject::Py));
+		handler->addEventVariable("METPX",new EventVariableObjectVariableVector<double>("PX","MET"));
+		handler->addEventVariable("METPY",new EventVariableObjectVariableVector<double>("PY","MET"));
+
+		handler->addObjectVariable("isZ",new ObjectVariableValue<int>("pdgId",23));
+		handler->addObjectVariable("status62", new ObjectVariableValue<int>("status",62));
+		handler->addProduct("ZBOSONS","ALLMC");
+		handler->addProductCut("ZBOSONS","isZ");
+		handler->addProductCut("ZBOSONS","status62");
+
+		handler->addEventVariable("ZPT",new EventVariableObjectVariableVector<double>("PT","ZBOSONS"));
+	} else {
+		EventVariableSumPT* MET = new EventVariableSumPT("MET", "MET");
+		handler->addEventVariable("MET",MET);
+	}
+}
 
 void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
   handler->addEventVariable("ALWAYSTRUE", new EventVariableConst<bool>(true));
@@ -1162,15 +1186,8 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
 
   EventVariableSumPT* HT = new EventVariableSumPT("HT","goodJets");
   handler->addEventVariable("HT",HT);
-
-  if(isMC){
-    EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NRECOVERTICES",2.68,4.14,3.48,2.68,5.10,3.48);
-    MET->setSeed(3141592654);
-    handler->addEventVariable("MET",MET);
-  }else{
-    EventVariableSumPT* MET = new EventVariableSumPT("MET","MET");
-    handler->addEventVariable("MET",MET);
-  }
+  
+  setupMET(handler, isMC);
 
   EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");
   LT->addProduct("goodElectrons");
@@ -1811,4 +1828,3 @@ void setupMCvariables(BaseHandler* handler) {
 
 	handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractions","TrueNumInteractions","",50,0,50));
 }
-
