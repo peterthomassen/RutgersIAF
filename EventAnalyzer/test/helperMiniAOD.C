@@ -981,6 +981,12 @@ void setupMET(BaseHandler* handler, bool isMC) {
 void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
   handler->addEventVariable("ALWAYSTRUE", new EventVariableConst<bool>(true));
 
+  EventVariableThreshold* pt20first = new EventVariableThreshold("PT20first","goodElectrons");
+  pt20first->addProduct("goodMuons");
+  pt20first->addThreshold(20);
+  handler->addEventVariable("PT20first",pt20first);
+  handler->addHandlerCut("PT20first");
+  
   EventVariableThreshold* pt201512 = new EventVariableThreshold("PT201512","goodElectrons");
   pt201512->addProduct("goodMuons");
   pt201512->addThreshold(20);
