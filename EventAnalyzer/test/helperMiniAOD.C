@@ -894,22 +894,22 @@ void setupMET(BaseHandler* handler, bool isMC) {
 		MET->setSeed(3141592654);
 		handler->addEventVariable("MET",MET);
 		
-		handler->addObjectVariable("PX",new ObjectVariableMethod("PX",&SignatureObject::Px));
-		handler->addObjectVariable("PY",new ObjectVariableMethod("PY",&SignatureObject::Py));
-		handler->addEventVariable("METPX",new EventVariableObjectVariableVector<double>("PX","MET"));
-		handler->addEventVariable("METPY",new EventVariableObjectVariableVector<double>("PY","MET"));
-
 		handler->addObjectVariable("isZ",new ObjectVariableValue<int>("pdgId",23));
 		handler->addObjectVariable("status62", new ObjectVariableValue<int>("status",62));
 		handler->addProduct("ZBOSONS","ALLMC");
 		handler->addProductCut("ZBOSONS","isZ");
 		handler->addProductCut("ZBOSONS","status62");
-
+		
 		handler->addEventVariable("ZPT",new EventVariableObjectVariableVector<double>("PT","ZBOSONS"));
 	} else {
 		EventVariableSumPT* MET = new EventVariableSumPT("MET", "MET");
 		handler->addEventVariable("MET",MET);
 	}
+	
+	handler->addObjectVariable("PX",new ObjectVariableMethod("PX",&SignatureObject::Px));
+	handler->addObjectVariable("PY",new ObjectVariableMethod("PY",&SignatureObject::Py));
+	handler->addEventVariable("METPX",new EventVariableObjectVariableVector<double>("PX","MET"));
+	handler->addEventVariable("METPY",new EventVariableObjectVariableVector<double>("PY","MET"));
 }
 
 void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
