@@ -38,6 +38,10 @@ void WZ() {
 	prepare(assembler);
 	assembler->process(varexp, selection);
 	
+	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+	assembler->getDefaultBundle()->print();
+	assembler->setMode("noRatioPlot");
+	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
 	
 	mkdir("WZ", 0755);
@@ -57,7 +61,9 @@ void WZ() {
 	
 	assembler->setRange("MET", 50, 100, false);
 	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_MT.pdf");
-//makeNicePlot(assembler->project("MT", true)->plot(false), "MT [GeV]")->SaveAs("../20150730/WZ_MET50to100_MT.pdf");
+makeNicePlot(assembler->project("MT", true)->plot(false), "MT [GeV]")->SaveAs("../nicePlots/WZ_MET50to100_MT.pdf");
+	assembler->project("HT", true)->plot(false)->SaveAs("WZ_MET50to100_HT.pdf");
+	assembler->project("HT", true)->plot(true)->SaveAs("WZ_MET50to100_HT_log.pdf");
 	assembler->setRange("NGOODMUONS%2", 0, 0);
 	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_evenMuon_MT.pdf");
 	assembler->setRange("NGOODMUONS%2", 1, 1);
@@ -104,10 +110,21 @@ void WZ() {
 	assembler->setRange("MT", 50, 100, false);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(false)->SaveAs("WZ_MT50to100HT0to200_MET.pdf");
+makeNicePlot(assembler->project("MET", true)->plot(false), "MET [GeV]")->SaveAs("../nicePlots/WZ_MT50to100HT0to200_MET.pdf");
 	assembler->project("MET", true)->print();
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("WZ_MT50to100HT0to200_NGOODJETS.pdf");
 	assembler->setRange("HT", 200);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("WZ_MT50to100HTgt200_NGOODJETS.pdf");
+	
+	assembler->setRange("MT");
+	assembler->setRange("HT", 0, 200, false);
+	assembler->project("MET", true)->plot(false)->SaveAs("WZ_HT0to200_MET.pdf");
+	
+	assembler->setRange("HT");
+	assembler->project("HT", true)->plot(false)->SaveAs("WZ_HT.pdf");
+	assembler->project("HT", true)->plot(true)->SaveAs("WZ_HT_log.pdf");
+	assembler->setRange("MET", 0, 50, false);
+	assembler->project("HT", true)->plot(false)->SaveAs("WZ_MET0to50_HT.pdf");
 	
 	assembler->setRange();
 	

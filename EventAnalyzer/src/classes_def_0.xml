@@ -336,10 +336,10 @@
    <version ClassVersion="1" checksum="2939268225"/>
   </class>
   <class name="SignatureTH1F_EventVariable<int>" ClassVersion="1">
-   <version ClassVersion="1" checksum="2681918708"/>
+   <version ClassVersion="1" checksum="646047684"/>
   </class>
   <class name="SignatureTH1F_EventVariable<double>" ClassVersion="1">
-   <version ClassVersion="1" checksum="3187664950"/>
+   <version ClassVersion="1" checksum="3938223930"/>
   </class>
   <class name="SignatureTH1F" ClassVersion="1">
     <version ClassVersion="1" checksum="3951656125"/>

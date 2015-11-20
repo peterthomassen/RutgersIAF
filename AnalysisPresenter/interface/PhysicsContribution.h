@@ -5,6 +5,7 @@
 
 #include <map>
 #include <set>
+#include <unordered_set>
 #include <vector>
 
 #include "THnBase.h"
@@ -30,6 +31,7 @@ public:
 	
 	void addFlatUncertainty(TString, double);
 	void addWeight(TString weight, double normalization = 1.0);
+	bool addVetoEvent(std::string vetoString);
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0);
 	int findBinFromLowEdge(TAxis* axis, double x);
 	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
@@ -88,6 +90,7 @@ private:
 	std::map<TString, TString> m_rangeStrings;
 	std::map<TString, THnBase*> m_uncertaintyMap;
 	std::vector<TString> m_weights;
+	std::unordered_set<std::string> m_vetoEvents;
 	
 	ClassDef(PhysicsContribution,1);
 };

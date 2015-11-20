@@ -614,7 +614,7 @@ void setupProducts(BaseHandler* handler)
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL","PHOTON_ENDCAP",false,"PHOTON_COMBINED"));
 
   handler->addProduct("basicPhotons","ALLPHOTONS");
-  handler->addProductCut("basicPhotons","PT15");
+  handler->addProductCut("basicPhotons","PT10");
   handler->addProductCut("basicPhotons","ETA2p4");
   handler->addProductCut("basicPhotons","PHOTON_COMBINED");
 
@@ -785,72 +785,6 @@ void setupProducts(BaseHandler* handler)
 }
 
 
-void setupVariables(BaseHandler* handler)
-{
-
-  handler->addEventVariable("N_bJetsCSVM", new EventVariableN("N_bJetsCSVM","bJetsCSVM"));
-  handler->addEventVariable("N_bJetsCSVL", new EventVariableN("N_bJetsCSVL","bJetsCSVL"));
-
-  handler->addEventVariable("N_promptTracks",new EventVariableN("N_promptTracks","promptTracks"));
-  handler->addEventVariable("N_nonPromptTracks",new EventVariableN("N_nonPromptTracks","nonPromptTracks"));
-  handler->addEventVariable("N_goodTracks", new EventVariableN("N_goodTracks","goodTracks"));
-
-  handler->addEventVariable("N_fakeElectrons", new EventVariableN("N_fakeElectrons","goodElectronsNotMatched"));
-  handler->addEventVariable("N_fakeMuons", new EventVariableN("N_fakeMuons","goodMuonsNotMatched"));
-
-  handler->addEventVariable("N_matchedElectrons", new EventVariableN("N_matchedElectrons","goodElectronsMatched"));
-  handler->addEventVariable("N_matchedMuons", new EventVariableN("N_matchedMuons","goodMuonsMatched"));
-
-  handler->addEventVariable("N_electrons", new EventVariableN("N_electrons","goodElectrons"));
-  handler->addEventVariable("N_muons", new EventVariableN("N_muons","goodMuons"));
-
-  handler->addEventVariable("N_goodJets", new EventVariableN("N_goodJets","goodJets"));
-
-  handler->addEventVariable("N_goodVertices", new EventVariableN("N_goodVertices","goodRecoVertices"));
-
-  handler->addEventVariable("HT", new EventVariableSumPT("HT","goodJets"));
-  if(handler->getMode("RA7")) {
-    handler->addEventVariable("RA7HT", new EventVariableSumPT("RA7HT","goodRA7Jets"));
-  }
-  handler->addEventVariable("SumPromptTrackPt", new EventVariableSumPT("SumPromptTrackPt","promptTracks"));
-  handler->addEventVariable("SumNonPromptTrackPt", new EventVariableSumPT("SumNonPromptTrackPt","nonPromptTracks"));
-  handler->addEventVariable("SumBasicTrackPt", new EventVariableSumPT("SumBasicTrackPt","basicTracks"));
-
-  EventVariableMixedPairMass* mumassProbePlus = new EventVariableMixedPairMass("MUPLUSMASS","goodMuonsNEG","MUPLUS_",91,15);
-  mumassProbePlus->addProduct("probeMuonsPOS");
-  handler->addEventVariable("MUPLUSMASS",mumassProbePlus);
-  EventVariableMixedPairMass* mumassProbeMinus = new EventVariableMixedPairMass("MUMINUSMASS","goodMuonsPOS","MUMINUS_",91,15);
-  mumassProbeMinus->addProduct("probeMuonsNEG");
-  handler->addEventVariable("MUMINUSMASS",mumassProbeMinus);
-  EventVariablePairMass* mumassProbe = new EventVariablePairMass("MUPROBEMASS","probeMuons","PROBEMU_",91,15);
-  handler->addEventVariable("MUPROBEMASS",mumassProbe);
-  EventVariablePairMass* mumassGood = new EventVariablePairMass("MUGOODMASS","goodMuons","GOODMU_",91,15);
-  handler->addEventVariable("MUGOODMASS",mumassGood);
-
-  EventVariableMixedPairMass* elmassProbePlus = new EventVariableMixedPairMass("ELPLUSMASS","goodElectronsNEG","ELPLUS_",91,15);
-  elmassProbePlus->addProduct("probeElectronsPOS");
-  handler->addEventVariable("ELPLUSMASS",elmassProbePlus);
-  EventVariableMixedPairMass* elmassProbeMinus = new EventVariableMixedPairMass("ELMINUSMASS","goodElectronsPOS","ELMINUS_",91,15);
-  elmassProbeMinus->addProduct("probeElectronsNEG");
-  handler->addEventVariable("ELMINUSMASS",elmassProbeMinus);
-  EventVariablePairMass* elmassProbe = new EventVariablePairMass("ELPROBEMASS","probeElectrons","PROBEEL_",91,15);
-  handler->addEventVariable("ELPROBEMASS",elmassProbe);
-  EventVariablePairMass* elmassGood = new EventVariablePairMass("ELGOODMASS","goodElectrons","GOODEL_",91,15);
-  handler->addEventVariable("ELGOODMASS",elmassGood);
-
-  handler->addEventVariable("PROBEMUPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeMuonsPOS"));
-  handler->addEventVariable("PROBEMUMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeMuonsNEG"));
-  handler->addEventVariable("PROBEELPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeElectronsPOS"));
-  handler->addEventVariable("PROBEELMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","probeElectronsNEG"));
-
-  handler->addEventVariable("GOODMUPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodMuonsPOS"));
-  handler->addEventVariable("GOODMUMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodMuonsNEG"));
-  handler->addEventVariable("GOODELPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodElectronsPOS"));
-  handler->addEventVariable("GOODELMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","goodElectronsNEG"));
-
-}
-
-
 void setupOnZSignatures(BaseHandler* handler)
 {
   handler->addSignature("Mu2")
@@ -953,10 +887,40 @@ void setupPrintRA7Sync(BaseHandler* handler)
   handler->addPrintModule(printLines);
 }
 
+void setupMET(BaseHandler* handler, bool isMC) {
+	if(isMC){
+		handler->addEventVariable("NVERTICES",new EventVariableN("NVERTICES","ALLVERTICES"));
+		EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NVERTICES",2.68,4.14,3.48,2.68,5.10,3.48);
+		MET->setSeed(3141592654);
+		handler->addEventVariable("MET",MET);
+		
+		handler->addObjectVariable("PX",new ObjectVariableMethod("PX",&SignatureObject::Px));
+		handler->addObjectVariable("PY",new ObjectVariableMethod("PY",&SignatureObject::Py));
+		handler->addEventVariable("METPX",new EventVariableObjectVariableVector<double>("PX","MET"));
+		handler->addEventVariable("METPY",new EventVariableObjectVariableVector<double>("PY","MET"));
+
+		handler->addObjectVariable("isZ",new ObjectVariableValue<int>("pdgId",23));
+		handler->addObjectVariable("status62", new ObjectVariableValue<int>("status",62));
+		handler->addProduct("ZBOSONS","ALLMC");
+		handler->addProductCut("ZBOSONS","isZ");
+		handler->addProductCut("ZBOSONS","status62");
+
+		handler->addEventVariable("ZPT",new EventVariableObjectVariableVector<double>("PT","ZBOSONS"));
+	} else {
+		EventVariableSumPT* MET = new EventVariableSumPT("MET", "MET");
+		handler->addEventVariable("MET",MET);
+	}
+}
 
 void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
   handler->addEventVariable("ALWAYSTRUE", new EventVariableConst<bool>(true));
 
+  EventVariableThreshold* pt20first = new EventVariableThreshold("PT20first","goodElectrons");
+  pt20first->addProduct("goodMuons");
+  pt20first->addThreshold(20);
+  handler->addEventVariable("PT20first",pt20first);
+  handler->addHandlerCut("PT20first");
+  
   EventVariableThreshold* pt201512 = new EventVariableThreshold("PT201512","goodElectrons");
   pt201512->addProduct("goodMuons");
   pt201512->addThreshold(20);
@@ -1162,15 +1126,8 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
 
   EventVariableSumPT* HT = new EventVariableSumPT("HT","goodJets");
   handler->addEventVariable("HT",HT);
-
-  if(isMC){
-    EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NRECOVERTICES",2.68,4.14,3.48,2.68,5.10,3.48);
-    MET->setSeed(3141592654);
-    handler->addEventVariable("MET",MET);
-  }else{
-    EventVariableSumPT* MET = new EventVariableSumPT("MET","MET");
-    handler->addEventVariable("MET",MET);
-  }
+  
+  setupMET(handler, isMC);
 
   EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");
   LT->addProduct("goodElectrons");
@@ -1809,5 +1766,5 @@ void setupMCvariables(BaseHandler* handler) {
 	handler->addEventVariable("FLATWEIGHT",new EventVariableTF1<int>("FLATWEIGHT","RUN",flatWeight));
 	handler->addWeightVariable("FLATWEIGHT");
 
+	handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractions","TrueNumInteractions","",50,0,50));
 }
-
