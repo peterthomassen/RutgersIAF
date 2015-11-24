@@ -888,8 +888,9 @@ void setupPrintRA7Sync(BaseHandler* handler)
 }
 
 void setupMET(BaseHandler* handler, bool isMC) {
+	handler->addEventVariable("NVERTICES",new EventVariableN("NVERTICES","ALLVERTICES"));
+	
 	if(isMC){
-		handler->addEventVariable("NVERTICES",new EventVariableN("NVERTICES","ALLVERTICES"));
 		EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NVERTICES",2.68,4.14,3.48,2.68,5.10,3.48);
 		MET->setSeed(3141592654);
 		handler->addEventVariable("MET",MET);
@@ -1767,4 +1768,5 @@ void setupMCvariables(BaseHandler* handler) {
 	handler->addWeightVariable("FLATWEIGHT");
 
 	handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractions","TrueNumInteractions","",50,0,50));
+//	handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractionsNEG","TrueNumInteractions","",50,0,50,"genEventInfo_weight"));
 }
