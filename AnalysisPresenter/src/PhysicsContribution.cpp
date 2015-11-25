@@ -132,7 +132,7 @@ void PhysicsContribution::applyUncertainty(TString name, THnBase* h) {
 	}
 }
 
-THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale) {
+THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale, TH1D* hPileup) {
 	delete m_hn;
 	delete m_hnAbs;
 	
@@ -219,6 +219,15 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	if(m_debug) cout << selection << endl;
 	
+	TH1D* hPileupWeights = 0;
+	TH1D* hPileupMC = (TH1D*)f.Get("noCutSignature_TrueNumInteractions");
+	if(isMC() && hPileup && hPileupMC) {
+		hPileupWeights = (TH1D*)hPileup->Clone();
+		hPileupWeights->Scale(1./hPileupWeights->Integral());
+		hPileupMC->Scale(1./hPileupMC->Integral());
+		hPileupWeights->Divide(hPileupMC);
+	}
+	
 	int step = 10000;
 	int n = treeR->GetEntries();
 	
@@ -241,8 +250,12 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s", varexp.c_str(), varexpIncarnation.c_str());
 	
-	if(m_hnAbs) {
-		varexpFull += TString(":") + m_nominalWeight;
+	varexpFull += (m_hnAbs)
+		? TString(":") + m_nominalWeight
+		: TString(":1");
+	
+	if(hPileupWeights) {
+		varexpFull += ":TrueNumInteractions";
 	}
 	
 	if(m_vetoEvents.size() > 0) {
@@ -285,6 +298,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			} 
 			double weight = treeR->GetW()[i];
 			
+			if(hPileupWeights) {
+				int trueNumInteractions = (int)(treeR->GetVal(m_hn->GetNdimensions() + 5)[i] + 0.5);
+				weight *= hPileupWeights->GetBinContent(trueNumInteractions);
+			}
+			
 			// Fill histograms
 			if(m_hnAbs) {
 				m_hnAbs->Fill(x, weight);
@@ -303,6 +321,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	}
 	
 	delete treeR;
+	delete hPileupWeights;
+	delete hPileupMC;
 	f.Close();
 	
 	cout << endl;

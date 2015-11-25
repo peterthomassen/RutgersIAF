@@ -112,6 +112,14 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0) {
 	}
 	
 	assembler->addContribution(data);
+	
+	TFile f("/cms/thomassen/2015/Analysis/data/DataPileup_2015-11-19.root");
+	if(f.IsZombie()) {
+		throw std::runtime_error("couldn't open pileup file");
+	}
+	TH1D* hPileup = (TH1D*)f.Get("pileup");
+	assembler->setPileupHistogram(hPileup);
+	cout << "Notice: Applying pileup weights" << endl;
 }
 
 void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false) {
@@ -157,27 +165,18 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	assembler->addBundle(correlationBundle);
 	
 	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZTo3LNu" + infix + suffix, xsec_wz, "WZ", false, "treeR", 39);
-	//wz->addWeight("exp(-0.005 * PTMCZ[0]/sqrt(MMCZ[0]))", 1.038);
 	//wz->addWeight("(NGOODJETS[0] == 0) * 1.053 + (NGOODJETS[0] == 1) * 0.85 + (NGOODJETS[0] == 2) * 1.15 + (NGOODJETS[0] > 2) * 1.19");
 	//wz->addWeight("(NGOODJETS[0] <= 1) + (NGOODJETS[0] > 1) * (Alt$((PTGOODJETS[0] < 70) * 0.65 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.07 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 1.00 + (PTGOODJETS[0] >= 150) * 1.55, 0))");
-	//wz->addWeight("1 + (NBJETSCSVM > 0) * 0.0"); // look with more data whether MC gets number of b's right
 	//wz->addFlatUncertainty("normalizationWZ", 0.05);
 	wz->setNominalWeight("genEventInfo_weight[0]");
-	wz->addWeight("1.10"); // normalization
+	wz->addWeight("0.922"); // normalization
 	correlationBundle->addComponent(wz);
 	mc.push_back(wz);
 	
 	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30);
-	//zz->addWeight("(NGOODJETS[0] == 0) * 1.084 + (NGOODJETS[0] == 1) * 0.75 + (NGOODJETS[0] == 2) * 0.333 + (NGOODJETS[0] > 2) * 1");
 	zz->setNominalWeight("genEventInfo_weight[0]");
-	zz->addWeight("1.35"); // normalization
 	correlationBundle->addComponent(zz);
 	mc.push_back(zz);
-	
-//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-100To250" + infix + suffix, 28730000*0.1178, "QCD_HT-100To250"));
-//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-250To500" + infix + suffix, 670500*0.1685, "QCD_HT-250To500"));
-//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-500To1000" + infix + suffix, 26740*0.2103, "QCD_HT-500To1000"));
-//	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "QCD_HT-1000ToInf" + infix + suffix, 769.7*0.2358, "QCD_HT-1000ToInf"));
 	
 	PhysicsContribution* c = 0;
 	
@@ -196,8 +195,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 0.019, "WZZ"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
 	
-	//TString nJetWeight = "1 + (NGOODJETS[0] >= 4) * 0.05"; // Peter's numbers
-	TString nJetWeight = "1";
+	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * -0.12 + (NGOODJETS[0] == 2) * -0.12 + (NGOODJETS[0] == 3) * -0.07 + (NGOODJETS[0] == 4) * -0.19 + (NGOODJETS[0] == 5) * -0.32 + (NGOODJETS[0] > 5) * -0.43";
 	
 	Bundle* bundleTTbar = new Bundle("background", "ttbar");
 	assembler->addBundle(bundleTTbar);
@@ -217,8 +215,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJets" + infix + suffix, xsec_tt, "TT", false, "treeR", -1, 0.01);
 		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF * xsec_ttF_fudge, "ttF", false, "treeR", kAzure + 1);
 		ttbarF->setNominalWeight("genEventInfo_weight[0]");
-//		ttbarF->addWeight("1.2 - 0.04 * NPROMPTNONISOINCLUSIVETRACKS7[0]");
-//		ttbarF->addWeight(nJetWeight);
+		ttbarF->addWeight(nJetWeight);
 		ttbarF->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 1.0");
 		ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
 		//ttbarF->addFlatUncertainty("xsec_tt", dxsec_tt / xsec_tt);
@@ -245,8 +242,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			
 			for(auto &contribution : ttbarFfake) {
 				contribution->setNominalWeight("genEventInfo_weight[0]");
-				//contribution->addWeight("1.2 - 0.04 * NPROMPTNONISOINCLUSIVETRACKS7[0]");
-				//contribution->addWeight(nJetWeight);
+				contribution->addWeight(nJetWeight);
 				contribution->addWeight("nTrackFakeElectrons + nTrackFakeMuons + nPhotonFakeElectrons + nPhotonFakeMuons == 1"); // + nTauFakeTaus == 1");
 				mc.push_back(contribution);
 			}
@@ -260,13 +256,13 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		
 		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10to50" + infix + suffix, xsec_dy10to50, "DY10to50", false, "treeR", 46);
 		c->setNominalWeight("genEventInfo_weight[0]");
-		c->addWeight("(NGOODJETS[0] == 0) * 1.4 + (NGOODJETS[0] == 1) * 1.3 + (NGOODJETS[0] == 2) * 1.3 + (NGOODJETS[0] == 3) * 1.3 + (NGOODJETS[0] == 4) * 1.38 + (NGOODJETS[0] == 5) * 1.6 + (NGOODJETS[0] > 4) * 1.45");
+		c->addWeight("(NGOODJETS[0] == 0) * 1.16 + (NGOODJETS[0] == 1) * 1.08 + (NGOODJETS[0] == 2) * 1.07 + (NGOODJETS[0] == 3) * 1.08 + (NGOODJETS[0] == 4) * 1.26 + (NGOODJETS[0] == 5) * 1.47 + (NGOODJETS[0] == 6) * 1.87 + (NGOODJETS[0] > 6) * 1");
 		mc.push_back(c);
 		
 		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dy50, "DY50", false, "treeR", 46);
 		c->addFlatUncertainty("xsec_dy50", dxsec_dy50 / xsec_dy50);
 		c->setNominalWeight("genEventInfo_weight[0]");
-		c->addWeight("(NGOODJETS[0] == 0) * 1.4 + (NGOODJETS[0] == 1) * 1.3 + (NGOODJETS[0] == 2) * 1.3 + (NGOODJETS[0] == 3) * 1.3 + (NGOODJETS[0] == 4) * 1.38 + (NGOODJETS[0] == 5) * 1.6 + (NGOODJETS[0] > 5) * 1.45");
+		c->addWeight("(NGOODJETS[0] == 0) * 1.16 + (NGOODJETS[0] == 1) * 1.08 + (NGOODJETS[0] == 2) * 1.07 + (NGOODJETS[0] == 3) * 1.08 + (NGOODJETS[0] == 4) * 1.26 + (NGOODJETS[0] == 5) * 1.47 + (NGOODJETS[0] == 6) * 1.87 + (NGOODJETS[0] > 6) * 1");
 		mc.push_back(c);
 	}
 	

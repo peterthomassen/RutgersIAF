@@ -1720,6 +1720,10 @@ BaseTreeWriter* BaseHandler::getWriter(TString fakeCombination) const {
 }
 //-----------------------------------------
 //-----------------------------------------
+bool BaseHandler::isProductListed(TString pname)
+{
+  return find(m_product_names.begin(),m_product_names.end(),pname) != m_product_names.end();
+}
 //-----------------------------------------
 //-----------------------------------------
 //-----------------------------------------

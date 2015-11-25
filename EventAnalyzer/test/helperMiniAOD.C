@@ -888,28 +888,29 @@ void setupPrintRA7Sync(BaseHandler* handler)
 }
 
 void setupMET(BaseHandler* handler, bool isMC) {
+	handler->addEventVariable("NVERTICES",new EventVariableN("NVERTICES","ALLVERTICES"));
+	
 	if(isMC){
-		handler->addEventVariable("NVERTICES",new EventVariableN("NVERTICES","ALLVERTICES"));
 		EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NVERTICES",2.68,4.14,3.48,2.68,5.10,3.48);
 		MET->setSeed(3141592654);
 		handler->addEventVariable("MET",MET);
 		
-		handler->addObjectVariable("PX",new ObjectVariableMethod("PX",&SignatureObject::Px));
-		handler->addObjectVariable("PY",new ObjectVariableMethod("PY",&SignatureObject::Py));
-		handler->addEventVariable("METPX",new EventVariableObjectVariableVector<double>("PX","MET"));
-		handler->addEventVariable("METPY",new EventVariableObjectVariableVector<double>("PY","MET"));
-
 		handler->addObjectVariable("isZ",new ObjectVariableValue<int>("pdgId",23));
 		handler->addObjectVariable("status62", new ObjectVariableValue<int>("status",62));
 		handler->addProduct("ZBOSONS","ALLMC");
 		handler->addProductCut("ZBOSONS","isZ");
 		handler->addProductCut("ZBOSONS","status62");
-
+		
 		handler->addEventVariable("ZPT",new EventVariableObjectVariableVector<double>("PT","ZBOSONS"));
 	} else {
 		EventVariableSumPT* MET = new EventVariableSumPT("MET", "MET");
 		handler->addEventVariable("MET",MET);
 	}
+	
+	handler->addObjectVariable("PX",new ObjectVariableMethod("PX",&SignatureObject::Px));
+	handler->addObjectVariable("PY",new ObjectVariableMethod("PY",&SignatureObject::Py));
+	handler->addEventVariable("METPX",new EventVariableObjectVariableVector<double>("PX","MET"));
+	handler->addEventVariable("METPY",new EventVariableObjectVariableVector<double>("PY","MET"));
 }
 
 void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
@@ -1572,8 +1573,8 @@ void setupTriggers(BaseHandler* handler,int mode){
     thresholds.push_back("MU2El1THRESHOLD");
     thresholds.push_back("MU1EL2THRESHOLD");
     thresholds.push_back("TRIELTHRESHOLD");
-    thresholds.push_back("SINGELTHRESHOLD");
-    thresholds.push_back("SINGMUTHRESHOLD");
+    thresholds.push_back("SINGELTRIGTHRESHOLD");
+    thresholds.push_back("SINGMUTRIGTHRESHOLD");
     thresholds.push_back("ALWAYSTRUE");
     
     for(int i = 0; i < (int) triggers.size(); i++){
@@ -1767,4 +1768,5 @@ void setupMCvariables(BaseHandler* handler) {
 	handler->addWeightVariable("FLATWEIGHT");
 
 	handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractions","TrueNumInteractions","",50,0,50));
+//	handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractionsNEG","TrueNumInteractions","",50,0,50,"genEventInfo_weight"));
 }

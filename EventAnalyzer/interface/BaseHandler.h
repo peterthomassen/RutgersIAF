@@ -130,6 +130,7 @@ class BaseHandler : virtual public TObject {
   //Product Management//
   //////////////////////
   virtual std::vector<SignatureObject*> getProduct(TString);
+  virtual bool isProductListed(TString);
   virtual bool isProductPresent(TString);
   virtual void addProduct(TString,TString);
   virtual void addProductCut(TString,TString);
