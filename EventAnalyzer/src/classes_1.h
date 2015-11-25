@@ -18,3 +18,4 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableRichardPhotonIso.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableDvector.h"
 #include "RutgersIAF/EventAnalyzer/interface/ProductMakerLeading.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariablePromptFakeWeights.h"

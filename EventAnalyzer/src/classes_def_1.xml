@@ -77,4 +77,7 @@
   <class name="ProductMakerLeading" ClassVersion="1">
    <version ClassVersion="1" checksum="3441259708"/>
   </class>
+  <class name="EventVariablePromptFakeWeights" ClassVersion="1">
+   <version ClassVersion="1" checksum="4225158186"/>
+  </class>
 </lcgdict>
