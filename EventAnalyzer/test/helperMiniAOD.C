@@ -156,7 +156,7 @@ void setupProducts(BaseHandler* handler)
   ObjectVariableCombined* muon_goodGlobalSeg = new ObjectVariableCombined("MUON_GOODGLOBAL","MUON_SEGCOM0p303",true);
   handler->addObjectVariable("MUON_GOODGLOBALSEGCOM",muon_goodGlobalSeg);
   handler->addObjectVariable("MUON_GOODSEGCOM",new ObjectVariableCombined("MUON_GOODGLOBALSEGCOM","MUON_SEGCOM0p451",false));
-  handler->addObjectVariable("MUON_validFraction", new ObjectVariableInRange<double>("validFraction",0.8,10000));
+  handler->addObjectVariable("MUON_validFraction", new ObjectVariableInRange<double>("validFraction",0.8+1e-9,10000));
 
   ////////////////////////
   ///Electron Variables///
@@ -422,7 +422,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodElectronsLowPt", "SIP3D_4sigma");
   handler->addProductCut("goodElectronsLowPt", "MULTIISOM");
   if(handler->getMode("RA7") && handler->getMode("MC")) {
-    handler->addProductCut("goodElectronsLowPt", "ELECTRON_IDISOemu");
+    handler->addProductCut("goodElectronsLowPt", "ELECTRON_IDemu");
   }
 
   handler->addProduct("goodElectrons","goodElectronsLowPt");
@@ -739,7 +739,9 @@ void setupProducts(BaseHandler* handler)
 
   handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
   handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
-  handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
+  if(!handler->getMode("RA7")) {
+    handler->addProductComparison("goodJets","goodTaus",deltaR0p4);
+  }
 //  handler->addProductComparison("goodJets","goodPhotons",deltaR0p3);
 
   handler->addProductComparison("goodForwardJets","goodMuons",deltaR0p4);
