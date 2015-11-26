@@ -1,28 +1,26 @@
 /**
- * This example macro reads ZZ background MC data and produces a file 
- * with AnalysisTree in it with all MC validation variables.
+ * This example macro reads WZto3LNu background from 2015 MC data 
+ * and produces a file with AnalysisTree with all MC validation variables.
  * Output is used for ValidationPlotMacro.C.
 */
 
 #include "RutgersIAF/EventAnalyzer/interface/AnalysisTreeWriter.h"
 #include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
-#include "RutgersIAF/EventAnalyzer/interface/SkimTreeReader.h"
+#include "RutgersIAF/EventAnalyzer/interface/FlatTreeReader.h"
 
 // Initialization: load helpers (which will load library etc.)
+#include "helperMiniAOD.C"
 #include "helperValidation.C"
-#include "helperTriggers.C"
-#include "helperHistograms.C"
 
-void exampleValidation(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC_53X/ZZJetsTo4L/All/results_mc_v1_1_*.root"
-	, TString pufile="/cms/matt/mwalker/Analysis/20120920_newPU/histograms/ZZJetsTo4L.pu.root"
-	, const char* outfile = "validation_ZZ_1.root"
+void exampleValidation(const char* infile = "/cms/multilepton/thomassen/2015/MCData/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1_MINIAODSIM/151030_030656/0000/results_1.root"
+	, const char* outfile = "WZto3LNu_1.simulation.root"
 	, int mode = 0
 	, Int_t iLo = 0	// change this to start running here
-	, Int_t iHi = 1000	// change this to stop running here
-	, Bool_t isMCData = true // change this to run over MC simulations
+	, Int_t iHi = 0	// change this to stop running here
+	, Bool_t isMC = true // change this to run over MC simulations
 ) {
 	// Prepare input
-	TChain* tree = new TChain("SkimTree");
+	TChain* tree = new TChain("tree");
 	TString input = infile;
 	if(!input.EndsWith(".root")) {
 		input += "/*.root";
@@ -30,7 +28,7 @@ void exampleValidation(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC_
 	tree->Add(input);
 	
 	// Create reader
-	SkimTreeReader* reader = new SkimTreeReader(tree);
+	FlatTreeReader* reader = new FlatTreeReader(tree);
 	
 	// Create the heart of the EventAnalyzer, the handler. Define output file and attach reader.
 	BaseHandler* handler = new BaseHandler(outfile, reader);
@@ -40,23 +38,17 @@ void exampleValidation(const char* infile = "/cms/zywicki/2012/DataLinks2012_MC_
 	handler->setWriter(writer);
 		
 	// If specified, only run over a subset of events. Provide indices in iLo, iHi
-	if(iLo > 0) handler->setMode("nEntryLow", iLo);
-	if(iHi > 0) handler->setMode("nEntryHigh", iHi);
-	
-	Bool_t matchingFlag = !(input.Contains("/TTJets") || input.Contains("/DYJets") || input.Contains("Zbb"));
-	Bool_t wzKinematics = input.Contains("/WZJetsTo3LNu");
-
+	//if(iLo > 0) handler->setMode("nEntryLow", iLo);
+	//if(iHi > 0) handler->setMode("nEntryHigh", iHi);
 	
 	// Set up leptons with quality cuts, triggers, analysis variables, ...
-	if (isMCData) setupMC1(handler,pufile,matchingFlag,wzKinematics);
+	setupMCproducts(handler);
 	setupProducts(handler);
-	if (isMCData) setupMC2(handler,pufile,matchingFlag);
+	setupMCvariables(handler);
 	setupMCValidation(handler);
+	setupVariables2(handler, isMC);
 	setupTriggers(handler, mode);
-	setupVariables(handler);
-	setupFilterCuts(handler);
-	
-	addHistograms(handler);
+
 	
 	// And send it running ...
 	handler->initSignatures();
