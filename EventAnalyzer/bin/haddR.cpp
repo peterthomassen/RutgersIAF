@@ -53,15 +53,16 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 	bool first = true;
 	bool success = true;
 	bool weights = false;
-	
+	TTreeFormula* treeFormula = NULL;
 	for(size_t i = 0; i < inputFiles.size(); ++i) {
 		cout << ((i % 10 == 9) ? '|' : '.') << flush;
 		
 		TFile* f = new TFile(inputFiles[i]);
 		TTree* curTree = (TTree*)(f->Get(treeName));
 		outfile->cd();
-
-		TTreeFormula* treeFormula = new TTreeFormula("selection",treeCut,curTree);
+		
+		treeFormula = NULL;
+		if(string(treeCut) != "")treeFormula = new TTreeFormula("selection",treeCut,curTree);
 		//treeFormula->SetTree(curTree);
 		
 		if(first && curTree->GetEntries() > 0) {
@@ -193,7 +194,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		for(int j = 0; j < curTree->GetEntries(); ++j) {
 			curTree->GetEntry(j);
 
-			if(string(treeCut) != "" && treeFormula->EvalInstance() == 0)continue;
+			if(treeFormula && treeFormula->EvalInstance() == 0)continue;
 			
 			outBits.clear();
 			if(inBits) {
@@ -214,7 +215,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 			
 			outTree->Fill();
 		}
-		
+		if(treeFormula) delete treeFormula;
 		delete curTree;
 		f->Close();
 		delete f;
