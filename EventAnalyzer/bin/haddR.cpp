@@ -29,10 +29,11 @@
 #include "TPRegexp.h"
 #include "TString.h"
 #include "TTree.h"
+#include "TTreeFormula.h"
 
 using namespace std;
 
-Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const char* treeName) {
+Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const char* treeName, const char* treeCut) {
 	cout << "Now adding Rutgers tree " << treeName << " ";
 	TFile* outfile = new TFile(targetname, "UPDATE");
 	
@@ -59,6 +60,9 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		TFile* f = new TFile(inputFiles[i]);
 		TTree* curTree = (TTree*)(f->Get(treeName));
 		outfile->cd();
+
+		TTreeFormula* treeFormula = new TTreeFormula("selection",treeCut,curTree);
+		//treeFormula->SetTree(curTree);
 		
 		if(first && curTree->GetEntries() > 0) {
 			outTree->SetTitle(curTree->GetTitle());
@@ -188,6 +192,8 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		
 		for(int j = 0; j < curTree->GetEntries(); ++j) {
 			curTree->GetEntry(j);
+
+			if(string(treeCut) != "" && treeFormula->EvalInstance() == 0)continue;
 			
 			outBits.clear();
 			if(inBits) {
@@ -256,6 +262,7 @@ int main( int argc, char **argv )
       cout << "If the option -v is used, explicitly set the verbosity level; 0 request no output, 99 is the default" <<endl;
       cout << "[unsupported] If the option -n is used, hadd will open at most 'maxopenedfiles' at once, use 0 to request to use the system maximum." << endl;
       cout << "If the option -t is used, the specified tree is used for the Rutgers AnalysisTree treatment (default: treeR)" << endl;
+      cout << "If the option -c is used, the specified cut will be applied to the tree during merging (default: no cut)" << endl;
       cout << "When the -f option is specified, one can also specify the compression" <<endl;
       cout << "level of the target file. By default the compression level is 1, but" <<endl;
       cout << "if \"-f0\" is specified, the target file will not be compressed." <<endl;
@@ -272,6 +279,7 @@ int main( int argc, char **argv )
    Int_t maxopenedfiles = 0;
    Int_t verbosity = 99;
    string treeNamePrefix = "treeR";
+   string treeCut = "";
 
    int outputPlace = 0;
    int ffirst = 2;
@@ -323,6 +331,15 @@ int main( int argc, char **argv )
             cerr << "Error: no tree name was provided after -t.\n";
          } else {
             treeNamePrefix = argv[a+1];
+	    ++a;
+	    ++ffirst;
+         }
+         ++ffirst;
+      } else if ( strcmp(argv[a],"-c") == 0 ) {
+         if (a+1 >= argc) {
+            cerr << "Error: no cut was provided after -c.\n";
+         } else {
+            treeCut = argv[a+1];
 	    ++a;
 	    ++ffirst;
          }
@@ -438,7 +455,7 @@ int main( int argc, char **argv )
    Bool_t status = merger.PartialMerge(TFileMerger::kAll | TFileMerger::kRegular | TFileMerger::kSkipListed);
    if(!noTrees) {
       for(auto &treeName : treeRnames) {
-         status &= mergeTreeR(targetname, vInputFiles, treeName.Data());
+	status &= mergeTreeR(targetname, vInputFiles, treeName.Data(),treeCut.c_str());
       }
    }
 

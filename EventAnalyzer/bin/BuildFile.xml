@@ -1,4 +1,5 @@
 <use name="root"/>
+<Flags LDFLAGS="-lTreePlayer"/>
 <bin name="haddR" file="haddR.cpp"/>
 <bin name="lheReader" file="lheReader.cpp"/>
 <bin name="aodsimReader" file="aodsimReader.cpp"/>
