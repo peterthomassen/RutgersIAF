@@ -887,6 +887,7 @@ void setupPrintRA7Sync(BaseHandler* handler)
   printLines->addVariable("OSSFMAXMLL",ddd);
   printLines->addVariable("OSSFMINMLL",ddd);
   printLines->addVariable("RA7MOSSF",ddd);
+  printLines->addVariable("PT201510",bbb);
   handler->addPrintModule(printLines);
 }
 
@@ -931,7 +932,14 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   pt201512->addThreshold(15);
   pt201512->addThreshold(12);
   handler->addEventVariable("PT201512",pt201512);
-
+  
+  EventVariableThreshold* pt201510 = new EventVariableThreshold("PT201510","goodElectrons");
+  pt201510->addProduct("goodMuons");
+  pt201510->addThreshold(20);
+  pt201510->addThreshold(15);
+  pt201510->addThreshold(10);
+  handler->addEventVariable("PT201510",pt201510);
+  
   EventVariableThreshold* pt201010 = new EventVariableThreshold("PT201010","goodElectrons");
   pt201010->addProduct("goodMuons");
   pt201010->addThreshold(20);
