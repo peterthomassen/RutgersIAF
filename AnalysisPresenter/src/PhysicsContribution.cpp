@@ -248,7 +248,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		? "fakeIncarnation[0]"
 		: ((m_type == "backgroundDD") ? "Entry$" : "0");
 	
-	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s:Iteration$", varexp.c_str(), varexpIncarnation.c_str());
+	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s:Entry$", varexp.c_str(), varexpIncarnation.c_str());
 	
 	varexpFull += (m_hnAbs)
 		? TString(":") + m_nominalWeight
@@ -261,6 +261,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	if(m_vetoEvents.size() > 0) {
 		cout << "Notice: " << m_vetoEvents.size() << " events in veto list" << endl;
 	}
+	
+	long entryPrev = 0;
 	
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
@@ -284,7 +286,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			int run = treeR->GetVal(m_hn->GetNdimensions() + 1)[i] + 0.5;
 			int lumi = treeR->GetVal(m_hn->GetNdimensions() + 2)[i] + 0.5;
 			int fakeIncarnation = treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5;
-			int iteration = treeR->GetVal(m_hn->GetNdimensions() + 4)[i] + 0.5;
+			long entry = treeR->GetVal(m_hn->GetNdimensions() + 4)[i] + 0.5;
 			
 			// Skip vetoed events
 			std::string vetoString = TString::Format("%ld:%d:%d", event, run, lumi).Data();
@@ -317,9 +319,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			if(bin >= (Long64_t)m_metadata.size()) {
 				m_metadata.push_back(std::vector<metadata_t>());
 			}
-			if(iteration == 0) {
+			if(entry != entryPrev || (k == 0 && i == 0)) {
 				m_metadata[bin].push_back({event, run, lumi, fakeIncarnation});
 			}
+			entryPrev = entry;
 		}
 	}
 	
