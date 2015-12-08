@@ -255,7 +255,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		: TString(":1");
 	
 	if(hPileupWeights) {
-		varexpFull += ":TrueNumInteractions";
+		varexpFull += ":TrueNumInteractions[0]";
 	}
 	
 	if(m_vetoEvents.size() > 0) {
