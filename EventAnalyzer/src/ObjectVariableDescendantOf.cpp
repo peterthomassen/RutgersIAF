@@ -9,6 +9,7 @@ bool ObjectVariableDescendantOf::calculate(SignatureObject* sigObj)
 {
 
   vector<SignatureObject*> product = m_handler->getProduct(m_productname);
+  if(product.size() < 1) return false;
   int motherpdgid = 0;
   int stepCount = 0;
   int motherIndex = 0;

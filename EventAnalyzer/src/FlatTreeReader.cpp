@@ -62,13 +62,19 @@ void FlatTreeReader::makeProducts()
 
   int nObjects = clonesarray_->GetEntries();
   vector<SignatureObject*> v;
+  vector<SignatureObject*> mc;
   for(int i = 0; i < nObjects; i++){
     SignatureObjectFlat* sof = (SignatureObjectFlat*)clonesarray_->At(i);
     //sof->Print();
     SignatureObject* so = new SignatureObject(*sof);
     v.push_back(so);
+    TString inputtype = "UNKNOWN";
+    bool hasInputtype = so->getVariable("INPUTTYPE",inputtype);
+    if(!hasInputtype)continue;
+    if(inputtype == "mc")mc.push_back(so);
   }
   m_productmap["ALL"] = v;
+  m_productmap["allmc"] = mc;
   clonesarray_->Delete();
 
 }
