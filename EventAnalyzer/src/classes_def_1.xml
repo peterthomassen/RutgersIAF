@@ -80,4 +80,7 @@
   <class name="EventVariablePromptFakeWeights" ClassVersion="1">
    <version ClassVersion="1" checksum="4225158186"/>
   </class>
+  <class name="ObjectVariableDescendantOf" ClassVersion="1">
+   <version ClassVersion="1" checksum="329728494"/>
+  </class>
 </lcgdict>
