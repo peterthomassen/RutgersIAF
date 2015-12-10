@@ -1664,16 +1664,26 @@ void setupMCproducts(BaseHandler* handler) {
 	ObjectVariableValueInList<int>* tauPDGID = new ObjectVariableValueInList<int>("pdgId",15);
 	tauPDGID->addValue(-15);
 	handler->addObjectVariable("TAUPDGID",tauPDGID);
-	handler->addObjectVariable("MOTHERZ",new ObjectVariableValue<int>("motherpdgId",23));
+	handler->addObjectVariable("MOTHERZ",new ObjectVariableDescendantOf("allmc",23,handler));
+	handler->addObjectVariable("MOTHERW",new ObjectVariableDescendantOf("allmc",24,handler));
+	handler->addObjectVariable("MOTHERH",new ObjectVariableDescendantOf("allmc",23,handler));
+	//handler->addObjectVariable("MOTHERZ",new ObjectVariableValue<int>("motherpdgId",23));
+	/*
 	ObjectVariableValueInList<int>* motherBoson = new ObjectVariableValueInList<int>("motherpdgId",23);
 	motherBoson->addValue(24);
 	motherBoson->addValue(-24);
 	motherBoson->addValue(25);
+	*/
+	ObjectVariableCombined* motherBoson = new ObjectVariableCombined("MOTHERZ","MOTHERW",false);
+	motherBoson->addVariable("MOTHERH");
 	handler->addObjectVariable("MOTHERBOSON",motherBoson);
-
+	
+	/*
 	ObjectVariableValueInList<int>* motherTau = new ObjectVariableValueInList<int>("motherpdgId",15);
 	motherTau->addValue(-15);
 	handler->addObjectVariable("MOTHERTAU",motherTau);
+	*/
+	handler->addObjectVariable("MOTHERTAU",new ObjectVariableDescendantOf("allmc",15,handler));
 
 	ObjectVariableValueInList<int>* isBoson = new ObjectVariableValueInList<int>("pdgId",23);
 	isBoson->addValue(24);
