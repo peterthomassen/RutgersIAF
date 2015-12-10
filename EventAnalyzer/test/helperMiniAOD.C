@@ -1666,24 +1666,15 @@ void setupMCproducts(BaseHandler* handler) {
 	handler->addObjectVariable("TAUPDGID",tauPDGID);
 	handler->addObjectVariable("MOTHERZ",new ObjectVariableDescendantOf("allmc",23,handler));
 	handler->addObjectVariable("MOTHERW",new ObjectVariableDescendantOf("allmc",24,handler));
-	handler->addObjectVariable("MOTHERH",new ObjectVariableDescendantOf("allmc",23,handler));
-	//handler->addObjectVariable("MOTHERZ",new ObjectVariableValue<int>("motherpdgId",23));
-	/*
-	ObjectVariableValueInList<int>* motherBoson = new ObjectVariableValueInList<int>("motherpdgId",23);
-	motherBoson->addValue(24);
-	motherBoson->addValue(-24);
-	motherBoson->addValue(25);
-	*/
+	handler->addObjectVariable("MOTHERH",new ObjectVariableDescendantOf("allmc",25,handler));
 	ObjectVariableCombined* motherBoson = new ObjectVariableCombined("MOTHERZ","MOTHERW",false);
 	motherBoson->addVariable("MOTHERH");
 	handler->addObjectVariable("MOTHERBOSON",motherBoson);
 	
-	/*
-	ObjectVariableValueInList<int>* motherTau = new ObjectVariableValueInList<int>("motherpdgId",15);
-	motherTau->addValue(-15);
-	handler->addObjectVariable("MOTHERTAU",motherTau);
-	*/
 	handler->addObjectVariable("MOTHERTAU",new ObjectVariableDescendantOf("allmc",15,handler));
+
+	handler->addObjectVariable("STATUS1", new ObjectVariableValue<int>("status",1));
+
 
 	ObjectVariableValueInList<int>* isBoson = new ObjectVariableValueInList<int>("pdgId",23);
 	isBoson->addValue(24);
@@ -1697,10 +1688,13 @@ void setupMCproducts(BaseHandler* handler) {
 
 	handler->addProduct("MCELECTRONS","ALLMC");
 	handler->addProductCut("MCELECTRONS","ELECTRONPDGID");
+	handler->addProductCut("MCELECTRONS","isLastCopy");
 	handler->addProduct("MCMUONS","ALLMC");
 	handler->addProductCut("MCMUONS","MUONPDGID");
+	handler->addProductCut("MCMUONS","isLastCopy");
 	handler->addProduct("MCTAUS","ALLMC");
 	handler->addProductCut("MCTAUS","TAUPDGID");
+	handler->addProductCut("MCTAUS","isLastCopy");
 
 	handler->addProduct("MCELECTRONSFROMZ","MCELECTRONS");
 	handler->addProductCut("MCELECTRONSFROMZ","MOTHERZ");
@@ -1709,15 +1703,19 @@ void setupMCproducts(BaseHandler* handler) {
 
 	handler->addProduct("MCELECTRONSFROMBOSON","MCELECTRONS");
 	handler->addProductCut("MCELECTRONSFROMBOSON","MOTHERBOSON");
+	handler->addProductCut("MCELECTRONSFROMBOSON","STATUS1");
 	handler->addProduct("MCMUONSFROMBOSON","MCMUONS");
 	handler->addProductCut("MCMUONSFROMBOSON","MOTHERBOSON");
+	handler->addProductCut("MCMUONSFROMBOSON","STATUS1");
 	handler->addProduct("MCTAUSFROMBOSON","MCTAUS");
 	handler->addProductCut("MCTAUSFROMBOSON","MOTHERBOSON");
 
 	handler->addProduct("MCELECTRONSFROMTAU","MCELECTRONS");
 	handler->addProductCut("MCELECTRONSFROMTAU","MOTHERTAU");
+	handler->addProductCut("MCELECTRONSFROMTAU","STATUS1");
 	handler->addProduct("MCMUONSFROMTAU","MCMUONS");
 	handler->addProductCut("MCMUONSFROMTAU","MOTHERTAU");
+	handler->addProductCut("MCMUONSFROMTAU","STATUS1");
 }
 
 void setupMCvariables(BaseHandler* handler) {
