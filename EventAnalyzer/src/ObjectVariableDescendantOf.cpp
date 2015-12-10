@@ -16,9 +16,15 @@ bool ObjectVariableDescendantOf::calculate(SignatureObject* sigObj)
   bool hasMother = sigObj->getVariable(m_motherIndexVariable,motherIndex);
   if(!hasMother)return false;
   while(abs(motherpdgid) != abs(m_value) && stepCount < m_maxSteps){
+    bool thisVariable = false;
+    bool hasThisVariable = product[motherIndex]->getVariable(getName(),thisVariable);
+    if(hasThisVariable && thisVariable){
+      sigObj->setVariable(getName(),thisVariable);
+      return thisVariable;
+    }
     bool hasVariable = product[motherIndex]->getVariable(m_variable,motherpdgid);
-    hasMother = product[motherIndex]->getVariable(m_motherIndexVariable,motherIndex);
     if(!hasVariable)motherpdgid=0;
+    hasMother = product[motherIndex]->getVariable(m_motherIndexVariable,motherIndex);
     if(!hasMother)break;
     stepCount++;
   }
