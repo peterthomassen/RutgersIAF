@@ -43,7 +43,7 @@ class BaseTreeReader : public TObject{
  protected:
   TTree* m_inTree;
   std::map<TString,std::vector<SignatureObject*> > m_productmap;
-  void clearProducts();
+  virtual void clearProducts();
   virtual void makeProducts() = 0;
 
   std::map<TString,std::vector<int>> m_variable_mapint;

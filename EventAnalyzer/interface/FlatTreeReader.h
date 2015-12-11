@@ -35,7 +35,7 @@ public :
 
  protected:
    void makeProducts();
-
+   void clearProducts();
    void createVariables();
 
    long event_;

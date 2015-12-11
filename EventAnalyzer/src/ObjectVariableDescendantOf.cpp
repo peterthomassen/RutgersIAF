@@ -7,7 +7,6 @@ ClassImp(ObjectVariableDescendantOf)
 
 bool ObjectVariableDescendantOf::calculate(SignatureObject* sigObj)
 {
-
   vector<SignatureObject*> product = m_handler->getProduct(m_productname);
   if(product.size() < 1) return false;
   int motherpdgid = 0;
@@ -26,6 +25,7 @@ bool ObjectVariableDescendantOf::calculate(SignatureObject* sigObj)
     if(!hasVariable)motherpdgid=0;
     hasMother = product[motherIndex]->getVariable(m_motherIndexVariable,motherIndex);
     if(!hasMother)break;
+    if(motherIndex >= (int)product.size()) break;
     stepCount++;
   }
   if(abs(motherpdgid) == abs(m_value)){

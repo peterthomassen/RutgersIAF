@@ -106,3 +106,26 @@ void FlatTreeReader::dumpEventInfo()
 {
 
 }
+
+void FlatTreeReader::clearProducts()
+{
+  map<TString,vector<SignatureObject*> >::iterator iter;
+  while(!m_productmap.empty()){
+    iter = m_productmap.begin();
+    vector<SignatureObject*> product = (*iter).second;
+    if((*iter).first == "ALL"){
+      while(!product.empty()){
+        delete product.back();
+        product.pop_back();
+      }
+    }
+    m_productmap.erase(iter);
+  }
+
+  m_variable_mapint.clear();
+  m_variable_maplong.clear();
+  m_variable_mapdouble.clear();
+  m_variable_mapTString.clear();
+  m_variable_mapbool.clear();
+}
+
