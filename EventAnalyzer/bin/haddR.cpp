@@ -63,8 +63,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		
 		treeFormula = NULL;
 		if(string(treeCut) != "")treeFormula = new TTreeFormula("selection",treeCut,curTree);
-		//treeFormula->SetTree(curTree);
-		
+
 		if(first && curTree->GetEntries() > 0) {
 			outTree->SetTitle(curTree->GetTitle());
 			weights = curTree->GetBranch("WEIGHT");
@@ -194,7 +193,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		for(int j = 0; j < curTree->GetEntries(); ++j) {
 			curTree->GetEntry(j);
 
-			if(treeFormula && treeFormula->EvalInstance() == 0)continue;
+			if(treeFormula && treeFormula->GetNdata() && treeFormula->EvalInstance() == 0)continue;
 			
 			outBits.clear();
 			if(inBits) {
