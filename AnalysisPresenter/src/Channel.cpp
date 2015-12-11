@@ -1,4 +1,5 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
+#include "RutgersIAF/AnalysisPresenter/interface/ChannelCollection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Assembler.h"
 
 #include <assert.h>
@@ -28,6 +29,12 @@ Channel::~Channel() {
 Channel* Channel::bundle(Bundle* bundle, TString missingName) const {
 	assert(bundle);
 	return new Channel(this, bundle, missingName);
+}
+
+void Channel::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
+	ChannelCollection* cc = new ChannelCollection(datacardName.Length() > 0 ? datacardName : this->getName());
+	cc->addChannel(this);
+	cc->datacard(cc->getName(), isData, statFactor, systFactor);
 }
 
 double Channel::get(TString type) const {
