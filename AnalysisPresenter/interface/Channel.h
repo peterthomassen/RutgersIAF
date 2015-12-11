@@ -21,6 +21,8 @@ public:
 	
 	Channel* bundle(Bundle* bundle, TString missingName = "") const;
 	
+	void datacard(TString datacardName = "", bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
+	
 	double get(TString type) const;
 	double get(TString type, TString bundleName) const;
 	TString getName() const;
