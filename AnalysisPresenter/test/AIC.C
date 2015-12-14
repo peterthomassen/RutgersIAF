@@ -31,16 +31,21 @@ void AIC() {
 	////////////////////////
 	Assembler* assembler = new Assembler();
 	init(assembler);
+	
+	//assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
+	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+	//assembler->setMode("noRatioPlot");
+	assembler->setMode("noPhotonSystematics");
+	
 	setupData(assembler);
 	setupBackgroundMC(assembler);
 	//setupBackgroundMC(assembler, false, false);
 	//setupBackgroundDD(assembler, "noTaus");
-	setupBackgroundDD(assembler);
+	setupBackgroundDD(assembler, "", true);
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	prepare(assembler);
 	assembler->process(varexp, selection);
-	
 	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
 	
@@ -58,7 +63,7 @@ void AIC() {
 	assembler->setRange("MET", 0, 50, false);
 	
 	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS.pdf");
-//makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "trilepton mass [GeV]")->SaveAs("../20150730/AIC_MLIGHTLEPTONS.pdf");
+makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "trilepton mass [GeV]")->SaveAs("../nicePlots/AIC_MLIGHTLEPTONS.pdf");
 	assembler->project("MT", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_MT-OFFZ.pdf");
 	assembler->project("MLIGHTLEPTONS*1", true)->plot(false)->SaveAs("AIC_MLIGHTLEPTONS_fine.pdf");
 	assembler->project("NPROMPTINCLUSIVETRACKS", true)->plot(false)->SaveAs("AIC_NPROMPTINCLUSIVETRACKS-OFFZ.pdf");

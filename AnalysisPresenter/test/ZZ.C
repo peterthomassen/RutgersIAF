@@ -26,6 +26,12 @@ void ZZ() {
 	////////////////////////
 	Assembler* assembler = new Assembler();
 	init(assembler);
+	
+	//assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
+	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+	//assembler->setMode("noRatioPlot");
+	assembler->setMode("noZZsystematics");
+	
 	setupData(assembler);
 	setupBackgroundMC(assembler);
 	//setupBackgroundDD(assembler, "justTracks");
@@ -34,7 +40,6 @@ void ZZ() {
 	assembler->setDebug(true);
 	prepare(assembler);
 	assembler->process(varexp, selection);
-	
 	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
 	
@@ -56,8 +61,11 @@ void ZZ() {
 	assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 2, 2);
 	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS.pdf");
-//makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "4L mass [GeV]")->SaveAs("../20150730/ZZ_DYz2MET0to50HT0to200_MLIGHTLEPTONS.pdf");
+makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "4L mass [GeV]")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_MLIGHTLEPTONS.pdf");
 	assembler->project("MLIGHTLEPTONS", true)->print();
+	assembler->setRange("NBJETSCSVM", 1);
+assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_B1.pdf");
+assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ZZ_NGOODJETS.pdf");
 	
 	assembler->setRange("NOSSF", 1, 2);

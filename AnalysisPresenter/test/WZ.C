@@ -30,6 +30,12 @@ void WZ() {
 	////////////////////////
 	Assembler* assembler = new Assembler();
 	init(assembler);
+	
+	//assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
+	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+	//assembler->setMode("noRatioPlot");
+	assembler->setMode("noWZsystematics");
+	
 	setupData(assembler);
 	setupBackgroundMC(assembler, false, false);
 	setupBackgroundDD(assembler, "noTaus", true);
@@ -37,10 +43,6 @@ void WZ() {
 	assembler->setDebug(true);
 	prepare(assembler);
 	assembler->process(varexp, selection);
-	
-	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
-	assembler->getDefaultBundle()->print();
-	assembler->setMode("noRatioPlot");
 	
 	// At this point, we have the multidimensional histogram in memory and can start taking projections (tables, 1d histograms, ...)
 	
