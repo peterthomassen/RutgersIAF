@@ -302,8 +302,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			double weight = treeR->GetW()[i];
 			
 			if(hPileupWeights) {
-				int trueNumInteractions = (int)(treeR->GetVal(m_hn->GetNdimensions() + 6)[i] + 0.5);
-				weight *= hPileupWeights->GetBinContent(trueNumInteractions);
+				int trueNumInteractions = (int)(treeR->GetVal(m_hn->GetNdimensions() + 6)[i]); // don't add 0.5 because we have integer bin boundaries
+				weight *= hPileupWeights->GetBinContent(trueNumInteractions + 1); // 1st bin contains ((int)trueNumInteractions == 0)
 			}
 			
 			// Fill histograms
