@@ -165,6 +165,8 @@ class BaseHandler : virtual public TObject {
 
   int m_lastEntryPrepared;
   int m_currentEntry;
+  
+  bool m_passedHandlerCuts = false;
     
   std::map<int, std::vector<int> > m_goodRunLumi;
   bool m_doRunLumiCheck;

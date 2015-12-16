@@ -260,7 +260,7 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						continue;
 					}
 					
-					if(m_hookFunction && applyHandlerCuts()) {
+					if(m_hookFunction && m_passedHandlerCuts) {
 						if(!(*m_hookFunction)(this, incarnation)) {
 							continue;
 						}
@@ -271,7 +271,7 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 						analyzeEvent();
 					}
 
-					if(applyHandlerCuts()){
+					if(m_passedHandlerCuts){
 					  bool saveEvent = false;
 					  bool isSet = getVariable("WRITEEVENT",saveEvent);
 					  if(m_writer && isSet && saveEvent) {
@@ -894,6 +894,8 @@ bool BaseHandler::prepareEvent()
   m_lastEntryPrepared = m_currentEntry;
 
   calcPhysicsWeight();
+
+  m_passedHandlerCuts = applyHandlerCuts();
 
   return true;
 }
@@ -1631,7 +1633,7 @@ void BaseHandler::analyzeEvent()
     ////////////////////////////
     //Check handler level cuts//
     ////////////////////////////
-    if(applyHandlerCuts()){
+    if(m_passedHandlerCuts){
 
     ////////////////////////////////////////////////////////////
     //Check if it is part of the signature and fill histograms//
