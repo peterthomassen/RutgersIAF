@@ -1162,6 +1162,10 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   EventVariableOSSF* OSSF = new EventVariableOSSF("OSSF","goodMuons","",mZ,zWidth);
   OSSF->addProduct("goodElectrons");
   handler->addEventVariable("OSSF",OSSF);
+
+  EventVariableOSSF* OSSFnoFake = new EventVariableOSSF("OSSFnoFake","goodMuons","NOFAKE",mZ,zWidth, false);
+  OSSFnoFake->addProduct("goodElectrons");
+  handler->addEventVariable("OSSFnoFake",OSSFnoFake);
   
   if(handler->getMode("RA7")) {
     EventVariableOSSF* RA7OSSF = new EventVariableOSSF("RA7OSSF", "goodMuons", "RA7", 91, 15);
@@ -1246,10 +1250,14 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
 
   handler->addEventVariable("MLOWDYCUTLOWPT", new EventVariableInRange<double>("LOWDYLOWPTOSMINMLL",10,1e6));
   
-  EventVariableCombined* writeEvent = handler->getMode("RA7")
-    ? new EventVariableCombined("MLOWDYCUT", "MLOWDYCUT", true, "WRITEEVENT")
-    : new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUT", true, "WRITEEVENT");
-  handler->addEventVariable("WRITEEVENT", writeEvent);
+  if(handler->getMode("singleGoodMuon")) {
+    handler->addEventVariable("WRITEEVENT", new EventVariableInRange<int>("NGOODMUONS", 1, 1e6, "GOODMUON"));
+  } else {
+    EventVariableCombined* writeEvent = handler->getMode("RA7")
+      ? new EventVariableCombined("MLOWDYCUT", "MLOWDYCUT", true, "WRITEEVENT")
+      : new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUT", true, "WRITEEVENT");
+    handler->addEventVariable("WRITEEVENT", writeEvent);
+  }
 
   //Trigger
   handler->addObjectVariable("ETA3",new ObjectVariableInRange<double>("ETA",-3.0,3.0,"ETA3"));
@@ -1718,10 +1726,19 @@ void setupMCproducts(BaseHandler* handler) {
 	handler->addProductCut("MCMUONSFROMTAU","STATUS1");
 }
 
-void setupMCvariables(BaseHandler* handler) {
+void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
 	////////////////////////
 	///MC matched leptons///
 	////////////////////////
+	ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
+	ObjectComparisonMatchDeltaRCharge* mcMatch = new ObjectComparisonMatchDeltaRCharge(0.1,"genParticle");
+	
+	if(doMatching) {
+		handler->addProductComparison("goodElectrons","MCELECTRONSFROMBOSON",mcMatch,false);
+		handler->addProductComparison("goodMuons","MCMUONSFROMBOSON",mcMatch,false);
+		handler->addProductComparison("goodTaus","MCTAUSFROMBOSON",mcMatch,false);
+	}
+
 	handler->addProduct("goodElectronsMatched","goodElectrons");
 	handler->addProduct("goodMuonsMatched","goodMuons");
 
@@ -1731,9 +1748,6 @@ void setupMCvariables(BaseHandler* handler) {
 	handler->addProduct("goodElectronsNotMatched","goodElectrons");
 	handler->addProduct("goodMuonsNotMatched","goodMuons");
 
-
-	ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
-	ObjectComparisonMatchDeltaRCharge* mcMatch = new ObjectComparisonMatchDeltaRCharge(0.1,"genParticle");
 
 	handler->addProductComparison("goodElectronsMatched","MCELECTRONSFROMBOSON",mcMatch,false);
 	handler->addProductComparison("goodMuonsMatched","MCMUONSFROMBOSON",mcMatch,false);
