@@ -3,11 +3,13 @@
  * for all the validation variables.
 
  * Some instructions:
- * - Change the Input-file (line 21; Important: Use exampleValidation.C when creating AnalysisTree!).
- * - Change the name and the collision energy for your sample (line 26f).
- * - You can swith a template sample on and off, swith scaling between input and template on and off and change the template file (line 23f & 29). With template-on, every 1D plot has the input and the template sample distribution.
- * - When you want to plot your own variables (1D, 2D, 3D), just create them in the same way as the others (see 2D & 3D example line 874ff).
- * - You can also change the range for the X-axis in 1D histograms. You have an upper and lower limit (see example line 891ff).
+ * - Change the Input-file (line 24; Important: Use exampleValidation.C and helperValidation.C when creating AnalysisTree!).
+ * - Change the name and the collision energy for your sample (line 29f).
+ * - You can swith a template sample on and off, swith scaling between input and template on and off and change the template file (line 25f & 31). 
+     With template-on, every 1D plot has the input and the template sample distribution.
+ * - When you want to plot your own variables (1D, 2D, 3D), just create them in the same way as the others (see 2D & 3D example line 918ff).
+ * - You can also change the range for the X-axis in 1D histograms. You have an upper and lower limit (see example line 935ff).
+ * - You can write some comments on the first page via TPaveText (line 975).
 */
 
 
@@ -20,11 +22,10 @@
 using namespace std;
 
 void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_package/AnalysisTree/WZto3LNu_all.simulation.root"
-	, Bool_t temp = false
-	, Bool_t scaling = false
+	, Bool_t temp = true
+	, Bool_t scaling = true
 	, TString templateFile = "/cms/data21/heindl/validation_package/AnalysisTree/WZto3LNu_all.simulation.root"
 ) {
-	
 	TString sample = "WZto3LNu";
 	TString energy = "13 TeV";
 	TString templateSample = "WZto3LNu";
@@ -48,106 +49,113 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	std::vector<double> rangeXdown;
 	
 	//electrons
-	variables.push_back("ValMCELECTRONSPT");	
+	variables.push_back("MCELECTRONSPT");	
 	titles.push_back("Generator Electrons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecElectronsPT");	
+	variables.push_back("PTGOODELECTRONS");	
 	titles.push_back("Reconstructed Electrons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSPhi");
+	variables.push_back("MCELECTRONSPhi");
 	titles.push_back("Generator Electrons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecElectronsPhi");
+	variables.push_back("PHIGOODELECTRONS");
 	titles.push_back("Reconstructed Electrons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSEta");
+	variables.push_back("MCELECTRONSEta");
 	titles.push_back("Generator Electrons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecElectronsEta");
+	variables.push_back("ETAGOODELECTRONS");
 	titles.push_back("Reconstructed Electrons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSN");
+	variables.push_back("MCELECTRONSN");
 	titles.push_back("Number of Generator Electrons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecElectronsN");
+	variables.push_back("NGOODELECTRONS");
 	titles.push_back("Number of Reconstructed Electrons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSM");
+	variables.push_back("MCELECTRONSM");
 	titles.push_back("Generator Electrons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecElectronsM");
+	variables.push_back("MGOODELECTRONS");
 	titles.push_back("Reconstructed Electrons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
+	variables.push_back("Mother_MCELECTRONS");
+	titles.push_back("Mother PDG-ID of Generator Electrons");
+	lableX.push_back("PDG-ID");
+	lableY.push_back("");
+	lableZ.push_back("");
+	rangeXup.push_back(0);
+	rangeXdown.push_back(0);	
 	
-	variables.push_back("ValMatchingElectronsPT");	
+	variables.push_back("MatchingElectronsPT");	
 	titles.push_back("Matching Electrons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingElectronsPhi");
+	variables.push_back("MatchingElectronsPhi");
 	titles.push_back("Matching Electrons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingElectronsEta");
+	variables.push_back("MatchingElectronsEta");
 	titles.push_back("Matching Electrons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingElectronsN");
+	variables.push_back("MatchingElectronsN");
 	titles.push_back("Number of Matching Electrons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingElectronsM");
+	variables.push_back("MatchingElectronsM");
 	titles.push_back("Matching Electrons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -155,35 +163,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValMCELECTRONSFromZPT");	
+	variables.push_back("MCELECTRONSFROMZPT");	
 	titles.push_back("Electrons from Z PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromZPhi");
+	variables.push_back("MCELECTRONSFROMZPhi");
 	titles.push_back("Electrons from Z Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromZEta");
+	variables.push_back("MCELECTRONSFROMZEta");
 	titles.push_back("Electrons from Z Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromZN");
+	variables.push_back("MCELECTRONSFROMZN");
 	titles.push_back("Number of Electrons from Z");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromZM");
+	variables.push_back("MCELECTRONSFROMZM");
 	titles.push_back("Electrons from Z Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -191,143 +199,150 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValMCELECTRONSFromWPT");	
+	variables.push_back("MCELECTRONSFROMWPT");	
 	titles.push_back("Electrons from W PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromWPhi");
+	variables.push_back("MCELECTRONSFROMWPhi");
 	titles.push_back("Electrons from W Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromWEta");
+	variables.push_back("MCELECTRONSFROMWEta");
 	titles.push_back("Electrons from W Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromWN");
+	variables.push_back("MCELECTRONSFROMWN");
 	titles.push_back("Number of Electrons from W");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCELECTRONSFromWM");
+	variables.push_back("MCELECTRONSFROMWM");
 	titles.push_back("Electrons from W Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-
+	
 	//muons
-	variables.push_back("ValMCMUONSPT");	
+	variables.push_back("MCMUONSPT");	
 	titles.push_back("Generator Muons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecMuonsPT");	
+	variables.push_back("PTGOODMUONS");	
 	titles.push_back("Reconstructed Muons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSPhi");
+	variables.push_back("MCMUONSPhi");
 	titles.push_back("Generator Muons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecMuonsPhi");
+	variables.push_back("PHIGOODMUONS");
 	titles.push_back("Reconstructed Muons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSEta");
+	variables.push_back("MCMUONSEta");
 	titles.push_back("Generator Muons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecMuonsEta");
+	variables.push_back("ETAGOODMUONS");
 	titles.push_back("Reconstructed Muons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSN");
+	variables.push_back("MCMUONSN");
 	titles.push_back("Number of Generator Muons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecMuonsN");
+	variables.push_back("NGOODMUONS");
 	titles.push_back("Number of Reconstructed Muons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSM");
+	variables.push_back("MCMUONSM");
 	titles.push_back("Generator Muons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecMuonsM");
+	variables.push_back("MGOODMUONS");
 	titles.push_back("Reconstructed Muons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
+	variables.push_back("Mother_MCMUONS");
+	titles.push_back("Mother PDG-ID of Generator Muons");
+	lableX.push_back("PDG-ID");
+	lableY.push_back("");
+	lableZ.push_back("");
+	rangeXup.push_back(0);
+	rangeXdown.push_back(0);	
 	
-	variables.push_back("ValMatchingMuonsPT");	
+	variables.push_back("MatchingMuonsPT");	
 	titles.push_back("Matching Muons PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingMuonsPhi");
+	variables.push_back("MatchingMuonsPhi");
 	titles.push_back("Matching Muons Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingMuonsEta");
+	variables.push_back("MatchingMuonsEta");
 	titles.push_back("Matching Muons Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingMuonsN");
+	variables.push_back("MatchingMuonsN");
 	titles.push_back("Number of Matching Muons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingMuonsM");
+	variables.push_back("MatchingMuonsM");
 	titles.push_back("Matching Muons Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -335,35 +350,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValMCMUONSFromZPT");	
+	variables.push_back("MCMUONSFROMZPT");	
 	titles.push_back("Muons from Z PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromZPhi");
+	variables.push_back("MCMUONSFROMZPhi");
 	titles.push_back("Muons from Z Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromZEta");
+	variables.push_back("MCMUONSFROMZEta");
 	titles.push_back("Muons from Z Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromZN");
+	variables.push_back("MCMUONSFROMZN");
 	titles.push_back("Number of Muons from Z");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromZM");
+	variables.push_back("MCMUONSFROMZM");
 	titles.push_back("Muons from Z Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -371,35 +386,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValMCMUONSFromWPT");	
+	variables.push_back("MCMUONSFROMWPT");	
 	titles.push_back("Muons from W PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromWPhi");
+	variables.push_back("MCMUONSFROMWPhi");
 	titles.push_back("Muons from W Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromWEta");
+	variables.push_back("MCMUONSFROMWEta");
 	titles.push_back("Muons from W Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromWN");
+	variables.push_back("MCMUONSFROMWN");
 	titles.push_back("Number of Muons from W");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCMUONSFromWM");
+	variables.push_back("MCMUONSFROMWM");
 	titles.push_back("Muons from W Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -408,106 +423,113 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXdown.push_back(0);
 	
 	//taus
-	variables.push_back("ValMCTAUSPT");	
+	variables.push_back("MCTAUSPT");	
 	titles.push_back("Generator Taus PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecTausPT");	
+	variables.push_back("PTGOODTAUS");	
 	titles.push_back("Reconstructed Taus PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSPhi");
+	variables.push_back("MCTAUSPhi");
 	titles.push_back("Generator Taus Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecTausPhi");
+	variables.push_back("PHIGOODTAUS");
 	titles.push_back("Reconstructed Taus Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSEta");
+	variables.push_back("MCTAUSEta");
 	titles.push_back("Generator Taus Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecTausEta");
+	variables.push_back("ETAGOODTAUS");
 	titles.push_back("Reconstructed Taus Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSN");
+	variables.push_back("MCTAUSN");
 	titles.push_back("Number of Generator Taus");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecTausN");
+	variables.push_back("NGOODTAUS");
 	titles.push_back("Number of Reconstructed Taus");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSM");
+	variables.push_back("MCTAUSM");
 	titles.push_back("Generator Taus Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValRecTausM");
+	variables.push_back("MGOODTAUS");
 	titles.push_back("Reconstructed Taus Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
+	variables.push_back("Mother_MCTAUS");
+	titles.push_back("Mother PDG-ID of Generator Taus");
+	lableX.push_back("PDG-ID");
+	lableY.push_back("");
+	lableZ.push_back("");
+	rangeXup.push_back(0);
+	rangeXdown.push_back(0);	
 	
-	variables.push_back("ValMatchingTausPT");	
+	variables.push_back("MatchingTausPT");	
 	titles.push_back("Matching Taus PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingTausPhi");
+	variables.push_back("MatchingTausPhi");
 	titles.push_back("Matching Taus Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingTausEta");
+	variables.push_back("MatchingTausEta");
 	titles.push_back("Matching Taus Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingTausN");
+	variables.push_back("MatchingTausN");
 	titles.push_back("Number of Matching Taus");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMatchingTausM");
+	variables.push_back("MatchingTausM");
 	titles.push_back("Matching Taus Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -515,35 +537,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValMCTAUSFromZPT");	
+	variables.push_back("MCTAUSFROMZPT");	
 	titles.push_back("Taus from Z PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromZPhi");
+	variables.push_back("MCTAUSFROMZPhi");
 	titles.push_back("Taus from Z Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromZEta");
+	variables.push_back("MCTAUSFROMZEta");
 	titles.push_back("Taus from Z Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromZN");
+	variables.push_back("MCTAUSFROMZN");
 	titles.push_back("Number of Taus from Z");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromZM");
+	variables.push_back("MCTAUSFROMZM");
 	titles.push_back("Taus from Z Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -551,51 +573,66 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValMCTAUSFromWPT");	
+	variables.push_back("MCTAUSFROMWPT");	
 	titles.push_back("Taus from W PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromWPhi");
+	variables.push_back("MCTAUSFROMWPhi");
 	titles.push_back("Taus from W Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromWEta");
+	variables.push_back("MCTAUSFROMWEta");
 	titles.push_back("Taus from W Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromWN");
+	variables.push_back("MCTAUSFROMWN");
 	titles.push_back("Number of Taus from W");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValMCTAUSFromWM");
+	variables.push_back("MCTAUSFROMWM");
 	titles.push_back("Taus from W Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	
+
 	//dz and dxy
-	variables.push_back("ValMuonsDz");
+	variables.push_back("ElectronsDz");
+	titles.push_back("Electrons dz");		
+	lableX.push_back("dz");
+	lableY.push_back("");
+	lableZ.push_back("");
+	rangeXup.push_back(0);
+	rangeXdown.push_back(0);	
+	variables.push_back("ElectronsDxy");
+	titles.push_back("Electrons dxy");		
+	lableX.push_back("dxy");
+	lableY.push_back("");
+	lableZ.push_back("");
+	rangeXup.push_back(0);
+	rangeXdown.push_back(0);
+	
+	variables.push_back("MuonsDz");
 	titles.push_back("Muons dz");		
 	lableX.push_back("dz");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);	
-	variables.push_back("ValMuonsDxy");
+	variables.push_back("MuonsDxy");
 	titles.push_back("Muons dxy");		
 	lableX.push_back("dxy");
 	lableY.push_back("");
@@ -603,20 +640,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValElectronsDz");
-	titles.push_back("Electrons dz");		
+	variables.push_back("TausDz");
+	titles.push_back("Taus dz");		
 	lableX.push_back("dz");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);	
-	variables.push_back("ValElectronsDxy");
-	titles.push_back("Electrons dxy");		
-	lableX.push_back("dxy");
-	lableY.push_back("");
-	lableZ.push_back("");
-	rangeXup.push_back(0);
-	rangeXdown.push_back(0);
 	
 	variables.push_back("MAXGENDXY");
 	titles.push_back("MAXGENDXY");		
@@ -627,35 +657,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXdown.push_back(0);
 	
 	//top and bottom; Jets
-	variables.push_back("ValTopPT");
+	variables.push_back("MCTopPT");
 	titles.push_back("Top-Quark PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValTopPhi");
+	variables.push_back("MCTopPhi");
 	titles.push_back("Top-Quark Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValTopEta");
+	variables.push_back("MCTopEta");
 	titles.push_back("Top-Quark Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValTopN");
+	variables.push_back("MCTopN");
 	titles.push_back("Number of Top-Quarks");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValTopM");
+	variables.push_back("MCTopM");
 	titles.push_back("Top-Quark Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -663,35 +693,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValBottomPT");
+	variables.push_back("MCBottomPT");
 	titles.push_back("Bottom-Quark PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValBottomPhi");
+	variables.push_back("MCBottomPhi");
 	titles.push_back("Bottom-Quark Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValBottomEta");
+	variables.push_back("MCBottomEta");
 	titles.push_back("Bottom-Quark Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValBottomN");
+	variables.push_back("MCBottomN");
 	titles.push_back("Number of Bottom-Quarks");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValBottomM");
+	variables.push_back("MCBottomM");
 	titles.push_back("Bottom-Quark Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -699,8 +729,22 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValNGOODJETS");
+	variables.push_back("NGOODJETS");
 	titles.push_back("Number of Jets");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	rangeXup.push_back(0);
+	rangeXdown.push_back(0);
+	variables.push_back("PTGOODJETS");
+	titles.push_back("Jet PT");		
+	lableX.push_back("N");
+	lableY.push_back("");
+	lableZ.push_back("");
+	rangeXup.push_back(0);
+	rangeXdown.push_back(0);
+	variables.push_back("ETAGOODJETS");
+	titles.push_back("Jet Eta");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
@@ -722,35 +766,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXdown.push_back(0);
 	
 	//Bosons: Z, W, Higgs
-	variables.push_back("ValZPT");
+	variables.push_back("Z_BOSONPT");
 	titles.push_back("Z-Boson PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValZPhi");
+	variables.push_back("Z_BOSONPhi");
 	titles.push_back("Z-Boson Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValZEta");
+	variables.push_back("Z_BOSONEta");
 	titles.push_back("Z-Boson Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValZN");
+	variables.push_back("Z_BOSONN");
 	titles.push_back("Number of Z-Bosons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValZM");
+	variables.push_back("Z_BOSONM");
 	titles.push_back("Z-Boson Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -758,35 +802,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValWPT");
+	variables.push_back("W_BOSONPT");
 	titles.push_back("W-Boson PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValWPhi");
+	variables.push_back("W_BOSONPhi");
 	titles.push_back("W-Boson Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValWEta");
+	variables.push_back("W_BOSONEta");
 	titles.push_back("W-Boson Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValWN");
+	variables.push_back("W_BOSONN");
 	titles.push_back("Number of W-Bosons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValWM");
+	variables.push_back("W_BOSONM");
 	titles.push_back("W-Boson Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -794,35 +838,35 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	
-	variables.push_back("ValHiggsPT");
+	variables.push_back("Higgs_BOSONPT");
 	titles.push_back("Higgs-Boson PT");		
 	lableX.push_back("PT");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValHiggsPhi");
+	variables.push_back("Higgs_BOSONPhi");
 	titles.push_back("Higgs-Boson Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValHiggsEta");
+	variables.push_back("Higgs_BOSONEta");
 	titles.push_back("Higgs-Boson Eta");		
 	lableX.push_back("Eta");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValHiggsN");
+	variables.push_back("Higgs_BOSONN");
 	titles.push_back("Number of Higgs-Bosons");		
 	lableX.push_back("N");
 	lableY.push_back("");
 	lableZ.push_back("");
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
-	variables.push_back("ValHiggsM");
+	variables.push_back("Higgs_BOSONM");
 	titles.push_back("Higgs-Boson Mass");		
 	lableX.push_back("M");
 	lableY.push_back("");
@@ -873,7 +917,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 
 	//your own plots, e.g:
 	//2D:
-	/*variables.push_back("ValMCTAUSEta:ValMCTAUSPhi");
+	/*variables.push_back("MCMUONSEta:MCMUONSPhi");
 	titles.push_back("Generator Taus Eta vs Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
@@ -881,7 +925,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	//3D:
-	variables.push_back("ValMCTAUSPT:ValMCTAUSEta:ValMCTAUSPhi");
+	variables.push_back("MCMUONSPT:MCMUONSEta:MCMUONSPhi");
 	titles.push_back("Generator Taus PT vs Eta vs Phi");		
 	lableX.push_back("Phi");
 	lableY.push_back("Eta");
@@ -889,7 +933,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	rangeXup.push_back(0);
 	rangeXdown.push_back(0);
 	//X-axis range:
-	variables.push_back("ValMCELECTRONSPhi");
+	variables.push_back("MCMUONSPhi");
 	titles.push_back("Generator Electrons Phi (Zoom)");		
 	lableX.push_back("Phi");
 	lableY.push_back("");
@@ -922,6 +966,20 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 	
 	//Draw histograms in one pdf; identify 1D, 2D or 3D plots	
 	TCanvas* canvas = new TCanvas("canvas");
+	
+	TPaveText *FirstPage1=new TPaveText(.05,.7,.95,.9,"NDC");
+	FirstPage1->AddText("MC validation of " + sample + " (" + energy + ")");
+	FirstPage1->Draw();
+	TPaveText *FirstPage2=new TPaveText(.05,.1,.95,.4,"NDC");
+	FirstPage2->AddText("Comments:");	
+	FirstPage2->AddText("...");
+	if (temp && !scaling) {FirstPage2->AddText("Template Sample: " + templateSample);}
+	if (temp && scaling) {FirstPage2->AddText("Template Sample: " + templateSample + " (scaled)");}
+	if (temp) {FirstPage2->AddText(sample + ": blue; " + templateSample + ": red");}
+	FirstPage2->Draw();
+	canvas->Print("validation_" + sample + ".pdf(");
+	canvas->Clear();
+	
 	canvas->Divide(2,2);
 	int n_plot = 0;
 	
@@ -963,94 +1021,8 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 		cout << "Histogram " << i+1 << "/" << variablesFiltered.size() << endl;
 		if (n_dim<0 || n_dim>2) {cout << "*** Hist " << variablesFiltered[i] << " error: wrong dimensions for Hist ***" << endl; break;}
 		
-		//begin pdf
-		if (i<4) {
-			if (n_dim==0) {
-				n_plot++;
-				canvas->cd(n_plot);
-				THStack *tempStack = new THStack("tempStack",titlesFiltered[i]);
-				if(rangeX == 0) {treeR->Draw(Draw1);}
-				else {treeR->Draw(Draw2);}
-				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
-				if(htemp1) {
-					tempStack->Add(htemp1);
-					if (temp && treeT->GetEntries(variablesFiltered[i]) != 0) {
-						if(rangeX == 0) {treeT->Draw(DrawT1);}
-						else {treeT->Draw(DrawT2);}
-						TH1D *htemp1T = (TH1D*)gPad->GetPrimitive("htempT");
-						htemp1T->SetLineColor(34);
-						if (scaling) {htemp1T->Scale(htemp1->GetEntries()/htemp1T->GetEntries());}
-						tempStack->Add(htemp1T);
-					}
-					tempStack->Draw("nostack");
-					tempStack->GetYaxis()->SetTitle(lableYFiltered[i]);
-					tempStack->GetXaxis()->SetTitle(lableXFiltered[i]);
-					
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
-					Info->AddText(sample + " (" + energy + ")");
-					Info->AddText("CMS Simulation");
-					if (temp) {Info->AddText("Template: " + templateSample);}
-					Info->Draw();
-					
-					if (n_plot==4) {
-						canvas->Print("validation_" + sample + ".pdf("); n_plot=0;
-						canvas->Clear("D");
-					}
-				} 
-				else {cout << "*** htemp1 error: " << variablesFiltered[i] << " ***" << endl;}
-			}
-			if (n_dim==1) {
-				n_plot++;
-				canvas->cd(n_plot);
-				treeR->Draw(variablesFiltered[i],"","COLZ"); 
-				TH2D *htemp2 = (TH2D*)gPad->GetPrimitive("htemp");
-				if(htemp2) {
-					htemp2->Draw("COLZ");
-					htemp2->SetTitle(titlesFiltered[i]);
-					htemp2->GetXaxis()->SetTitle(lableXFiltered[i]);
-					htemp2->GetYaxis()->SetTitle(lableYFiltered[i]);
-					htemp2->GetZaxis()->SetTitle(lableZFiltered[i]);
-					
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
-					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " (" + energy + ")");
-					Info->Draw();
-					
-					if (n_plot==4) {
-						canvas->Print("validation_" + sample + ".pdf("); n_plot=0;
-						canvas->Clear("D");
-					}
-				} 
-				else {cout << "*** htemp2 error: " << variablesFiltered[i] << " ***" << endl;}
-			}
-			if (n_dim==2) {
-				n_plot++;
-				canvas->cd(n_plot);
-				treeR->Draw(variablesFiltered[i],"","ISO"); 
-				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
-				if(htemp3) {
-					htemp3->Draw("ISO");
-					htemp3->SetTitle(titlesFiltered[i]);
-					htemp3->GetXaxis()->SetTitle(lableXFiltered[i]);
-					htemp3->GetYaxis()->SetTitle(lableYFiltered[i]);
-					htemp3->GetZaxis()->SetTitle(lableZFiltered[i]);
-					
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
-					Info->AddText("CMS Simulation");
-					Info->AddText(sample + " (" + energy + ")");
-					Info->Draw();
-					
-					if (n_plot==4) {
-						canvas->Print("validation_" + sample + ".pdf("); n_plot=0;
-						canvas->Clear("D");
-					}
-				} 
-				else {cout << "*** htemp3 error: " << variablesFiltered[i] << " ***" << endl;}
-			}
-		}
-		
 		//mid of pdf
-		if (i>3 && i<4*fullPages) {
+		if (i<4*fullPages) {
 			if (n_dim==0) {
 				n_plot++;
 				canvas->cd(n_plot);
@@ -1058,13 +1030,14 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 				if(rangeX == 0) {treeR->Draw(Draw1);}
 				else {treeR->Draw(Draw2);}
 				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
+				htemp1->SetLineColor(4);
 				if(htemp1) {
 					tempStack->Add(htemp1);
 					if (temp && treeT->GetEntries(variablesFiltered[i]) != 0) {
 						if(rangeX == 0) {treeT->Draw(DrawT1);}
 						else {treeT->Draw(DrawT2);}
 						TH1D *htemp1T = (TH1D*)gPad->GetPrimitive("htempT");
-						htemp1T->SetLineColor(34);
+						htemp1T->SetLineColor(46);
 						if (scaling) {htemp1T->Scale(htemp1->GetEntries()/htemp1T->GetEntries());}
 						tempStack->Add(htemp1T);
 					}
@@ -1079,7 +1052,8 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					Info->Draw();
 					
 					if (n_plot==4) {
-						canvas->Print("validation_" + sample + ".pdf"); n_plot=0;
+						canvas->Print("validation_" + sample + ".pdf"); 
+						n_plot=0;
 						canvas->Clear("D");
 					}
 				} 
@@ -1103,7 +1077,8 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					Info->Draw();
 					
 					if (n_plot==4) {
-						canvas->Print("validation_" + sample + ".pdf"); n_plot=0;
+						canvas->Print("validation_" + sample + ".pdf"); 
+						n_plot=0;
 						canvas->Clear("D");
 					}
 				} 
@@ -1112,7 +1087,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 			if (n_dim==2) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variablesFiltered[i],"","ISO"); 
+				treeR->Draw(variablesFiltered[i],"","LEGO"); 
 				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
 				if(htemp3) {
 					htemp3->Draw("ISO");
@@ -1127,7 +1102,8 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					Info->Draw();
 					
 					if (n_plot==4) {
-						canvas->Print("validation_" + sample + ".pdf"); n_plot=0;
+						canvas->Print("validation_" + sample + ".pdf"); 
+						n_plot=0;
 						canvas->Clear("D");
 					}
 				} 
@@ -1144,13 +1120,14 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 				if(rangeX == 0) {treeR->Draw(Draw1);}
 				else {treeR->Draw(Draw2);}
 				TH1D *htemp1 = (TH1D*)gPad->GetPrimitive("htemp");
+				htemp1->SetLineColor(4);
 				if(htemp1) {
 					tempStack->Add(htemp1);
 					if (temp && treeT->GetEntries(variablesFiltered[i]) != 0) {
 						if(rangeX == 0) {treeT->Draw(DrawT1);}
 						else {treeT->Draw(DrawT2);}
 						TH1D *htemp1T = (TH1D*)gPad->GetPrimitive("htempT");
-						htemp1T->SetLineColor(34);
+						htemp1T->SetLineColor(46);
 						if (scaling) {htemp1T->Scale(htemp1->GetEntries()/htemp1T->GetEntries());}
 						tempStack->Add(htemp1T);
 					}
@@ -1198,7 +1175,7 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 			if (n_dim==2) {
 				n_plot++;
 				canvas->cd(n_plot);
-				treeR->Draw(variablesFiltered[i],"","ISO"); 
+				treeR->Draw(variablesFiltered[i],"","LEGO"); 
 				TH3D *htemp3 = (TH3D*)gPad->GetPrimitive("htemp");
 				if(htemp3) {
 					htemp3->Draw("ISO");
