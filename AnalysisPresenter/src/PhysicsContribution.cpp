@@ -38,7 +38,9 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 	}
 	//m_MC = treeR->GetBranch("WEIGHT");
 	m_MC = (type != "data" && type != "backgroundDD");
-	m_weight = treeR->GetWeight();
+	m_lumi = isMC()
+		? (1. / lumiOrXsec / treeR->GetWeight())
+		: lumiOrXsec;
 	delete treeR;
 	f.Close();
 	
@@ -49,10 +51,6 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 		cout << "was processing " << m_filename << "#" << m_treeRname << endl;
 		throw std::runtime_error("MC tree does not have a WEIGHT branch");
 	}
-	
-	m_lumi = isMC()
-		? (1. / lumiOrXsec / m_weight)
-		: lumiOrXsec;
 }
 
 PhysicsContribution::~PhysicsContribution() {
@@ -65,11 +63,30 @@ void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
 		return;
 	}
 	
+	assert(m_uncertaintyMap.find(name) == m_uncertaintyMap.end());
+	
 	if(m_flatUncertaintyMap.find(name) != m_flatUncertaintyMap.end()) {
 		cout << "Warning: Changing flat uncertainty " << name << " from " << m_flatUncertaintyMap[name] << " to " << relErr << endl;
 		m_flatUncertaintyMap[name] = relErr;
 	} else {
 		m_flatUncertaintyMap.insert(make_pair(name, relErr));
+	}
+}
+
+void PhysicsContribution::addRelativeUncertainty(TString name, TString uncertaintyExpression) {
+	if(isData()) {
+		return;
+	}
+	
+	assert(m_flatUncertaintyMap.find(name) == m_flatUncertaintyMap.end());
+	
+	auto pair = make_pair(uncertaintyExpression, (THnBase*)(0));
+	
+	if(m_uncertaintyMap.find(name) != m_uncertaintyMap.end()) {
+		cout << "Warning: Changing uncertainty " << name << " from " << m_uncertaintyMap[name].first << " to " << pair.first << endl;
+		m_uncertaintyMap[name] = pair;
+	} else {
+		m_uncertaintyMap.insert(make_pair(name, pair));
 	}
 }
 
@@ -93,8 +110,8 @@ bool PhysicsContribution::addVetoEvent(std::string vetoString) {
 	return result.second;
 }
 
-void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
-	if(!hIn) {
+void PhysicsContribution::applyFlatUncertainty(TString name) {
+	if(!m_hn) {
 		throw std::runtime_error("Null histogram given");
 	}
 	
@@ -102,33 +119,19 @@ void PhysicsContribution::applyRelativeUncertainty(THnBase* hIn, TString name) {
 		throw std::runtime_error("Could not find requested flat uncertainty");
 	}
 	
-	if(hIn->GetEntries() == 0) {
+	if(m_hn->GetEntries() == 0) {
 		return;
 	}
 	
-	THnBase* h = (THnBase*)hIn->Clone(name);
+	THnBase* h = (THnBase*)m_hn->Clone(name);
 	h->CalculateErrors(false);
-	for(int i = 0; i <= h->GetNbins() + 1; ++i) {
-		h->SetBinContent(i, m_flatUncertaintyMap[name] * h->GetBinContent(i));
-		h->SetBinError(i, 0);
-	}
-	
-	applyUncertainty(name, h);
-}
-
-void PhysicsContribution::applyUncertainty(TString name, THnBase* h) {
-	if(!h || !m_hn) {
-		throw std::runtime_error("Histograms not ready");
-	}
-	if(h->GetNbins() != m_hn->GetNbins()) {
-		throw std::runtime_error("Number of bins in uncertainty histogram does not match");
-	}
+	h->Scale(m_flatUncertaintyMap[name]);
 	
 	if(m_uncertaintyMap.find(name) != m_uncertaintyMap.end()) {
 		cout << "Warning: Overwriting histogram for uncertainty " << name << endl;
-		m_uncertaintyMap[name] = h;
+		m_uncertaintyMap[name].second = h;
 	} else {
-		m_uncertaintyMap.insert(make_pair(name, h));
+		m_uncertaintyMap.insert(make_pair(name, make_pair("", h)));
 	}
 }
 
@@ -140,6 +143,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	if(m_nominalWeight.Length() > 0) {
 		m_hnAbs = (THnBase*)hn->Clone();
 		m_hnAbs->Reset();
+	}
+	for(auto &uncertainty : m_uncertaintyMap) {
+		uncertainty.second.second = (THnBase*)hn->Clone(uncertainty.first);
+		uncertainty.second.second->Reset();
+		uncertainty.second.second->CalculateErrors(false);
 	}
 	
 	cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
@@ -258,6 +266,17 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		varexpFull += ":TrueNumInteractions[0]";
 	}
 	
+	int uncertaintyOffset = m_hn->GetNdimensions() + 6 + (bool)hPileupWeights;
+	
+	std::vector<TString> uncertaintyNames;
+	for(const auto &uncertainty : m_uncertaintyMap) {
+		uncertaintyNames.push_back(uncertainty.first);
+	}
+	
+	for(const auto uncertaintyName : uncertaintyNames) {
+		varexpFull += TString(":") + m_uncertaintyMap[uncertaintyName].first;
+	}
+	
 	if(m_vetoEvents.size() > 0) {
 		cout << "Notice: " << m_vetoEvents.size() << " events in veto list" << endl;
 	}
@@ -315,6 +334,12 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			}
 			Long64_t bin = m_hn->Fill(x, weight);
 			
+			// Fill uncertainties
+			for(size_t l = 0; l < uncertaintyNames.size(); ++l) {
+				double uncertainty = treeR->GetVal(uncertaintyOffset + l)[i];
+				m_uncertaintyMap[uncertaintyNames[l]].second->Fill(x, weight * uncertainty);
+			}
+			
 			// Write down event and run number, lumi section and fake incartion
 			if(bin >= (Long64_t)m_metadata.size()) {
 				m_metadata.push_back(std::vector<metadata_t>());
@@ -334,7 +359,14 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	cout << endl;
 	
 	for(auto &flatUncertainty : m_flatUncertaintyMap) {
-		applyRelativeUncertainty(m_hn, flatUncertainty.first);
+		applyFlatUncertainty(flatUncertainty.first);
+	}
+	
+	for(auto &uncertainty : m_uncertaintyMap) {
+		auto h = uncertainty.second.second;
+		for(int i = 0; i <= h->GetNbins() + 1; ++i) {
+			h->SetBinError(i, 0);
+		}
 	}
 	
 	return m_hn;
@@ -460,8 +492,8 @@ TString PhysicsContribution::getSelectionString() const {
 	return "(" + m_selection + ") * (" + rangeString + ")";
 }
 
-double PhysicsContribution::getWeight() {
-	return m_weight;
+std::map<TString, std::pair<TString, THnBase*>> PhysicsContribution::getUncertaintyMap() const {
+	return m_uncertaintyMap;
 }
 
 bool PhysicsContribution::isMC() const {
@@ -476,7 +508,7 @@ void PhysicsContribution::print(int level) const {
 BaseBundleProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow) const {
 	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
 	
-	PhysicsContributionProjection* projection = new PhysicsContributionProjection(this, varName, &m_uncertaintyMap, zerostat);
+	PhysicsContributionProjection* projection = new PhysicsContributionProjection(this, varName, zerostat);
 	
 	if(binForOverflow) {
 		projection->incorporateOverflow();
@@ -562,7 +594,7 @@ bool PhysicsContribution::setRange(const char* name, double lo, double hi, bool 
 		((TAxis*)m_hnAbs->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	for(auto &uncertainty : m_uncertaintyMap) {
-		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+		((TAxis*)uncertainty.second.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
 	return true;
@@ -583,7 +615,7 @@ bool PhysicsContribution::setRange(const char* name, double lo) {
 		((TAxis*)m_hnAbs->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	for(auto &uncertainty : m_uncertaintyMap) {
-		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
+		((TAxis*)uncertainty.second.second->GetListOfAxes()->FindObject(name))->SetRange(first, last);
 	}
 	
 	return true;
@@ -601,7 +633,7 @@ bool PhysicsContribution::setRange(const char* name) {
 		((TAxis*)m_hnAbs->GetListOfAxes()->FindObject(name))->SetRange();
 	}
 	for(auto &uncertainty : m_uncertaintyMap) {
-		((TAxis*)uncertainty.second->GetListOfAxes()->FindObject(name))->SetRange();
+		((TAxis*)uncertainty.second.second->GetListOfAxes()->FindObject(name))->SetRange();
 	}
 	
 	return true;
@@ -613,7 +645,7 @@ bool PhysicsContribution::setRange() {
 		m_hnAbs->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
 	}
 	for(auto &uncertainty : m_uncertaintyMap) {
-		uncertainty.second->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
+		uncertainty.second.second->GetListOfAxes()->R__FOR_EACH(TAxis, SetRange)();
 	}
 	
 	return true;
@@ -629,7 +661,7 @@ void PhysicsContribution::setRanges(std::vector<std::pair<int, int>> ranges) {
 			TAxis* axis = (TAxis*)hn->GetListOfAxes()->At(i);
 			axis->SetRange(ranges[i].first, ranges[i].second);
 			for(auto &uncertainty : m_uncertaintyMap) {
-				axis = (TAxis*)uncertainty.second->GetListOfAxes()->At(i);
+				axis = (TAxis*)uncertainty.second.second->GetListOfAxes()->At(i);
 				axis->SetRange(ranges[i].first, ranges[i].second);
 			}
 		}

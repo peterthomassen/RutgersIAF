@@ -14,7 +14,7 @@ class PhysicsContributionProjection : public BaseBundleProjection {
 
 public:
 	PhysicsContributionProjection();
-	PhysicsContributionProjection(const PhysicsContribution*, const char* varName, const std::map<TString, THnBase*>* uncertaintyMap = 0, const double zerostat = 0.);
+	PhysicsContributionProjection(const PhysicsContribution*, const char* varName, const double zerostat = 0.);
 	virtual ~PhysicsContributionProjection();
 	
 	void scale(const double scale);

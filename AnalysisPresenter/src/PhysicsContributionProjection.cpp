@@ -18,7 +18,7 @@ PhysicsContributionProjection::PhysicsContributionProjection() {
 	/* no-op */
 }
 
-PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContribution* contribution, const char* varName, const std::map<TString, THnBase*>* uncertaintyMap, const double zerostat) : BaseBundleProjection(contribution, varName) {
+PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContribution* contribution, const char* varName, const double zerostat) : BaseBundleProjection(contribution, varName) {
 	TAxis* axis = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(varName);
 	if(!axis) {
 		cerr << "Could not find axis " << varName << endl;
@@ -59,12 +59,10 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 		}
 	}
 	
-	if(uncertaintyMap) {
-		for(auto &uncertainty : *uncertaintyMap) {
-			TH1D* hProjection = uncertainty.second->Projection(dim, "E");
-			hProjection->SetName(uncertainty.second->GetName());
-			m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
-		}
+	for(auto &uncertainty : contribution->getUncertaintyMap()) {
+		TH1D* hProjection = uncertainty.second.second->Projection(dim, "E");
+		hProjection->SetName(uncertainty.first);
+		m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
 	}
 	
 	m_contributions.insert(contribution);

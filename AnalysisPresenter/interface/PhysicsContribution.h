@@ -30,6 +30,7 @@ public:
 	virtual ~PhysicsContribution();
 	
 	void addFlatUncertainty(TString, double);
+	void addRelativeUncertainty(TString, TString);
 	void addWeight(TString weight, double normalization = 1.0);
 	bool addVetoEvent(std::string vetoString);
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, TH1D* hPileup = 0);
@@ -40,7 +41,7 @@ public:
 	double getLumi() const;
 	std::set<PhysicsContribution::metadata_t> getMeta() const;
 	TString getSelectionString() const;
-	double getWeight();
+	std::map<TString, std::pair<TString, THnBase*>> getUncertaintyMap() const;
 	
 	bool isMC() const;
 	
@@ -53,8 +54,7 @@ public:
 	void setNominalWeight(TString);
 
 protected:
-	void applyRelativeUncertainty(THnBase*, TString);
-	void applyUncertainty(TString, THnBase*);
+	void applyFlatUncertainty(TString);
 	
 	bool setRange(const char*, double, double, bool = true);
 	bool setRange(const char*, double);
@@ -77,7 +77,6 @@ private:
 	bool m_unordered;
 	
 	TString m_nominalWeight;
-	double m_weight = 0;
 	
 	THnBase* m_hn = 0;
 	THnBase* m_hnAbs = 0;
@@ -88,7 +87,7 @@ private:
 	std::map<TString, TString> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
 	std::map<TString, TString> m_rangeStrings;
-	std::map<TString, THnBase*> m_uncertaintyMap;
+	std::map<TString, std::pair<TString, THnBase*>> m_uncertaintyMap;
 	std::vector<TString> m_weights;
 	std::unordered_set<std::string> m_vetoEvents;
 	
