@@ -8,6 +8,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include "THnBase.h"
+#include "TLeaf.h"
 #include "TTree.h"
 
 #include "RutgersIAF/AnalysisPresenter/interface/BaseBundleProjection.h"
@@ -56,6 +57,10 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 PhysicsContribution::~PhysicsContribution() {
 	delete m_hn;
 	delete m_hnAbs;
+	
+	for(auto &uncertainty : m_uncertaintyMap) {
+		delete uncertainty.second.second;
+	}
 }
 
 void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
@@ -64,6 +69,7 @@ void PhysicsContribution::addFlatUncertainty(TString name, double relErr) {
 	}
 	
 	assert(m_uncertaintyMap.find(name) == m_uncertaintyMap.end());
+	assert(m_variationMap.find(name) == m_variationMap.end());
 	
 	if(m_flatUncertaintyMap.find(name) != m_flatUncertaintyMap.end()) {
 		cout << "Warning: Changing flat uncertainty " << name << " from " << m_flatUncertaintyMap[name] << " to " << relErr << endl;
@@ -79,6 +85,7 @@ void PhysicsContribution::addRelativeUncertainty(TString name, TString uncertain
 	}
 	
 	assert(m_flatUncertaintyMap.find(name) == m_flatUncertaintyMap.end());
+	assert(m_variationMap.find(name) == m_variationMap.end());
 	
 	auto pair = make_pair(uncertaintyExpression, (THnBase*)(0));
 	
@@ -86,6 +93,28 @@ void PhysicsContribution::addRelativeUncertainty(TString name, TString uncertain
 		cout << "Warning: Changing uncertainty " << name << " from " << m_uncertaintyMap[name].first << " to " << pair.first << endl;
 		m_uncertaintyMap[name] = pair;
 	} else {
+		m_uncertaintyMap.insert(make_pair(name, pair));
+	}
+}
+
+void PhysicsContribution::addVariation(TString name, std::pair<TString, TString> mapping) {
+	if(isData()) {
+		return;
+	}
+	
+	assert(m_flatUncertaintyMap.find(name) == m_flatUncertaintyMap.end());
+	assert(m_uncertaintyMap.find(name) == m_uncertaintyMap.end() || m_uncertaintyMap[name].first == "");
+	
+	assert((m_uncertaintyMap.find(name) != m_uncertaintyMap.end()) == (m_variationMap.find(name) != m_variationMap.end()));
+	
+	auto pair = make_pair("", (THnBase*)(0));
+	
+	if(m_uncertaintyMap.find(name) != m_uncertaintyMap.end()) {
+		cout << "Warning: Changing variation " << name << endl;
+		m_variationMap[name] = mapping;
+		m_uncertaintyMap[name] = pair;
+	} else {
+		m_variationMap.insert(make_pair(name, mapping));
 		m_uncertaintyMap.insert(make_pair(name, pair));
 	}
 }
@@ -144,20 +173,80 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		m_hnAbs = (THnBase*)hn->Clone();
 		m_hnAbs->Reset();
 	}
+	
 	for(auto &uncertainty : m_uncertaintyMap) {
+		delete uncertainty.second.second;
 		uncertainty.second.second = (THnBase*)hn->Clone(uncertainty.first);
 		uncertainty.second.second->Reset();
 		uncertainty.second.second->CalculateErrors(false);
 	}
 	
-	cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
 	TFile f(m_filename);
 	if(f.IsZombie()) {
 		throw std::runtime_error("couldn't open contribution file");
 	}
 	TTree* treeR = (TTree*)f.Get(m_treeRname);
-	assert(treeR);
 	treeR->SetWeight(1);
+	
+	TH1D* hPileupWeights = 0;
+	TH1D* hPileupMC = (TH1D*)f.Get("noCutSignature_TrueNumInteractions");
+	if(isMC() && hPileup && hPileupMC) {
+		hPileupWeights = (TH1D*)hPileup->Clone();
+		hPileupWeights->Scale(1./hPileupWeights->Integral());
+		hPileupMC->Scale(1./hPileupMC->Integral());
+		hPileupWeights->Divide(hPileupMC);
+	}
+	
+	cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
+	fillContentVariation(treeR, m_hn, varexp, selection, scale, hPileupWeights);
+	
+	for(auto &pair : m_variationMap) {
+		TString orgBranchName = pair.second.first;
+		TString tmpBranchName = TString("_") + orgBranchName;
+		TString variationExpr = pair.second.second;
+		
+		cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb), " << pair.first << " variation (" << orgBranchName << " --> " << variationExpr << ")" << endl;
+		
+		assert(treeR->GetBranch(orgBranchName));
+		
+		treeR->GetBranch(orgBranchName)->SetTitle(tmpBranchName);
+		treeR->GetBranch(orgBranchName)->SetName(tmpBranchName);
+		treeR->GetLeaf(orgBranchName)->SetTitle(tmpBranchName);
+		treeR->GetLeaf(orgBranchName)->SetName(tmpBranchName);
+		treeR->SetAlias(orgBranchName, variationExpr);
+		
+		fillContentVariation(treeR, m_uncertaintyMap[pair.first].second, varexp, selection, scale, hPileupWeights);
+		
+		treeR->GetListOfAliases()->Remove(treeR->GetListOfAliases()->FindObject(orgBranchName));
+		treeR->GetBranch(tmpBranchName)->SetTitle(orgBranchName);
+		treeR->GetBranch(tmpBranchName)->SetName(orgBranchName);
+		treeR->GetLeaf(tmpBranchName)->SetTitle(orgBranchName);
+		treeR->GetLeaf(tmpBranchName)->SetName(orgBranchName);
+	}
+	
+	delete hPileupWeights;
+	delete hPileupMC;
+	delete treeR;
+	f.Close();
+	
+	for(auto &flatUncertainty : m_flatUncertaintyMap) {
+		applyFlatUncertainty(flatUncertainty.first);
+	}
+	
+	for(auto &uncertainty : m_uncertaintyMap) {
+		auto h = uncertainty.second.second;
+		for(int i = 0; i <= h->GetNbins() + 1; ++i) {
+			h->SetBinError(i, 0);
+		}
+	}
+	
+	return m_hn;
+}
+
+THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, std::string varexp, TString selection, double scale, TH1D* hPileupWeights) {
+	assert(treeR);
+	
+	bool variation = (hn != m_hn);
 	
 	if(selection == "") {
 		selection = "1";
@@ -227,15 +316,6 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	if(m_debug) cout << selection << endl;
 	
-	TH1D* hPileupWeights = 0;
-	TH1D* hPileupMC = (TH1D*)f.Get("noCutSignature_TrueNumInteractions");
-	if(isMC() && hPileup && hPileupMC) {
-		hPileupWeights = (TH1D*)hPileup->Clone();
-		hPileupWeights->Scale(1./hPileupWeights->Integral());
-		hPileupMC->Scale(1./hPileupMC->Integral());
-		hPileupWeights->Divide(hPileupMC);
-	}
-	
 	int step = 10000;
 	int n = treeR->GetEntries();
 	
@@ -251,14 +331,14 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	m_scale = scale;
 	cout << "scale: " << m_scale << endl;
 	
-	Double_t x[m_hn->GetNdimensions()];
+	Double_t x[hn->GetNdimensions()];
 	std::string varexpIncarnation = treeR->GetListOfBranches()->FindObject("fakeIncarnation")
 		? "fakeIncarnation[0]"
 		: ((m_type == "backgroundDD") ? "Entry$" : "0");
 	
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s:Entry$", varexp.c_str(), varexpIncarnation.c_str());
 	
-	varexpFull += (m_hnAbs)
+	varexpFull += (!variation && m_hnAbs)
 		? TString(":") + m_nominalWeight
 		: TString(":1");
 	
@@ -266,15 +346,21 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		varexpFull += ":TrueNumInteractions[0]";
 	}
 	
-	int uncertaintyOffset = m_hn->GetNdimensions() + 6 + (bool)hPileupWeights;
-	
+	int uncertaintyOffset = 0;
 	std::vector<TString> uncertaintyNames;
-	for(const auto &uncertainty : m_uncertaintyMap) {
-		uncertaintyNames.push_back(uncertainty.first);
-	}
-	
-	for(const auto uncertaintyName : uncertaintyNames) {
-		varexpFull += TString(":") + m_uncertaintyMap[uncertaintyName].first;
+	if(!variation) {
+		uncertaintyOffset = hn->GetNdimensions() + 6 + (bool)hPileupWeights;
+		
+		for(const auto &uncertainty : m_uncertaintyMap) {
+			if(uncertainty.second.first == "") {
+				continue;
+			}
+			uncertaintyNames.push_back(uncertainty.first);
+		}
+		
+		for(const auto uncertaintyName : uncertaintyNames) {
+			varexpFull += TString(":") + m_uncertaintyMap[uncertaintyName].first;
+		}
 	}
 	
 	if(m_vetoEvents.size() > 0) {
@@ -301,11 +387,11 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		
 		for(int i = 0; i < nSelected; ++i) {
 			// Extract metadata
-			long event = treeR->GetVal(m_hn->GetNdimensions() + 0)[i] + 0.5;
-			int run = treeR->GetVal(m_hn->GetNdimensions() + 1)[i] + 0.5;
-			int lumi = treeR->GetVal(m_hn->GetNdimensions() + 2)[i] + 0.5;
-			int fakeIncarnation = treeR->GetVal(m_hn->GetNdimensions() + 3)[i] + 0.5;
-			long entry = treeR->GetVal(m_hn->GetNdimensions() + 4)[i] + 0.5;
+			long event = treeR->GetVal(hn->GetNdimensions() + 0)[i] + 0.5;
+			int run = treeR->GetVal(hn->GetNdimensions() + 1)[i] + 0.5;
+			int lumi = treeR->GetVal(hn->GetNdimensions() + 2)[i] + 0.5;
+			int fakeIncarnation = treeR->GetVal(hn->GetNdimensions() + 3)[i] + 0.5;
+			long entry = treeR->GetVal(hn->GetNdimensions() + 4)[i] + 0.5;
 			
 			// Skip vetoed events
 			std::string vetoString = TString::Format("%ld:%d:%d", event, run, lumi).Data();
@@ -315,61 +401,51 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 			}
 			
 			// Get variable values and weight
-			for(Int_t j = 0; j < m_hn->GetNdimensions(); ++j) {
+			for(Int_t j = 0; j < hn->GetNdimensions(); ++j) {
 				x[j] = treeR->GetVal(j)[i];
 			} 
 			double weight = treeR->GetW()[i];
 			
 			if(hPileupWeights) {
-				int trueNumInteractions = (int)(treeR->GetVal(m_hn->GetNdimensions() + 6)[i]); // don't add 0.5 because we have integer bin boundaries
+				int trueNumInteractions = (int)(treeR->GetVal(hn->GetNdimensions() + 6)[i]); // don't add 0.5 because we have integer bin boundaries
 				weight *= hPileupWeights->GetBinContent(trueNumInteractions + 1); // 1st bin contains ((int)trueNumInteractions == 0)
 			}
 			
 			// Fill histograms
-			if(m_hnAbs) {
+			if(!variation && m_hnAbs) {
 				m_hnAbs->Fill(x, weight);
 				
 				// This is the sgn function
-				weight *= (treeR->GetVal(m_hn->GetNdimensions() + 5)[i] > 0) - (treeR->GetVal(m_hn->GetNdimensions() + 5)[i] < 0);
+				weight *= (treeR->GetVal(hn->GetNdimensions() + 5)[i] > 0) - (treeR->GetVal(hn->GetNdimensions() + 5)[i] < 0);
 			}
-			Long64_t bin = m_hn->Fill(x, weight);
+			Long64_t bin = hn->Fill(x, weight);
 			
-			// Fill uncertainties
-			for(size_t l = 0; l < uncertaintyNames.size(); ++l) {
-				double uncertainty = treeR->GetVal(uncertaintyOffset + l)[i];
-				m_uncertaintyMap[uncertaintyNames[l]].second->Fill(x, weight * uncertainty);
-			}
-			
-			// Write down event and run number, lumi section and fake incartion
-			if(bin >= (Long64_t)m_metadata.size()) {
-				m_metadata.push_back(std::vector<metadata_t>());
-			}
-			if(entry != entryPrev || (k == 0 && i == 0)) {
-				m_metadata[bin].push_back({event, run, lumi, fakeIncarnation});
+			if(!variation) {
+				// Fill uncertainties
+				for(size_t l = 0; l < uncertaintyNames.size(); ++l) {
+					double uncertainty = treeR->GetVal(uncertaintyOffset + l)[i];
+					m_uncertaintyMap[uncertaintyNames[l]].second->Fill(x, weight * uncertainty);
+				}
+				
+				// Write down event and run number, lumi section and fake incartion
+				if(bin >= (Long64_t)m_metadata.size()) {
+					m_metadata.push_back(std::vector<metadata_t>());
+				}
+				if(entry != entryPrev || (k == 0 && i == 0)) {
+					m_metadata[bin].push_back({event, run, lumi, fakeIncarnation});
+				}
 			}
 			entryPrev = entry;
 		}
 	}
 	
-	delete treeR;
-	delete hPileupWeights;
-	delete hPileupMC;
-	f.Close();
-	
 	cout << endl;
 	
-	for(auto &flatUncertainty : m_flatUncertaintyMap) {
-		applyFlatUncertainty(flatUncertainty.first);
+	if(variation) {
+		hn->Add(m_hn, -1);
 	}
 	
-	for(auto &uncertainty : m_uncertaintyMap) {
-		auto h = uncertainty.second.second;
-		for(int i = 0; i <= h->GetNbins() + 1; ++i) {
-			h->SetBinError(i, 0);
-		}
-	}
-	
-	return m_hn;
+	return hn;
 }
 
 int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {

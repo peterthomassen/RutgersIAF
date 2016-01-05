@@ -12,6 +12,7 @@
 #include "TROOT.h"
 
 class PhysicsContributionProjection;
+class TTree;
 
 class PhysicsContribution : public BaseBundle {
 
@@ -31,6 +32,7 @@ public:
 	
 	void addFlatUncertainty(TString, double);
 	void addRelativeUncertainty(TString, TString);
+	void addVariation(TString, std::pair<TString, TString>);
 	void addWeight(TString weight, double normalization = 1.0);
 	bool addVetoEvent(std::string vetoString);
 	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, TH1D* hPileup = 0);
@@ -88,8 +90,11 @@ private:
 	std::map<TString, double> m_flatUncertaintyMap;
 	std::map<TString, TString> m_rangeStrings;
 	std::map<TString, std::pair<TString, THnBase*>> m_uncertaintyMap;
+	std::map<TString, std::pair<TString, TString>> m_variationMap;
 	std::vector<TString> m_weights;
 	std::unordered_set<std::string> m_vetoEvents;
+	
+	THnBase* fillContentVariation(TTree*, THnBase*, std::string, TString, double scale = 1.0, TH1D* hPileupWeights = 0);
 	
 	ClassDef(PhysicsContribution,1);
 };
