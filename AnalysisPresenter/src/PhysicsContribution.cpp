@@ -235,6 +235,9 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	for(auto &uncertainty : m_uncertaintyMap) {
 		auto h = uncertainty.second.second;
+		if(!h->GetNbins()) {
+			continue;
+		}
 		for(int i = 0; i <= h->GetNbins() + 1; ++i) {
 			h->SetBinError(i, 0);
 		}
