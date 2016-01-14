@@ -159,6 +159,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	//wz->addWeight("(NGOODJETS[0] <= 1) + (NGOODJETS[0] > 1) * (Alt$((PTGOODJETS[0] < 70) * 0.65 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.07 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 1.00 + (PTGOODJETS[0] >= 150) * 1.55, 0))");
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("1.015"); // normalization
+	//wz->addVariation("METunc", make_pair("MET", "18.5 * sqrt(-log(rndm())) * cos(6.2831853 * rndm()) + _MET"));
 	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZ", 0.015);
 	correlationBundle->addComponent(wz);
 	mc.push_back(wz);
@@ -167,7 +168,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	zz->setNominalWeight("genEventInfo_weight[0]");
 	correlationBundle->addComponent(zz);
 	zz->addWeight("1.256"); // normalization
-	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", 0.103); // (1.115-1)/1.115
+	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", (1.256-1)/1.256);
 	mc.push_back(zz);
 	
 	PhysicsContribution* c = 0;
@@ -187,9 +188,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 0.019, "WZZ"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
 	
-	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * -0.12 + (NGOODJETS[0] == 2) * -0.12 + (NGOODJETS[0] == 3) * -0.07 + (NGOODJETS[0] == 4) * -0.19 + (NGOODJETS[0] == 5) * -0.32 + (NGOODJETS[0] > 5) * -0.43";
-	nJetWeight = "1";
+	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * 0.01 + (NGOODJETS[0] == 2) * 0.01 + (NGOODJETS[0] == 3) * 0.07 + (NGOODJETS[0] == 4) * -0.07 + (NGOODJETS[0] == 5) * -0.22 + (NGOODJETS[0] > 5) * -0.34";
 	TString normalization = "0.805";
+//	nJetWeight = "1";
 	
 	Bundle* bundleTTbar = new Bundle("background", "ttbar");
 	assembler->addBundle(bundleTTbar);
@@ -212,8 +213,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		ttbarF->addWeight(normalization); // normalization
 		//if(!assembler->getMode("noTTsystematics")) wz->addFlatUncertainty("normalizationTT", 0);
 		ttbarF->addWeight(nJetWeight);
+		//ttbarF->addVariation("METunc", make_pair("MET", "18.5 * sqrt(-log(rndm())) * cos(6.2831853 * rndm()) + _MET"));
 		ttbarF->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
-		ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
+		//ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
 		//if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("xsec_tt", dxsec_tt / xsec_tt);
 		if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("ttbarFudge", 0.333);
 		mc.push_back(ttbarF);
@@ -274,7 +276,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
-		contribution->addFlatUncertainty("lumi", 0.06); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
 	}
@@ -293,7 +295,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
-		contribution->addFlatUncertainty("lumi", 0.06); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
 		assembler->addContribution(contribution);
 		assembler->getBundle("Higgs")->addComponent(contribution);
 	}
@@ -408,7 +410,7 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   //pad1->RedrawAxis();
   pad2->RedrawAxis();
 
-
+  pad1->cd();
   TList* list = pad1->GetListOfPrimitives();
   cout<<"make nice plot "<<list->GetEntries()<<endl;
   for(int i = 0; i < list->GetEntries(); i++){
@@ -417,7 +419,12 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
     if(cname.Contains("TH1")){
       ((TH1*)obj)->SetStats(false);
     }else if(cname == "TLegend"){
-      ((TLegend*)obj)->SetFillColor(kWhite);
+      TLegend* legend = ((TLegend*)obj);
+      legend->SetFillColor(kWhite);
+      //legend->SetY1(.5);
+      //legend->SetY2(.9);
+      legend->SetY1(1.5);
+      legend->SetY2(3.2);
     }
   }
 
@@ -445,7 +452,7 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   latex->SetNDC();
   latex->SetTextFont(61);
   latex->SetTextSize(0.04);	
-  latex->DrawLatex(0.16,0.885,"CMS Preliminary");
+  latex->DrawLatex(0.35,0.885,"CMS Preliminary");
 
   latex->SetTextSize(0.03);
   latex->SetTextFont(42);
