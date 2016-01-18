@@ -651,6 +651,45 @@ void AssemblerProjection::print() const {
 	cout << endl;
 }
 
+TString AssemblerProjection::printRA7table() const {
+	double sumBackground = 0;
+	double sumBackgroundStat2 = 0;
+	double sumBackgroundSyst = 0;
+	double sumSignal = 0;
+	double sumSignalStat2 = 0;
+	double sumSignalSyst = 0;
+	TString SRvalue = "";
+	
+	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
+	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+		if(!has("signal")) {
+			double contentBackground = getBin("background", i);
+			double contentBackgroundStat = getBinStat("background", i);
+			double contentBackgroundSyst = getBinSyst("background", i);
+			sumBackground += contentBackground;
+			sumBackgroundStat2 += contentBackgroundStat*contentBackgroundStat;
+			sumBackgroundSyst += contentBackgroundSyst;
+		}
+		
+		if(has("signal")) {
+			double contentSignal = getBin("signal", i);
+			double contentSignalStat = getBinStat("signal", i);
+			double contentSignalSyst = getBinSyst("signal", i);
+			sumSignal += contentSignal;
+			sumSignalStat2 += contentSignalStat*contentSignalStat;
+			sumSignalSyst += contentSignalSyst;
+		}
+	}
+	if(!has("signal")) {
+		// TODO Replace by Poisson error
+		SRvalue = TString::Format("%.2f ± %.2f ± %.2f ± %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
+	}
+	if(has("signal")) {
+		SRvalue = TString::Format("%.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
+	}
+	return SRvalue;
+}
+
 void AssemblerProjection::printMeta(TString type) const {
 	for(auto &meta : getMeta(type)) {
 		cout << meta.event << " " << meta.run << " " << meta.lumi << " " << meta.fakeIncarnation << endl;
