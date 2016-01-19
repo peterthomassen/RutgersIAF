@@ -64,11 +64,8 @@ with open('RA7table.tex', 'wb') as texfile:
  texfile.write(values[14])
  texfile.write("}\\\\ \n")
  texfile.write("\\hline \n")
- texfile.write("\\end{tabular} \\ \n")
- if counter == 3:
-  texfile.write("Explanation of rates: $data : background \\pm \\sqrt{background} \\pm \\sqrt{stat^2} \\pm syst$")
- if counter == 2: 
-  texfile.write("Explanation of rates: $data : signal \\pm \\sqrt{stat^2} \\pm syst$")
+ texfile.write("\\end{tabular} \\\\ \\vspace{0.2cm} \n")
+ texfile.write("Explanation of rates: \\quad $\\textrm{observed : expected } \\pm \\textrm{ stat } \\pm \\textrm{ syst}$")
  texfile.write("\\newpage \n")
  texfile.write("\\large{Baseline selection: 3 tight leptons with $p_T > 20 / 15 / 10$ GeV, min. 2 jets, $E^{miss}_T > 50$ GeV and $M_{ll} \geq 12$ GeV}\\normalsize \\\\ \\vspace{1cm}\n")
  texfile.write("OffZ signal regions: OSSF-pair with $M_{ll} < 76$ GeV or $M_{ll} > 106$ GeV \\\\ \\vspace{0.5cm}\n")
@@ -122,11 +119,8 @@ with open('RA7table.tex', 'wb') as texfile:
  texfile.write(values[29])
  texfile.write("}\\\\ \n")
  texfile.write("\\hline \n")
- texfile.write("\\end{tabular} \\ \n")
- if counter == 3:
-  texfile.write("Explanation of rates: $data : background \\pm \\sqrt{background} \\pm \\sqrt{stat^2} \\pm syst$")
- if counter == 2: 
-  texfile.write("Explanation of rates: $data : signal \\pm \\sqrt{stat^2} \\pm syst$")
+ texfile.write("\\end{tabular} \\\\ \\vspace{0.2cm} \n")
+ texfile.write("Explanation of rates: \\quad $\\textrm{observed : expected } \\pm \\textrm{ stat } \\pm \\textrm{ syst}$")
  texfile.write("\\end{center}\n")
  texfile.write("\\renewcommand{\\arraystretch}{1}\n")
  texfile.write("\\end{document}\n")
