@@ -45,6 +45,8 @@ void RA7table() {
 	ofstream RA7table;
 	RA7table.open("RA7table.txt");
 	
+	std::cout << "Create input for RA7table..." << std::endl;
+	
 	//OnZ signal regions
 	assembler->setRange("ONZ", 1);
 	assembler->setRange("NBJETSCSVM[0]", 0, 0);

@@ -652,6 +652,7 @@ void AssemblerProjection::print() const {
 }
 
 TString AssemblerProjection::printRA7table() const {
+	double sumData = 0;
 	double sumBackground = 0;
 	double sumBackgroundStat2 = 0;
 	double sumBackgroundSyst = 0;
@@ -662,6 +663,9 @@ TString AssemblerProjection::printRA7table() const {
 	
 	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
 	for(int i = 1; i <= hData->GetNbinsX(); ++i) {
+		double contentData = getBin("data", i);
+		sumData += contentData;
+		
 		if(!has("signal")) {
 			double contentBackground = getBin("background", i);
 			double contentBackgroundStat = getBinStat("background", i);
@@ -682,10 +686,10 @@ TString AssemblerProjection::printRA7table() const {
 	}
 	if(!has("signal")) {
 		// TODO Replace by Poisson error
-		SRvalue = TString::Format("%.2f $\\pm$ %.2f $\\pm$ %.2f $\\pm$ %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
+		SRvalue = TString::Format("%.0f : %.2f $\\pm$ %.2f $\\pm$ %.2f $\\pm$ %.2f", sumData, sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
 	}
 	if(has("signal")) {
-		SRvalue = TString::Format("%.2f $\\pm$ %.2f $\\pm$ %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
+		SRvalue = TString::Format("%.0f : %.2f $\\pm$ %.2f $\\pm$ %.2f", sumData, sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
 	}
 	return SRvalue;
 }
