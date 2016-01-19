@@ -30,6 +30,7 @@ void RA7table() {
 	////////////////////////
 	Assembler* assembler = new Assembler("", "RECREATE");
 	init(assembler);
+	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	setupData(assembler);
 	setupBackgroundMC(assembler, false, true);
 	setupBackgroundDD(assembler);
