@@ -682,10 +682,10 @@ TString AssemblerProjection::printRA7table() const {
 	}
 	if(!has("signal")) {
 		// TODO Replace by Poisson error
-		SRvalue = TString::Format("%.2f ± %.2f ± %.2f ± %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
+		SRvalue = TString::Format("%.2f $\\pm$ %.2f $\\pm$ %.2f $\\pm$ %.2f", sumBackground, sqrt(sumBackground), sqrt(sumBackgroundStat2), sumBackgroundSyst);
 	}
 	if(has("signal")) {
-		SRvalue = TString::Format("%.2f ± %.2f ± %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
+		SRvalue = TString::Format("%.2f $\\pm$ %.2f $\\pm$ %.2f", sumSignal, sqrt(sumSignalStat2), sumSignalSyst);
 	}
 	return SRvalue;
 }
