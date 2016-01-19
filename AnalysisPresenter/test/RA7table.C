@@ -17,7 +17,7 @@ void RA7table() {
 	std::string varexp = "NLEPTONS[0]{2,6}:MOSSF[0]{0,150,150}:(abs(MOSSF[0]-91)<15){0,2, \"ONZ\"}:NGOODTAUS[0]{0,2}:NBJETSCSVM[0]{0,3}:HT[0]{0,600,30}:MET[0]{0,300,6}";
 	
 	// Global cuts, if desired
-	TString selection = "NLEPTONS[0] == 3 && NGOODTAUS[0] == 0 && PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10 && MET[0] > 50 && MOSSF[0] >= 12 && NGOODJETS[0] >= 2";
+	TString selection = "NLEPTONS[0] == 3 && NGOODTAUS[0] == 0 && PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10 && MET[0] > 50 && NGOODJETS[0] >= 2";
 	
 	///////////////////////
 	// Signal definition //

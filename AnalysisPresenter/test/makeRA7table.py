@@ -1,7 +1,8 @@
 import os
+import re
+from ROOT import *
 
 values = open("RA7table.txt").readlines()
-counter = values[0].count("p")
 
 with open('RA7table.tex', 'wb') as texfile:
  texfile.write("\\documentclass[a4paper,11pt,landscape]{article}\n")
@@ -127,3 +128,60 @@ with open('RA7table.tex', 'wb') as texfile:
  texfile.close()
 
 os.system("pdflatex RA7table.tex")
+
+print "Creating RA7 OnZ and OffZ signal regions in histogram..."
+
+gStyle.SetOptStat(0)
+OnZstack = THStack("OnZstack", "RA7 table: OnZ signal regions")
+hOnZ = TH1F("hOnZ", "RA7 table: OnZ signal regions", 15, 0, 15)
+hOnZ.SetFillColor(38)
+hOnZerror = TH1F("hOnZerror", "RA7 table: OnZ signal regions", 15, 0, 15)
+hOnZerror.SetFillColor(1)
+hOnZerror.SetMarkerColor(1)
+hOnZerror.SetFillStyle(3018);
+hOnZdata = TH1F("hOnZdata", "RA7 table: OnZ signal regions", 15, 0, 15)
+hOnZdata.SetMarkerStyle(33)
+hOnZdata.SetMarkerColor(kRed)
+
+for i in range(0, 15):
+ rate = values[i].split()
+ for x in range(0, len(rate)):
+  hOnZ.GetXaxis().SetBinLabel(i+1, "SR"+str(i))
+  hOnZ.SetBinContent(i+1, float(rate[2]))
+  hOnZerror.GetXaxis().SetBinLabel(i+1, "SR"+str(i))
+  hOnZerror.SetBinContent(i+1, float(rate[2]))
+  hOnZerror.SetBinError(i+1, float(rate[4])+float(rate[6]))
+  hOnZdata.GetXaxis().SetBinLabel(i+1, "SR"+str(i))
+  hOnZdata.SetBinContent(i+1, float(rate[0]))
+OnZstack.Add(hOnZ, "B")
+OnZstack.Add(hOnZerror, "E2")
+OnZstack.Add(hOnZdata, "P0")
+OnZstack.Draw("nostack")
+c1.SaveAs("RA7_SRs.pdf(")
+
+OffZstack = THStack("OffZstack", "RA7 table: OffZ signal regions")
+hOffZ = TH1F("hOffZ", "RA7 table: OffZ signal regions", 15, 0, 15)
+hOffZ.SetFillColor(38)
+hOffZerror = TH1F("hOffZerror", "RA7 table: OffZ signal regions", 15, 0, 15)
+hOffZerror.SetFillColor(1)
+hOffZerror.SetMarkerColor(1)
+hOffZerror.SetFillStyle(3018);
+hOffZdata = TH1F("hOffZdata", "RA7 table: OffZ signal regions", 15, 0, 15)
+hOffZdata.SetMarkerStyle(33)
+hOffZdata.SetMarkerColor(kRed)
+
+for j in range(15, 30):
+ rate = values[j].split()
+ for y in range(0, len(rate)):
+  hOffZ.GetXaxis().SetBinLabel(j-14, "SR"+str(j-15))
+  hOffZ.SetBinContent(j-14, float(rate[2]))
+  hOffZerror.GetXaxis().SetBinLabel(j-14, "SR"+str(j-15))
+  hOffZerror.SetBinContent(j-14, float(rate[2]))
+  hOffZerror.SetBinError(j-14, float(rate[4])+float(rate[6]))
+  hOffZdata.GetXaxis().SetBinLabel(j-14, "SR"+str(j-15))
+  hOffZdata.SetBinContent(j-14, float(rate[0]))
+OffZstack.Add(hOffZ, "B")
+OffZstack.Add(hOffZerror, "E2")
+OffZstack.Add(hOffZdata, "P0")
+OffZstack.Draw("nostack")
+c1.SaveAs("RA7_SRs.pdf)")
