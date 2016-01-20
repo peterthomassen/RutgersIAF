@@ -23,8 +23,8 @@ void RA7table() {
 	///////////////////////
 	// Signal definition //
 	///////////////////////
-	PhysicsContribution* signal = new PhysicsContribution("signal", "/cms/multilepton/mheindl/2016/LQ_analysis/EventAnalyzer/AnalysisTree/LQ200_TopMu.simulation.root", 0.123, "LQ200_TopMu");
-	signal->addWeight("WEIGHT");
+	//PhysicsContribution* signal = new PhysicsContribution("signal", "/cms/multilepton/mheindl/2016/LQ_analysis/EventAnalyzer/AnalysisTree/LQ200_TopMu.simulation.root", 0.123, "LQ200_TopMu");
+	//signal->addWeight("WEIGHT");
 	
 	////////////////////////
 	// Initialize and run //
@@ -35,7 +35,7 @@ void RA7table() {
 	setupData(assembler);
 	setupBackgroundMC(assembler, false, true);
 	setupBackgroundDD(assembler);
-	assembler->addContribution(signal);
+	//assembler->addContribution(signal);
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	prepare(assembler);
