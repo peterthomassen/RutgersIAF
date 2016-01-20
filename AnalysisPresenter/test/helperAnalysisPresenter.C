@@ -158,6 +158,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	double xsec_ttz = 0.2529; // PHYS14: 1.152
 	double xsec_glugluHtoZZto4L = 0.01212;
 	double xsec_vbf_HtoZZto4L = 0.001034;
+	double xsec_WWZ = 0.1651;
+	double xsec_WZZ = 0.05565;
+	double xsec_ZZZ = 0.01398;
 	
 	std::vector<PhysicsContribution*> mc;
 	std::vector<PhysicsContribution*> mcH;
@@ -199,9 +202,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 //	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TBLL" + infix + suffix, xsec_tbz_tqz, "TBZ + TQZ"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 0.08217, "WWW"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZ" + infix + suffix, 0.1651, "WWZ"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZ" + infix + suffix, 0.05565, "WZZ"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZ" + infix + suffix, 0.01398, "ZZZ"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZ" + infix + suffix, xsec_WWZ, "WWZ"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZ" + infix + suffix, xsec_WZZ, "WZZ"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZ" + infix + suffix, xsec_ZZZ, "ZZZ"));
 	
 	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * 0.01 + (NGOODJETS[0] == 2) * 0.01 + (NGOODJETS[0] == 3) * 0.07 + (NGOODJETS[0] == 4) * -0.07 + (NGOODJETS[0] == 5) * -0.22 + (NGOODJETS[0] > 5) * -0.34";
 	TString normalization = "0.805";
@@ -226,8 +229,8 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "ttF", false, "treeR", kAzure + 1);
 		ttbarF->setNominalWeight("genEventInfo_weight[0]");
 		ttbarF->addWeight(normalization); // normalization
-		if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("normalizationTT", 0.195);
 		ttbarF->addWeight(nJetWeight);
+		if(!assembler->getMode("noTTsystematics")) ttbarF->addRelativeUncertainty("ttbarNJet", nJetWeight + TString(" - 1"));
 		ttbarF->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
 		//ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
 		//if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("xsec_tt", dxsec_tt / xsec_tt);
@@ -255,6 +258,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			for(auto &contribution : ttbarFfake) {
 				contribution->setNominalWeight("genEventInfo_weight[0]");
 				contribution->addWeight(nJetWeight);
+				if(!assembler->getMode("noTTsystematics")) contribution->addRelativeUncertainty("ttbarNJet", nJetWeight + TString(" - 1"));
 				contribution->addWeight("nTrackFakeElectrons + nTrackFakeMuons + nPhotonFakeElectrons + nPhotonFakeMuons == 1"); // + nTauFakeTaus == 1");
 				mc.push_back(contribution);
 			}
@@ -430,20 +434,23 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   pad1->cd();
   TList* list = pad1->GetListOfPrimitives();
   cout<<"make nice plot "<<list->GetEntries()<<endl;
+  TH1* h = 0;
+  TLegend* legend = 0;
   for(int i = 0; i < list->GetEntries(); i++){
     TObject* obj = list->At(i);
     TString cname(obj->ClassName());
     if(cname.Contains("TH1")){
+      h = ((TH1*)obj);
       ((TH1*)obj)->SetStats(false);
-    }else if(cname == "TLegend"){
-      TLegend* legend = ((TLegend*)obj);
-      legend->SetFillColor(kWhite);
-      //legend->SetY1(.5);
-      //legend->SetY2(.9);
-      legend->SetY1(1.5);
-      legend->SetY2(3.2);
+    } else if(cname == "TLegend") {
+      legend = ((TLegend*)obj);
     }
   }
+  legend->SetFillColor(kWhite);
+  double max = h->GetMaximum();
+  double min = h->GetMinimum();
+  legend->SetY1(min + 0.5 * (max - min));
+  legend->SetY2(min + 0.9 * (max - min));
 
   for(auto pad : {pad1, pad2}) {
 	  TList* list2 = pad->GetListOfPrimitives();
