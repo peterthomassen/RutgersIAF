@@ -230,7 +230,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		ttbarF->setNominalWeight("genEventInfo_weight[0]");
 		ttbarF->addWeight(normalization); // normalization
 		ttbarF->addWeight(nJetWeight);
-		if(!assembler->getMode("noTTsystematics")) ttbarF->addRelativeUncertainty("ttbarNJet", nJetWeight + TString(" - 1"));
+		if(!assembler->getMode("noTTsystematics")) ttbarF->addRelativeUncertainty("ttbarNJet", TString::Format("1 - 1/(%s)", nJetWeight.Data()));
 		ttbarF->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
 		//ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
 		//if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("xsec_tt", dxsec_tt / xsec_tt);
@@ -258,7 +258,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			for(auto &contribution : ttbarFfake) {
 				contribution->setNominalWeight("genEventInfo_weight[0]");
 				contribution->addWeight(nJetWeight);
-				if(!assembler->getMode("noTTsystematics")) contribution->addRelativeUncertainty("ttbarNJet", nJetWeight + TString(" - 1"));
+				if(!assembler->getMode("noTTsystematics")) contribution->addRelativeUncertainty("ttbarNJet", TString::Format("1 - 1/(%s)", nJetWeight.Data()));
 				contribution->addWeight("nTrackFakeElectrons + nTrackFakeMuons + nPhotonFakeElectrons + nPhotonFakeMuons == 1"); // + nTauFakeTaus == 1");
 				mc.push_back(contribution);
 			}
