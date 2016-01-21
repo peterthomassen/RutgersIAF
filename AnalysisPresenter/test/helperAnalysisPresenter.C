@@ -329,6 +329,8 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 	std::string body = getDataFileName();
 	std::string suffix = ".3L.root";
 	
+	TString nVertexWeight = "0.701 + 0.0218 * NVERTICES[0]";
+	
 	////// Tracks
 	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
 	fakeTracks->addWeight("TRIGGERACCEPT");
@@ -338,6 +340,8 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 		" + (Sum$(fakeRoleGOODMUONS) > 0)"
 			" * ( (Min$(PTGOODMUONS) < 25) * (0.00 + 0.07 * Min$(PTGOODMUONS)) + !(Min$(PTGOODMUONS) < 25) )"
 	);
+	fakeTracks->addWeight(nVertexWeight);
+	fakeTracks->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
 	if(syst && !assembler->getMode("noTrackSystematics")) {
 		fakeTracks->addFlatUncertainty("trackFakeRateFit", 0.06);
 		fakeTracks->addFlatUncertainty("trackPtFit", 0.10);
@@ -350,6 +354,8 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 	////// Photons
 	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
 	fakePhotons->addWeight("TRIGGERACCEPT");
+	fakePhotons->addWeight(nVertexWeight);
+	fakePhotons->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
 	if(syst && !assembler->getMode("noPhotonSystematics")) {
 		fakePhotons->addFlatUncertainty("photonDR", 0.52);
 	}
