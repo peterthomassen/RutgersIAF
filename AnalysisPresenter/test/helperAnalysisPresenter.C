@@ -324,7 +324,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	}
 }
 
-void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = false) {
+void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = true) {
 	std::string prefix = "/cms/thomassen/2015/Analysis/data/results/";
 	std::string body = getDataFileName();
 	std::string suffix = ".3L.root";
