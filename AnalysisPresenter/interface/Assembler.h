@@ -49,7 +49,7 @@ public:
 	Bundle* setDefaultBundle(Bundle* bundle);
 	void setFakeRate(TString, TString);
 	bool setMode(TString name, bool value = true);
-	void setPileupHistogram(TH1D* hPileup);
+	void setPileupHistogram(TH1D* hPileup, TH1D* hPileupUnc = 0);
 	void setRange(const char*, double, double, bool = true);
 	void setRange(const char*, double);
 	void setRange(const char*);
@@ -63,7 +63,7 @@ private:
 	
 	std::map<TString, std::vector<PhysicsContribution*>> m_contributions;
 	std::map<TString, Bundle*> m_bundles;
-	TH1D* m_hPileup = 0;
+	std::pair<TH1D*, TH1D*> m_hPileup;
 	std::map<TString, bool> m_modes;
 	
 	Bundle* m_defaultBundle = 0;
