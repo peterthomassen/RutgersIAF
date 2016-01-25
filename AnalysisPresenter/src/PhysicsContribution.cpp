@@ -341,7 +341,7 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 	
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s:Entry$", varexp.c_str(), varexpIncarnation.c_str());
 	
-	varexpFull += (!variation && m_hnAbs)
+	varexpFull += (m_hnAbs)
 		? TString(":") + m_nominalWeight
 		: TString(":1");
 	
@@ -415,8 +415,10 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 			}
 			
 			// Fill histograms
-			if(!variation && m_hnAbs) {
-				m_hnAbs->Fill(x, weight);
+			if(m_hnAbs) {
+				if(!variation) {
+					m_hnAbs->Fill(x, weight);
+				}
 				
 				// This is the sgn function
 				weight *= (treeR->GetVal(hn->GetNdimensions() + 5)[i] > 0) - (treeR->GetVal(hn->GetNdimensions() + 5)[i] < 0);
