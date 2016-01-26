@@ -346,6 +346,8 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 		int nOld = n;
 		double scaleOld = scale;
 		n /= m_minScale / scale;
+		// Make sure at least 1 event gets read (otherwise, scale goes to infinity)
+		n = max(n, 1);
 		scale *= (float)nOld / n;
 		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scaleOld << " --> " << scale << " (target scale: " << m_minScale << ")" << endl;
 	}
