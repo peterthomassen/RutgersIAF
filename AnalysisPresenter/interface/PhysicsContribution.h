@@ -35,7 +35,7 @@ public:
 	void addVariation(TString, std::pair<TString, TString>);
 	void addWeight(TString weight, double normalization = 1.0);
 	bool addVetoEvent(std::string vetoString);
-	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, TH1D* hPileup = 0);
+	THnBase* fillContent(const THnBase*, std::string, TString, double scale = 1.0, TH1D* hPileup = 0, TH1D* hPileupUnc = 0);
 	int findBinFromLowEdge(TAxis* axis, double x);
 	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
 	THnBase* getContent(bool absoluteWeights = false) const;

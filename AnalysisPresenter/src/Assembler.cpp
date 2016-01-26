@@ -206,7 +206,7 @@ void Assembler::process(std::string varexp, TString selection) {
 	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
 	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
-		contribution->fillContent(hs, varexp, selection, scale, m_hPileup);
+		contribution->fillContent(hs, varexp, selection, scale, m_hPileup.first, m_hPileup.second);
 		contribution->getMeta();
 	}
 	delete hs;
@@ -282,8 +282,8 @@ bool Assembler::setMode(TString name, bool value) {
 	return oldValue;
 }
 
-void Assembler::setPileupHistogram(TH1D* hPileup) {
-	m_hPileup = hPileup;
+void Assembler::setPileupHistogram(TH1D* hPileup, TH1D* hPileupUnc) {
+	m_hPileup = make_pair(hPileup, hPileupUnc);
 }
 
 void Assembler::setRange(const char* name, double lo, double hi, bool includeLast) {

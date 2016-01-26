@@ -192,8 +192,10 @@ void TheoryTreeWriter::fillTree()
   bool hasLumi = m_handler->getVariable("LUMI",lumiBlock);
   bool hasEvent = m_handler->getVariable("EVENT",event);
 
-  bool hasPFMET =  m_handler->getProduct("MET")[0]->getVariable("PF_PT",pf_met_pt);
-  bool hasPFMETPhi =  m_handler->getProduct("MET")[0]->getVariable("PF_PHI",pf_met_phi);
+  bool hasPFMET = true;
+  bool hasPFMETPhi = true;
+  pf_met_pt = m_handler->getProduct("MET")[0]->Pt();
+  pf_met_phi = m_handler->getProduct("MET")[0]->Phi();
 
   bool hasTCMET =  m_handler->getProduct("MET")[0]->getVariable("TC_PT",tc_met_pt);
   bool hasTCMETPhi =  m_handler->getProduct("MET")[0]->getVariable("TC_PT",tc_met_phi);

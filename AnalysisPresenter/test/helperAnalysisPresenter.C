@@ -27,6 +27,7 @@ void init(Assembler* assembler) {
 	assembler->addBundle(new Bundle("background", "TrackFakes", false, kGreen - 3));
 	assembler->addBundle(new Bundle("background", "PhotonFakes", false, kBlue - 7));
 	
+	assembler->addBundle(new Bundle("background", "WZ", false, 39));
 	assembler->addBundle(new Bundle("background", "Higgs", false, 38));
 	assembler->addBundle(new Bundle("background", "Rare MC", false, 33));
 }
@@ -45,7 +46,7 @@ void prepare(Assembler* assembler) {
 	}
 	
 	Bundle* presentationBundle = assembler->getBundle("presentationBundle");
-	for(const auto &bundleName : {"Fakes", "Higgs", "Rare MC"}) {
+	for(const auto &bundleName : {"Fakes", "WZ", "Higgs", "Rare MC"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
 			presentationBundle->addComponent(bundle);
@@ -53,7 +54,7 @@ void prepare(Assembler* assembler) {
 	}
 	
 	Bundle* fakePresentationBundle = assembler->getBundle("fakePresentationBundle");
-	for(const auto &bundleName : {"TrackFakes", "PhotonFakes", "Higgs", "Rare MC"}) {
+	for(const auto &bundleName : {"TrackFakes", "PhotonFakes", "WZ", "Higgs", "Rare MC"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
 			fakePresentationBundle->addComponent(bundle);
@@ -65,7 +66,7 @@ void prepare(Assembler* assembler) {
 	}
 }
 
-void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, std::vector<string> vetoFilenames = {}) {
+void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool applyEventVetos = false) {
 	std::string prefix = "/cms/thomassen/2015/Analysis/data/results/";
 	std::string infix = dilep ? "" : ".3L";
 	std::string body = getDataFileName();
@@ -88,6 +89,16 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, std::
 	
 	data->addWeight("TRIGGERACCEPT");
 	
+        std::vector<string> vetoFilenames = {
+                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/csc2015_Dec01.txt",
+                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/ecalscn1043093_Dec01.txt",
+                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/badResolutionTrack_Jan13.txt",
+                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/muonBadTrack_Jan13.txt",
+        };
+        if(!applyEventVetos) {
+                vetoFilenames.clear();
+        }
+
 	for(auto vetoFilename : vetoFilenames) {
 		cout << "adding vetos from " << vetoFilename << " ..." << flush;
 		int nDuplicates = 0;
@@ -140,34 +151,42 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		double dxsec_ttF = sqrt(pow(3.07, 2) + pow(3.68, 2));
 	double xsec_tt = 831.76;
 		double dxsec_tt = sqrt(pow(29.20 , 2) + pow(35.06, 2));
-	double xsec_wz = 4.42965; // PHYS14: 43.871*(0.3257*0.10095);
+	double xsec_WZTo3LNu = 4.42965; // PHYS14: 43.871*(0.3257*0.10095);
+	double xsec_WZJets = 5.263;
 	double xsec_zz = 1.212; // from MCM; // PHYS14: 1.218;
 	double xsec_ttw = 0.2043; // PHYS14: 2.232
 	double xsec_ttz = 0.2529; // PHYS14: 1.152
 	double xsec_glugluHtoZZto4L = 0.01212;
 	double xsec_vbf_HtoZZto4L = 0.001034;
+	double xsec_WWZ = 0.1651;
+	double xsec_WZZ = 0.05565;
+	double xsec_ZZZ = 0.01398;
 	
 	std::vector<PhysicsContribution*> mc;
 	std::vector<PhysicsContribution*> mcH;
 	std::vector<PhysicsContribution*> mcRare;
 	
-	Bundle* correlationBundle = new Bundle("background", "correlationBundle");
-	assembler->addBundle(correlationBundle);
-	
-	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZTo3LNu" + infix + suffix, xsec_wz, "WZ", false, "treeR", 39);
-	//wz->addWeight("(NGOODJETS[0] == 0) * 1.053 + (NGOODJETS[0] == 1) * 0.85 + (NGOODJETS[0] == 2) * 1.15 + (NGOODJETS[0] > 2) * 1.19");
-	//wz->addWeight("(NGOODJETS[0] <= 1) + (NGOODJETS[0] > 1) * (Alt$((PTGOODJETS[0] < 70) * 0.65 + (PTGOODJETS[0] >= 70 && PTGOODJETS[0] < 110) * 1.07 + (PTGOODJETS[0] >= 110 && PTGOODJETS[0] < 150) * 1.00 + (PTGOODJETS[0] >= 150) * 1.55, 0))");
+	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZTo3LNu" + infix + suffix, xsec_WZTo3LNu, "WZTo3LNu", false, "treeR", -1, 0);
 	wz->setNominalWeight("genEventInfo_weight[0]");
+	wz->addWeight("!ONZ");
 	wz->addWeight("1.015"); // normalization
-	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZ", 0.015);
-	correlationBundle->addComponent(wz);
+	//wz->addVariation("METunc", make_pair("MET", "18.5 * sqrt(-log(rndm())) * cos(6.2831853 * rndm()) + _MET"));
+	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZTo3LNu", 0.015);
+	assembler->getBundle("WZ")->addComponent(wz);
+	mc.push_back(wz);
+	
+	wz = new PhysicsContribution("backgroundMC", prefix + "WZJets" + infix + suffix, xsec_WZJets, "WZJets", false, "treeR", -1, 0);
+	wz->setNominalWeight("genEventInfo_weight[0]");
+	wz->addWeight("ONZ");
+	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZJets", 0.073);
+	wz->addWeight("1.372"); // normalization
+	assembler->getBundle("WZ")->addComponent(wz);
 	mc.push_back(wz);
 	
 	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30);
 	zz->setNominalWeight("genEventInfo_weight[0]");
-	correlationBundle->addComponent(zz);
 	zz->addWeight("1.256"); // normalization
-	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", 0.103); // (1.115-1)/1.115
+	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", (1.256-1)/1.256);
 	mc.push_back(zz);
 	
 	PhysicsContribution* c = 0;
@@ -183,13 +202,13 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 //	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TBLL" + infix + suffix, xsec_tbz_tqz, "TBZ + TQZ"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 0.08217, "WWW"));
-//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZJets" + infix + suffix, 0.0633, "WWZ"));
-//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZJets" + infix + suffix, 0.019, "WZZ"));
-//	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZNoGstarJets" + infix + suffix, 0.004587, "ZZZ"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZ" + infix + suffix, xsec_WWZ, "WWZ"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZ" + infix + suffix, xsec_WZZ, "WZZ"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZ" + infix + suffix, xsec_ZZZ, "ZZZ"));
 	
-	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * -0.12 + (NGOODJETS[0] == 2) * -0.12 + (NGOODJETS[0] == 3) * -0.07 + (NGOODJETS[0] == 4) * -0.19 + (NGOODJETS[0] == 5) * -0.32 + (NGOODJETS[0] > 5) * -0.43";
-	nJetWeight = "1";
+	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * 0.01 + (NGOODJETS[0] == 2) * 0.01 + (NGOODJETS[0] == 3) * 0.07 + (NGOODJETS[0] == 4) * -0.07 + (NGOODJETS[0] == 5) * -0.22 + (NGOODJETS[0] > 5) * -0.34";
 	TString normalization = "0.805";
+//	nJetWeight = "1";
 	
 	Bundle* bundleTTbar = new Bundle("background", "ttbar");
 	assembler->addBundle(bundleTTbar);
@@ -210,10 +229,10 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "ttF", false, "treeR", kAzure + 1);
 		ttbarF->setNominalWeight("genEventInfo_weight[0]");
 		ttbarF->addWeight(normalization); // normalization
-		//if(!assembler->getMode("noTTsystematics")) wz->addFlatUncertainty("normalizationTT", 0);
 		ttbarF->addWeight(nJetWeight);
+		if(!assembler->getMode("noTTsystematics")) ttbarF->addRelativeUncertainty("ttbarNJet", TString::Format("1 - 1/(%s)", nJetWeight.Data()));
 		ttbarF->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
-		ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
+		//ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
 		//if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("xsec_tt", dxsec_tt / xsec_tt);
 		if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("ttbarFudge", 0.333);
 		mc.push_back(ttbarF);
@@ -228,20 +247,23 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			ttbarFfake.push_back(ttbarFfakeTracks);
 			assembler->getBundle("TrackFakes")->addComponent(ttbarFfakeTracks);
 			
+			/* 
+			 * We don't assume the ttbar MC to model AIC's correctly. We therefore decided to get the estimate from data, and veto leptons from photons in the MC. Thus, we don't need MC subtraction in the data-driven method.
+			 * 
 			PhysicsContribution* ttbarFfakePhotons = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "TT_FullLfakePhotons", true, "treeRfakePhotons", -1, 0.01);
 			ttbarFfake.push_back(ttbarFfakePhotons);
 			assembler->getBundle("PhotonFakes")->addComponent(ttbarFfakePhotons);
+			*/
 			
 			for(auto &contribution : ttbarFfake) {
 				contribution->setNominalWeight("genEventInfo_weight[0]");
 				contribution->addWeight(nJetWeight);
+				if(!assembler->getMode("noTTsystematics")) contribution->addRelativeUncertainty("ttbarNJet", TString::Format("1 - 1/(%s)", nJetWeight.Data()));
 				contribution->addWeight("nTrackFakeElectrons + nTrackFakeMuons + nPhotonFakeElectrons + nPhotonFakeMuons == 1"); // + nTauFakeTaus == 1");
 				mc.push_back(contribution);
 			}
 		}
 	}
-	
-	correlationBundle->addComponent(bundleTTbar);
 	
 	if(dilep) {
 		PhysicsContribution* c = 0;
@@ -258,6 +280,8 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		mc.push_back(c);
 	}
 	
+//	mc.clear();
+//	mc.push_back(wz);
 	
 	for(auto &contribution : mc) {
 		contribution->addWeight("WEIGHT[0]");
@@ -265,6 +289,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		assembler->addContribution(contribution);
 	}
+//	return;
 	
 	if(onlyTTF) {
 		return;
@@ -274,7 +299,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
-		contribution->addFlatUncertainty("lumi", 0.06); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
 	}
@@ -293,18 +318,18 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
-		contribution->addFlatUncertainty("lumi", 0.06); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
 		assembler->addContribution(contribution);
 		assembler->getBundle("Higgs")->addComponent(contribution);
 	}
-	
-	correlationBundle->addComponent(assembler->getBundle("Higgs"));
 }
 
-void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = false) {
+void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = true) {
 	std::string prefix = "/cms/thomassen/2015/Analysis/data/results/";
 	std::string body = getDataFileName();
 	std::string suffix = ".3L.root";
+	
+	TString nVertexWeight = "0.701 + 0.0218 * NVERTICES[0]";
 	
 	////// Tracks
 	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
@@ -315,6 +340,8 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 		" + (Sum$(fakeRoleGOODMUONS) > 0)"
 			" * ( (Min$(PTGOODMUONS) < 25) * (0.00 + 0.07 * Min$(PTGOODMUONS)) + !(Min$(PTGOODMUONS) < 25) )"
 	);
+	fakeTracks->addWeight(nVertexWeight);
+	fakeTracks->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
 	if(syst && !assembler->getMode("noTrackSystematics")) {
 		fakeTracks->addFlatUncertainty("trackFakeRateFit", 0.06);
 		fakeTracks->addFlatUncertainty("trackPtFit", 0.10);
@@ -327,6 +354,8 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = fa
 	////// Photons
 	PhysicsContribution* fakePhotons = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakePhotons", false, "treeRfakePhotons");
 	fakePhotons->addWeight("TRIGGERACCEPT");
+	fakePhotons->addWeight(nVertexWeight);
+	fakePhotons->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
 	if(syst && !assembler->getMode("noPhotonSystematics")) {
 		fakePhotons->addFlatUncertainty("photonDR", 0.52);
 	}
@@ -408,18 +437,26 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   //pad1->RedrawAxis();
   pad2->RedrawAxis();
 
-
+  pad1->cd();
   TList* list = pad1->GetListOfPrimitives();
   cout<<"make nice plot "<<list->GetEntries()<<endl;
+  TH1* h = 0;
+  TLegend* legend = 0;
   for(int i = 0; i < list->GetEntries(); i++){
     TObject* obj = list->At(i);
     TString cname(obj->ClassName());
     if(cname.Contains("TH1")){
+      h = ((TH1*)obj);
       ((TH1*)obj)->SetStats(false);
-    }else if(cname == "TLegend"){
-      ((TLegend*)obj)->SetFillColor(kWhite);
+    } else if(cname == "TLegend") {
+      legend = ((TLegend*)obj);
     }
   }
+  legend->SetFillColor(kWhite);
+  double max = h->GetMaximum();
+  double min = h->GetMinimum();
+  legend->SetY1(min + 0.5 * (max - min));
+  legend->SetY2(min + 0.9 * (max - min));
 
   for(auto pad : {pad1, pad2}) {
 	  TList* list2 = pad->GetListOfPrimitives();
@@ -445,7 +482,7 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   latex->SetNDC();
   latex->SetTextFont(61);
   latex->SetTextSize(0.04);	
-  latex->DrawLatex(0.16,0.885,"CMS Preliminary");
+  latex->DrawLatex(0.35,0.885,"CMS Preliminary");
 
   latex->SetTextSize(0.03);
   latex->SetTextFont(42);

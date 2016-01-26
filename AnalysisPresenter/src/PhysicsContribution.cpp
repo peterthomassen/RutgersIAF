@@ -164,7 +164,7 @@ void PhysicsContribution::applyFlatUncertainty(TString name) {
 	}
 }
 
-THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale, TH1D* hPileup) {
+THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp, TString selection, double scale, TH1D* hPileup, TH1D* hPileupUnc) {
 	delete m_hn;
 	delete m_hnAbs;
 	
@@ -188,13 +188,21 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	TTree* treeR = (TTree*)f.Get(m_treeRname);
 	treeR->SetWeight(1);
 	
-	TH1D* hPileupWeights = 0;
 	TH1D* hPileupMC = (TH1D*)f.Get("noCutSignature_TrueNumInteractions");
-	if(isMC() && hPileup && hPileupMC) {
-		hPileupWeights = (TH1D*)hPileup->Clone();
-		hPileupWeights->Scale(1./hPileupWeights->Integral());
+	TH1D* hPileupWeights = 0;
+	TH1D* hPileupWeightsUnc = 0;
+	if(isMC() && hPileupMC) {
 		hPileupMC->Scale(1./hPileupMC->Integral());
-		hPileupWeights->Divide(hPileupMC);
+		if(hPileup) {
+			hPileupWeights = (TH1D*)hPileup->Clone();
+			hPileupWeights->Scale(1./hPileupWeights->Integral());
+			hPileupWeights->Divide(hPileupMC);
+		}
+		if(hPileupUnc) {
+			hPileupWeightsUnc = (TH1D*)hPileupUnc->Clone();
+			hPileupWeightsUnc->Scale(1./hPileupWeightsUnc->Integral());
+			hPileupWeightsUnc->Divide(hPileupMC);
+		}
 	}
 	
 	cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb)" << endl;
@@ -224,8 +232,18 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		treeR->GetLeaf(tmpBranchName)->SetName(orgBranchName);
 	}
 	
-	delete hPileupWeights;
+	if(hPileupWeightsUnc) {
+		addVariation(hPileupWeightsUnc->GetName(), std::pair<TString, TString>());
+		m_uncertaintyMap[hPileupWeightsUnc->GetName()].second = (THnBase*)hn->Clone(hPileupWeightsUnc->GetName());
+		m_uncertaintyMap[hPileupWeightsUnc->GetName()].second->Reset();
+		m_uncertaintyMap[hPileupWeightsUnc->GetName()].second->CalculateErrors(false);
+		cout << "Running " << m_filename << "#" << m_treeRname << " (" << m_type << ", lumi=" << m_lumi << "/pb), pileup variation" << endl;
+		fillContentVariation(treeR, m_uncertaintyMap[hPileupWeightsUnc->GetName()].second, varexp, selection, scale, hPileupWeightsUnc);
+	}
+	
 	delete hPileupMC;
+	delete hPileupWeights;
+	delete hPileupWeightsUnc;
 	delete treeR;
 	f.Close();
 	
@@ -235,6 +253,9 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	
 	for(auto &uncertainty : m_uncertaintyMap) {
 		auto h = uncertainty.second.second;
+		if(!h->GetNbins()) {
+			continue;
+		}
 		for(int i = 0; i <= h->GetNbins() + 1; ++i) {
 			h->SetBinError(i, 0);
 		}
@@ -338,7 +359,7 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 	
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s:Entry$", varexp.c_str(), varexpIncarnation.c_str());
 	
-	varexpFull += (!variation && m_hnAbs)
+	varexpFull += (m_hnAbs)
 		? TString(":") + m_nominalWeight
 		: TString(":1");
 	
@@ -412,8 +433,10 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 			}
 			
 			// Fill histograms
-			if(!variation && m_hnAbs) {
-				m_hnAbs->Fill(x, weight);
+			if(m_hnAbs) {
+				if(!variation) {
+					m_hnAbs->Fill(x, weight);
+				}
 				
 				// This is the sgn function
 				weight *= (treeR->GetVal(hn->GetNdimensions() + 5)[i] > 0) - (treeR->GetVal(hn->GetNdimensions() + 5)[i] < 0);

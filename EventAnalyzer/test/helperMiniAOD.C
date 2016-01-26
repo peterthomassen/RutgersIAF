@@ -970,6 +970,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
 
   EventVariableObjectVariableVector<double>* leptonPts = new EventVariableObjectVariableVector<double>("PT","goodMuons",true);
   leptonPts->addProduct("goodElectrons");
+  leptonPts->addProduct("goodTaus");
   handler->addEventVariable("PTGOODLEPTONS",leptonPts);
   
   handler->addEventVariable("DXYBASICELECTRONS", new EventVariableObjectVariableVector<double>("dxy","basicElectrons"));

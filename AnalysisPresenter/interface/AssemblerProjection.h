@@ -49,6 +49,7 @@ public:
 	TCanvas* plot(bool log = true, TF1* f1 = 0, double xminFit = 0, double xmaxFit = 0);
 	
 	void print() const;
+	TString printRA7table() const;
 	void printMeta(TString type = "data") const;
 	
 	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
