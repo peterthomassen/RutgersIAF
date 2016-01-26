@@ -11,7 +11,6 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMixedPairMass.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOSSF.h"
-#include "RutgersIAF/EventAnalyzer/interface/EventVariableOSSFscott.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixLeptons.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOS.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableExtreme.h"
