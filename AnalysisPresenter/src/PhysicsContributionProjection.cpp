@@ -39,6 +39,12 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 		}
 	}
 	
+	for(auto &uncertainty : contribution->getUncertaintyMap()) {
+		TH1D* hProjection = uncertainty.second.second->Projection(dim, "E");
+		hProjection->SetName(uncertainty.first);
+		m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
+	}
+	
 	m_histogram->SetName(contribution->getName());
 	TString title = contribution->isData()
 		? contribution->getSelectionString()
@@ -50,6 +56,12 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 			// Set negative bins to 0 (this can happen due to fake subtraction, negative MC weights etc.)
 			if(!m_source->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
+				// Also set negative uncertainties to 0 (would otherwise affect uncertainty bundling)
+				for(auto &uncertainty : getUncertainties()) {
+					if(uncertainty.second->GetBinContent(i) == 0) {
+						uncertainty.second->SetBinContent(i, 0);
+					}
+				}
 			}
 			
 			// Zerostat uncertainty for background and signal samples
@@ -57,12 +69,6 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 				m_histogram->SetBinError(i, zerostat);
 			}
 		}
-	}
-	
-	for(auto &uncertainty : contribution->getUncertaintyMap()) {
-		TH1D* hProjection = uncertainty.second.second->Projection(dim, "E");
-		hProjection->SetName(uncertainty.first);
-		m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
 	}
 	
 	m_contributions.insert(contribution);

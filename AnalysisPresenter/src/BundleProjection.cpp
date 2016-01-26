@@ -88,7 +88,9 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 			if(m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
 				for(auto &uncertainty : getUncertainties()) {
-					uncertainty.second->SetBinContent(i, 0);
+					if(uncertainty.second->GetBinContent(i) == 0) {
+						uncertainty.second->SetBinContent(i, 0);
+					}
 				}
 			}
 		}
