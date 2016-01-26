@@ -28,8 +28,8 @@ void ttbar() {
 	Assembler* assembler = new Assembler();
 	init(assembler);
 	
-	//assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
-	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
+	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	//assembler->setMode("noRatioPlot");
 	assembler->setMode("noTTsystematics");
 	
@@ -68,9 +68,12 @@ makeNicePlot(assembler->project("ST", true)->plot(false), "ST [GeV]")->SaveAs(".
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbar_NGOODJETS_STgt300.pdf");
 makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("../nicePlots/ttbar_NGOODJETS_STgt300.pdf");
 	assembler->project("NGOODJETS", true)->print();
+	assembler->project("ST", true)->plot(true)->SaveAs("ttbar_ST_STgt300.pdf");
+makeNicePlot(assembler->project("ST", true)->plot(true), "ST [GeV]")->SaveAs("../nicePlots/ttbar_ST_STgt300.pdf");
 	assembler->project("HT", true)->plot(true)->SaveAs("ttbar_HT_STgt300.pdf");
-makeNicePlot(assembler->project("HT", true)->plot(false), "HT [GeV]")->SaveAs("../nicePlots/ttbar_HT_STgt300.pdf");
+makeNicePlot(assembler->project("HT", true)->plot(true), "HT [GeV]")->SaveAs("../nicePlots/ttbar_HT_STgt300.pdf");
 	assembler->project("MET", true)->plot(true)->SaveAs("ttbar_MET_STgt300.pdf");
+makeNicePlot(assembler->project("MET", true)->plot(true), "MET [GeV]")->SaveAs("../nicePlots/ttbar_MET_STgt300.pdf");
 	assembler->project("ST", true)->plot(true)->SaveAs("ttbar_ST_STgt300.pdf");
 	assembler->project("NPROMPTNONISOINCLUSIVETRACKS7", true)->plot(true)->SaveAs("ttbar_NPROMPTNONISOINCLUSIVETRACKS7_STgt300.pdf");
 makeNicePlot(assembler->project("NPROMPTNONISOINCLUSIVETRACKS7", true)->plot(false), "nPromptNonIsoTracks")->SaveAs("../nicePlots/ttbar_NPROMPTNONISOINCLUSIVETRACKS7_STgt300.pdf");

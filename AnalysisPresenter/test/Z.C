@@ -16,7 +16,7 @@ void Z() {
 	// Specify axes and bins of multidimensional histogram
 	// For Z peak
 	//std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{76,106}";
-	std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{66,106}";
+	std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,510,17}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{66,106}";
 	varexp += ":NPROMPTTRACKS7{0,100,1}";
 	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
 	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
@@ -42,8 +42,8 @@ void Z() {
 	Assembler* assembler = new Assembler();
 	init(assembler);
 	
-	//assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
-	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
+	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	//assembler->setMode("noRatioPlot");
 	assembler->setMode("noTrackSystematics");
 	
@@ -69,7 +69,7 @@ void Z() {
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("NBJETSCSVM", 0, 0);
 	
-	assembler->setRange("HT", -10, 200, false);
+//	assembler->setRange("HT", -10, 200, false);
 	assembler->setRange("MET", 0, 50, false);
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("Zloose_MINMUONPT.pdf");
@@ -81,16 +81,17 @@ void Z() {
 	assembler->setRange("MET", 0, 50, false);
 	//assembler->setRange("MT", 0, 50, false);
 	
-	assembler->setRange("HT");
+//	assembler->setRange("HT");
 	assembler->project("HT", true)->plot(true)->SaveAs("Z_HT.pdf");
-
+makeNicePlot(assembler->project("HT", true)->plot(true), "HT [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50_HT.pdf");
+	
 	//assembler->setRange("MET", 0, 30, false);
 //	assembler->setRange("HT", -10, 200, false);
 	
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSF.pdf");
 
-makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50HT0to200MT0to50_MOSSF.pdf");
+makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50_MOSSF.pdf");
 
 	assembler->setRange("MLIGHTLEPTONS", 75, 100);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSF_3LonZ.pdf");
@@ -99,15 +100,15 @@ makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF p
 	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSFfine.pdf");
 	assembler->setRange("AIC", 0, 0);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_noAIC_MOSSF.pdf");
-makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50HT0to200MT0to50_noAIC_MOSSF.pdf");
+makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50_noAIC_MOSSF.pdf");
 	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_noAIC_ONZ.pdf");
-makeNicePlot(assembler->project("ONZ", true)->plot(false), "OSSF pair on Z?")->SaveAs("../nicePlots/Z_L3MET0to50HT0to200MT0to50_noAIC_ONZ.pdf");
+makeNicePlot(assembler->project("ONZ", true)->plot(false), "OSSF pair on Z?")->SaveAs("../nicePlots/Z_L3MET0to50_noAIC_ONZ.pdf");
 	assembler->setRange("AIC", 1, 1);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_AIC_MOSSF.pdf");
 	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_AIC_ONZ.pdf");
 	assembler->setRange("AIC");
 	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_ONZ.pdf");
-makeNicePlot(assembler->project("ONZ", true)->plot(false), "OSSF pair on Z?")->SaveAs("../nicePlots/Z_L3MET0to50HT0to200MT0to50_ONZ.pdf");
+makeNicePlot(assembler->project("ONZ", true)->plot(false), "OSSF pair on Z?")->SaveAs("../nicePlots/Z_L3MET0to50_ONZ.pdf");
 	assembler->setRange("ONZ", 1, 1);
 	assembler->project("MINMUONPT", true)->plot(false)->SaveAs("Z_MINMUONPT.pdf");
 	assembler->project("MINELECTRONPT", true)->plot(false)->SaveAs("Z_MINELECTRONPT.pdf");

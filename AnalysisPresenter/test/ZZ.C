@@ -15,7 +15,7 @@ void ZZ() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLEPTONS{0,400,20,\"MLIGHTLEPTONS\"}:NGOODJETS{0,6}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{0,600,30}:NGOODJETS{0,6}";
 	
 	// Global cuts, if desired
 	TString selection = "";
@@ -27,9 +27,9 @@ void ZZ() {
 	Assembler* assembler = new Assembler();
 	init(assembler);
 	
-	//assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
-	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
-	//assembler->setMode("noRatioPlot");
+	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
+	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
+	assembler->setMode("noRatioPlot");
 	assembler->setMode("noZZsystematics");
 	
 	setupData(assembler);
@@ -67,6 +67,7 @@ makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "4L mass [G
 assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_B1.pdf");
 assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ZZ_NGOODJETS.pdf");
+makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_NGOODJETS.pdf");
 	
 	assembler->setRange("NOSSF", 1, 2);
 	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_NOSSF12-0Taus.pdf");
