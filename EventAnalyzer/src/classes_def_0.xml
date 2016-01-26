@@ -62,6 +62,12 @@
   <class name="EventVariableOSSF" ClassVersion="1">
    <version ClassVersion="1" checksum="3020714107"/>
   </class>
+  <class name="EventVariableOSSFscott" ClassVersion="1">
+   <version ClassVersion="1" checksum="4083584410"/>
+  </class>
+  <class name="EventVariableMatrixLeptons" ClassVersion="1">
+   <version ClassVersion="1" checksum="3631208740"/>
+  </class>
   <class name="EventVariableOS" ClassVersion="1">
    <version ClassVersion="1" checksum="3966592974"/>
   </class>
