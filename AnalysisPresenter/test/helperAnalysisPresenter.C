@@ -194,14 +194,22 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("!ONZ");
 	wz->addWeight("1.015"); // normalization
-	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZTo3LNu", 0.015);
+	if(!assembler->getMode("noWZsystematics")) {
+		wz->addFlatUncertainty("normalizationWZ", 0.015);
+		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
+		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
+	}
 	assembler->getBundle("WZ")->addComponent(wz);
 	mc.push_back(wz);
 	
 	wz = new PhysicsContribution("backgroundMC", prefix + "WZJets" + infix + suffix, xsec_WZJets, "WZJets", false, "treeR", -1, 0);
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("ONZ");
-	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZJets", 0.073);
+	if(!assembler->getMode("noWZsystematics")) {
+		wz->addFlatUncertainty("normalizationWZ", 0.073);
+		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
+		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
+	}
 	wz->addWeight("1.372"); // normalization
 	assembler->getBundle("WZ")->addComponent(wz);
 	mc.push_back(wz);
@@ -256,7 +264,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		ttbarF->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
 		//ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
 		//if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("xsec_tt", dxsec_tt / xsec_tt);
-		if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("ttbarFudge", 0.333);
+		if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("ttbarFudge", 0.5);
 		mc.push_back(ttbarF);
 		bundleTTbar->addComponent(ttbarF);
 		
@@ -265,7 +273,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			
 			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "TT_FullLfakeTracks", true, "treeRfakeTracks", -1, assembler->getMode("fullPrecision") ? 0 : 0.01);
 			ttbarFfakeTracks->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
-			if(!assembler->getMode("noTTsystematics")) ttbarFfakeTracks->addFlatUncertainty("ttbarFudge", 0.333);
+			if(!assembler->getMode("noTTsystematics")) ttbarFfakeTracks->addFlatUncertainty("ttbarFudge", 0.5);
 			ttbarFfake.push_back(ttbarFfakeTracks);
 			assembler->getBundle("TrackFakes")->addComponent(ttbarFfakeTracks);
 			
@@ -370,6 +378,8 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 		//fakeTracks->addFlatUncertainty("trackFakeRateFit", 0.06);
 		//fakeTracks->addFlatUncertainty("trackPtFit", 0.10);
 		fakeTracks->addFlatUncertainty("trackFakes", 0.14);
+		fakeTracks->addFlatUncertainty("photonFakes", -0.080); // based on 52% variation of photon contribution in track fake rate measurement region
+		fakeTracks->addFlatUncertainty("normalizationWZ", -0.033); // based on 7.3% variation of WZ in track fake rate measurement region
 	}
 	if(option != "noTracks" && option != "justTaus" && option != "justPhotons" && option != "fakeTaus2L") {
 		assembler->getBundle("TrackFakes")->addComponent(fakeTracks);
@@ -383,7 +393,9 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 	fakePhotons->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
 	applyUncertainties(assembler, fakePhotons);
 	if(syst && !assembler->getMode("noPhotonSystematics")) {
-		fakePhotons->addFlatUncertainty("photonDR", 0.52);
+		fakePhotons->addFlatUncertainty("photonFakes", 0.52); // due to photonDR
+		fakePhotons->addFlatUncertainty("trackFakes", -0.056); // based on 14% variation of track contribution in photon fake rate measurement region
+		fakePhotons->addFlatUncertainty("normalizationWZ", -0.0018); // based on 7.3% variation of WZ in photon fake rate measurement region
 	}
 	if(option != "noPhotons" && option != "justTracks" && option != "justTaus" && option != "fakeTaus2L") {
 		assembler->getBundle("PhotonFakes")->addComponent(fakePhotons);
