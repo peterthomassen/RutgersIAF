@@ -31,8 +31,8 @@ void exampleAnalysisTree(const char* ifname="in.root"
 	BaseHandler* handler = new BaseHandler(ofname,reader);
 	
 	// If specified, only run over a subset of events
-	if(iLow > 0) handler->setMode("nEntryLow", iLow);
-	if(iHigh > 0) handler->setMode("nEntryHigh", iHigh);
+	if(iLo > 0) handler->setMode("nEntryLow", iLo);
+	if(iHi > 0) handler->setMode("nEntryHigh", iHi);
 	
 	if(single) handler->setMode("singleGoodMuon");
 	
