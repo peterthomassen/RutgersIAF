@@ -23,6 +23,7 @@ void applyUncertainties(Assembler* assembler, PhysicsContribution* contribution)
 	
 	contribution->addRelativeUncertainty("lepIDTrigger", "0.03");
 	if(contribution->isMC() && !assembler->getMode("noSystVariations")) {
+		// See https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
 		contribution->addVariation("METunc", make_pair("MET", "0.5 * (18.5*sqrt(2)) * sqrt(-log(rndm())) * cos(6.2831853 * rndm()) + _MET"));
 	}
 }
@@ -301,8 +302,6 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		mc.push_back(c);
 	}
 	
-//	mc.clear();
-	
 	for(auto &contribution : mc) {
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
@@ -321,6 +320,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		applyUncertainties(assembler, contribution);
 		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("xsecRare", 0.5);
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
 	}
@@ -341,6 +341,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		applyUncertainties(assembler, contribution);
 		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("xsecHiggs", 0.5);
 		assembler->addContribution(contribution);
 		assembler->getBundle("Higgs")->addComponent(contribution);
 	}
@@ -480,8 +481,10 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   legend->SetFillColor(kWhite);
   double max = h->GetMaximum();
   double min = h->GetMinimum();
-  legend->SetY1(min + 0.5 * (max - min));
-  legend->SetY2(min + 0.9 * (max - min));
+  //legend->SetY1(min + 0.5 * (max - min));
+  //legend->SetY2(min + 0.9 * (max - min));
+  legend->SetY1(0.5);
+  legend->SetY2(2.1);
 
   for(auto pad : {pad1, pad2}) {
 	  TList* list2 = pad->GetListOfPrimitives();
