@@ -47,19 +47,10 @@ void exampleAnalysisTree(const char* ifname="in.root"
 	}
 	handler->setWriter(writer);
 	
-	if(!single && !theory) {
-		cout << "Setting fake modes ..." << endl;
-		
-		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTracks") , "trackFakeCombination");
-		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakePhotons"), "photonFakeCombination");
-//		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTaus")   , "tauFakeCombination");
-	}
-	
-	
 	if(!isMC) handler->readGoodRunLumiFromJSON(TString(json));
 	
 	bool matchingFlag = !(input.Contains("/TTJets") || input.Contains("/TTTo2L") || input.Contains("/DYJets") || input.Contains("/WWTo2L"));
-	if(!matchingFlag && noFakes == 0) {
+	if(!single && !theory && !matchingFlag && noFakes == 0) {
 		cout << "Setting fake modes ..." << endl;
 		
 		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTracks") , "trackFakeCombination");
