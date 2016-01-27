@@ -195,7 +195,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	wz->addWeight("!ONZ");
 	wz->addWeight("1.015"); // normalization
 	if(!assembler->getMode("noWZsystematics")) {
-		wz->addFlatUncertainty("normalizationWZ", 0.015);
+		wz->addFlatUncertainty("normalizationWZ", 0.015); // size of scale factor (< statistical)
 		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
 		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
 	}
@@ -206,7 +206,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("ONZ");
 	if(!assembler->getMode("noWZsystematics")) {
-		wz->addFlatUncertainty("normalizationWZ", 0.073);
+		wz->addFlatUncertainty("normalizationWZ", 0.073); // statistical
 		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
 		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
 	}
@@ -217,7 +217,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30, assembler->getMode("fullPrecision") ? 0 : 0.01);
 	zz->setNominalWeight("genEventInfo_weight[0]");
 	zz->addWeight("1.256"); // normalization
-	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", 1.166);
+	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", 0.166); // statistical
 	mc.push_back(zz);
 	
 	PhysicsContribution* c = 0;
