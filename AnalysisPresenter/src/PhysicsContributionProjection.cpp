@@ -58,7 +58,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 				m_histogram->SetBinContent(i, 0);
 				// Also set negative uncertainties to 0 (would otherwise affect uncertainty bundling)
 				for(auto &uncertainty : getUncertainties()) {
-					if(uncertainty.second->GetBinContent(i) == 0) {
+					if(uncertainty.second->GetBinContent(i) < 0) {
 						uncertainty.second->SetBinContent(i, 0);
 					}
 				}
