@@ -888,6 +888,7 @@ void setupPrintRA7Sync(BaseHandler* handler)
   printLines->addVariable("OSSFMINMLL",ddd);
   printLines->addVariable("RA7MOSSF",ddd);
   printLines->addVariable("PT201510",bbb);
+  printLines->addVariable("RA7TRIGGERACCEPT",bbb);
   handler->addPrintModule(printLines);
 }
 
@@ -1628,20 +1629,32 @@ void setupTriggers(BaseHandler* handler,int mode){
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DOUBLEEG")));
     break;
   case 4:
-    trigaccept = new EventVariableCombined("ACCEPT_SingleMuTrigger","REJECT_DoubleEgTrigger",true);
+    trigaccept = new EventVariableCombined("ACCEPT_SingleMuTrigger","REJECT_DoubleEGTrigger",true);
     trigaccept->addVariable("REJECT_DoubleMuTrigger");
     trigaccept->addVariable("REJECT_MuEGTrigger");
     handler->addEventVariable("TRIGGERACCEPT",trigaccept);
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("SINGLEMU")));
     break;
   case 5:
-    trigaccept = new EventVariableCombined("ACCEPT_SingleElTrigger","REJECT_DoubleEgTrigger",true);
+    trigaccept = new EventVariableCombined("ACCEPT_SingleElTrigger","REJECT_DoubleEGTrigger",true);
     trigaccept->addVariable("REJECT_SingleMuTrigger");
     trigaccept->addVariable("REJECT_DoubleMuTrigger");
     trigaccept->addVariable("REJECT_MuEGTrigger");
     handler->addEventVariable("TRIGGERACCEPT",trigaccept);
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("SINGLEEL")));
     break;
+  case 6:
+    trigaccept = new EventVariableCombined("ACCEPT_DoubleEGTrigger", "ACCEPT_DoubleMuTrigger",false);
+    trigaccept->addVariable("ACCEPT_MuEGTrigger");
+    trigaccept->addVariable("ACCEPT_DoubleEGHTTrigger");
+    trigaccept->addVariable("ACCEPT_DoubleMuHTTrigger");
+    trigaccept->addVariable("ACCEPT_MuEGHTTrigger");
+    trigaccept->addVariable("ACCEPT_TriElTrigger");
+    trigaccept->addVariable("ACCEPT_MuDiElTrigger");
+    trigaccept->addVariable("ACCEPT_DiMuElTrigger");
+    trigaccept->addVariable("ACCEPT_TriMuTrigger");
+    handler->addEventVariable("RA7TRIGGERACCEPT",trigaccept);
+    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("RA7leptons")));
   default:
     trigaccept = new EventVariableCombined("DIMUTRIGTHRESHOLD","DIELTRIGTHRESHOLD");
     trigaccept->addVariable("MUEGCOMBINEDTHRESHOLD");
