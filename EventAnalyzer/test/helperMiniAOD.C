@@ -422,7 +422,7 @@ void setupProducts(BaseHandler* handler)
   handler->addProductCut("goodElectronsLowPt", "ELECTRON_MVA_TIGHT");
   handler->addProductCut("goodElectronsLowPt", "SIP3D_4sigma");
   handler->addProductCut("goodElectronsLowPt", "MULTIISOM");
-  if(handler->getMode("RA7") && handler->getMode("MC")) {
+  if(handler->getMode("RA7")) {
     handler->addProductCut("goodElectronsLowPt", "ELECTRON_IDemu");
   }
 
