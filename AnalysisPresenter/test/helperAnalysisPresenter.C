@@ -16,6 +16,18 @@ namespace {
   int loadMyLibraryTrigger = loadMyLibraryTriggerFunc();
 }
 
+void applyUncertainties(Assembler* assembler, PhysicsContribution* contribution) {
+	if(!assembler->getMode("fullPrecision")) {
+		return;
+	}
+	
+	contribution->addRelativeUncertainty("lepIDTrigger", "0.03");
+	if(contribution->isMC() && !assembler->getMode("noSystVariations")) {
+		// See https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
+		contribution->addVariation("METunc", make_pair("MET", "0.5 * (18.5*sqrt(2)) * sqrt(-log(rndm())) * cos(6.2831853 * rndm()) + _MET"));
+	}
+}
+
 void init(Assembler* assembler) {
 	TH1::AddDirectory(false);
 	TH1::SetDefaultSumw2(true);
@@ -89,16 +101,16 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	
 	data->addWeight("TRIGGERACCEPT");
 	
-        std::vector<string> vetoFilenames = {
-                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/csc2015_Dec01.txt",
-                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/ecalscn1043093_Dec01.txt",
-                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/badResolutionTrack_Jan13.txt",
-                "/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/muonBadTrack_Jan13.txt",
-        };
-        if(!applyEventVetos) {
-                vetoFilenames.clear();
-        }
-
+	std::vector<string> vetoFilenames = {
+		"/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/csc2015_Dec01.txt",
+		"/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/ecalscn1043093_Dec01.txt",
+		"/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/badResolutionTrack_Jan13.txt",
+		"/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/muonBadTrack_Jan13.txt",
+	};
+	if(!applyEventVetos) {
+		vetoFilenames.clear();
+	}
+	
 	for(auto vetoFilename : vetoFilenames) {
 		cout << "adding vetos from " << vetoFilename << " ..." << flush;
 		int nDuplicates = 0;
@@ -119,13 +131,25 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	
 	assembler->addContribution(data);
 	
-	TFile* f = new TFile("/cms/thomassen/2015/Analysis/data/DataPileup_2015-11-19.root");
+	// Pile-up weights
+	cout << "Notice: Applying pileup weights" << endl;
+	TFile* f = new TFile("/cms/thomassen/2015/Analysis/data/DataPileup_2015-12-18.root");
 	if(f->IsZombie()) {
 		throw std::runtime_error("couldn't open pileup file");
 	}
 	TH1D* hPileup = (TH1D*)f->Get("pileup");
-	assembler->setPileupHistogram(hPileup);
-	cout << "Notice: Applying pileup weights" << endl;
+	TH1D* hPileupUnc = 0;
+	
+	if(assembler->getMode("fullPrecision")) {
+		TFile* fUnc = new TFile("/cms/thomassen/2015/Analysis/data/DataPileup+5%_2015-12-18.root");
+		if(fUnc->IsZombie()) {
+			throw std::runtime_error("couldn't open pileup uncertainty file");
+		}
+		hPileupUnc = (TH1D*)fUnc->Get("pileup");
+	} else {
+		cout << "Notice: Not applying lepID, MET smearing and pile-up uncertainties. Set fullPrecision mode to do so." << endl;
+	}
+	assembler->setPileupHistogram(hPileup, hPileupUnc);
 }
 
 void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false) {
@@ -170,41 +194,48 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("!ONZ");
 	wz->addWeight("1.015"); // normalization
-	//wz->addVariation("METunc", make_pair("MET", "18.5 * sqrt(-log(rndm())) * cos(6.2831853 * rndm()) + _MET"));
-	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZTo3LNu", 0.015);
+	if(!assembler->getMode("noWZsystematics")) {
+		wz->addFlatUncertainty("normalizationWZ", 0.015); // size of scale factor (< statistical)
+		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
+		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
+	}
 	assembler->getBundle("WZ")->addComponent(wz);
 	mc.push_back(wz);
 	
 	wz = new PhysicsContribution("backgroundMC", prefix + "WZJets" + infix + suffix, xsec_WZJets, "WZJets", false, "treeR", -1, 0);
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("ONZ");
-	if(!assembler->getMode("noWZsystematics")) wz->addFlatUncertainty("normalizationWZJets", 0.073);
+	if(!assembler->getMode("noWZsystematics")) {
+		wz->addFlatUncertainty("normalizationWZ", 0.073); // statistical
+		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
+		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
+	}
 	wz->addWeight("1.372"); // normalization
 	assembler->getBundle("WZ")->addComponent(wz);
 	mc.push_back(wz);
 	
-	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30);
+	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30, assembler->getMode("fullPrecision") ? 0 : 0.01);
 	zz->setNominalWeight("genEventInfo_weight[0]");
 	zz->addWeight("1.256"); // normalization
-	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", (1.256-1)/1.256);
+	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", 0.166); // statistical
 	mc.push_back(zz);
 	
 	PhysicsContribution* c = 0;
 	
-	c = new PhysicsContribution("backgroundMC", prefix + "TTWJetsToLNu" + infix + suffix, xsec_ttw, "TTW");
+	c = new PhysicsContribution("backgroundMC", prefix + "TTWJetsToLNu" + infix + suffix, xsec_ttw, "TTW", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01);
 	c->setNominalWeight("genEventInfo_weight[0]");
 	mcRare.push_back(c);
 	
-	c = new PhysicsContribution("backgroundMC", prefix + "TTZToLLNuNu" + infix + suffix, xsec_ttz, "TTZ");
+	c = new PhysicsContribution("backgroundMC", prefix + "TTZToLLNuNu" + infix + suffix, xsec_ttz, "TTZ", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01);
 	c->setNominalWeight("genEventInfo_weight[0]");
 	mcRare.push_back(c);
 	
 //	mc.push_back(new PhysicsContribution("backgroundMC", prefix + "TBLL" + infix + suffix, xsec_tbz_tqz, "TBZ + TQZ"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "TTWWJets" + infix + suffix, 0.002037, "TTWW"));
 //	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWWJets" + infix + suffix, 0.08217, "WWW"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZ" + infix + suffix, xsec_WWZ, "WWZ"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZ" + infix + suffix, xsec_WZZ, "WZZ"));
-	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZ" + infix + suffix, xsec_ZZZ, "ZZZ"));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WWZ" + infix + suffix, xsec_WWZ, "WWZ", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "WZZ" + infix + suffix, xsec_WZZ, "WZZ", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+	mcRare.push_back(new PhysicsContribution("backgroundMC", prefix + "ZZZ" + infix + suffix, xsec_ZZZ, "ZZZ", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
 	
 	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * 0.01 + (NGOODJETS[0] == 2) * 0.01 + (NGOODJETS[0] == 3) * 0.07 + (NGOODJETS[0] == 4) * -0.07 + (NGOODJETS[0] == 5) * -0.22 + (NGOODJETS[0] > 5) * -0.34";
 	TString normalization = "0.805";
@@ -225,8 +256,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			mc.clear();
 		}
 		
-		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJets" + infix + suffix, xsec_tt, "TT", false, "treeR", -1, 0.01);
-		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "ttF", false, "treeR", kAzure + 1);
+		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "ttF", false, "treeR", kAzure + 1, assembler->getMode("fullPrecision") ? 0 : 0.01);
 		ttbarF->setNominalWeight("genEventInfo_weight[0]");
 		ttbarF->addWeight(normalization); // normalization
 		ttbarF->addWeight(nJetWeight);
@@ -234,23 +264,23 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		ttbarF->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
 		//ttbarF->addFlatUncertainty("xsec_ttF", dxsec_ttF / xsec_ttF);
 		//if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("xsec_tt", dxsec_tt / xsec_tt);
-		if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("ttbarFudge", 0.333);
+		if(!assembler->getMode("noTTsystematics")) ttbarF->addFlatUncertainty("ttbarFudge", 0.5);
 		mc.push_back(ttbarF);
 		bundleTTbar->addComponent(ttbarF);
 		
 		if(!dilep) {
 			std::vector<PhysicsContribution*> ttbarFfake;
 			
-			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "TT_FullLfakeTracks", true, "treeRfakeTracks", -1, 0.01);
+			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "TT_FullLfakeTracks", true, "treeRfakeTracks", -1, assembler->getMode("fullPrecision") ? 0 : 0.01);
 			ttbarFfakeTracks->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
-			if(!assembler->getMode("noTTsystematics")) ttbarFfakeTracks->addFlatUncertainty("ttbarFudge", 0.333);
+			if(!assembler->getMode("noTTsystematics")) ttbarFfakeTracks->addFlatUncertainty("ttbarFudge", 0.5);
 			ttbarFfake.push_back(ttbarFfakeTracks);
 			assembler->getBundle("TrackFakes")->addComponent(ttbarFfakeTracks);
 			
 			/* 
 			 * We don't assume the ttbar MC to model AIC's correctly. We therefore decided to get the estimate from data, and veto leptons from photons in the MC. Thus, we don't need MC subtraction in the data-driven method.
 			 * 
-			PhysicsContribution* ttbarFfakePhotons = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "TT_FullLfakePhotons", true, "treeRfakePhotons", -1, 0.01);
+			PhysicsContribution* ttbarFfakePhotons = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "TT_FullLfakePhotons", true, "treeRfakePhotons", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
 			ttbarFfake.push_back(ttbarFfakePhotons);
 			assembler->getBundle("PhotonFakes")->addComponent(ttbarFfakePhotons);
 			*/
@@ -268,28 +298,25 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	if(dilep) {
 		PhysicsContribution* c = 0;
 		
-		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10to50" + infix + suffix, xsec_dy10to50, "DY10to50", false, "treeR", 46);
+		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10to50" + infix + suffix, xsec_dy10to50, "DY10to50", false, "treeR", 46, assembler->getMode("fullPrecision") ? 0 : 0.01);
 		c->setNominalWeight("genEventInfo_weight[0]");
 		c->addWeight("(NGOODJETS[0] == 0) * 1.0 + (NGOODJETS[0] == 1) * 0.93 + (NGOODJETS[0] == 2) * 0.92 + (NGOODJETS[0] == 3) * 0.93 + (NGOODJETS[0] == 4) * 1.09 + (NGOODJETS[0] == 5) * 1.27 + (NGOODJETS[0] == 6) * 1.61 + (NGOODJETS[0] > 6) * 1");
 		mc.push_back(c);
 		
-		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dy50, "DY50", false, "treeR", 46);
+		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dy50, "DY50", false, "treeR", 46, assembler->getMode("fullPrecision") ? 0 : 0.01);
 		c->addFlatUncertainty("xsec_dy50", dxsec_dy50 / xsec_dy50);
 		c->setNominalWeight("genEventInfo_weight[0]");
 		c->addWeight("(NGOODJETS[0] == 0) * 1.0 + (NGOODJETS[0] == 1) * 0.93 + (NGOODJETS[0] == 2) * 0.92 + (NGOODJETS[0] == 3) * 0.93 + (NGOODJETS[0] == 4) * 1.09 + (NGOODJETS[0] == 5) * 1.27 + (NGOODJETS[0] == 6) * 1.61 + (NGOODJETS[0] > 6) * 1");
 		mc.push_back(c);
 	}
 	
-//	mc.clear();
-//	mc.push_back(wz);
-	
 	for(auto &contribution : mc) {
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
+		applyUncertainties(assembler, contribution);
 		assembler->addContribution(contribution);
 	}
-//	return;
 	
 	if(onlyTTF) {
 		return;
@@ -299,26 +326,30 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
+		applyUncertainties(assembler, contribution);
 		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("xsecRare", 0.5);
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
 	}
 	
-//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau"));
-//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluHToZZTo4L_M125" + infix + suffix, xsec_glugluHtoZZto4L, "GluGluHToZZTo4L"));
-//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToTauTau" + infix + suffix, 0.0992, "VBF_HToTauTau"));
-//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToWWTo2LAndTau2Nu" + infix + suffix, 0.0282, "VBF_HToWWTo2LAndTau2Nu"));
-	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToZZTo4L_M125" + infix + suffix, xsec_vbf_HtoZZto4L, "VBF_HToZZTo4L"));
-//?	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToTauTau" + infix + suffix, 0.0778, "WH_ZH_TTH_HToTauTau"));
-//?	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToWW" + infix + suffix, 0.254, "WH_ZH_TTH_HToWW"));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToTauTau" + infix + suffix, 1.2466, "GluGluToHToTauTau", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluToHToWWTo2LAndTau2Nu" + infix + suffix, 0.4437, "GluGluToHToWWTo2LAndTau2Nu", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "GluGluHToZZTo4L_M125" + infix + suffix, xsec_glugluHtoZZto4L, "GluGluHToZZTo4L", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToTauTau" + infix + suffix, 0.0992, "VBF_HToTauTau", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+//	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToWWTo2LAndTau2Nu" + infix + suffix, 0.0282, "VBF_HToWWTo2LAndTau2Nu", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "VBF_HToZZTo4L_M125" + infix + suffix, xsec_vbf_HtoZZto4L, "VBF_HToZZTo4L", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+//?	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToTauTau" + infix + suffix, 0.0778, "WH_ZH_TTH_HToTauTau", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
+//?	mcH.push_back(new PhysicsContribution("backgroundMC", prefix + "WH_ZH_TTH_HToWW" + infix + suffix, 0.254, "WH_ZH_TTH_HToWW", false, "treeR", -1, assembler->getMode("fullPrecision") ? 0 : 0.01));
 	
 	for(auto &contribution : mcH) {
 		//contribution->addFlatUncertainty("xsecH", 0.5); // TODO correlations?
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
+		applyUncertainties(assembler, contribution);
 		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("xsecHiggs", 0.5);
 		assembler->addContribution(contribution);
 		assembler->getBundle("Higgs")->addComponent(contribution);
 	}
@@ -329,7 +360,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 	std::string body = getDataFileName();
 	std::string suffix = ".3L.root";
 	
-	TString nVertexWeight = "0.701 + 0.0218 * NVERTICES[0]";
+	TString nVertexWeight = "0.773 + 0.0218 * NVERTICES[0]";
 	
 	////// Tracks
 	PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
@@ -342,9 +373,13 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 	);
 	fakeTracks->addWeight(nVertexWeight);
 	fakeTracks->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
+	applyUncertainties(assembler, fakeTracks);
 	if(syst && !assembler->getMode("noTrackSystematics")) {
-		fakeTracks->addFlatUncertainty("trackFakeRateFit", 0.06);
-		fakeTracks->addFlatUncertainty("trackPtFit", 0.10);
+		//fakeTracks->addFlatUncertainty("trackFakeRateFit", 0.06);
+		//fakeTracks->addFlatUncertainty("trackPtFit", 0.10);
+		fakeTracks->addFlatUncertainty("trackFakes", 0.14);
+		fakeTracks->addFlatUncertainty("photonFakes", -0.080); // based on 52% variation of photon contribution in track fake rate measurement region
+		fakeTracks->addFlatUncertainty("normalizationWZ", -0.033); // based on 7.3% variation of WZ in track fake rate measurement region
 	}
 	if(option != "noTracks" && option != "justTaus" && option != "justPhotons" && option != "fakeTaus2L") {
 		assembler->getBundle("TrackFakes")->addComponent(fakeTracks);
@@ -356,8 +391,11 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 	fakePhotons->addWeight("TRIGGERACCEPT");
 	fakePhotons->addWeight(nVertexWeight);
 	fakePhotons->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
+	applyUncertainties(assembler, fakePhotons);
 	if(syst && !assembler->getMode("noPhotonSystematics")) {
-		fakePhotons->addFlatUncertainty("photonDR", 0.52);
+		fakePhotons->addFlatUncertainty("photonFakes", 0.52); // due to photonDR
+		fakePhotons->addFlatUncertainty("trackFakes", -0.056); // based on 14% variation of track contribution in photon fake rate measurement region
+		fakePhotons->addFlatUncertainty("normalizationWZ", -0.0018); // based on 7.3% variation of WZ in photon fake rate measurement region
 	}
 	if(option != "noPhotons" && option != "justTracks" && option != "justTaus" && option != "fakeTaus2L") {
 		assembler->getBundle("PhotonFakes")->addComponent(fakePhotons);
@@ -455,8 +493,10 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   legend->SetFillColor(kWhite);
   double max = h->GetMaximum();
   double min = h->GetMinimum();
-  legend->SetY1(min + 0.5 * (max - min));
-  legend->SetY2(min + 0.9 * (max - min));
+  //legend->SetY1(min + 0.5 * (max - min));
+  //legend->SetY2(min + 0.9 * (max - min));
+  legend->SetY1(0.5);
+  legend->SetY2(2.1);
 
   for(auto pad : {pad1, pad2}) {
 	  TList* list2 = pad->GetListOfPrimitives();
