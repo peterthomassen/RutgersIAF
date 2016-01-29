@@ -565,3 +565,71 @@ void writeUncertainties(AssemblerProjection* projection, TString type) {
 		}
 	}
 }
+
+
+void SaveHistograms(TCanvas* c, TString outfilename)
+{
+  c->cd();
+  TPad* pad1 = (TPad*)c->GetPrimitive("pad1");
+  TPad* pad2 = (TPad*)c->GetPrimitive("pad2");
+  
+  pad1->cd();
+  TList* list = pad1->GetListOfPrimitives();
+  TH1* h = 0;
+  THStack* ths = 0;
+  std::vector<TH1*> histVector;
+  //
+  for(int i = 0; i < list->GetEntries(); i++){
+    //
+    TObject* obj = list->At(i);
+    TString cname(obj->ClassName());
+    std::cout<<"cname: "<<cname<<std::endl;
+    //
+    // MC stack histos
+    if(cname.Contains("THStack")){
+      ths = ((THStack*)obj);
+      TList* hists = ths->GetHists();
+      TIterator* iter = new TListIter(hists);
+      while(TH1* h = (TH1*)iter->Next()) {
+        std::cout<<h->GetName()<<std::endl;
+        std::cout<<"new Integral(): "<<h->Integral(0,h->GetNbinsX()+1)<<std::endl;
+        for( int ibin=0; ibin<h->GetNbinsX()+1; ibin++){
+          std::cout<<"Bin("<<ibin<<"): "<<h->GetBinContent(ibin)<<" +/- "<<h->GetBinError(ibin)<<std::endl;
+        }
+        histVector.push_back(h);
+      }
+    }
+    //
+    // Data
+        if(cname.Contains("TH1")){
+      h = ((TH1*)obj);
+      TString histoname(h->GetName());
+      if(histoname.Contains("13TeV")){
+        std::cout<<h->GetName()<<std::endl;
+        std::cout<<"new Integral(): "<<h->Integral(0,h->GetNbinsX()+1)<<std::endl;
+        for( int ibin=0; ibin<h->GetNbinsX()+1; ibin++){
+          std::cout<<"Bin("<<ibin<<"): "<<h->GetBinContent(ibin)<<" +/- "<<h->GetBinError(ibin)<<std::endl;
+        }
+        histVector.push_back(h);
+      }
+    }
+    //
+  }
+  
+  TFile* outfile = new TFile(outfilename,"RECREATE");
+  outfile->cd();
+  for(std::vector<TH1*>::iterator it = histVector.begin(); it != histVector.end(); ++it) {
+    std::cout<<"histVector name: "<<(*it)->GetName()<<std::endl;
+    TString histoname((*it)->GetName());
+    if(histoname.Contains("13TeV")){//Clean up data histo name and title
+      (*it)->SetTitle("Data");
+      (*it)->Write("Data");
+    }
+    else{
+      (*it)->SetTitle(histoname);
+      (*it)->Write(histoname);
+    }
+  }
+  outfile->ls();
+  outfile->Close();
+}
