@@ -569,6 +569,7 @@ void writeUncertainties(AssemblerProjection* projection, TString type) {
 
 void SaveHistograms(TCanvas* c, TString outfilename)
 {
+  bool isdebug=false;
   c->cd();
   TPad* pad1 = (TPad*)c->GetPrimitive("pad1");
   TPad* pad2 = (TPad*)c->GetPrimitive("pad2");
@@ -583,7 +584,7 @@ void SaveHistograms(TCanvas* c, TString outfilename)
     //
     TObject* obj = list->At(i);
     TString cname(obj->ClassName());
-    std::cout<<"cname: "<<cname<<std::endl;
+    if(isdebug) std::cout<<"cname: "<<cname<<std::endl;
     //
     // MC stack histos
     if(cname.Contains("THStack")){
@@ -591,24 +592,28 @@ void SaveHistograms(TCanvas* c, TString outfilename)
       TList* hists = ths->GetHists();
       TIterator* iter = new TListIter(hists);
       while(TH1* h = (TH1*)iter->Next()) {
-        std::cout<<h->GetName()<<std::endl;
-        std::cout<<"new Integral(): "<<h->Integral(0,h->GetNbinsX()+1)<<std::endl;
-        for( int ibin=0; ibin<h->GetNbinsX()+1; ibin++){
-          std::cout<<"Bin("<<ibin<<"): "<<h->GetBinContent(ibin)<<" +/- "<<h->GetBinError(ibin)<<std::endl;
+        if(isdebug){ 
+            std::cout<<h->GetName()<<std::endl;
+            std::cout<<"new Integral(): "<<h->Integral(0,h->GetNbinsX()+1)<<std::endl;
+            for( int ibin=0; ibin<h->GetNbinsX()+1; ibin++){
+              std::cout<<"Bin("<<ibin<<"): "<<h->GetBinContent(ibin)<<" +/- "<<h->GetBinError(ibin)<<std::endl;
+            }
         }
         histVector.push_back(h);
       }
     }
     //
     // Data
-        if(cname.Contains("TH1")){
+    if(cname.Contains("TH1")){
       h = ((TH1*)obj);
       TString histoname(h->GetName());
       if(histoname.Contains("13TeV")){
-        std::cout<<h->GetName()<<std::endl;
-        std::cout<<"new Integral(): "<<h->Integral(0,h->GetNbinsX()+1)<<std::endl;
-        for( int ibin=0; ibin<h->GetNbinsX()+1; ibin++){
-          std::cout<<"Bin("<<ibin<<"): "<<h->GetBinContent(ibin)<<" +/- "<<h->GetBinError(ibin)<<std::endl;
+        if(isdebug){ 
+            std::cout<<h->GetName()<<std::endl;
+            std::cout<<"new Integral(): "<<h->Integral(0,h->GetNbinsX()+1)<<std::endl;
+            for( int ibin=0; ibin<h->GetNbinsX()+1; ibin++){
+                std::cout<<"Bin("<<ibin<<"): "<<h->GetBinContent(ibin)<<" +/- "<<h->GetBinError(ibin)<<std::endl;
+            }
         }
         histVector.push_back(h);
       }
@@ -619,7 +624,7 @@ void SaveHistograms(TCanvas* c, TString outfilename)
   TFile* outfile = new TFile(outfilename,"RECREATE");
   outfile->cd();
   for(std::vector<TH1*>::iterator it = histVector.begin(); it != histVector.end(); ++it) {
-    std::cout<<"histVector name: "<<(*it)->GetName()<<std::endl;
+    if(isdebug) std::cout<<"histVector name: "<<(*it)->GetName()<<std::endl;
     TString histoname((*it)->GetName());
     if(histoname.Contains("13TeV")){//Clean up data histo name and title
       (*it)->SetTitle("Data");
