@@ -1254,6 +1254,8 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   
   if(handler->getMode("singleGoodMuon")) {
     handler->addEventVariable("WRITEEVENT", new EventVariableInRange<int>("NGOODMUONS", 1, 1e6, "GOODMUON"));
+  } else if(handler->getMode("theoryMinituples")) {
+    handler->addEventVariable("WRITEEVENT", new EventVariableRename<bool>("ALWAYSTRUE"));
   } else {
     EventVariableCombined* writeEvent = handler->getMode("RA7")
       ? new EventVariableCombined("MLOWDYCUT", "MLOWDYCUT", true, "WRITEEVENT")
