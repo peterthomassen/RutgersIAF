@@ -206,6 +206,7 @@ void Assembler::process(std::string varexp, TString selection, bool ApplyMCNorma
 	auto contributionsModel = boost::join(m_contributions["background"], m_contributions["signal"]);
 	for(auto &contribution : boost::join(m_contributions["data"], contributionsModel)) {
 		double scale = contribution->isData() ? 1 : (getLumi() / contribution->getLumi());
+		if(!ApplyMCNormalizationWeights) scale = 1.0;
 		contribution->fillContent(hs, varexp, selection, scale, m_hPileup.first, m_hPileup.second);
 		contribution->getMeta();
 	}
