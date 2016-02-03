@@ -40,7 +40,7 @@ public:
 	TString getVarName(TString name) const;
 	TString getSelection() const;
 	
-	void process(std::string, TString);
+	void process(std::string, TString, bool ApplyMCNormalizationWeights=true);
 	AssemblerProjection* project(const char* name, const bool binForOverflow, Bundle* bundle = 0);
 	void save();
 	void save(const char*, const bool binForOverflow = true);
