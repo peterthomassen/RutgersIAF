@@ -144,7 +144,7 @@ TString Assembler::getSelection() const {
 	return m_selection;
 }
 
-void Assembler::process(std::string varexp, TString selection) {
+void Assembler::process(std::string varexp, TString selection, bool ApplyMCNormalizationWeights) {
 	std::vector<TString> variables;
 	std::vector<TString> names;
 	std::vector<double> rangeMin, rangeMax;
