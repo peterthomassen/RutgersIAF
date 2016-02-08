@@ -1071,6 +1071,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("NGOODJETS", new EventVariableN("NGOODJETS","goodJets"));
   handler->addEventVariable("PTGOODJETS", new EventVariableObjectVariableVector<double>("PT","goodJets"));
   handler->addEventVariable("ETAGOODJETS", new EventVariableObjectVariableVector<double>("ETA","goodJets"));
+  handler->addEventVariable("CSVGOODJETS", new EventVariableObjectVariableVector<double>("pfCombinedInclusiveSecondaryVertexV2BJetTags", "goodJets"));
 
   if(handler->getMode("RA7")) {
     handler->addEventVariable("NGOODRA7JETS", new EventVariableN("NGOODRA7JETS","goodRA7Jets"));
