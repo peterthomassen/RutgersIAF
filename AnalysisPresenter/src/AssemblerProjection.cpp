@@ -294,7 +294,6 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	bool hasBackground = has("background");
 	bool doRatio = hasBackground && !m_assembler->getMode("noRatioPlot");
 	bool debug = m_assembler->getMode("debug");
-cout << "debug: " << debug << endl;
 	m_canvas = new TCanvas("c1", "c1", 700, doRatio ? 700 : 490);
 	
 	TPad *pad1 = new TPad("pad1", "pad1", 0, doRatio ? 0.3 : 0, 1, 1);
