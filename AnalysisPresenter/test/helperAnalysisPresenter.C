@@ -87,13 +87,13 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	PhysicsContribution* data = 0;
 	
 	if(fakeMode == 0) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2138, "2.14/fb@13TeV");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV");
 	} else if(fakeMode == 1) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2138, "2.14/fb@13TeV", false, "treeRfakeTracks");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV", false, "treeRfakeTracks");
 	} else if(fakeMode == 2) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2138, "2.14/fb@13TeV", false, "treeRfakePhotons");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV", false, "treeRfakePhotons");
 	} else if(fakeMode == 3) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2138, "2.14/fb@13TeV", false, "treeRfakeTaus");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV", false, "treeRfakeTaus");
 	} else {
 		cout << "unsure what to do";
 		exit(1);
@@ -193,7 +193,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZTo3LNu" + infix + suffix, xsec_WZTo3LNu, "WZTo3LNu", false, "treeR", -1, 0);
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("!ONZ");
-	wz->addWeight("1.015"); // normalization
+	wz->addWeight("0.940"); // normalization
 	if(!assembler->getMode("noWZsystematics")) {
 		wz->addFlatUncertainty("normalizationWZ", 0.015); // size of scale factor (< statistical)
 		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
@@ -205,18 +205,18 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	wz = new PhysicsContribution("backgroundMC", prefix + "WZJets" + infix + suffix, xsec_WZJets, "WZJets", false, "treeR", -1, 0);
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("ONZ");
+	wz->addWeight("1.271"); // normalization
 	if(!assembler->getMode("noWZsystematics")) {
 		wz->addFlatUncertainty("normalizationWZ", 0.073); // statistical
 		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
 		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
 	}
-	wz->addWeight("1.372"); // normalization
 	assembler->getBundle("WZ")->addComponent(wz);
 	mc.push_back(wz);
 	
 	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30, assembler->getMode("fullPrecision") ? 0 : 0.01);
 	zz->setNominalWeight("genEventInfo_weight[0]");
-	zz->addWeight("1.256"); // normalization
+	zz->addWeight("1.224"); // normalization
 	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", 0.166); // statistical
 	mc.push_back(zz);
 	
@@ -256,6 +256,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			mc.clear();
 		}
 		
+		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJets" + infix + suffix, xsec_tt, "ttF", false, "treeR", kAzure + 1);
 		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "ttF", false, "treeR", kAzure + 1, assembler->getMode("fullPrecision") ? 0 : 0.01);
 		ttbarF->setNominalWeight("genEventInfo_weight[0]");
 		ttbarF->addWeight(normalization); // normalization
@@ -495,8 +496,8 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   double min = h->GetMinimum();
   //legend->SetY1(min + 0.5 * (max - min));
   //legend->SetY2(min + 0.9 * (max - min));
-  legend->SetY1(0.5);
-  legend->SetY2(2.1);
+  //legend->SetY1(0.5);
+  //legend->SetY2(2.1);
 
   for(auto pad : {pad1, pad2}) {
 	  TList* list2 = pad->GetListOfPrimitives();
@@ -506,9 +507,9 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
 		if(cname.Contains("TH1")){
 		  float offset = ((TH1*)obj)->GetXaxis()->GetTitleOffset();
 		  float fontsize = ((TH1*)obj)->GetXaxis()->GetTitleSize();
-		  ((TH1*)obj)->GetXaxis()->SetTitleOffset(1.1*offset);
+		  ((TH1*)obj)->GetXaxis()->SetTitleOffset(0.9*offset);
 		  ((TH1*)obj)->GetXaxis()->SetTitleFont(42);
-		  ((TH1*)obj)->GetXaxis()->SetTitleSize(1.1*fontsize);
+		  ((TH1*)obj)->GetXaxis()->SetTitleSize(1.5*fontsize);
 		  if(TString(axistitle) != "" && TString(((TH1*)obj)->GetXaxis()->GetTitle()) != ""){
 			((TH1*)obj)->GetXaxis()->SetTitle(axistitle);
 		  }
@@ -522,11 +523,11 @@ TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
   latex->SetNDC();
   latex->SetTextFont(61);
   latex->SetTextSize(0.04);	
-  latex->DrawLatex(0.35,0.885,"CMS Preliminary");
+  latex->DrawLatex(0.53,0.885,"CMS Preliminary");
 
   latex->SetTextSize(0.03);
   latex->SetTextFont(42);
-  latex->DrawLatex(0.75,0.96,"2.1 fb^{-1} (13 TeV)");
+  latex->DrawLatex(0.7,0.97,"2.2 fb^{-1} (13 TeV)");
 
   c->Update();
   pad1->Update();

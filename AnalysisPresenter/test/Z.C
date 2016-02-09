@@ -27,11 +27,7 @@ void Z() {
 	
 	// Global cuts, if desired
 	//TString selection = "!AIC";
-	TString selection = "1";
-//	selection += " && !(MLIGHTLEPTONS > 81 && MLIGHTLEPTONS < 101)";
-	// for Zpeak
-	selection += " && NLEPTONS == 3";
-	//selection += " && ONZ";
+	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
 //	selection += " && fakeRoleGOODMUONS > 0";
 	//selection += " && !(MLIGHTLEPTONS > 76 && MLIGHTLEPTONS < 106)";
 	
@@ -48,10 +44,9 @@ void Z() {
 	assembler->setMode("noTrackSystematics");
 	
 	setupData(assembler);
-	//setupBackgroundMC(assembler);
-	setupBackgroundMC(assembler, false, false);
-	setupBackgroundDD(assembler, "noTaus", true);
-	//setupBackgroundDD(assembler, "justTracks");
+	setupBackgroundMC(assembler);
+	setupBackgroundDD(assembler);
+	//setupBackgroundDD(assembler, "noTaus", true);
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	prepare(assembler);
@@ -91,7 +86,7 @@ makeNicePlot(assembler->project("HT", true)->plot(true), "HT [GeV]")->SaveAs("..
 	assembler->project("MOSSF", true)->print();
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSF.pdf");
 
-makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50_MOSSF.pdf");
+makeNicePlot(assembler->project("MOSSF", true)->plot(false), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50_MOSSF.pdf");
 
 	assembler->setRange("MLIGHTLEPTONS", 75, 100);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSF_3LonZ.pdf");
@@ -100,7 +95,7 @@ makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF p
 	assembler->project("MOSSFfine", true)->plot(false, f, 81, 101)->SaveAs("Z_MOSSFfine.pdf");
 	assembler->setRange("AIC", 0, 0);
 	assembler->project("MOSSF", true)->plot(false, f, 81, 101)->SaveAs("Z_noAIC_MOSSF.pdf");
-makeNicePlot(assembler->project("MOSSF", true)->plot(false, f, 81, 101), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50_noAIC_MOSSF.pdf");
+makeNicePlot(assembler->project("MOSSF", true)->plot(false), "OSSF pair mass [GeV]")->SaveAs("../nicePlots/Z_L3MET0to50_noAIC_MOSSF.pdf");
 	assembler->project("ONZ", true)->plot(false)->SaveAs("Z_noAIC_ONZ.pdf");
 makeNicePlot(assembler->project("ONZ", true)->plot(false), "OSSF pair on Z?")->SaveAs("../nicePlots/Z_L3MET0to50_noAIC_ONZ.pdf");
 	assembler->setRange("AIC", 1, 1);

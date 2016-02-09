@@ -21,7 +21,8 @@ void AIC() {
 	
 	// Global cuts, if desired
 	//TString selection = "!AIC";
-	TString selection = "MOSSF < 81 && NGOODTAUS == 0";
+	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
+	selection += " && MOSSF < 81 && NGOODTAUS == 0";
 	//TString selection = "NPROMPTINCLUSIVETRACKS >= 6";
 	//TString selection = "!(MLIGHTLEPTONS > 76 && MLIGHTLEPTONS < 106)";
 	

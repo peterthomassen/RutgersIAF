@@ -15,10 +15,10 @@ void ZZ() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{0,600,30}:NGOODJETS{0,6}";
+	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{20,540,13}:NGOODJETS{0,6}";
 	
 	// Global cuts, if desired
-	TString selection = "";
+	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
 	
 	
 	////////////////////////
@@ -29,7 +29,7 @@ void ZZ() {
 	
 	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
 	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
-	assembler->setMode("noRatioPlot");
+	//assembler->setMode("noRatioPlot");
 	assembler->setMode("noZZsystematics");
 	
 	setupData(assembler);
