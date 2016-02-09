@@ -293,6 +293,8 @@ bool AssemblerProjection::isDistribution() const {
 TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xmaxFit) {
 	bool hasBackground = has("background");
 	bool doRatio = hasBackground && !m_assembler->getMode("noRatioPlot");
+	bool debug = m_assembler->getMode("debug");
+cout << "debug: " << debug << endl;
 	m_canvas = new TCanvas("c1", "c1", 700, doRatio ? 700 : 490);
 	
 	TPad *pad1 = new TPad("pad1", "pad1", 0, doRatio ? 0.3 : 0, 1, 1);
@@ -360,7 +362,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		}
 		
 		hRatio = (TH1*)hData->Clone("hRatio");
-		hRatioBkg = (TH1*)hBackgroundErr->Clone("hRatioBkg");
+		hRatioBkg = debug ? (TH1*)hBackgroundErr->Clone("hRatioBkg") : (TH1*)hBackground->Clone("hRatioBkg");
 		
 		if(hSignal) {
 			hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
@@ -393,14 +395,16 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	
 	if(hasBackground) {
 		((THStack*)m_stacks.find("background")->second.first->Clone())->Draw("HIST SAME"); // TODO crashes when not cloning
-		hBackground->SetFillColor(kRed);
+		hBackground->SetFillColor(kBlack);
 		hBackground->SetFillStyle(3002);
 		hBackground->Draw("E2 SAME");
-		hBackgroundErr->SetFillColor(kBlack);
-		hBackgroundErr->SetFillStyle(3013);
-		hBackgroundErr->SetMarkerStyle(20);
-		hBackgroundErr->SetMarkerSize(0);
-		hBackgroundErr->Draw("SAME E2");
+		if(debug) {
+			hBackgroundErr->SetFillColor(kBlue + 2);
+			hBackgroundErr->SetFillStyle(3013);
+			hBackgroundErr->SetMarkerStyle(20);
+			hBackgroundErr->SetMarkerSize(0);
+			hBackgroundErr->Draw("SAME E2");
+		}
 		if(hSignal) {
 			hSignal->SetMarkerColor(kWhite);
 			hSignal->SetMarkerStyle(21);
@@ -419,7 +423,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	if(hasBackground) {
 		ratio = hData->Integral() / hBackground->Integral();
 		
-		TLegend* legend = new TLegend(0.84,0.15,0.98,0.55);
+		TLegend* legend = new TLegend(0.84,0.35,0.98,0.80);
 		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
 		TList* hists = m_stacks.find("background")->second.first->GetHists();
 		TIterator* iter = new TListIter(hists, false);
@@ -461,14 +465,10 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio->SetFillColor(kBlack);
 		hRatio->SetFillStyle(3001);
 		hRatio->SetMinimum(0);
-		if(hRatio->GetMaximum() > 1) {
-			hRatio->SetMaximum(3);
-		} else if(hRatio->GetMaximum() < 0.1) {
-			hRatio->SetMaximum(0.1);
-		} else if(hRatio->GetMaximum() < 0.3) {
-			hRatio->SetMaximum(0.3);
-		} else if(hRatio->GetMaximum() < 0.5) {
-			hRatio->SetMaximum(0.5);
+		if(hRatio->GetMaximum() < 0.5) {
+			hRatio->SetMaximum(2 * hRatio->GetMaximum());
+		} else if(hRatio->GetMaximum() < 2) {
+			hRatio->SetMaximum(2);
 		}
 		hRatio->GetYaxis()->SetRangeUser(hRatio->GetMinimum(0), hRatio->GetMaximum());
 		hRatio->Draw("AXIS");
@@ -492,7 +492,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			hRatioBkg->SetMarkerStyle(20);
 			hRatioBkg->SetMarkerSize(0);
 			line1->Draw();
-			line2->Draw();
+			if(debug) {
+				line2->Draw();
+			}
 			hRatioBkg->Draw("E2 SAME");
 		}
 		gStyle->SetOptFit(1111);
