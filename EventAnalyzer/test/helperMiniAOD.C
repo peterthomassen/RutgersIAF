@@ -1700,6 +1700,7 @@ void setupTriggers(BaseHandler* handler,int mode){
     trigaccept->addVariable("ACCEPT_TriMuTrigger");
     handler->addEventVariable("RA7TRIGGERACCEPT",trigaccept);
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("RA7leptons")));
+    break;
   default:
     trigaccept = new EventVariableCombined("DIMUTRIGTHRESHOLD","DIELTRIGTHRESHOLD");
     trigaccept->addVariable("MUEGCOMBINEDTHRESHOLD");
