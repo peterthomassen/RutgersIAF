@@ -372,12 +372,12 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("goodMuons","goodMuonsLowPt");
   handler->addProductCut("goodMuons","PT10");
 
-  if(handler->getMode("RA7")) {
+  //if(handler->getMode("RA7")) {
     handler->addProduct("RA7FOMuons","looseMuons");
     handler->addProductCut("RA7FOMuons","SIP3D_4sigma");
     handler->addProductCut("RA7FOMuons","MUON_GOODSEGCOM");
     handler->addProductCut("RA7FOMuons","MUON_validFraction");  
-  }
+  //}
 
   handler->addProduct("isoNonPromptMuons","basicMuons");
   handler->addProductCut("isoNonPromptMuons","IREL0p15");
@@ -432,14 +432,14 @@ void setupProducts(BaseHandler* handler)
   handler->addProduct("goodElectrons","goodElectronsLowPt");
   handler->addProductCut("goodElectrons", "PT10");
 
-  if(handler->getMode("RA7")) {
+  //if(handler->getMode("RA7")) {
     handler->addProduct("RA7FOElectrons","looseElectrons");
     handler->addProductCut("RA7FOElectrons", "ELECTRON_MVA_RA7FO");
     handler->addProductCut("RA7FOElectrons", "SIP3D_4sigma");
     handler->addProductCut("RA7FOElectrons", "MULTIISOM");
     handler->addProductCut("RA7FOElectrons", "PT10");
     handler->addProductCut("RA7FOElectrons", "ELECTRON_IDemu");
-  }
+  //}
 
   handler->addProduct("isoNonPromptElectrons","basicElectrons");
   handler->addProductCut("isoNonPromptElectrons","ELECTRON_ISOLATED");
@@ -986,6 +986,9 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   leptonPts->addProduct("goodElectrons");
   leptonPts->addProduct("goodTaus");
   handler->addEventVariable("PTGOODLEPTONS",leptonPts);
+  
+  handler->addEventVariable("MINIISORA7FOElectrons", new EventVariableObjectVariableVector<double>("MINIISO","RA7FOElectrons"));
+  handler->addEventVariable("MINIISORA7FOMuons", new EventVariableObjectVariableVector<double>("MINIISO","RA7FOMuons"));
   
   handler->addEventVariable("QBASICELECTRONS", new EventVariableObjectVariableVector<int>("CHARGE","basicElectrons"));
   handler->addEventVariable("DXYBASICELECTRONS", new EventVariableObjectVariableVector<double>("dxy","basicElectrons"));
