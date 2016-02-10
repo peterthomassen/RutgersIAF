@@ -1395,6 +1395,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addProductCut("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1", "isHLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1");
   handler->addEventVariable("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1_N", new EventVariableN("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1_N", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
 
+  //Offline tresholds for higher trigger efficiencies
   EventVariableThreshold* singElTrig = new EventVariableThreshold("singeltrig","goodElectrons");
   singElTrig->addThreshold(26);
   handler->addEventVariable("SINGELTRIGTHRESHOLD",singElTrig);
@@ -1463,23 +1464,23 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   diel->addThreshold(13);
   handler->addEventVariable("DIELTHRESHOLD_FORTRI",diel);
 
-  EventVariableThreshold* mu10 = new EventVariableThreshold("mu10","goodMuons");
-  mu10->addThreshold(9);
-  handler->addEventVariable("MU11THRESHOLD_FORTRI",mu10);
+  EventVariableThreshold* mu9 = new EventVariableThreshold("mu9","goodMuons");
+  mu9->addThreshold(9);
+  handler->addEventVariable("MU9THRESHOLD_FORTRI",mu9);
 
   EventVariableThreshold* dimu = new EventVariableThreshold("dimu","goodMuons");
   dimu->addThreshold(10);
   dimu->addThreshold(10);
   handler->addEventVariable("DIMUTHRESHOLD_FORTRI",dimu);
 
-  EventVariableThreshold* el12 = new EventVariableThreshold("el12","goodElectrons");
-  el12->addThreshold(15);
-  handler->addEventVariable("EL12THRESHOLD_FORTRI",el12);
+  EventVariableThreshold* el15 = new EventVariableThreshold("el15","goodElectrons");
+  el15->addThreshold(15);
+  handler->addEventVariable("EL15THRESHOLD_FORTRI",el15);
 
-  EventVariableCombined* Mu1El2Threshold = new EventVariableCombined("MU11THRESHOLD_FORTRI","DIELTHRESHOLD_FORTRI",true,"Mu1El2Threshold");
+  EventVariableCombined* Mu1El2Threshold = new EventVariableCombined("MU9THRESHOLD_FORTRI","DIELTHRESHOLD_FORTRI",true,"Mu1El2Threshold");
   handler->addEventVariable("MU1EL2THRESHOLD",Mu1El2Threshold);
 
-  EventVariableCombined* Mu2El1Threshold = new EventVariableCombined("EL12THRESHOLD_FORTRI","DIMUTHRESHOLD_FORTRI",true,"Mu2El1Threshold");
+  EventVariableCombined* Mu2El1Threshold = new EventVariableCombined("EL15THRESHOLD_FORTRI","DIMUTHRESHOLD_FORTRI",true,"Mu2El1Threshold");
   handler->addEventVariable("MU2EL1THRESHOLD",Mu2El1Threshold);
 
 
@@ -1491,21 +1492,21 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
 
   handler->addEventVariable("HLTHT300",new EventVariableInRange<double>("HLT_HT",300,1000000));
 
-  EventVariableThreshold* dieltright = new EventVariableThreshold("dieltrig","goodElectrons");
+  EventVariableThreshold* dieltright = new EventVariableThreshold("dieltright","goodElectrons");
   dieltright->addThreshold(28);
   dieltright->addThreshold(17);
   handler->addEventVariable("DIELHTTRIGTHRESHOLD",dieltright);
 
-  EventVariableThreshold* dimutright = new EventVariableThreshold("dimutrig","goodMuons");
+  EventVariableThreshold* dimutright = new EventVariableThreshold("dimutright","goodMuons");
   dimutright->addThreshold(10);
   dimutright->addThreshold(8);
   handler->addEventVariable("DIMUHTTRIGTHRESHOLD",dimutright);
 
-  EventVariableThreshold* elleadht = new EventVariableThreshold("ellead","goodElectrons");
+  EventVariableThreshold* elleadht = new EventVariableThreshold("elleadht","goodElectrons");
   elleadht->addThreshold(18);
   handler->addEventVariable("MUEG_ELHTTHRESHOLD",elleadht);
 
-  EventVariableThreshold* muleadht = new EventVariableThreshold("mulead","goodMuons");
+  EventVariableThreshold* muleadht = new EventVariableThreshold("muleadht","goodMuons");
   muleadht->addThreshold(8);
   handler->addEventVariable("MUEG_MUHTTHRESHOLD",muleadht);
 
@@ -1652,7 +1653,8 @@ void setupTriggers(BaseHandler* handler,int mode){
       TString nnamege1  = TString::Format("N%sgt0",trigger.Data());
       handler->addEventVariable(nnamege1,new EventVariableInRange<int>(nname,1,100000));
       TString acceptname = TString::Format("ACCEPT_%s",trigger.Data());
-      handler->addEventVariable(acceptname,new EventVariableCombined(thresholds[i],nnamege1,true));
+      handler->addEventVariable(acceptname,new EventVariableCombined(nnamege1,true));
+      //handler->addEventVariable(acceptname,new EventVariableCombined(thresholds[i],nnamege1,true));
       TString nacceptname = TString::Format("REJECT_%s",trigger.Data());
       handler->addEventVariable(nacceptname,new EventVariableReversed(acceptname));
     }
