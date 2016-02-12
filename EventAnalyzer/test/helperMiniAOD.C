@@ -1653,8 +1653,8 @@ void setupTriggers(BaseHandler* handler,int mode){
       TString nnamege1  = TString::Format("N%sgt0",trigger.Data());
       handler->addEventVariable(nnamege1,new EventVariableInRange<int>(nname,1,100000));
       TString acceptname = TString::Format("ACCEPT_%s",trigger.Data());
-      handler->addEventVariable(acceptname,new EventVariableCombined(nnamege1,true));
-      //handler->addEventVariable(acceptname,new EventVariableCombined(thresholds[i],nnamege1,true));
+      //RA7sync: handler->addEventVariable(acceptname,new EventVariableCombined(nnamege1,true));
+      handler->addEventVariable(acceptname,new EventVariableCombined(thresholds[i],nnamege1,true));
       TString nacceptname = TString::Format("REJECT_%s",trigger.Data());
       handler->addEventVariable(nacceptname,new EventVariableReversed(acceptname));
     }
