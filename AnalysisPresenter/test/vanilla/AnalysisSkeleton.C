@@ -8,11 +8,10 @@ void AnalysisSkeleton() {
 	///////////////////////
 	
 	// Specify axes and bins of multidimensional histogram
-	// For WZ
-	std::string varexp = "NLEPTONS{3,6}";
+	std::string varexp = "NLEPTONS{2,6}";
 	
 	// Global cuts, if desired
-	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
+	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && Alt$(PTGOODLEPTONS[2] > 10, 1)";
 	
 	////////////////////////
 	// Initialize and run //

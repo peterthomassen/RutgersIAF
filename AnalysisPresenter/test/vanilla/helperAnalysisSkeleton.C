@@ -39,7 +39,7 @@ void prepare(Assembler* assembler) {
 	}
 }
 
-void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool applyEventVetos = false) {
+void setupData(Assembler* assembler) {
 	PhysicsContribution* data = new PhysicsContribution("data", "/cms/thomassen/2015/Analysis/data/results/20151203_data.root", 2198, "2.20/fb@13TeV");
 	data->addWeight("TRIGGERACCEPT");
 	
@@ -49,9 +49,6 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 		"/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/badResolutionTrack_Jan13.txt",
 		"/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/muonBadTrack_Jan13.txt",
 	};
-	if(!applyEventVetos) {
-		vetoFilenames.clear();
-	}
 	
 	for(auto vetoFilename : vetoFilenames) {
 		cout << "adding vetos from " << vetoFilename << " ..." << flush;
