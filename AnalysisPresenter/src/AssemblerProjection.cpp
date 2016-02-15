@@ -370,7 +370,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		}
 	}
 	
-	hData->SetMaximum(max(log ? 50. : 5., 1.5 * hData->GetMaximum()));
+	hData->SetMaximum(max(log ? 50. : 5., (log ? 5. : 1.5) * hData->GetMaximum()));
 	if(log) {
 		hData->SetMinimum(hasBackground ? min(0.1, 0.5 * hBackground->GetMinimum(0)) : 0.1);
 		// Make sure the range spans at least one order of magnitude
