@@ -22,8 +22,8 @@
 using namespace std;
 
 void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_package/AnalysisTree/WZto3LNu_all.simulation.root"
-	, Bool_t temp = true
-	, Bool_t scaling = true
+	, Bool_t temp = false
+	, Bool_t scaling = false
 	, TString templateFile = "/cms/data21/heindl/validation_package/AnalysisTree/WZto3LNu_all.simulation.root"
 ) {
 	TString sample = "WZto3LNu";
@@ -1045,10 +1045,14 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					tempStack->GetYaxis()->SetTitle(lableYFiltered[i]);
 					tempStack->GetXaxis()->SetTitle(lableXFiltered[i]);
 
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
 					if (temp) {Info->AddText("Template: " + templateSample);}
+					TString Entries = TString::Format("Entries: %.0f", htemp1->GetEntries());
+					Info->AddText(Entries);
+					TString Mean = TString::Format("Mean: %.2f", htemp1->GetMean());
+					Info->AddText(Mean);
 					Info->Draw();
 					
 					if (n_plot==4) {
@@ -1071,9 +1075,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					htemp2->GetYaxis()->SetTitle(lableYFiltered[i]);
 					htemp2->GetZaxis()->SetTitle(lableZFiltered[i]);
 	
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
+					TString Entries = TString::Format("Entries: %.0f", htemp2->GetEntries());
+					Info->AddText(Entries);
+					TString Mean = TString::Format("Mean: %.2f:%.2f", htemp2->GetMean(1), htemp2->GetMean(2));
+					Info->AddText(Mean);
 					Info->Draw();
 					
 					if (n_plot==4) {
@@ -1096,9 +1104,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					htemp3->GetYaxis()->SetTitle(lableYFiltered[i]);
 					htemp3->GetZaxis()->SetTitle(lableZFiltered[i]);
 
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
+					TString Entries = TString::Format("Entries: %0f", htemp3->GetEntries());
+					Info->AddText(Entries);
+					TString Mean = TString::Format("Mean: %.2f:%.2f:%.2f", htemp3->GetMean(1), htemp3->GetMean(2), htemp3->GetMean(3));
+					Info->AddText(Mean);
 					Info->Draw();
 					
 					if (n_plot==4) {
@@ -1135,10 +1147,14 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					tempStack->GetYaxis()->SetTitle(lableYFiltered[i]);
 					tempStack->GetXaxis()->SetTitle(lableXFiltered[i]);
 	
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
 					if (temp) {Info->AddText("Template: " + templateSample);}
+					TString Entries = TString::Format("Entries: %.0f", htemp1->GetEntries());
+					Info->AddText(Entries);
+					TString Mean = TString::Format("Mean: %.2f", htemp1->GetMean());
+					Info->AddText(Mean);
 					Info->Draw();
 					
 					if (i==variablesFiltered.size()-1) {
@@ -1160,9 +1176,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					htemp2->GetYaxis()->SetTitle(lableYFiltered[i]);
 					htemp2->GetZaxis()->SetTitle(lableZFiltered[i]);
 
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
+					TString Entries = TString::Format("Entries: %.0f", htemp2->GetEntries());
+					Info->AddText(Entries);
+					TString Mean = TString::Format("Mean: %.2f:%.2f", htemp2->GetMean(1), htemp2->GetMean(2));
+					Info->AddText(Mean);
 					Info->Draw();
 					
 					if (i==variablesFiltered.size()-1) {
@@ -1184,9 +1204,13 @@ void ValidationPlotMacro (TString inputFile = "/cms/data21/heindl/validation_pac
 					htemp3->GetYaxis()->SetTitle(lableYFiltered[i]);
 					htemp3->GetZaxis()->SetTitle(lableZFiltered[i]);
 
-					TPaveText *Info=new TPaveText(0.8,0.8,1,1,"NDC");
+					TPaveText *Info=new TPaveText(0.85,0.85,1,1,"NDC");
 					Info->AddText("CMS Simulation");
 					Info->AddText(sample + " (" + energy + ")");
+					TString Entries = TString::Format("Entries: %.0f", htemp3->GetEntries());
+					Info->AddText(Entries);
+					TString Mean = TString::Format("Mean: %.2f:%.2f:%.2f", htemp3->GetMean(1), htemp3->GetMean(2), htemp3->GetMean(3));
+					Info->AddText(Mean);
 					Info->Draw();
 					
 					if (i==variablesFiltered.size()-1) {
