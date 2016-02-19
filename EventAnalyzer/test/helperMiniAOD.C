@@ -987,6 +987,10 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   leptonPts->addProduct("goodTaus");
   handler->addEventVariable("PTGOODLEPTONS",leptonPts);
   
+  EventVariableObjectVariableVector<double>* lightLeptonPts = new EventVariableObjectVariableVector<double>("PT","goodMuons",true);
+  lightLeptonPts->addProduct("goodElectrons");
+  handler->addEventVariable("PTLIGHTLEPTONS",lightLeptonPts);
+  
   handler->addEventVariable("MINIISORA7FOElectrons", new EventVariableObjectVariableVector<double>("MINIISO","RA7FOElectrons"));
   handler->addEventVariable("MINIISORA7FOMuons", new EventVariableObjectVariableVector<double>("MINIISO","RA7FOMuons"));
   
