@@ -14,16 +14,12 @@ void addMETchannels(std::vector<Channel*> &channels, Assembler* assembler, TStri
 	auto ranges = assembler->getRanges();
 	
 	assembler->setRange("LT+MET");
-	assembler->project("LT+MET", true)->plot(true)->SaveAs(name + TString(".pdf"));
-makeNicePlot(assembler->project("LT+MET", true)->plot(true), "LT+MET [GeV]")->SaveAs(TString("../nicePlots/") + name + TString(".pdf"));
-	assembler->project("minElectronPT", true)->plot(true)->SaveAs(name + TString("_minElectronPT.pdf"));
-makeNicePlot(assembler->project("minElectronPT", true)->plot(true), "min electron pT [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_minElectronPT.pdf"));
-	assembler->project("minMuonPT", true)->plot(true)->SaveAs(name + TString("_minMuonPT.pdf"));
-makeNicePlot(assembler->project("minMuonPT", true)->plot(true), "min muon pT [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_minMuonPT.pdf"));
-	assembler->project("LT", true)->plot(true)->SaveAs(name + TString("_LT.pdf"));
-makeNicePlot(assembler->project("LT", true)->plot(true), "LT [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT.pdf"));
-	assembler->project("LT+MET", true)->plot(true)->SaveAs(name + TString("_LT+MET.pdf"));
-makeNicePlot(assembler->project("LT+MET", true)->plot(true), "LT+MET [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT+MET.pdf"));
+	assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true)->SaveAs(name + TString(".pdf"));
+	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "LT+MET [GeV]")->SaveAs(TString("../nicePlots/") + name + TString(".pdf"));
+	//assembler->project("LT", true)->plot(true)->SaveAs(name + TString("_LT.pdf"));
+	//makeNicePlot(assembler->project("LT", true)->plot(true), "LT [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT.pdf"));
+	//assembler->project("LT+MET", true)->plot(true)->SaveAs(name + TString("_LT+MET.pdf"));
+	//makeNicePlot(assembler->project("LT+MET", true)->plot(true), "LT+MET [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT+MET.pdf"));
 	
 	int start = 350;
 	int step = 200;
@@ -55,28 +51,36 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For inclusive table
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,250,5}";
+	std::string varexp = "NLIGHTLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NGOODJETS{0,5}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,500,10}";
 	varexp += std::string(TString::Format(":(NLIGHTLEPTONS == 3 && (abs(MOSSF-%f)>%f) && abs(MLIGHTLEPTONS-%f) < %f){0,2,\"AIC\"}", z, zWidth, 87.5, 12.5).Data());
-	varexp += ":(Sum$(QGOODMUONS) + Sum$(QGOODELECTRONS)){-3,3,\"QLIGHTLEPTONS\"}";
+	varexp += ":(Sum$(QGOODMUONS) + Sum$(QGOODELECTRONS)){-2.5,2.5,\"QLIGHTLEPTONS\"}";
 	varexp += ":Alt$(PTGOODELECTRONS[0],0){20,320,15,\"minElectronPT\"}";
 	varexp += ":Alt$(PTGOODMUONS[0],0){20,320,15,\"minMuonPT\"}";
 	varexp += ":LT{0,600,30}";
+	varexp += ":Alt$(MT,-1){0,200,5,\"MT\"}";
+	//varexp += ":LT+MET{-50,1150,6}";
 	varexp += ":LT+MET{350,1150,4}";
+	varexp += ":PTGOODLEPTONS[0]{0,500,25}";
+	varexp += ":MLIGHTLEPTONS{0,600,15}";
 	varexp += ":(sqrt(2) * 18.5 * sqrt(-log(rndm())) * cos(6.2831853 * rndm())){-50,50,100,\"gaus\"}";
+	varexp += ":(NLIGHTLEPTONS[0] == 3 && ONZ && MET[0] > 50 && MET[0] < 100){0,2,\"WZ\"}";
 	
 	// Global cuts, if desired
 	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
-	selection += " && NGOODTAUS[0] == 0 && NBJETSCSVM[0] == 0"; // no taus or b-tags
-	selection += " && !(NLEPTONS[0] == 3 && ONZ && NBJETSCSVM[0] == 0 && NGOODTAUS[0] == 0 && MET[0] < 100)"; // veto WZ and Z+jets control regions
-	selection += " && !(NLEPTONS[0] == 4 && NOSSF[0] == 2 && ONZ && NBJETSCSVM[0] == 0 && NGOODTAUS[0] == 0 && MET[0] < 50)"; // veto ZZ control region
+	//selection += " && NGOODTAUS[0] == 0 && NBJETSCSVM[0] == 0"; // no taus or b-tags
+	selection += " && !(NLIGHTLEPTONS[0] == 3 && ONZ && MET[0] < 100)"; // veto WZ and Z+jets control regions
+	selection += " && !(NLIGHTLEPTONS[0] == 4 && NOSSF[0] == 2 && ONZ && MET[0] < 50)"; // veto ZZ control region
+	selection += " && !(NLIGHTLEPTONS[0] == 3 && NOSSF[0] == 1 && MOSSF[0] < 81)";
+	selection += " && !(NLIGHTLEPTONS[0] > 3 && NOSSF[0] == 0)";
 	
 	// Padova style
-//	TString selection ="NLIGHTLEPTONS[0] == 3 && (Alt$((NGOODMUONS == 3 && PTGOODMUONS[0] > 30 && PTGOODMUONS[1] > 20 && PTGOODMUONS[2] > 20), 0) || Alt$((NGOODELECTRONS == 3 && PTGOODELECTRONS[0] > 30 && PTGOODELECTRONS[1] > 20 && PTGOODELECTRONS[2] > 20), 0) || Alt$((NGOODELECTRONS == 2 && PTGOODELECTRONS[0] > PTGOODMUONS[0] && PTGOODELECTRONS[0] > 30 && PTGOODELECTRONS[1] > 20 && PTGOODMUONS[0] > 20), 0) || Alt$((NGOODELECTRONS == 2 && PTGOODELECTRONS[0] < PTGOODMUONS[0] && PTGOODMUONS[0] > 30 && PTGOODELECTRONS[1] > 20 && PTGOODELECTRONS[0] > 20), 0) || Alt$((NGOODMUONS == 2 && PTGOODMUONS[0] > PTGOODELECTRONS[0] && PTGOODMUONS[0] > 30 && PTGOODMUONS[1] > 20 && PTGOODELECTRONS[0] > 20), 0) || Alt$((NGOODMUONS == 2 && PTGOODMUONS[0] < PTGOODELECTRONS[0] && PTGOODELECTRONS[0] > 30 && PTGOODMUONS[1] > 20 && PTGOODMUONS[0] > 20), 0))";
-//	selection += " && abs(Sum$(QGOODMUONS) + Sum$(QGOODELECTRONS)) == 1 && MET[0] > 50 && HT[0] < 150 && NBJETSCSVL[0] == 0 && (NOSSF[0] == 0 || abs(MOSSF[0]-91) > 15) && abs(MLIGHTLEPTONS[0]-91) > 15";
-
+/*	selection = "NLIGHTLEPTONS[0] == 3 && (Alt$((NGOODMUONS == 3 && PTGOODMUONS[0] > 30 && PTGOODMUONS[1] > 20 && PTGOODMUONS[2] > 20), 0) || Alt$((NGOODELECTRONS == 3 && PTGOODELECTRONS[0] > 30 && PTGOODELECTRONS[1] > 20 && PTGOODELECTRONS[2] > 20), 0) || Alt$((NGOODELECTRONS == 2 && PTGOODELECTRONS[0] > PTGOODMUONS[0] && PTGOODELECTRONS[0] > 30 && PTGOODELECTRONS[1] > 20 && PTGOODMUONS[0] > 20), 0) || Alt$((NGOODELECTRONS == 2 && PTGOODELECTRONS[0] < PTGOODMUONS[0] && PTGOODMUONS[0] > 30 && PTGOODELECTRONS[1] > 20 && PTGOODELECTRONS[0] > 20), 0) || Alt$((NGOODMUONS == 2 && PTGOODMUONS[0] > PTGOODELECTRONS[0] && PTGOODMUONS[0] > 30 && PTGOODMUONS[1] > 20 && PTGOODELECTRONS[0] > 20), 0) || Alt$((NGOODMUONS == 2 && PTGOODMUONS[0] < PTGOODELECTRONS[0] && PTGOODELECTRONS[0] > 30 && PTGOODMUONS[1] > 20 && PTGOODMUONS[0] > 20), 0))";
+	selection += " && abs(Sum$(QGOODMUONS) + Sum$(QGOODELECTRONS)) == 1 && MET[0] > 50 && HT[0] < 150 && NBJETSCSVL[0] == 0 && (NOSSF[0] == 0 || abs(MOSSF[0]-91) > 15) && abs(MLIGHTLEPTONS[0]-91) > 15";
+	selection += " && !(NLIGHTLEPTONS[0] == 3 && ONZ && MET[0] < 100)"; // veto WZ and Z+jets control regions
+*/
 	//TString selection = "";
 	// Cut down charge flips
-	//selection += " && (NLEPTONS != 3 || (NGOODMUONS == 3 || NGOODELECTRONS == 3 || abs(NPOSGOODMUONS+NPOSGOODELECTRONS-NNEGGOODMUONS-NNEGGOODELECTRONS) != 3))";
+	//selection += " && (NLIGHTLEPTONS != 3 || (NGOODMUONS == 3 || NGOODELECTRONS == 3 || abs(NPOSGOODMUONS+NPOSGOODELECTRONS-NNEGGOODMUONS-NNEGGOODELECTRONS) != 3))";
 	
 	
 	///////////////////////
@@ -85,6 +89,8 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	
 	//std::string mass = "220";
 	std::string mass = "340";
+	//std::string mass = "500";
+	//std::string mass = "660";
 	std::string xsecfile = mass + "_xsecs_and_procs.txt";
 	std::string directory = "/cms/data23/feigelis/SeesawProject/Analysis/output/" + mass;
 	
@@ -109,7 +115,9 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 		//std::string filename = directory + "_old/" + process + "/output/10_15_update_results.root";
 		//std::string filename = directory + "/" + process + "/output/validation_Nov3.root";
 		//std::string filename = directory + "/" + process + "/output/validation_Nov6.root";
-		std::string filename = directory + "/" + process + "/output/validation_Dec9.root";
+		//std::string filename = directory + "/" + process + "/output/validation_Dec9.root";
+		//std::string filename = directory + "_Moriond/" + process + "/output/Moriond_prediction.root";
+		std::string filename = directory + "/" + process + "/output/Moriond_prediction_fixedFakes.root";
 		
 		PhysicsContribution* signal = new PhysicsContribution("signal", filename, xsec*br*filterEff, TString::Format("Seesaw%d", i), false, "treeR", -1, 0);
 		signal->addWeight("WEIGHT[0]");
@@ -143,7 +151,7 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
 	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	//assembler->setMode("fullPrecision");
-	assembler->setMode("noRatioPlot");
+	//assembler->setMode("noRatioPlot");
 	
 	setupData(assembler);
 	setupBackgroundMC(assembler);
@@ -154,9 +162,9 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->getBundle("SignalBundle")->addComponent(assembler->getBundle("Seesaw"));
 	
 	for(const auto &signal : signals) {
-		applyUncertainties(assembler, signal);
+		applyUncertaintiesAndScaleFactors(assembler, signal);
 		signal->addFlatUncertainty("lumi", 0.046);
-		signal->addFlatUncertainty("signalXsec", 0.3);
+		//signal->addFlatUncertainty("signalXsec", 0.3);
 		assembler->addContribution(signal);
 		assembler->getBundle("Seesaw")->addComponent(signal);
 	}
@@ -176,20 +184,41 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	
 	assembler->project("gaus", false)->plot(false)->SaveAs("gaus.pdf");
 	
+	assembler->setRange("WZ", 1, 1);
+	makeNicePlot(assembler->project("MT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "MT [GeV]")->SaveAs("WZ_contamination.pdf");
+	assembler->project("MT", true)->print();
+	assembler->setRange("WZ");
+	
+	assembler->setRange("NLIGHTLEPTONS", 3);
+	
+	assembler->project("LT+MET", true)->print();
+	
+	assembler->setRange("AIC", 0, 0);
+/*	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "LT+MET [GeV]")->SaveAs("LT+MET.pdf");
+	assembler->setRange("AIC");
+	assembler->setRange("LT+MET", -50, 350);
+	makeNicePlot(assembler->project("MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "MET [GeV]")->SaveAs("LTMET0to350_MET.pdf");
+	makeNicePlot(assembler->project("MT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "MT [GeV]")->SaveAs("LTMET0to350_MT.pdf");
+	makeNicePlot(assembler->project("NGOODJETS", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "nJets")->SaveAs("LTMET0to350_NGOODJETS.pdf");
+	makeNicePlot(assembler->project("PTGOODLEPTONS[0]", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "leading lepton pT [GeV]")->SaveAs("LTMET0to350_PTGOODLEPTONS0.pdf");
+	makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "all lepton invariant mass [GeV]")->SaveAs("LTMET0to350_MLIGHTLEPTONS.pdf");
+*/	
+	assembler->setRange();
+	
 	// Inclusive plots: L3Tau0
-	assembler->setRange("NLEPTONS", 3, 3);
+	assembler->setRange("NLIGHTLEPTONS", 3, 3);
 	assembler->setRange("NGOODTAUS", 0, 0);
 	
-	assembler->project("QLIGHTLEPTONS", false)->plot(false)->SaveAs("L3Tau0_Q.pdf");
+	makeNicePlot(assembler->project("QLIGHTLEPTONS", false)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "Sum of lepton charges")->SaveAs("L3Tau0_Q.pdf");
 	assembler->channel("L3Tau0")->datacard();
 	
 	ChannelCollection* ccQ = new ChannelCollection("L3Tau0_Q");
 	
-	assembler->setRange("QLIGHTLEPTONS", -2, 0);
+	assembler->setRange("QLIGHTLEPTONS", -1.5, -0.5);
 	assembler->channel("L3Tau0QN")->datacard();
 	ccQ->addChannel(assembler->channel("L3Tau0QN")->bundle(assembler->getBundle("SignalBundle")));
 	
-	assembler->setRange("QLIGHTLEPTONS", 0, +2);
+	assembler->setRange("QLIGHTLEPTONS", 0.5, 1.5);
 	assembler->channel("L3Tau0QP")->datacard();
 	ccQ->addChannel(assembler->channel("L3Tau0QP")->bundle(assembler->getBundle("SignalBundle")));
 	
@@ -197,6 +226,15 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->setRange("QLIGHTLEPTONS");
 	
 	assembler->setRange("AIC", 0, 0);
+	
+	assembler->setRange("LT+MET", 350);
+	makeNicePlot(assembler->project("MET", true)->plot(false), "MET [GeV]")->SaveAs("L3Tau0LTMETgt350_MET.pdf");
+	makeNicePlot(assembler->project("MT", true)->plot(false), "MT [GeV]")->SaveAs("L3Tau0LTMETgt350_MT.pdf");
+	makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("L3Tau0LTMETgt350_NGOODJETS.pdf");
+	makeNicePlot(assembler->project("PTGOODLEPTONS[0]", true)->plot(false), "leading lepton pT [GeV]")->SaveAs("L3Tau0LTMETgt350_PTGOODLEPTONS0.pdf");
+	makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "all lepton invariant mass [GeV]")->SaveAs("L3Tau0LTMETgt350_MLIGHTLEPTONS.pdf");
+	assembler->setRange("LT+MET");
+	assembler->setRange("NGOODTAUS");
 	
 	assembler->setRange("NOSSF", 0, 0);
 	addMETchannels(channels, assembler, "L3DY0");
@@ -222,13 +260,16 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->setRange();
 	
 	// Inclusive plots: L4Tau0
-	assembler->setRange("NLEPTONS", 4);
-	assembler->setRange("NGOODTAUS", 0, 0);
+	assembler->setRange("NLIGHTLEPTONS", 4);
+	//assembler->setRange("NGOODTAUS", 0, 0);
 	
-	assembler->setRange("NOSSF", 0, 0);
+	//assembler->setRange("NOSSF", 0, 0);
 	//addMETchannels(channels, assembler, "L4DY0");
 	
-	assembler->setRange("NOSSF", 1, 1);
+	assembler->setRange("NOSSF", 1);
+	addMETchannels(channels, assembler, "L4DYgt0");
+	
+	/*assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 1, 1);
 	addMETchannels(channels, assembler, "L4DYz1");
 	
@@ -243,20 +284,20 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->setRange("NOSSF", 2);
 	assembler->setRange("ONZ", 0, 0);
 	addMETchannels(channels, assembler, "L4DYn2");
-
+*/
 	assembler->setRange();
 	
 	std::vector<TString> channelNames = {
-		"L3DY0LTMET350to550",
-		"L3DYh1LTMET350to550",
 		"L3DYh1LTMET550to750",
+		"L3DYh1LTMET350to550",
+		"L3DY0LTMET350to550",
 		"L3DY0LTMET550to750",
-		"L4DYz1LTMET550to750",
-		"L4DYz1LTMET350to550",
-		"L3DYh1LTMET750to950",
+		"L4DYgt0LTMET550to750",
+		"L4DYgt0LTMET350to550",
 		"L3DYz1LTMET350to550",
-		"L3DY0LTMET750to950",
 		"L3DYz1LTMET550to750",
+		"L3DYh1LTMET750to950",
+		"L3DY0LTMET750to950",
 	};
 	
 	ChannelCollection* ccGrand = new ChannelCollection("grandCollection");
@@ -273,11 +314,11 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 		
 		ChannelCollection* ccSingle = new ChannelCollection(channel->getName());
 		ccSingle->addChannel(channel);
-		ccSingle->datacard(ccSingle->getName() + TString(".txt"), false);
+		ccSingle->datacard(ccSingle->getName() + TString(".txt"), true);
 	}
 	ccGrand->datacard(ccGrand->getName() + TString(".txt"));
 	if(ccSelected->getChannels().size() > 0) {
-		ccSelected->datacard(ccSelected->getName() + TString(".txt"), false);
+		ccSelected->datacard(ccSelected->getName() + TString(".txt"), true);
 	}
 	
 	delete assembler;

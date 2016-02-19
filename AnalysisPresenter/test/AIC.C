@@ -15,14 +15,14 @@ void AIC() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,2}:(NGOODELECTRONS%2){0,2}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{0,200,8}:MLIGHTLEPTONS*1{0,200,48}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
+	std::string varexp = "NLIGHTLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,2}:(NGOODELECTRONS%2){0,2}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{0,200,8}:MLIGHTLEPTONS*1{0,200,48}:NGOODJETS{0,6}:NPROMPTINCLUSIVETRACKS{0,15}:MT{0,300,30}";
 	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
 	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
 	
 	// Global cuts, if desired
 	//TString selection = "!AIC";
 	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
-	selection += " && MOSSF < 81 && NGOODTAUS == 0";
+	selection += " && MOSSF < 81"; // && NGOODTAUS == 0";
 	//TString selection = "NPROMPTINCLUSIVETRACKS >= 6";
 	//TString selection = "!(MLIGHTLEPTONS > 76 && MLIGHTLEPTONS < 106)";
 	
@@ -56,7 +56,7 @@ void AIC() {
 	// ZZ control plot
 	// selection += "NLEPTONS == 3 && NOSSF == 1 && !ONZ && NGOODTAUS == 0 && NBJETSCSVM == 0 && HT < 200 && MET < 50"; // Richard's
 	//	selection += " && NLEPTONS == NGOODMUONS";
-	assembler->setRange("NLEPTONS", 3, 3);
+	assembler->setRange("NLIGHTLEPTONS", 3, 3);
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 0, 0);
 	assembler->setRange("NBJETSCSVM", 0, 0);

@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <vector>
@@ -16,18 +17,13 @@ void fakeRatesLight_plots() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For fake rate measurement
-	std::string varexp1 = "(NGOODELECTRONS[0]%2){0,2}:(NGOODMUONS[0]%2){0,2}:NGOODMUONS[0]{0,4}:NGOODELECTRONS[0]{0,4}:NPOSGOODMUONS[0]{0,4}:NPOSGOODELECTRONS[0]{0,4}:NNEGGOODMUONS[0]{0,4}:NNEGGOODELECTRONS[0]{0,4}:NOSSF[0]{0,2}:ONZ{0,2}:NBJETSCSVM[0]{0,4}:HT[0]{0,450,45}:ST[0]{0,600,60}:MET[0]{0,100,10}:MT[0]{0,100,10}:NGOODJETS[0]{0,10}:NPROMPTINCLUSIVETRACKS7[0]{0,25}:NPROMPTNONISOTRACKS[0]{0,15}:NPROMPTNONISOTRACKS7[0]{0,15}:NISONONPROMPTTRACKS[0]{0,15}:NISONONPROMPTTRACKS7[0]{0,15}";
+	std::string varexp1 = "(NGOODELECTRONS[0]%2){0,2}:(NGOODMUONS[0]%2){0,2}:NGOODMUONS[0]{0,4}:NGOODELECTRONS[0]{0,4}:NOSSF[0]{0,2}:ONZ{0,2}:NBJETSCSVM[0]{0,4}:HT[0]{0,450,45}:ST[0]{0,600,60}:MET[0]{0,100,10}:MT[0]{0,100,10}:NGOODJETS[0]{0,10}:NPROMPTINCLUSIVETRACKS7[0]{0,25}:NPROMPTNONISOTRACKS[0]{0,15}:NPROMPTNONISOTRACKS7[0]{0,15}:NISONONPROMPTTRACKS[0]{0,15}:NISONONPROMPTTRACKS7[0]{0,15}";
 	varexp1 += ":NPROMPTINCLUSIVETRACKS[0]{0,15}";
-	varexp1 += ":NPROMPTNONISOINCLUSIVETRACKS7[0]{0,15}";
+	varexp1 += ":NPROMPTNONISOINCLUSIVETRACKS7[0]{0,15,1}";
 	varexp1 += ":Max$(PTGOODJETS){-10,430,11,\"maxJetPT\"}";
 	
 	varexp1 += ":NISONONPROMPTINCLUSIVETRACKS7[0]{0,15}";
-	varexp1 += ":NNONISONONPROMPTINCLUSIVETRACKS7[0]{0,15}";
 	//varexp1 += ":Max$(BDISCCSVGOODJETS){0,1,20,\"maxBDISCCSVGOODJETS\"}";
-	varexp1 += ":BDISCCSVGOODJETS{0,1,20}";
-	varexp1 += ":Max$(BDISCJETBPROBBJETTAGSGOODJETS){0,5,20,\"maxBDISCJETBPROBBJETTAGSGOODJETS\"}";
-	varexp1 += ":Max$(BDISCJETPROBBJETTAGSGOODJETS){0,1,20,\"maxBDISCJETPROBBJETTAGSGOODJETS\"}";
-	varexp1 += ":Max$(fabs(DXYBASICTRACKS)){0,0.1,20,\"maxDXYBASICTRACKSabs\"}";
 	
 	//std::string varexp1 = "(NGOODELECTRONS%2){0,1}:(NGOODMUONS%2){0,1}:NGOODMUONS{0,3}:NGOODELECTRONS{0,3}:NPOSGOODMUONS{0,3}:NPOSGOODELECTRONS{0,3}:NNEGGOODMUONS{0,3}:NNEGGOODELECTRONS{0,3}:NOSSF{0,2}:ONZ{0,1}:NBJETSCSVM{0,2}:HT{0,500,10}:MET{0,100,10}:NGOODJETS{0,10}:NPROMPTINCLUSIVETRACKS7{6,100,1}:NPROMPTNONISOTRACKS{0,15}:NPROMPTNONISOTRACKS7{0,15}:NISONONPROMPTTRACKS{0,15}:NISONONPROMPTTRACKS7{0,15}";
 	//std::string varexp1 = "(NGOODELECTRONS%2){0,1}:(NGOODMUONS%2){0,1}:NGOODMUONS{0,3}:NGOODELECTRONS{0,3}:NPOSGOODMUONS{0,3}:NPOSGOODELECTRONS{0,3}:NNEGGOODMUONS{0,3}:NNEGGOODELECTRONS{0,3}:NOSSF{0,2}:ONZ{0,1}:NBJETSCSVM{0,2}:HT{0,500,10}:MET{0,100,10}:NGOODJETS{0,10}:NPROMPTINCLUSIVETRACKS7{4,6,1}:NPROMPTNONISOTRACKS{0,15}:NPROMPTNONISOTRACKS7{0,15}:NISONONPROMPTTRACKS{0,15}:NISONONPROMPTTRACKS7{0,15}";
@@ -36,8 +32,7 @@ void fakeRatesLight_plots() {
 	std::string varexp2 = varexp1 + std::string(":nTrackFakeElectrons[0]{0,3}:nTrackFakeMuons[0]{0,3}:nTrackFakePosElectrons[0]{0,3}:nTrackFakePosMuons[0]{0,3}:nTrackFakeNegElectrons[0]{0,3}:nTrackFakeNegMuons[0]{0,3}");
 	
 	// Global cuts, if desired
-	TString selection1 = "NOTTRILEPTONONZ";
-	selection1 += " && NLEPTONS[0] == 3 && NGOODTAUS[0] == 0";
+	TString selection1 = "NLIGHTLEPTONS[0] == 3 && PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10"; // && NGOODTAUS[0] == 0";
 	//selection1 += " && abs(OSSFCLOSEMLL - 91) < 10";
 	//selection1 += " && !(MLEPTONS > 81 && MLEPTONS < 101)";
 //	selection1 += " && MT < 50 && HT < 100";
@@ -49,10 +44,10 @@ void fakeRatesLight_plots() {
 	Assembler* assembler1 = new Assembler;
 	init(assembler1);
 	setupData(assembler1);
-	setupBackgroundMC(assembler1, false, false);
+	setupBackgroundMC(assembler1);
 	//setupBackgroundMC(assembler1);
 	//setupBackgroundDD(assembler1, "noTracks");
-	//setupBackgroundDD(assembler1, "justPhotons"); // tracks are not a background here; taus can be skipped (NGOODTAUS == 0 in selection1)
+	setupBackgroundDD(assembler1, "justPhotons"); // tracks are not a background here
 	setupFakeRates(assembler1);
 	assembler1->setFakeRate("nTrackFakeMuons", "0"); // avoid ttbar MC subtraction
 	assembler1->setFakeRate("nTrackFakeElectrons", "0"); // avoid ttbar MC subtraction
@@ -62,11 +57,12 @@ void fakeRatesLight_plots() {
 	
 	Assembler* assembler2 = new Assembler;
 	init(assembler2);
-	setupData(assembler2, true);
+	setupData(assembler2, true, 1);
 	//setupBackgroundMC(assembler2, false, true, true);
 	assembler2->setDebug(true);
 	TString selection2 = selection1;
-	selection2 += " && nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] + nTauFakeTaus[0] == 0";
+	selection2 += " && nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 0"; // + nTauFakeTaus[0] == 0";
+	selection2 += " && nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1"; // + nTauFakeTaus[0] == 0";
 	prepare(assembler2);
 	assembler2->process(varexp2, selection2);
 	
@@ -80,41 +76,38 @@ void fakeRatesLight_plots() {
 	assemblers.push_back(assembler1);
 	assemblers.push_back(assembler2);
 	
-	std::vector<char*> cuts;
+	std::vector<TString> cuts;
 	cuts.push_back("");
 	//cuts.push_back("assembler->setRange(\"HT[0]\", 0, 200, false);");
 	//cuts.push_back("assembler->setRange(\"HT[0]\", 200);");
 	
-	//char* varName = "HT[0]";
-	//char* varName = "NGOODJETS[0]";
-	//char* varName = "NBJETSCSVM[0]";
-	//char* varName = "NPROMPTNONISOTRACKS[0]";
-	//char* varName = "NPROMPTNONISOTRACKS7[0]";
-	//char* varName = "NISONONPROMPTTRACKS[0]";
-	//char* varName = "NISONONPROMPTTRACKS7[0]";
-	//char* varName = "(NPROMPTNONISOTRACKS[0]+NGOODTRACKS[0])";
-	//char* varName = "(NPROMPTNONISOTRACKS7[0]+NGOODTRACKS[0])";
-	//char* varName = "NBASICTRACKS7[0]";
-//	char* varName = "NPROMPTINCLUSIVETRACKS[0]"; // considerung to use
-	//char* varName = "NPROMPTINCLUSIVETRACKS7[0]"; // this is what we use
+	//TString varName = "HT[0]";
+	//TString varName = "NGOODJETS[0]";
+	//TString varName = "NBJETSCSVM[0]";
+	//TString varName = "NPROMPTNONISOTRACKS[0]";
+	//TString varName = "NPROMPTNONISOTRACKS7[0]";
+	//TString varName = "NISONONPROMPTTRACKS[0]";
+	//TString varName = "NISONONPROMPTTRACKS7[0]";
+	//TString varName = "(NPROMPTNONISOTRACKS[0]+NGOODTRACKS[0])";
+	//TString varName = "(NPROMPTNONISOTRACKS7[0]+NGOODTRACKS[0])";
+	//TString varName = "NBASICTRACKS7[0]";
+//	TString varName = "NPROMPTINCLUSIVETRACKS[0]"; // considerung to use
+	//TString varName = "NPROMPTINCLUSIVETRACKS7[0]"; // this is what we use
 	//varName = "maxJetPT";
 
-//	char* varName = "NPROMPTNONISOINCLUSIVETRACKS7[0]";
+	TString varName = "NPROMPTNONISOINCLUSIVETRACKS7[0]";
 
-//	char* varName = "NISONONPROMPTINCLUSIVETRACKS7[0]";
-//	char* varName = "NNONISONONPROMPTINCLUSIVETRACKS7[0]";
-//	char* varName = "maxBDISCCSVGOODJETS";
-	char* varName = "BDISCCSVGOODJETS";
-//	char* varName = "maxBDISCJETBPROBBJETTAGSGOODJETS";
-//	char* varName = "maxBDISCJETPROBBJETTAGSGOODJETS";
-//	char* varName = "maxDXYBASICTRACKSabs";
+//	TString varName = "NISONONPROMPTINCLUSIVETRACKS7[0]";
+//	TString varName = "maxBDISCCSVGOODJETS";
 
-	//char* varName = "NISONONPROMPTINCLUSIVETRACKS7[0]";
-	//char* varName = "NISOINCLUSIVETRACKS7[0]";
-	//char* varName = "NINCLUSIVETRACKS7[0]";
-	//char* varName = "(NPROMPTINCLUSIVETRACKS7[0]-NPROMPTNONISOINCLUSIVETRACKS7[0])";
+	//TString varName = "NISONONPROMPTINCLUSIVETRACKS7[0]";
+	//TString varName = "NISOINCLUSIVETRACKS7[0]";
+	//TString varName = "NINCLUSIVETRACKS7[0]";
+	//TString varName = "(NPROMPTINCLUSIVETRACKS7[0]-NPROMPTNONISOINCLUSIVETRACKS7[0])";
 	
 	assemblers[0]->setRange(varName);
+	TCanvas* c1 = new TCanvas();
+	c1->cd();
 	TH1* hTemplate = (TH1*)assemblers[0]->project(varName, false)->getHistogram("data")->Clone("mu");
 	hTemplate->Reset();
 	hTemplate->SetLineColor(2);
@@ -125,7 +118,7 @@ void fakeRatesLight_plots() {
 	// Measure light lepton fake rates
 	for(int nMuons = 0; nMuons < 4; ++nMuons) {
 		std::string fakeName = (nMuons % 2) ? "muon" : "electron";
-		for(int charge = -1; charge <= -1; charge += 2) {
+//		for(int charge : {-1, +1}) {
 			for(size_t j = 0; j < cuts.size(); ++j) {
 				TH1* h = (TH1*)hTemplate->Clone(TString::Format("%s fake in %d mu region", fakeName.c_str(), nMuons));
 				for(int k = 1; k <= h->GetXaxis()->GetNbins(); ++k) {
@@ -137,8 +130,8 @@ void fakeRatesLight_plots() {
 					for(size_t i = 1; i <= 2; ++i) {
 						Assembler* assembler = assemblers[i-1];
 						assembler->setRange();
+						//assembler->setRange("(NGOODMUONS[0]%2)", nMuons, nMuons);
 						assembler->setRange("NGOODMUONS[0]", nMuons, nMuons);
-						//assembler->setRange("(NGOODMUONS[0]%2)", (nMuons % 2), (nMuons % 2));
 						if(i == 2) {
 							assembler->setRange("nTrackFakeMuons[0]", (nMuons % 2), (nMuons % 2));
 							assembler->setRange("nTrackFakeElectrons[0]", !(nMuons % 2), !(nMuons % 2));
@@ -146,7 +139,8 @@ void fakeRatesLight_plots() {
 						
 						//assembler->setRange("HT[0]", 0, 200, false);
 						//assembler->setRange("HT[0]", 200);
-						//assembler->setRange("MET[0]", 0, 50, false); // 30?
+						assembler->setRange("ONZ", 1);
+						assembler->setRange("MET[0]", 0, 50, false); // 30?
 						
 						// Z+b
 						//assembler->setRange("ONZ", 1, 1);
@@ -155,9 +149,9 @@ void fakeRatesLight_plots() {
 						//assembler->setRange("NBJETSCSVM[0]", 1, 1);
 						
 						// ttbar
-						assembler->setRange("ONZ", 0, 0);
-						assembler->setRange("ST[0]", 200);
-						assembler->setRange("NBJETSCSVM[0]", 1, 1);
+						//assembler->setRange("ONZ", 0, 0);
+						//assembler->setRange("ST[0]", 200);
+						//assembler->setRange("NBJETSCSVM[0]", 1, 1);
 						
 						//assembler->setRange("MT[0]", 0, 50, false);
 						//assembler->setRange("ONZ", 1, 1);
@@ -186,7 +180,6 @@ void fakeRatesLight_plots() {
 					cout << fakeMC << "/" << fakeMCerr << endl;
 					if(fake == 0) continue;
 					double fakeRate = (data - mc) / (fake - fakeMC);
-					//double fakeRateErr = sqrt(dataErr*dataErr + pow(fakeErr*(data-mc)/fake, 2) + mcErr*mcErr) / fake;
 					double fakeRateErr = sqrt( (dataErr*dataErr + mcErr*mcErr) / pow(fake - fakeMC, 2) + ( (fakeErr*fakeErr + fakeMCerr*fakeMCerr) * pow(data - mc, 2) ) / pow(fake - fakeMC, 4) );
 					printf("fake rate: %.4f ± %.4f (%.0f%%)\n", fakeRate, fakeRateErr, fakeRateErr / fakeRate * 100);
 					h->SetBinContent(k, fakeRate);
@@ -194,37 +187,14 @@ void fakeRatesLight_plots() {
 				}
 				h->SetMinimum(-0.10); h->SetMaximum(+0.30);
 				h->Draw();
-				h->Fit("pol1", "", "SAME");
-				//c1->SaveAs(TString::Format("%d/sum_%s_%s_%dmu.pdf", j, varName, fakeName.c_str(), nMuons));
-				c1->SaveAs(TString::Format("sum_%s_%s_%dmu.pdf", varName, fakeName.c_str(), nMuons));
+				h->Fit("pol0", "", "SAME");
+				c1->SaveAs(TString::Format("sum_%s_%s_%dmu.pdf", varName.Data(), fakeName.c_str(), nMuons));
+				//c1->SaveAs(TString::Format("sum_%s_%s_%s.pdf", varName.Data(), fakeName.c_str(), (nMuons == 0) ? "electronFake" : "muonFake"));
+				//c1->SaveAs(TString::Format("sum_%s_%s_%s.pdf", varName.Data(), "lepon", "allFlavor"));
 			}
-		}
+//		}
 	}
-/*	
-	TLegend* leg = 0;
-	TH1* h1 = 0;
-	TH1* h2 = 0;
 	
-	h1 = mu;
-	h1->SetMinimum(-0.20); h1->SetMaximum(+0.20);
-	h2 = el;
-	h1->Draw();
-	h2->Draw("SAME");
-	leg = new TLegend(0.1,0.8,0.3,0.9);
-	leg->AddEntry(h1);
-	leg->AddEntry(h2);
-	leg->Draw();
-	gStyle->SetOptFit(1111);
-	cout << "mu" << endl;
-	h1->Fit("pol0", "", "SAME");
-	h1->Fit("pol1", "", "SAME");
-//	h1->Fit("pol2", "", "SAME");
-	cout << "el" << endl;
-	h2->Fit("pol0", "", "SAME");
-	h2->Fit("pol1", "", "SAME");
-//	h2->Fit("pol2", "", "SAME");
-	c1->SaveAs(TString::Format("sum_%s.pdf", varName));
-*/	
 	delete assembler1;
 	delete assembler2;
 }

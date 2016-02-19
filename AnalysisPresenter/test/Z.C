@@ -15,8 +15,8 @@ void Z() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For Z peak
-	//std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{76,106}";
-	std::string varexp = "NLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,510,17}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{66,106}";
+	//std::string varexp = "NLIGHTLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{-10,440,15}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{76,106}";
+	std::string varexp = "NLIGHTLEPTONS{2,6}:NGOODELECTRONS{0,4}:NGOODMUONS{0,4}:NGOODELECTRONS%2{0,2,\"elFake\"}:NGOODMUONS%2{0,2,\"muFake\"}:MOSSF{11,131,36}:NOSSF{0,2}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,510,17}:MET{0,100,10}:MT{0,100,10}:MLIGHTLEPTONS{66,106}";
 	varexp += ":NPROMPTTRACKS7{0,100,1}";
 	varexp += ":Min$(PTGOODMUONS){0,100,20,\"MINMUONPT\"}:Min$(PTGOODELECTRONS){0,100,20,\"MINELECTRONPT\"}";
 	varexp += ":Max$(PTGOODMUONS){0,100,20,\"MAXMUONPT\"}:Max$(PTGOODELECTRONS){0,100,20,\"MAXELECTRONPT\"}";
@@ -60,9 +60,9 @@ void Z() {
 	TF1* f = new TF1("f", "pol0", 81, 101);
 	TF1* f1 = new TF1("f", "pol1", 10, 100);
 	
-	assembler->setRange("NGOODTAUS", 0, 0);
+//	assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 1, 1);
-	assembler->setRange("NBJETSCSVM", 0, 0);
+//	assembler->setRange("NBJETSCSVM", 0, 0);
 	
 //	assembler->setRange("HT", -10, 200, false);
 	assembler->setRange("MET", 0, 50, false);

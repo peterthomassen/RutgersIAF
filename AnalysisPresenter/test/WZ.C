@@ -16,7 +16,7 @@ void WZ() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For WZ
-	std::string varexp = "NLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:(MET){0,200,4}:MT{0,150,15}:NGOODJETS{0,6}:ST{0,1000,100}";
+	std::string varexp = "NLIGHTLEPTONS{3,6}:MOSSF{6,126,36}:NOSSF{0,2}:ONZ{0,1}:NGOODTAUS{0,1}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:(MET){0,200,4}:MT{0,150,15}:NGOODJETS{0,6}:ST{0,1000,100}";
 	varexp += ":NGOODMUONS{0,4}:NGOODELECTRONS{0,4}";
 	varexp += ":NGOODMUONS%2{0,2}";
 	varexp += ":PTOSSF{0,300,30}";
@@ -52,18 +52,18 @@ void WZ() {
 	
 	// Check for duplicate events
 	
-//	assembler->project("NLEPTONS", true)->getMeta(); // printMeta();
-	//assembler->project("NLEPTONS", true)->print();
+//	assembler->project("NLIGHTLEPTONS", true)->getMeta(); // printMeta();
+	//assembler->project("NLIGHTLEPTONS", true)->print();
 	
 	// WZ control plot
-	assembler->setRange("NLEPTONS", 3, 3);
-	assembler->setRange("NGOODTAUS", 0, 0);
+	assembler->setRange("NLIGHTLEPTONS", 3, 3);
+	//assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 1);
 	
 makeNicePlot(assembler->project("(MET)", true)->plot(true), "MET [GeV]")->SaveAs("../nicePlots/L3DYz1Tau0_MET.pdf");
 
-	assembler->setRange("NBJETSCSVM", 0, 0);
+	//assembler->setRange("NBJETSCSVM", 0, 0);
 	
 	assembler->setRange("MET", 50, 100, false);
 	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_MT.pdf");

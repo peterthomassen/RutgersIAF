@@ -15,7 +15,7 @@ void ZZ() {
 	
 	// Specify axes and bins of multidimensional histogram
 	// For ZZ
-	std::string varexp = "NLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{20,540,13}:NGOODJETS{0,6}";
+	std::string varexp = "NLIGHTLEPTONS{2,6}:MOSSF{6,126,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NBJETSCSVM{0,2}:HT{0,500,50}:MET{0,300,30}:MLIGHTLEPTONS{20,540,13}:NGOODJETS{0,6}";
 	
 	// Global cuts, if desired
 	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
@@ -47,18 +47,19 @@ void ZZ() {
 	chdir("ZZ");
 	
 	// ZZ control plot
-	assembler->setRange("NLEPTONS", 4, 4);
+	assembler->setRange("NLIGHTLEPTONS", 4, 4);
 	
-	assembler->setRange("NGOODTAUS", 0, 0);
+	//assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_noCuts.pdf");
 	
 	assembler->setRange("ONZ", 1, 1);
-	assembler->setRange("NBJETSCSVM", 0, 0);
-	assembler->setRange("HT", 0, 200, false);
+	assembler->project("MET", true)->plot(false)->SaveAs("ZZ_onZ_MET.pdf");
+	//assembler->setRange("NBJETSCSVM", 0, 0);
+	//assembler->setRange("HT", 0, 200, false);
 	assembler->setRange("MET", 0, 50, false);
 	
 	
-	assembler->setRange("NGOODTAUS", 0, 0);
+	//assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 2, 2);
 	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS.pdf");
 makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "4L mass [GeV]")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_MLIGHTLEPTONS.pdf");
@@ -68,24 +69,6 @@ assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS
 assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ZZ_NGOODJETS.pdf");
 makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_NGOODJETS.pdf");
-	
-	assembler->setRange("NOSSF", 1, 2);
-	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_NOSSF12-0Taus.pdf");
-	
-	assembler->setRange("NOSSF", 1, 1);
-	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_NOSSF1-0Taus.pdf");
-	
-	assembler->setRange("NGOODTAUS", 1, 1);
-	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_NOSSF1-1Tau.pdf");
-	
-	assembler->setRange("NGOODTAUS", 1);
-	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_NOSSF1-1orMoreTaus.pdf");
-	
-	assembler->setRange("NGOODTAUS", 2);
-	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_NOSSF1-2orMoreTaus.pdf");
-	
-	assembler->setRange("NGOODTAUS");
-	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_NOSSF1-0orMoreTaus.pdf");
 	
 	assembler->setRange();
 	
