@@ -3,7 +3,6 @@
 #include "RutgersIAF/EventAnalyzer/interface/FlatTreeReader.h"
 
 #include "helperMiniAOD.C"
-#include "helperMET.C"
 #include "helperValidation.C" // redefines MCTAUS!
 
 void exampleAnalysisTree(const char* ifname="in.root"
