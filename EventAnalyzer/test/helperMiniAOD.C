@@ -902,6 +902,9 @@ void setupMET(BaseHandler* handler, bool isMC) {
 	handler->addEventVariable("NVERTICES",new EventVariableN("NVERTICES","ALLVERTICES"));
 	
 	if(isMC){
+		EventVariableSumPT* METnoSmearing = new EventVariableSumPT("METnoSmearing", "MET");
+		handler->addEventVariable("METnoSmearing",METnoSmearing);
+		
 		EventVariableSmearMET* MET = new EventVariableSmearMET("MET","MET","HT","NVERTICES",7.5,4.0,4.6,8.8,4.4,4.6);
 		MET->setSeed(3141592654);
 		handler->addEventVariable("MET",MET);
