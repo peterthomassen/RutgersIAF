@@ -55,7 +55,7 @@ bool ChannelCollection::addChannel(Channel* channel, bool allowDuplicates) {
 	return true;
 }
 
-void ChannelCollection::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
+void ChannelCollection::datacard(TString datacardName, bool isData, double statFactor, double systFactor, double signalXsecUncertainty) {
 	std::cout << "Creating datacard " << datacardName << " ..." << std::endl;
 	
 	assert(getChannels().size() > 0);
@@ -74,7 +74,7 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	datacard << "# Datacard " << datacardName << endl << endl;
 	datacard << "imax " << getChannels().size() << " number of channels" << endl;
 	datacard << "jmax " << bundleNamesBkg.size() + bundleNamesSig.size() - 1 << " number of backgrounds and signals minus 1" << endl;
-	datacard << "kmax " << getUncertaintyNames().size() + getChannels().size() * (bundleNamesBkg.size() + bundleNamesSig.size()) << " number nuisance parameters" << endl;
+	datacard << "kmax " << getUncertaintyNames().size() + getChannels().size() * (bundleNamesBkg.size() + (1 + (signalXsecUncertainty != 0)) * bundleNamesSig.size()) << " number nuisance parameters" << endl;
 	datacard << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 	datacard << "Observation";
 	
@@ -194,6 +194,26 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 		}
 		
 		datacard << endl;
+	}
+	
+	if(signalXsecUncertainty != 0) {
+		for(int n = 0; n < nYields; n++) {
+			// Skip backgrounds
+			if(!(n % (bundleNamesBkg.size() + bundleNamesSig.size()) < bundleNamesSig.size())) {
+				continue;
+			}
+			
+			datacard << "SignalXsec" << n + 1 << " lnN";
+		
+			for(int m = 0; m < nYields; m++) {
+			  if(n == m)
+				datacard << '\t' << 1 + signalXsecUncertainty;
+			  else 
+				datacard << '\t' << 1;
+			}
+			
+			datacard << endl;
+		}
 	}
 	
 	datacard.close();

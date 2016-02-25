@@ -18,7 +18,7 @@ public:
 	virtual ~ChannelCollection();
 	
 	bool addChannel(Channel* channel, bool allowDuplicates = false);
-	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
+	void datacard(TString datacardName, bool isData = true, double statFactor = 1.00, double systFactor = 1.00, double signalXsecUncertainty = 0.00);
 	
 	std::vector<Channel*> getChannels() const;
 	std::set<TString> getUncertaintyNames() const;
