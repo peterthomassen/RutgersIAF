@@ -62,13 +62,13 @@ void ZZ() {
 	//assembler->setRange("NGOODTAUS", 0, 0);
 	assembler->setRange("NOSSF", 2, 2);
 	assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS.pdf");
-makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "4L mass [GeV]")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_MLIGHTLEPTONS.pdf");
+makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "m_{4l}", "GeV")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_MLIGHTLEPTONS.pdf");
 	assembler->project("MLIGHTLEPTONS", true)->print();
 	assembler->setRange("NBJETSCSVM", 1);
 assembler->project("MLIGHTLEPTONS", true)->plot(false)->SaveAs("ZZ_MLIGHTLEPTONS_B1.pdf");
 assembler->setRange("NBJETSCSVM", 0, 0);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ZZ_NGOODJETS.pdf");
-makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_NGOODJETS.pdf");
+makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "n_{jets}")->SaveAs("../nicePlots/ZZ_DYz2MET0to50HT0to200_NGOODJETS.pdf");
 	
 	assembler->setRange();
 	

@@ -23,8 +23,8 @@ void applyUncertaintiesAndScaleFactors(Assembler* assembler, PhysicsContribution
 	
 	// Approximate implementation of https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF?rev=92#Summary_of_needed_SF_for_Decembe
 	// MET identity condition is to work around https://sft.its.cern.ch/jira/browse/ROOT-7993
-	contribution->addWeight("(MET[0] == MET[0]) * pow(0.991*0.999*1.000, Sum$(abs(ETAGOODMUONS) < 2.4)) * pow(0.968*0.993*0.992, Sum$(abs(ETAGOODMUONS) > 2.4))");
-	contribution->addWeight("(NLEPTONS[0] == NLEPTONS[0]) * pow(0.99, Sum$(abs(ETAGOODELECTRONS) < 1.442)) * pow(0.98, Sum$(abs(ETAGOODELECTRONS) > 1.442))");
+	contribution->addWeight("(EVENT[0] == EVENT[0]) * pow(0.991*0.999*1.000, Sum$(abs(ETAGOODMUONS) < 2.4)) * pow(0.968*0.993*0.992, Sum$(abs(ETAGOODMUONS) > 2.4))");
+	contribution->addWeight("(EVENT[0] == EVENT[0]) * pow(0.99, Sum$(abs(ETAGOODELECTRONS) < 1.442)) * pow(0.98, Sum$(abs(ETAGOODELECTRONS) > 1.442))");
 	contribution->addRelativeUncertainty("lepIDTrigger", "0.03");
 	if(!assembler->getMode("noTTsystematics")) {
 		//contribution->addRelativeUncertainty("bTag", (contribution->getName()).BeginsWith("TT", TString::kIgnoreCase) ? "0.1" : "0");
@@ -39,8 +39,9 @@ void applyUncertaintiesAndScaleFactors(Assembler* assembler, PhysicsContribution
 void init(Assembler* assembler) {
 	TH1::AddDirectory(false);
 	TH1::SetDefaultSumw2(true);
+	//gStyle->SetErrorX(0);
 	
-	assembler->addBundle(new Bundle("background", "Fakes", false, 42));
+	assembler->addBundle(new Bundle("background", "Misidentified", false, 42));
 	assembler->addBundle(new Bundle("background", "presentationBundle"));
 	assembler->addBundle(new Bundle("background", "fakePresentationBundle"));
 	
@@ -57,7 +58,7 @@ std::string getDataFileName() {
 }
 
 void prepare(Assembler* assembler) {
-	Bundle* fakeBundle = assembler->getBundle("Fakes");
+	Bundle* fakeBundle = assembler->getBundle("Misidentified");
 	for(const auto &bundleName : {"TrackFakes", "PhotonFakes"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
@@ -66,7 +67,7 @@ void prepare(Assembler* assembler) {
 	}
 	
 	Bundle* presentationBundle = assembler->getBundle("presentationBundle");
-	for(const auto &bundleName : {"Fakes", "WZ", "Higgs", "Rare MC"}) {
+	for(const auto &bundleName : {"Misidentified", "WZ", "Higgs", "Rare MC"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
 			presentationBundle->addComponent(bundle);
@@ -214,6 +215,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("ONZ");
 	wz->addWeight("1.300"); // normalization
+	wz->addWeight("EVENT[0] == EVENT[0]");
 	if(!assembler->getMode("noWZsystematics")) {
 		wz->addFlatUncertainty("normalizationWZ", 0.071); // statistical
 		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
@@ -248,7 +250,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * 0.01 + (NGOODJETS[0] == 2) * 0.01 + (NGOODJETS[0] == 3) * 0.07 + (NGOODJETS[0] == 4) * -0.07 + (NGOODJETS[0] == 5) * -0.22 + (NGOODJETS[0] > 5) * -0.34";
 	//nJetWeight = "(NLEPTONS[0] == NLEPTONS[0])";
 	TString normalization = "0.805";
-	normalization += " * (NLEPTONS[0] == NLEPTONS[0])";
+	normalization += " * (EVENT[0] == EVENT[0])";
 	
 	Bundle* bundleTTbar = new Bundle("background", "ttbar");
 	assembler->addBundle(bundleTTbar);
@@ -266,7 +268,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		}
 		
 		//PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTJets" + infix + suffix, xsec_tt, "ttF", false, "treeR", kAzure + 1);
-		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "ttF", false, "treeR", kAzure + 1, assembler->getMode("fullPrecision") ? 0 : 0.01);
+		PhysicsContribution* ttbarF = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_ttF, "ttbar", false, "treeR", kAzure + 1, assembler->getMode("fullPrecision") ? 0 : 0.01);
 		ttbarF->setNominalWeight("genEventInfo_weight[0]");
 		ttbarF->addWeight(normalization); // normalization
 		ttbarF->addWeight(nJetWeight);
@@ -305,7 +307,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		}
 	}
 	
-	if(dilep) {
+	if(dilep && !onlyTTF) {
 		PhysicsContribution* c = 0;
 		
 		c = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-10to50" + infix + suffix, xsec_dy10to50, "DY10to50", false, "treeR", 46, assembler->getMode("fullPrecision") ? 0 : 0.01);
@@ -338,6 +340,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
+		contribution->addWeight("EVENT[0] == EVENT[0]");
 		applyUncertaintiesAndScaleFactors(assembler, contribution);
 		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
 		contribution->addFlatUncertainty("xsecRare", 0.5);
@@ -457,89 +460,120 @@ void setupFakeRates(Assembler* assembler) {
 #include <TLegend.h>
 #include <TStyle.h>
 
-TCanvas* makeNicePlot(TCanvas* c, const char* axistitle="")
-{
-  gStyle->SetOptStat(0);
-  gStyle->SetOptTitle(0);
+TCanvas* makeNicePlot(TCanvas* c, TString axistitle = "", TString unit = "", TString preliminary = "Preliminary", bool noRatio = false) {
+	gStyle->SetOptStat(0);
+	gStyle->SetOptTitle(0);
 
-  c->cd();
-  c->SetTopMargin(0.001);
-  c->SetRightMargin(0.001);
-  c->SetBottomMargin(0.001);
-  c->SetLeftMargin(0.001);
+	c->cd();
+	c->SetTopMargin(0.001);
+	c->SetRightMargin(0.001);
+	c->SetBottomMargin(0.001);
+	c->SetLeftMargin(0.001);
 
-  TPad* pad1 = (TPad*)c->GetPrimitive("pad1");
-  pad1->SetTopMargin(0.06);
-  //pad1->SetBottomMargin(0.01);
-  TPad* pad2 = (TPad*)c->GetPrimitive("pad2");
-  pad2->SetBottomMargin(0.15);
-  pad2->SetTopMargin(0.01);
+	TPad* pad1 = (TPad*)c->GetPrimitive("pad1");
+	pad1->SetRightMargin(0.03);
+	//pad1->SetBottomMargin(0.01);
+	pad1->SetTopMargin(0.07);
+	TPad* pad2 = (TPad*)c->GetPrimitive("pad2");
+	pad2->SetTopMargin(0.01);
+	pad2->SetRightMargin(0.03);
+	pad2->SetBottomMargin(0.25);
 
-  //pad1->RedrawAxis();
-  pad2->RedrawAxis();
+	//pad1->RedrawAxis();
+	pad2->RedrawAxis();
 
-  pad1->cd();
-  TList* list = pad1->GetListOfPrimitives();
-  cout<<"make nice plot "<<list->GetEntries()<<endl;
-  TH1* h = 0;
-  TLegend* legend = 0;
-  for(int i = 0; i < list->GetEntries(); i++){
-    TObject* obj = list->At(i);
-    TString cname(obj->ClassName());
-    if(cname.Contains("TH1")){
-      h = ((TH1*)obj);
-      ((TH1*)obj)->SetStats(false);
-    } else if(cname == "TLegend") {
-      legend = ((TLegend*)obj);
-    }
-  }
-  legend->SetFillColor(kWhite);
-  double max = h->GetMaximum();
-  double min = h->GetMinimum();
-  //legend->SetY1(min + 0.5 * (max - min));
-  //legend->SetY2(min + 0.9 * (max - min));
-  //legend->SetY1(0.5);
-  //legend->SetY2(2.1);
-  pad1->Range(0, 0, 1, 1);
-  legend->SetX1(0.7); legend->SetX2(0.96);
-  legend->SetY1(0.5); legend->SetY2(0.8);
-
-  for(auto pad : {pad1, pad2}) {
-	  TList* list2 = pad->GetListOfPrimitives();
-	  for(int i = 0; i < list2->GetEntries(); i++){
-		TObject* obj = list2->At(i);
+	pad1->cd();
+	TList* list = pad1->GetListOfPrimitives();
+	cout<<"make nice plot "<<list->GetEntries()<<endl;
+	TH1* h = 0;
+	TLegend* legend = 0;
+	for(int i = 0; i < list->GetEntries(); i++) {
+		TObject* obj = list->At(i);
 		TString cname(obj->ClassName());
 		if(cname.Contains("TH1")){
-		  float offset = ((TH1*)obj)->GetXaxis()->GetTitleOffset();
-		  float fontsize = ((TH1*)obj)->GetXaxis()->GetTitleSize();
-		  ((TH1*)obj)->GetXaxis()->SetTitleOffset(0.9*offset);
-		  ((TH1*)obj)->GetXaxis()->SetTitleFont(42);
-		  ((TH1*)obj)->GetXaxis()->SetTitleSize(1.5*fontsize);
-		  if(TString(axistitle) != "" && TString(((TH1*)obj)->GetXaxis()->GetTitle()) != ""){
-			((TH1*)obj)->GetXaxis()->SetTitle(axistitle);
-		  }
+			h = ((TH1*)obj);
+			((TH1*)obj)->SetStats(false);
+		} else if(cname == "TLegend") {
+			legend = ((TLegend*)obj);
 		}
-	  }
-  }
+	}
+	legend->SetFillColor(kWhite);
+	double max = h->GetMaximum();
+	double min = h->GetMinimum();
+	pad1->Range(0, 0, 1, 1);
+	legend->SetX1(0.63); legend->SetX2(1.0);
+	legend->SetY1(0.51); legend->SetY2(0.9);
 
-  c->cd();
-
-  TLatex* latex = new TLatex;
-  latex->SetNDC();
-  latex->SetTextFont(61);
-  latex->SetTextSize(0.04);	
-  latex->DrawLatex(0.53,0.885,"CMS Preliminary");
-
-  latex->SetTextSize(0.03);
-  latex->SetTextFont(42);
-  latex->DrawLatex(0.7,0.97,"2.2 fb^{-1} (13 TeV)");
-
-  c->Update();
-  pad1->Update();
-  pad2->Update();
-
-  return c;
-
+	for(auto pad : {pad1, pad2}) {
+		TList* list2 = pad->GetListOfPrimitives();
+		for(int i = 0; i < list2->GetEntries(); i++){
+			TObject* obj = list2->At(i);
+			TString cname(obj->ClassName());
+			if(cname.Contains("TH1")) {
+				if(pad == pad1) {
+					if(!noRatio) {
+						((TH1*)obj)->GetXaxis()->SetTitle("");
+					}
+					if(unit != "") {
+						float offsetY = ((TH1*)obj)->GetYaxis()->GetTitleOffset();
+						float fontsizeY = ((TH1*)obj)->GetYaxis()->GetTitleSize();
+						((TH1*)obj)->GetYaxis()->SetTitleOffset(1*offsetY);
+						((TH1*)obj)->GetYaxis()->SetTitleSize(1.3*fontsizeY);
+						TString axisTitleY = TString::Format("Events / %d %s", (int)(((TH1*)obj)->GetBinWidth(1)), unit.Data());
+						((TH1*)obj)->GetYaxis()->SetTitle(axisTitleY);
+					}
+				}
+				if(pad == pad2 || noRatio) {
+					float offsetX = ((TH1*)obj)->GetXaxis()->GetTitleOffset();
+					float fontsizeX = ((TH1*)obj)->GetXaxis()->GetTitleSize();
+					((TH1*)obj)->GetXaxis()->SetTitleOffset(1*offsetX);
+					((TH1*)obj)->GetXaxis()->SetTitleFont(42);
+					if(noRatio) {
+						((TH1*)obj)->GetXaxis()->SetTitleSize(1.25*fontsizeX);
+						((TH1*)obj)->GetXaxis()->SetLabelSize(0.05);
+					} else {
+						((TH1*)obj)->GetXaxis()->SetTitleSize(1.75*fontsizeX);
+					}
+					if(axistitle != "" && TString(((TH1*)obj)->GetXaxis()->GetTitle()) != ""){
+						TString axisTitleX = axistitle;
+						if(unit != "") {
+							axisTitleX += TString::Format(" [%s]", unit.Data());
+						}
+						((TH1*)obj)->GetXaxis()->SetTitle(axisTitleX);
+					}
+				}
+				if(pad == pad2) {
+					((TH1*)obj)->GetYaxis()->SetNdivisions(50206);
+					float offsetY = ((TH1*)obj)->GetYaxis()->GetTitleOffset();
+					float fontsizeY = ((TH1*)obj)->GetYaxis()->GetTitleSize();
+					((TH1*)obj)->GetYaxis()->SetTitleOffset(0.65*offsetY);
+					((TH1*)obj)->GetYaxis()->SetTitleSize(1.75*fontsizeY);
+				}
+			}
+		}
+	}
+	
+	c->cd();
+	
+	TLatex* latex = new TLatex;
+	latex->SetNDC();
+	latex->SetTextFont(61);
+	latex->SetTextSize(0.04);
+	latex->DrawLatex(0.13, noRatio ? 0.86 : 0.89, "CMS");
+	latex->SetTextFont(52);
+	latex->DrawLatex(0.13, noRatio ? 0.81 : 0.84, preliminary);
+	
+	latex->SetTextSize(0.035);
+	latex->SetTextFont(42);
+	if(!preliminary.Contains("Simulation", TString::kIgnoreCase)) {
+		latex->DrawLatex(0.76, 0.96, "2.2 fb^{-1} (13 TeV)");
+	}
+	
+	c->Update();
+	pad1->Update();
+	pad2->Update();
+	
+	return c;
 }
 
 void writeUncertainties(AssemblerProjection* projection, TString type) {

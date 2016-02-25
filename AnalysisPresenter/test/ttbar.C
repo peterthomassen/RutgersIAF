@@ -35,12 +35,12 @@ void ttbar() {
 	
 	setupData(assembler, true);
 	setupBackgroundMC(assembler, true, true, true);
-	setupBackgroundDD(assembler);
-	setupFakeRates(assembler);
-	assembler->setFakeRate("nTrackFakeElectrons", "0");
-	assembler->setFakeRate("nTrackFakeMuons", "0");
-	assembler->setFakeRate("nPhotonFakeElectrons", "0");
-	assembler->setFakeRate("nPhotonFakeMuons", "0");
+	//setupBackgroundDD(assembler);
+	//setupFakeRates(assembler);
+//	assembler->setFakeRate("nTrackFakeElectrons", "0");
+//	assembler->setFakeRate("nTrackFakeMuons", "0");
+//	assembler->setFakeRate("nPhotonFakeElectrons", "0");
+//	assembler->setFakeRate("nPhotonFakeMuons", "0");
 //	assembler->setFakeRate("nTauFakeTaus", "0");
 	assembler->setDebug(true);
 	assembler->process(varexp, selection);
@@ -58,7 +58,7 @@ void ttbar() {
 	assembler->project("HT", true)->plot(true)->SaveAs("ttbar_HT.pdf");
 	assembler->project("MET", true)->plot(true)->SaveAs("ttbar_MET.pdf");
 	assembler->project("ST", true)->plot(true)->SaveAs("ttbar_ST.pdf");
-makeNicePlot(assembler->project("ST", true)->plot(false), "ST [GeV]")->SaveAs("../nicePlots/ttbar_ST.pdf");
+makeNicePlot(assembler->project("ST", true)->plot(false), "S_{T}", "GeV")->SaveAs("../nicePlots/ttbar_ST.pdf");
 	assembler->project("NPROMPTNONISOINCLUSIVETRACKS7", true)->plot(true)->SaveAs("ttbar_NPROMPTNONISOINCLUSIVETRACKS7.pdf");
 	assembler->project("NGOODINCLUSIVETRACKS", true)->plot(true)->SaveAs("ttbar_NGOODINCLUSIVETRACKS.pdf");
 	assembler->project("NGOODTRACKS", true)->plot(true)->SaveAs("ttbar_NGOODTRACKS.pdf");
@@ -66,14 +66,15 @@ makeNicePlot(assembler->project("ST", true)->plot(false), "ST [GeV]")->SaveAs(".
 	
 	assembler->setRange("ST", 300);
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("ttbar_NGOODJETS_STgt300.pdf");
-makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("../nicePlots/ttbar_NGOODJETS_STgt300.pdf");
+makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "n_{jets}")->SaveAs("../nicePlots/ttbar_NGOODJETS_STgt300.pdf");
 	assembler->project("NGOODJETS", true)->print();
+	writeUncertainties(assembler->project("NGOODJETS", true), "background");
 	assembler->project("ST", true)->plot(true)->SaveAs("ttbar_ST_STgt300.pdf");
-makeNicePlot(assembler->project("ST", true)->plot(true), "ST [GeV]")->SaveAs("../nicePlots/ttbar_ST_STgt300.pdf");
+makeNicePlot(assembler->project("ST", true)->plot(true), "S_{T}", "GeV")->SaveAs("../nicePlots/ttbar_ST_STgt300.pdf");
 	assembler->project("HT", true)->plot(true)->SaveAs("ttbar_HT_STgt300.pdf");
-makeNicePlot(assembler->project("HT", true)->plot(true), "HT [GeV]")->SaveAs("../nicePlots/ttbar_HT_STgt300.pdf");
+makeNicePlot(assembler->project("HT", true)->plot(true), "H_{T}", "GeV")->SaveAs("../nicePlots/ttbar_HT_STgt300.pdf");
 	assembler->project("MET", true)->plot(true)->SaveAs("ttbar_MET_STgt300.pdf");
-makeNicePlot(assembler->project("MET", true)->plot(true), "MET [GeV]")->SaveAs("../nicePlots/ttbar_MET_STgt300.pdf");
+makeNicePlot(assembler->project("MET", true)->plot(true), "E_{T}^{miss}", "GeV")->SaveAs("../nicePlots/ttbar_MET_STgt300.pdf");
 	assembler->project("ST", true)->plot(true)->SaveAs("ttbar_ST_STgt300.pdf");
 	assembler->project("NPROMPTNONISOINCLUSIVETRACKS7", true)->plot(true)->SaveAs("ttbar_NPROMPTNONISOINCLUSIVETRACKS7_STgt300.pdf");
 makeNicePlot(assembler->project("NPROMPTNONISOINCLUSIVETRACKS7", true)->plot(false), "nPromptNonIsoTracks")->SaveAs("../nicePlots/ttbar_NPROMPTNONISOINCLUSIVETRACKS7_STgt300.pdf");

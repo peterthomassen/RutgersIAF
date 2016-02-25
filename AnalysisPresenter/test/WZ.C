@@ -67,8 +67,8 @@ makeNicePlot(assembler->project("(MET)", true)->plot(true), "MET [GeV]")->SaveAs
 	
 	assembler->setRange("MET", 50, 100, false);
 	assembler->project("MT", true)->plot(false)->SaveAs("WZ_MET50to100_MT.pdf");
-makeNicePlot(assembler->project("MT", true)->plot(false), "MT [GeV]")->SaveAs("../nicePlots/WZ_MET50to100_MT.pdf");
-makeNicePlot(assembler->project("PTOSSF", true)->plot(false), "pT(Z) [GeV]")->SaveAs("../nicePlots/WZ_MET50to100_PTOSSF.pdf");
+makeNicePlot(assembler->project("MT", true)->plot(false), "M_{T}", "GeV")->SaveAs("../nicePlots/WZ_MET50to100_MT.pdf");
+makeNicePlot(assembler->project("PTOSSF", true)->plot(false), "p_{T}(Z)", "GeV")->SaveAs("../nicePlots/WZ_MET50to100_PTOSSF.pdf");
 	assembler->project("HT", true)->plot(false)->SaveAs("WZ_MET50to100_HT.pdf");
 	assembler->project("HT", true)->plot(true)->SaveAs("WZ_MET50to100_HT_log.pdf");
 	assembler->setRange("NGOODMUONS%2", 0, 0);
@@ -90,7 +90,7 @@ makeNicePlot(assembler->project("PTOSSF", true)->plot(false), "pT(Z) [GeV]")->Sa
 	assembler->project("HT", true)->plot(false)->SaveAs("WZ_MET50to100_HT.pdf");
 	assembler->project("HT", true)->plot(true)->SaveAs("WZ_MET50to100_HT_log.pdf");
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("WZ_MET50to100_NGOODJETS.pdf");
-makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("../nicePlots/WZ_MET50to100_NGOODJETS.pdf");
+makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "n_{jets}")->SaveAs("../nicePlots/WZ_MET50to100_NGOODJETS.pdf");
 	assembler->project("NGOODJETS", true)->print();
 	
 	assembler->setRange("NGOODJETS", 0, 0);
@@ -118,7 +118,7 @@ makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveA
 	assembler->setRange("MT", 50, 100, false);
 	assembler->setRange("HT", 0, 200, false);
 	assembler->project("MET", true)->plot(false)->SaveAs("WZ_MT50to100HT0to200_MET.pdf");
-makeNicePlot(assembler->project("MET", true)->plot(false), "MET [GeV]")->SaveAs("../nicePlots/WZ_MT50to100HT0to200_MET.pdf");
+makeNicePlot(assembler->project("MET", true)->plot(false), "E_{T}^{miss}", "GeV")->SaveAs("../nicePlots/WZ_MT50to100HT0to200_MET.pdf");
 	assembler->project("MET", true)->print();
 	assembler->project("NGOODJETS", true)->plot(false)->SaveAs("WZ_MT50to100HT0to200_NGOODJETS.pdf");
 	assembler->setRange("HT", 200);

@@ -15,11 +15,11 @@ void addMETchannels(std::vector<Channel*> &channels, Assembler* assembler, TStri
 	
 	assembler->setRange("LT+MET");
 	assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true)->SaveAs(name + TString(".pdf"));
-	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "LT+MET [GeV]")->SaveAs(TString("../nicePlots/") + name + TString(".pdf"));
+	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV")->SaveAs(TString("../nicePlots/") + name + TString(".pdf"));
 	//assembler->project("LT", true)->plot(true)->SaveAs(name + TString("_LT.pdf"));
 	//makeNicePlot(assembler->project("LT", true)->plot(true), "LT [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT.pdf"));
 	//assembler->project("LT+MET", true)->plot(true)->SaveAs(name + TString("_LT+MET.pdf"));
-	//makeNicePlot(assembler->project("LT+MET", true)->plot(true), "LT+MET [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT+MET.pdf"));
+	//makeNicePlot(assembler->project("LT+MET", true)->plot(true), "L_{T} + E_{T}^{miss} [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT+MET.pdf"));
 	
 	int start = 350;
 	int step = 200;
@@ -41,7 +41,7 @@ void addMETchannels(std::vector<Channel*> &channels, Assembler* assembler, TStri
 	assembler->setRanges(ranges);
 }
 
-void SeesawInclusiveBins13(TString ofname = "test.root") {
+void SeesawInclusiveBins13(std::string mass = "420", TString ofname = "test.root") {
 	///////////////////////
 	// Binning/selection //
 	///////////////////////
@@ -88,7 +88,9 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	///////////////////////
 	
 	//std::string mass = "220";
-	std::string mass = "340";
+	//std::string mass = "340";
+	//std::string mass = "380";
+	//std::string mass = "420";
 	//std::string mass = "500";
 	//std::string mass = "660";
 	std::string xsecfile = mass + "_xsecs_and_procs.txt";
@@ -111,6 +113,7 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 		double xsec = stod(tokens[1]);
 		double br = stod(tokens[2]);
 		double filterEff = stod(tokens[3]);
+		double k = (tokens.size() == 5) ? stod(tokens[4]) : 1.0;
 		
 		//std::string filename = directory + "_old/" + process + "/output/10_15_update_results.root";
 		//std::string filename = directory + "/" + process + "/output/validation_Nov3.root";
@@ -119,9 +122,10 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 		//std::string filename = directory + "_Moriond/" + process + "/output/Moriond_prediction.root";
 		std::string filename = directory + "/" + process + "/output/Moriond_prediction_fixedFakes.root";
 		
-		PhysicsContribution* signal = new PhysicsContribution("signal", filename, xsec*br*filterEff, TString::Format("Seesaw%d", i), false, "treeR", -1, 0);
+		PhysicsContribution* signal = new PhysicsContribution("signal", filename, xsec*br*filterEff*k, TString::Format("Seesaw%d", i), false, "treeR", -1, 0);
 		signal->addWeight("WEIGHT[0]");
 		signal->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
+		signal->addWeight("EVENT[0] == EVENT[0]");
 		signals.push_back(signal);
 	}
 	ifile.close();
@@ -150,27 +154,28 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	
 	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
 	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
-	//assembler->setMode("fullPrecision");
+	assembler->setMode("fullPrecision");
 	//assembler->setMode("noRatioPlot");
 	
 	setupData(assembler);
 	setupBackgroundMC(assembler);
 	setupBackgroundDD(assembler, "", true);
 	
-	assembler->addBundle(new Bundle("signal", "Seesaw"));
+	TString bundleName = TString::Format("#splitline{Seesaw [X]}{(m_{#Sigma} = %s GeV)}", mass.c_str());
+	assembler->addBundle(new Bundle("signal", bundleName));
 	assembler->addBundle(new Bundle("signal", "SignalBundle"));
-	assembler->getBundle("SignalBundle")->addComponent(assembler->getBundle("Seesaw"));
+	assembler->getBundle("SignalBundle")->addComponent(assembler->getBundle(bundleName));
 	
 	for(const auto &signal : signals) {
 		applyUncertaintiesAndScaleFactors(assembler, signal);
 		signal->addFlatUncertainty("lumi", 0.046);
 		//signal->addFlatUncertainty("signalXsec", 0.3);
 		assembler->addContribution(signal);
-		assembler->getBundle("Seesaw")->addComponent(signal);
+		assembler->getBundle(bundleName)->addComponent(signal);
 	}
 	
 	assembler->getBundle("SignalBundle")->print();
-
+	
 	setupFakeRates(assembler);
 	assembler->setDebug(true);
 	prepare(assembler);
@@ -185,7 +190,7 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->project("gaus", false)->plot(false)->SaveAs("gaus.pdf");
 	
 	assembler->setRange("WZ", 1, 1);
-	makeNicePlot(assembler->project("MT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "MT [GeV]")->SaveAs("WZ_contamination.pdf");
+	makeNicePlot(assembler->project("MT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "M_{T} [GeV]")->SaveAs("WZ_contamination.pdf");
 	assembler->project("MT", true)->print();
 	assembler->setRange("WZ");
 	
@@ -194,15 +199,16 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->project("LT+MET", true)->print();
 	
 	assembler->setRange("AIC", 0, 0);
-/*	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "LT+MET [GeV]")->SaveAs("LT+MET.pdf");
+/*	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV")->SaveAs("LT+MET.pdf");
+	//makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV", "Simulation Preliminary", true)->SaveAs("LT+MET.pdf");
 	assembler->setRange("AIC");
 	assembler->setRange("LT+MET", -50, 350);
-	makeNicePlot(assembler->project("MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "MET [GeV]")->SaveAs("LTMET0to350_MET.pdf");
-	makeNicePlot(assembler->project("MT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "MT [GeV]")->SaveAs("LTMET0to350_MT.pdf");
+	makeNicePlot(assembler->project("MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "E_{T}^{miss} [GeV]")->SaveAs("LTMET0to350_MET.pdf");
+	makeNicePlot(assembler->project("MT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "M_{T} [GeV]")->SaveAs("LTMET0to350_MT.pdf");
 	makeNicePlot(assembler->project("NGOODJETS", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "nJets")->SaveAs("LTMET0to350_NGOODJETS.pdf");
 	makeNicePlot(assembler->project("PTGOODLEPTONS[0]", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "leading lepton pT [GeV]")->SaveAs("LTMET0to350_PTGOODLEPTONS0.pdf");
-	makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "all lepton invariant mass [GeV]")->SaveAs("LTMET0to350_MLIGHTLEPTONS.pdf");
-*/	
+	makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "all lepton invariant mass [GeV]")->SaveAs("LTMET0to350_MLIGHTLEPTONS.pdf");*/
+	
 	assembler->setRange();
 	
 	// Inclusive plots: L3Tau0
@@ -228,8 +234,8 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 	assembler->setRange("AIC", 0, 0);
 	
 	assembler->setRange("LT+MET", 350);
-	makeNicePlot(assembler->project("MET", true)->plot(false), "MET [GeV]")->SaveAs("L3Tau0LTMETgt350_MET.pdf");
-	makeNicePlot(assembler->project("MT", true)->plot(false), "MT [GeV]")->SaveAs("L3Tau0LTMETgt350_MT.pdf");
+	makeNicePlot(assembler->project("MET", true)->plot(false), "E_{T}^{miss} [GeV]")->SaveAs("L3Tau0LTMETgt350_MET.pdf");
+	makeNicePlot(assembler->project("MT", true)->plot(false), "M_{T} [GeV]")->SaveAs("L3Tau0LTMETgt350_MT.pdf");
 	makeNicePlot(assembler->project("NGOODJETS", true)->plot(false), "nJets")->SaveAs("L3Tau0LTMETgt350_NGOODJETS.pdf");
 	makeNicePlot(assembler->project("PTGOODLEPTONS[0]", true)->plot(false), "leading lepton pT [GeV]")->SaveAs("L3Tau0LTMETgt350_PTGOODLEPTONS0.pdf");
 	makeNicePlot(assembler->project("MLIGHTLEPTONS", true)->plot(false), "all lepton invariant mass [GeV]")->SaveAs("L3Tau0LTMETgt350_MLIGHTLEPTONS.pdf");
@@ -316,7 +322,7 @@ void SeesawInclusiveBins13(TString ofname = "test.root") {
 		ccSingle->addChannel(channel);
 		ccSingle->datacard(ccSingle->getName() + TString(".txt"), true);
 	}
-	ccGrand->datacard(ccGrand->getName() + TString(".txt"));
+	ccGrand->datacard(ccGrand->getName() + TString(".txt"), true, 1., 1., 0.1);
 	if(ccSelected->getChannels().size() > 0) {
 		ccSelected->datacard(ccSelected->getName() + TString(".txt"), true);
 	}
