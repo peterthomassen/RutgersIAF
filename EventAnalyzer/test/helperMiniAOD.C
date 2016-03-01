@@ -1341,66 +1341,209 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addProduct("goodtriggers", "TRIGGERS");
   handler->addProductCut("goodtriggers", "Accepted");
   handler->addProductCut("goodtriggers", "WasRun");
-  
-  handler->addProduct("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1"));
-  handler->addProductCut("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1", "isHLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1");
-  handler->addEventVariable("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1_N", new EventVariableN("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1_N", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1"));
-  
-  handler->addProduct("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1"));
-  handler->addProductCut("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1", "isHLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1");
-  handler->addEventVariable("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1_N", new EventVariableN("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1_N", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1"));
 
-  handler->addProduct("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
-  handler->addProductCut("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1", "isHLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1");
-  handler->addEventVariable("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1_N", new EventVariableN("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1_N", "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
-  
-  handler->addProduct("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  handler->addProductCut("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1", "isHLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1");
-  handler->addEventVariable("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1_N", new EventVariableN("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1_N", "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  
-  handler->addProduct("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  handler->addProductCut("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1", "isHLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1");
-  handler->addEventVariable("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1_N", new EventVariableN("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1_N", "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  
-  handler->addProduct("HLT_DoubleMu8_Mass8_PFHT300_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_DoubleMu8_Mass8_PFHT300_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_DoubleMu8_Mass8_PFHT300_v1"));
-  handler->addProductCut("HLT_DoubleMu8_Mass8_PFHT300_v1", "isHLT_DoubleMu8_Mass8_PFHT300_v1");
-  handler->addEventVariable("HLT_DoubleMu8_Mass8_PFHT300_v1_N", new EventVariableN("HLT_DoubleMu8_Mass8_PFHT300_v1_N", "HLT_DoubleMu8_Mass8_PFHT300_v1"));
-  
-  handler->addProduct("HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
-  handler->addProductCut("HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1", "isHLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1");
-  handler->addEventVariable("HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1_N", new EventVariableN("HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1_N", "HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
-  
-  handler->addProduct("HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
-  handler->addProductCut("HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1", "isHLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1");
-  handler->addEventVariable("HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1_N", new EventVariableN("HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1_N", "HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
+  // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
+  // HLT bundles
+  // These are supposed to include all paths for data and MC.
+  // To be maintained! (Feb 26, 2016)
+  // ------------------------------------------------------------------------
+  // All available final HLT variables are listed here:
+  //    -------------- All Muon
+  //    IsoMuHLT
+  //    MuHLTprescaled
+  //    Mu45eta2p1HLT
+  //    Mu50HLT
+  //    IsoDiMuHLT
+  //    DiMuHLT
+  //    DiMuSSHLTmc   <<<< for  MC  only
+  //    DiMuSSHLTdata <<<< for DATA only
+  //    TripleMuHLT
+  //    -------------- All Electron
+  //    IsoEleHLTmc   <<<< for  MC  only
+  //    IsoEleHLTdata <<<< for DATA only
+  //    EleHLT
+  //    IsoDiEleHLT
+  //    DiEleHLT
+  //    TripleEleHLT
+  //    -------------- Mixed
+  //    IsoMuEleHLT
+  //    MuEleHLT
+  //    MuMuEleHLT
+  //    MuEleEleHLT
+  //    DiMuHTHLT
+  //    DiEleHTHLT
+  //    MuEleHTHLT
+  // ------------------------------------------------------------------------
+  std::vector< vector<pair<string, string> > > RutgersHLT;
+  // All-muon paths
+  std::vector< pair<string, string> > IsoMuHLT;
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu20_v1"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu20_v2"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu20_v3"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v1"));//these are ORed for higher eff, mentioned in the muon POG Twiki.
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v2"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v3"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v4"));
+  RutgersHLT.push_back(IsoMuHLT);
+  std::vector< pair<string, string> > MuHLTprescaled;
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v1"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v2"));
+  RutgersHLT.push_back(MuHLTprescaled);
+  std::vector< pair<string, string> > Mu45eta2p1HLT;
+  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v1"));
+  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v2"));
+  RutgersHLT.push_back(Mu45eta2p1HLT);
+  std::vector< pair<string, string> > Mu50HLT;
+  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v1"));
+  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v2"));
+  RutgersHLT.push_back(Mu50HLT);
+  std::vector< pair<string, string> > IsoDiMuHLT;
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2"));
+  RutgersHLT.push_back(IsoDiMuHLT);
+  std::vector< pair<string, string> > DiMuHLT;
+  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v1"));
+  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v2"));
+  RutgersHLT.push_back(DiMuHLT);
+  std::vector< pair<string, string> > DiMuSSHLTmc;
+  DiMuSSHLTmc.push_back(std::make_pair("DiMuSSHLTmc","HLT_Mu17_Mu8_DZ_v1"));//...........MC and DATA, but not full-lumi in DATA
+  RutgersHLT.push_back(DiMuSSHLTmc);
+  std::vector< pair<string, string> > DiMuSSHLTdata;
+  DiMuSSHLTdata.push_back(std::make_pair("DiMuSSHLTdata","HLT_Mu17_Mu8_SameSign_DZ_v1"));//..DATA-only
+  RutgersHLT.push_back(DiMuSSHLTdata);
+  std::vector< pair<string, string> > TripleMuHLT;
+  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v1"));
+  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v2"));
+  RutgersHLT.push_back(TripleMuHLT);
+  // ------------------------------------------------------------------------
+  // All-electron paths
+  std::vector< pair<string, string> > IsoEleHLTmc;
+  IsoEleHLTmc.push_back(std::make_pair("IsoEleHLTmc","HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));//..MC and DATA, but not full-lumi in DATA
+  RutgersHLT.push_back(IsoEleHLTmc);
+  std::vector< pair<string, string> > IsoEleHLTdata;
+  IsoEleHLTdata.push_back(std::make_pair("IsoEleHLTdata","HLT_Ele23_WPLoose_Gsf_v1"));//...........Data-only
+  IsoEleHLTdata.push_back(std::make_pair("IsoEleHLTdata","HLT_Ele23_WPLoose_Gsf_v2"));//...........Data-only
+  IsoEleHLTdata.push_back(std::make_pair("IsoEleHLTdata","HLT_Ele23_WPLoose_Gsf_v3"));//...........Data-only
+  RutgersHLT.push_back(IsoEleHLTdata);
+  std::vector< pair<string, string> > EleHLT;
+  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v1"));
+  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v2"));
+  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v3"));
+  RutgersHLT.push_back(EleHLT);
+  std::vector< pair<string, string> > IsoDiEleHLT;
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"));
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"));
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3"));
+  RutgersHLT.push_back(IsoDiEleHLT);
+  std::vector< pair<string, string> > DiEleHLT;
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v1"));
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v2"));
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v3"));
+  RutgersHLT.push_back(DiEleHLT);
+  std::vector< pair<string, string> > TripleEleHLT;
+  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
+  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v2"));
+  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v3"));
+  RutgersHLT.push_back(TripleEleHLT);
+  // ------------------------------------------------------------------------
+  // Mixed multi-lepton paths
+  std::vector< pair<string, string> > IsoMuEleHLT;
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
+  RutgersHLT.push_back(IsoMuEleHLT);
+  std::vector< pair<string, string> > MuEleHLT;
+  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v1"));
+  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v2"));
+  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v3"));
+  RutgersHLT.push_back(MuEleHLT);
+  std::vector< pair<string, string> > MuMuEleHLT;
+  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1"));
+  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v2"));
+  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v3"));
+  RutgersHLT.push_back(MuMuEleHLT);
+  std::vector< pair<string, string> > MuEleEleHLT;
+  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1"));
+  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v2"));
+  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v3"));
+  RutgersHLT.push_back(MuEleEleHLT);
+  // ------------------------------------------------------------------------
+  // Di-lepton + PFHT paths
+  std::vector< pair<string, string> > DiMuHTHLT;
+  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v1"));
+  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v2"));
+  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v3"));
+  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v4"));
+  RutgersHLT.push_back(DiMuHTHLT);
+  std::vector< pair<string, string> > DiEleHTHLT;
+  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
+  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v2"));
+  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v3"));
+  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v4"));
+  RutgersHLT.push_back(DiEleHTHLT);
+  std::vector< pair<string, string> > MuEleHTHLT;
+  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
+  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v2"));
+  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v3"));
+  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4"));
+  RutgersHLT.push_back(MuEleHTHLT);
+  // ------------------------------------------------------------------------
 
-  handler->addProduct("HLT_TripleMu_12_10_5_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_TripleMu_12_10_5_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_TripleMu_12_10_5_v1"));
-  handler->addProductCut("HLT_TripleMu_12_10_5_v1", "isHLT_TripleMu_12_10_5_v1");
-  handler->addEventVariable("HLT_TripleMu_12_10_5_v1_N", new EventVariableN("HLT_TripleMu_12_10_5_v1_N", "HLT_TripleMu_12_10_5_v1"));
+  // Store all *individual* HLTpaths and HLTpath groups as specified above:
+  for(unsigned int i=0; i<RutgersHLT.size(); i++){
+    std::vector< pair<string, string> > HLTgroup = RutgersHLT.at(i);
+    if( HLTgroup.size()==0 ) continue;
+    //
+    TString   HLTgroupName = HLTgroup.at(0).first;
+    TString isHLTgroupName = TString::Format("is%s",HLTgroupName.Data());
+    //
+    //cout<<"HLT group: "<<HLTgroupName.Data()<<endl;
+    //
+    handler->addProduct(HLTgroupName,"goodtriggers");
+    //
+    ObjectVariableValueInList<TString>* isHLTgroup = new ObjectVariableValueInList<TString>("TRIGGERNAME","placeHolderHLTname");
+    // "placeHolderHLTname" in the above line just makes looping over & adding individual hltpaths to isHLTgroup below easier.
+    for(unsigned int j=0; j<HLTgroup.size(); j++){
+      TString   HLTname = HLTgroup.at(j).second;
+      isHLTgroup->addValue(HLTname);
+    }
+    //
+    handler->addObjectVariable(isHLTgroupName,isHLTgroup);
+    handler->addProductCut(HLTgroupName,isHLTgroupName);
+    TString nname = TString::Format("N%s",HLTgroupName.Data());
+    handler->addEventVariable(nname,new EventVariableN(nname,HLTgroupName));// count
+    TString acceptname = TString::Format("ACCEPT_%s",HLTgroupName.Data());
+    handler->addEventVariable(acceptname,new EventVariableInRange<int>(nname,1,100000));//............................ACCEPT true/false
+    handler->addEventVariable(TString::Format("REJECT_%s",HLTgroupName.Data()),EventVariableReversed(acceptname));//..REJECT true/false
+    //
+    // ------------------------------------------------------------------------
+    // Store all HLT path names specified above
+    TString   HLTpathName = HLTgroup.at(0).second;
+    TString isHLTpathName = TString::Format("is%s",HLTpathName.Data());
+    handler->addProduct(HLTpathName,"goodtriggers");
+    //
+    ObjectVariableValue<TString>* isHLTpath = new ObjectVariableValue<TString>("TRIGGERNAME",HLTpathName.Data());
+    handler->addObjectVariable(isHLTpathName,isHLTpath);
+    handler->addProductCut(HLTpathName,isHLTpathName);
+    //
+    TString nnamepath = TString::Format("N%s",HLTpathName.Data());
+    EventVariableN* HLTpathCount = new EventVariableN(nnamepath,HLTpathName);// count
+    handler->addEventVariable(nnamepath,HLTpathCount);
+    TString acceptnamepath =  TString::Format("ACCEPT_%s",,HLTpathName.Data());
+    handler->addEventVariable(acceptnamepath,new EventVariableInRange<int>(nnamepath,1,100000));//.......................ACCEPT true/false
+    handler->addEventVariable(TString::Format("REJECT_%s",HLTpathName.Data()),EventVariableReversed(acceptnamepath));//..REJECT true/false
+  }
+  // ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------  
 
-  handler->addProduct("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1"));
-  handler->addProductCut("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1", "isHLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1");
-  handler->addEventVariable("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1_N", new EventVariableN("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1_N", "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1"));
 
-  handler->addProduct("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1"));
-  handler->addProductCut("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1", "isHLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1");
-  handler->addEventVariable("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1_N", new EventVariableN("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1_N", "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1"));
-  
-  handler->addProduct("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1", "goodtriggers");
-  handler->addObjectVariable("isHLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1", new ObjectVariableValue<TString>("TRIGGERNAME", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
-  handler->addProductCut("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1", "isHLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1");
-  handler->addEventVariable("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1_N", new EventVariableN("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1_N", "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
+  // WORK-IN-PROGRESS: trig tresholds 
 
   //Offline tresholds for higher trigger efficiencies
   EventVariableThreshold* singElTrig = new EventVariableThreshold("singeltrig","goodElectrons");
@@ -1523,13 +1666,6 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("PASSDIMUHTTRIG",new EventVariableCombined("DIMUHTTRIGTHRESHOLD","HLTHT300",true));
   handler->addEventVariable("PASSDIELHTTRIG",new EventVariableCombined("DIELHTTRIGTHRESHOLD","HLTHT300",true));
 
-  /*
-  if(isMC){
-    handler->addEventVariable("WRITEEVENT", new EventVariableInRange<int>("N_bosons",0,10000));
-  }else{
-    handler->addEventVariable("WRITEEVENT", new EventVariableRename<bool>("ALWAYSTRUE"));
-  }
-  */
 
 }
 
