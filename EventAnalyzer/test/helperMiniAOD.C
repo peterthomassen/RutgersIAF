@@ -1520,7 +1520,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
     handler->addEventVariable(nname,new EventVariableN(nname,HLTgroupName));// count
     TString acceptname = TString::Format("ACCEPT_%s",HLTgroupName.Data());
     handler->addEventVariable(acceptname,new EventVariableInRange<int>(nname,1,100000));//............................ACCEPT true/false
-    handler->addEventVariable(TString::Format("REJECT_%s",HLTgroupName.Data()),EventVariableReversed(acceptname));//..REJECT true/false
+    handler->addEventVariable(TString::Format("REJECT_%s",HLTgroupName.Data()),new EventVariableReversed(acceptname));//..REJECT true/false
     //
     // ------------------------------------------------------------------------
     // Store all HLT path names specified above
@@ -1535,9 +1535,9 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
     TString nnamepath = TString::Format("N%s",HLTpathName.Data());
     EventVariableN* HLTpathCount = new EventVariableN(nnamepath,HLTpathName);// count
     handler->addEventVariable(nnamepath,HLTpathCount);
-    TString acceptnamepath =  TString::Format("ACCEPT_%s",,HLTpathName.Data());
+    TString acceptnamepath =  TString::Format("ACCEPT_%s",HLTpathName.Data());
     handler->addEventVariable(acceptnamepath,new EventVariableInRange<int>(nnamepath,1,100000));//.......................ACCEPT true/false
-    handler->addEventVariable(TString::Format("REJECT_%s",HLTpathName.Data()),EventVariableReversed(acceptnamepath));//..REJECT true/false
+    handler->addEventVariable(TString::Format("REJECT_%s",HLTpathName.Data()),new EventVariableReversed(acceptnamepath));//..REJECT true/false
   }
   // ------------------------------------------------------------------------
   // ------------------------------------------------------------------------  
@@ -1546,45 +1546,53 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   // WORK-IN-PROGRESS: trig tresholds 
 
   //Offline tresholds for higher trigger efficiencies
+  /*
+  // Single Electron
   EventVariableThreshold* singElTrig = new EventVariableThreshold("singeltrig","goodElectrons");
   singElTrig->addThreshold(26);
   handler->addEventVariable("SINGELTRIGTHRESHOLD",singElTrig);
 
+  // Single Muon
   EventVariableThreshold* singMuTrig = new EventVariableThreshold("singmutrig","goodMuons");
   singMuTrig->addThreshold(20);
   handler->addEventVariable("SINGMUTRIGTHRESHOLD",singMuTrig);
+  */
 
+  // Di-Electron treshold
   EventVariableThreshold* dieltrig = new EventVariableThreshold("dieltrig","goodElectrons");
   dieltrig->addThreshold(20);
   dieltrig->addThreshold(15);
   handler->addEventVariable("DIELTRIGTHRESHOLD",dieltrig);
 
+  // Di-Muon treshold
   EventVariableThreshold* dimutrig = new EventVariableThreshold("dimutrig","goodMuons");
   dimutrig->addThreshold(17);
   dimutrig->addThreshold(8);
   handler->addEventVariable("DIMUTRIGTHRESHOLD",dimutrig);
 
-  EventVariableThreshold* ellead = new EventVariableThreshold("ellead","goodElectrons");
+  // Mu-Ele treshold
+  // Leading Electron - Subleading Muon : (20, 8)
+  EventVariableThreshold* ellead = new EventVariableThreshold("ellead","goodElectrons");//........leading ele cut
   ellead->addThreshold(20);
   handler->addEventVariable("EGMULEADTHRESHOLD",ellead);
-
-  EventVariableThreshold* elsublead = new EventVariableThreshold("elsublead","goodElectrons");
-  elsublead->addThreshold(15);
-  handler->addEventVariable("MUEGSUBLEADTHRESHOLD",elsublead);
-
-  EventVariableThreshold* mulead = new EventVariableThreshold("mulead","goodMuons");
-  mulead->addThreshold(17);
-  handler->addEventVariable("MUEGLEADTHRESHOLD",mulead);
-
-  EventVariableThreshold* musublead = new EventVariableThreshold("musublead","goodMuons");
+  EventVariableThreshold* musublead = new EventVariableThreshold("musublead","goodMuons");//......subleading mu cut
   musublead->addThreshold(8);
   handler->addEventVariable("EGMUSUBLEADTHRESHOLD",musublead);
-
-  handler->addEventVariable("MUEGTHRESHOLD",new EventVariableCombined("MUEGLEADTHRESHOLD","MUEGSUBLEADTHRESHOLD",true));
   handler->addEventVariable("EGMUTHRESHOLD",new EventVariableCombined("EGMULEADTHRESHOLD","EGMUSUBLEADTHRESHOLD",true));
-
+  //
+  // Leading Muon - Subleading Electron : (17,15)
+  EventVariableThreshold* mulead = new EventVariableThreshold("mulead","goodMuons");//............leading mu cut
+  mulead->addThreshold(17);
+  handler->addEventVariable("MUEGLEADTHRESHOLD",mulead);
+  EventVariableThreshold* elsublead = new EventVariableThreshold("elsublead","goodElectrons");//..subleading ele cut
+  elsublead->addThreshold(15);
+  handler->addEventVariable("MUEGSUBLEADTHRESHOLD",elsublead);
+  handler->addEventVariable("MUEGTHRESHOLD",new EventVariableCombined("MUEGLEADTHRESHOLD","MUEGSUBLEADTHRESHOLD",true));
+  //
   handler->addEventVariable("MUEGCOMBINEDTHRESHOLD", new EventVariableCombined("MUEGTHRESHOLD","EGMUTHRESHOLD"));
 
+
+  /*
   EventVariableThreshold* tauthresh = new EventVariableThreshold("tauthresh","goodTaus");
   tauthresh->addThreshold(25);
   handler->addEventVariable("TAUTHRESH",tauthresh);
@@ -1665,11 +1673,12 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("PASSMUEGHTTRIG",new EventVariableCombined("MUEGHTTHRESHOLD","HLTHT300",true));
   handler->addEventVariable("PASSDIMUHTTRIG",new EventVariableCombined("DIMUHTTRIGTHRESHOLD","HLTHT300",true));
   handler->addEventVariable("PASSDIELHTTRIG",new EventVariableCombined("DIELHTTRIGTHRESHOLD","HLTHT300",true));
-
-
+  */
 }
 
+
 void setupTriggers(BaseHandler* handler,int mode){
+  /*
   if(mode > 0) {
     ObjectVariableValueInList<TString>* isDoubleMuTrigger = new ObjectVariableValueInList<TString>("TRIGGERNAME","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2");
     isDoubleMuTrigger->addValue("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2");
@@ -1756,7 +1765,7 @@ void setupTriggers(BaseHandler* handler,int mode){
     isSingleMuTrigger->addValue("HLT_IsoTkMu20_v3");
     isSingleMuTrigger->addValue("HLT_IsoTkMu20_v4");
     handler->addObjectVariable("isSingleMuTrigger",isSingleMuTrigger);
-    
+
     vector<TString> triggers;
     triggers.push_back("DoubleMuTrigger");
     triggers.push_back("DoubleEGTrigger");
@@ -1771,11 +1780,12 @@ void setupTriggers(BaseHandler* handler,int mode){
     triggers.push_back("SingleElTrigger");
     triggers.push_back("SingleMuTrigger");
     triggers.push_back("HTTrigger");
+
     
     vector<TString> thresholds;
-    thresholds.push_back("DIMUTRIGTHRESHOLD");
-    thresholds.push_back("DIELTRIGTHRESHOLD");
-    thresholds.push_back("MUEGCOMBINEDTHRESHOLD");
+    thresholds.push_back("DIMUTRIGTHRESHOLD");//......used in TRIGGERACCEPT, default mode 
+    thresholds.push_back("DIELTRIGTHRESHOLD");//......used in TRIGGERACCEPT, default mode
+    thresholds.push_back("MUEGCOMBINEDTHRESHOLD");//..used in TRIGGERACCEPT, default mode
     thresholds.push_back("PASSDIMUHTTRIG");
     thresholds.push_back("PASSDIELHTTRIG");
     thresholds.push_back("PASSMUEGHTTRIG");
@@ -1796,53 +1806,75 @@ void setupTriggers(BaseHandler* handler,int mode){
       TString nnamege1  = TString::Format("N%sgt0",trigger.Data());
       handler->addEventVariable(nnamege1,new EventVariableInRange<int>(nname,1,100000));
       TString acceptname = TString::Format("ACCEPT_%s",trigger.Data());
-      //RA7sync: handler->addEventVariable(acceptname,new EventVariableCombined(nnamege1,true));
       handler->addEventVariable(acceptname,new EventVariableCombined(thresholds[i],nnamege1,true));
       TString nacceptname = TString::Format("REJECT_%s",trigger.Data());
       handler->addEventVariable(nacceptname,new EventVariableReversed(acceptname));
     }
-  }
+  }//closes if(mode>0)
+  */
+
   EventVariableCombined* trigaccept = NULL;
   switch(mode){
   case 1:
-    handler->addEventVariable("TRIGGERACCEPT",new EventVariableRename<bool>("ACCEPT_MuEGTrigger"));
+    handler->addEventVariable("TRIGGERACCEPT",new EventVariableRename<bool>("ACCEPT_IsoMuEleHLT"));
+    //handler->addEventVariable("TRIGGERACCEPT",new EventVariableRename<bool>("ACCEPT_MuEGTrigger"));
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("MUEG")));
     break;
   case 2:
-    handler->addEventVariable("TRIGGERACCEPT",new EventVariableCombined("ACCEPT_DoubleMuTrigger","REJECT_MuEGTrigger",true));
+    handler->addEventVariable("TRIGGERACCEPT",new EventVariableCombined("ACCEPT_IsoDiMuHLT","REJECT_IsoMuEleHLT",true));
+    //handler->addEventVariable("TRIGGERACCEPT",new EventVariableCombined("ACCEPT_DoubleMuTrigger","REJECT_MuEGTrigger",true));
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DOUBLEMU")));
     break;
   case 3:
-    trigaccept = new EventVariableCombined("ACCEPT_DoubleEGTrigger","REJECT_DoubleMuTrigger",true);
-    trigaccept->addVariable("REJECT_MuEGTrigger");
+    trigaccept = new EventVariableCombined("ACCEPT_IsoDiEleHLT","REJECT_IsoDiMuHLT",true);
+    //trigaccept->addVariable("REJECT_MuEGTrigger");
+    trigaccept->addVariable("REJECT_IsoMuEleHLT");
     handler->addEventVariable("TRIGGERACCEPT",trigaccept);
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DOUBLEEG")));
     break;
+    // -----------------------------------------------------------
   case 4:
-    trigaccept = new EventVariableCombined("ACCEPT_SingleMuTrigger","REJECT_DoubleEGTrigger",true);
-    trigaccept->addVariable("REJECT_DoubleMuTrigger");
-    trigaccept->addVariable("REJECT_MuEGTrigger");
+    trigaccept = new EventVariableCombined("ACCEPT_IsoMuHLT","REJECT_IsoDiEleHLT",true);
+    //trigaccept = new EventVariableCombined("ACCEPT_SingleMuTrigger","REJECT_DoubleEGTrigger",true);
+    trigaccept->addVariable("REJECT_IsoDiMuHLT");
+    //trigaccept->addVariable("REJECT_DoubleMuTrigger");
+    trigaccept->addVariable("REJECT_IsoMuEleHLT");
+    //trigaccept->addVariable("REJECT_MuEGTrigger");
     handler->addEventVariable("TRIGGERACCEPT",trigaccept);
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("SINGLEMU")));
     break;
   case 5:
-    trigaccept = new EventVariableCombined("ACCEPT_SingleElTrigger","REJECT_DoubleEGTrigger",true);
-    trigaccept->addVariable("REJECT_SingleMuTrigger");
-    trigaccept->addVariable("REJECT_DoubleMuTrigger");
-    trigaccept->addVariable("REJECT_MuEGTrigger");
+    trigaccept = new EventVariableCombined("ACCEPT_IsoEleHLTdata","REJECT_IsoDiEleHLT",true);//................DATA ONLY
+    //trigaccept = new EventVariableCombined("ACCEPT_SingleElTrigger","REJECT_DoubleEGTrigger",true);
+    trigaccept->addVariable("REJECT_IsoMuHLT");
+    //trigaccept->addVariable("REJECT_SingleMuTrigger");
+    trigaccept->addVariable("REJECT_IsoDiMuHLT");
+    //trigaccept->addVariable("REJECT_DoubleMuTrigger");
+    trigaccept->addVariable("REJECT_IsoMuEleHLT");
+    //trigaccept->addVariable("REJECT_MuEGTrigger");
     handler->addEventVariable("TRIGGERACCEPT",trigaccept);
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("SINGLEEL")));
     break;
+    // -----------------------------------------------------------
   case 6:
-    trigaccept = new EventVariableCombined("ACCEPT_DoubleEGTrigger", "ACCEPT_DoubleMuTrigger",false);
-    trigaccept->addVariable("ACCEPT_MuEGTrigger");
-    trigaccept->addVariable("ACCEPT_DoubleEGHTTrigger");
-    trigaccept->addVariable("ACCEPT_DoubleMuHTTrigger");
-    trigaccept->addVariable("ACCEPT_MuEGHTTrigger");
-    trigaccept->addVariable("ACCEPT_TriElTrigger");
-    trigaccept->addVariable("ACCEPT_MuDiElTrigger");
-    trigaccept->addVariable("ACCEPT_DiMuElTrigger");
-    trigaccept->addVariable("ACCEPT_TriMuTrigger");
+    trigaccept = new EventVariableCombined("ACCEPT_IsoDiEleHLT", "ACCEPT_IsoDiMuHLT",false);
+    //trigaccept = new EventVariableCombined("ACCEPT_DoubleEGTrigger", "ACCEPT_DoubleMuTrigger",false);
+    trigaccept->addVariable("ACCEPT_IsoMuEleHLT");
+    //trigaccept->addVariable("ACCEPT_MuEGTrigger");
+    trigaccept->addVariable("ACCEPT_DiEleHTHLT");
+    //trigaccept->addVariable("ACCEPT_DoubleEGHTTrigger");
+    trigaccept->addVariable("ACCEPT_DiMuHTHLT");
+    //trigaccept->addVariable("ACCEPT_DoubleMuHTTrigger");
+    trigaccept->addVariable("ACCEPT_MuEleHTHLT");
+    //trigaccept->addVariable("ACCEPT_MuEGHTTrigger");
+    trigaccept->addVariable("ACCEPT_TripleEleHLT");
+    //trigaccept->addVariable("ACCEPT_TriElTrigger");
+    trigaccept->addVariable("ACCEPT_MuEleEleHLT");
+    //trigaccept->addVariable("ACCEPT_MuDiElTrigger");
+    trigaccept->addVariable("ACCEPT_MuMuEleHLT");
+    //trigaccept->addVariable("ACCEPT_DiMuElTrigger");
+    trigaccept->addVariable("ACCEPT_TripleMuHLT");
+    //trigaccept->addVariable("ACCEPT_TriMuTrigger");
     handler->addEventVariable("RA7TRIGGERACCEPT",trigaccept);
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("RA7leptons")));
     break;
