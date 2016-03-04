@@ -96,19 +96,20 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	PhysicsContribution* data = 0;
 	
 	if(fakeMode == 0) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2251, "2.25/fb@13TeV");
 	} else if(fakeMode == 1) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV", false, "treeRfakeTracks");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2251, "2.25/fb@13TeV", false, "treeRfakeTracks");
 	} else if(fakeMode == 2) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV", false, "treeRfakePhotons");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2251, "2.25/fb@13TeV", false, "treeRfakePhotons");
 	} else if(fakeMode == 3) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2198, "2.20/fb@13TeV", false, "treeRfakeTaus");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2251, "2.25/fb@13TeV", false, "treeRfakeTaus");
 	} else {
 		cout << "unsure what to do";
 		exit(1);
 	}
 	
 	data->addWeight("TRIGGERACCEPT");
+	//data->addVariation("JECv6", make_pair("MET", "1.03 * _MET"));
 	
 	std::vector<string> vetoFilenames = {
 		"/cms/thomassen/2015/Analysis/CMSSW/src/RutgersIAF/AnalysisPresenter/test/veto/csc2015_Dec01.txt",
@@ -202,9 +203,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZTo3LNu" + infix + suffix, xsec_WZTo3LNu, "WZTo3LNu", false, "treeR", -1, 0);
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("!ONZ");
-	wz->addWeight("0.962"); // normalization
+	wz->addWeight("0.945"); // normalization
 	if(!assembler->getMode("noWZsystematics")) {
-		wz->addFlatUncertainty("normalizationWZ", 0.038); // size of scale factor (< statistical)
+		wz->addFlatUncertainty("normalizationWZ", 0.055); // size of scale factor (< statistical)
 		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
 		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
 	}
@@ -214,7 +215,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	wz = new PhysicsContribution("backgroundMC", prefix + "WZJets" + infix + suffix, xsec_WZJets, "WZJets", false, "treeR", -1, 0);
 	wz->setNominalWeight("genEventInfo_weight[0]");
 	wz->addWeight("ONZ");
-	wz->addWeight("1.300"); // normalization
+	wz->addWeight("1.277"); // normalization
 	wz->addWeight("EVENT[0] == EVENT[0]");
 	if(!assembler->getMode("noWZsystematics")) {
 		wz->addFlatUncertainty("normalizationWZ", 0.071); // statistical
@@ -226,7 +227,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	
 	PhysicsContribution* zz = new PhysicsContribution("backgroundMC", prefix + "ZZTo4L" + infix + suffix, xsec_zz, "ZZ", false, "treeR", 30, assembler->getMode("fullPrecision") ? 0 : 0.01);
 	zz->setNominalWeight("genEventInfo_weight[0]");
-	zz->addWeight("1.431"); // normalization
+	zz->addWeight("1.376"); // normalization
 	if(!assembler->getMode("noZZsystematics")) zz->addFlatUncertainty("normalizationZZ", 0.156); // statistical
 	mc.push_back(zz);
 	
@@ -249,7 +250,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	
 	TString nJetWeight = "1 + (NGOODJETS[0] == 1) * 0.01 + (NGOODJETS[0] == 2) * 0.01 + (NGOODJETS[0] == 3) * 0.07 + (NGOODJETS[0] == 4) * -0.07 + (NGOODJETS[0] == 5) * -0.22 + (NGOODJETS[0] > 5) * -0.34";
 	//nJetWeight = "(NLEPTONS[0] == NLEPTONS[0])";
-	TString normalization = "0.805";
+	TString normalization = "0.786";
 	normalization += " * (EVENT[0] == EVENT[0])";
 	
 	Bundle* bundleTTbar = new Bundle("background", "ttbar");
@@ -342,7 +343,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		contribution->addWeight("EVENT[0] == EVENT[0]");
 		applyUncertaintiesAndScaleFactors(assembler, contribution);
-		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("lumi", 0.027); // as of 2016-02-22 https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/563.html
 		contribution->addFlatUncertainty("xsecRare", 0.5);
 		assembler->addContribution(contribution);
 		assembler->getBundle("Rare MC")->addComponent(contribution);
@@ -363,7 +364,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 //		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		applyUncertaintiesAndScaleFactors(assembler, contribution);
-		contribution->addFlatUncertainty("lumi", 0.046); // as of 2015-11-16 https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/2544/1/1.html
+		contribution->addFlatUncertainty("lumi", 0.027); // as of 2016-02-22 https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/563.html
 		contribution->addFlatUncertainty("xsecHiggs", 0.5);
 		assembler->addContribution(contribution);
 		assembler->getBundle("Higgs")->addComponent(contribution);
@@ -422,11 +423,11 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 void setupFakeRates(Assembler* assembler) {
 	// We found that NGOODJETS and HT binning does not work very well; NPROMPTINCLUSIVETRACK7 binning does a good job at least in 0b regions.
 	assembler->setFakeRate("nTrackFakeMuons",
-		"0.0150"
+		"0.0149"
 		" * (nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 	assembler->setFakeRate("nTrackFakeElectrons",
-		"(NGOODELECTRONS[0] == 1) * 0.0176 + (NGOODELECTRONS[0] == 3) * 0.0138 + !(NGOODELECTRONS[0] == 1 || NGOODELECTRONS[0] == 3) * 0.0160"
+		"(NGOODELECTRONS[0] == 1) * 0.0175 + (NGOODELECTRONS[0] == 3) * 0.0137 + !(NGOODELECTRONS[0] == 1 || NGOODELECTRONS[0] == 3) * 0.0159"
 		" * (nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 	
@@ -566,7 +567,7 @@ TCanvas* makeNicePlot(TCanvas* c, TString axistitle = "", TString unit = "", TSt
 	latex->SetTextSize(0.035);
 	latex->SetTextFont(42);
 	if(!preliminary.Contains("Simulation", TString::kIgnoreCase)) {
-		latex->DrawLatex(0.76, 0.96, "2.2 fb^{-1} (13 TeV)");
+		latex->DrawLatex(0.76, 0.96, "2.3 fb^{-1} (13 TeV)");
 	}
 	
 	c->Update();

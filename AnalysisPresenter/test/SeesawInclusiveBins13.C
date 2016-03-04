@@ -13,9 +13,17 @@
 void addMETchannels(std::vector<Channel*> &channels, Assembler* assembler, TString name) {
 	auto ranges = assembler->getRanges();
 	
-	assembler->setRange("LT+MET");
+	assembler->setRange("LT+MET", 350);
+	assembler->project("LT+MET", true)->printMeta("data");
+	assembler->project("LT+MET", true)->print();
 	assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true)->SaveAs(name + TString(".pdf"));
 	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV")->SaveAs(TString("../nicePlots/") + name + TString(".pdf"));
+	makeNicePlot(assembler->project("LT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T}", "GeV")->SaveAs(TString("../nicePlots/") + name + TString("_LT.pdf"));
+	makeNicePlot(assembler->project("MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "E_{T}^{miss}", "GeV")->SaveAs(TString("../nicePlots/") + name + TString("_MET.pdf"));
+	assembler->setRange("HT", 200);
+	makeNicePlot(assembler->project("LT", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T}", "GeV")->SaveAs(TString("../nicePlots/") + name + TString("HTgt200_LT.pdf"));
+	assembler->setRange("LT+MET");
+	assembler->setRange("HT");
 	//assembler->project("LT", true)->plot(true)->SaveAs(name + TString("_LT.pdf"));
 	//makeNicePlot(assembler->project("LT", true)->plot(true), "LT [GeV]")->SaveAs(TString("../nicePlots/") + name + TString("_LT.pdf"));
 	//assembler->project("LT+MET", true)->plot(true)->SaveAs(name + TString("_LT+MET.pdf"));
@@ -51,15 +59,15 @@ void SeesawInclusiveBins13(std::string mass = "420", TString ofname = "test.root
 	
 	// Specify axes and bins of multidimensional histogram
 	// For inclusive table
-	std::string varexp = "NLIGHTLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NGOODJETS{0,5}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,500,10}";
+	std::string varexp = "NLIGHTLEPTONS{2,6}:MOSSF{11,131,36}:NOSSF{0,3}:ONZ{0,2}:NGOODTAUS{0,2}:NGOODJETS{0,5}:NBJETSCSVM{0,2}:HT{0,200,1}:MET{0,400,8}";
 	varexp += std::string(TString::Format(":(NLIGHTLEPTONS == 3 && (abs(MOSSF-%f)>%f) && abs(MLIGHTLEPTONS-%f) < %f){0,2,\"AIC\"}", z, zWidth, 87.5, 12.5).Data());
 	varexp += ":(Sum$(QGOODMUONS) + Sum$(QGOODELECTRONS)){-2.5,2.5,\"QLIGHTLEPTONS\"}";
 	varexp += ":Alt$(PTGOODELECTRONS[0],0){20,320,15,\"minElectronPT\"}";
 	varexp += ":Alt$(PTGOODMUONS[0],0){20,320,15,\"minMuonPT\"}";
-	varexp += ":LT{0,600,30}";
+	varexp += ":LT{0,700,7}";
 	varexp += ":Alt$(MT,-1){0,200,5,\"MT\"}";
-	//varexp += ":LT+MET{-50,1150,6}";
-	varexp += ":LT+MET{350,1150,4}";
+	varexp += ":LT+MET{-50,1150,6}";
+	//varexp += ":LT+MET{350,1150,4}";
 	varexp += ":PTGOODLEPTONS[0]{0,500,25}";
 	varexp += ":MLIGHTLEPTONS{0,600,15}";
 	varexp += ":(sqrt(2) * 18.5 * sqrt(-log(rndm())) * cos(6.2831853 * rndm())){-50,50,100,\"gaus\"}";
@@ -95,6 +103,7 @@ void SeesawInclusiveBins13(std::string mass = "420", TString ofname = "test.root
 	//std::string mass = "660";
 	std::string xsecfile = mass + "_xsecs_and_procs.txt";
 	std::string directory = "/cms/data23/feigelis/SeesawProject/Analysis/output/" + mass;
+	//std::string directory = "/cms/data26/feigelis/SeesawProject/Analysis/output/" + mass;
 	
 	std::vector<PhysicsContribution*> signals;
 	
@@ -119,8 +128,8 @@ void SeesawInclusiveBins13(std::string mass = "420", TString ofname = "test.root
 		//std::string filename = directory + "/" + process + "/output/validation_Nov3.root";
 		//std::string filename = directory + "/" + process + "/output/validation_Nov6.root";
 		//std::string filename = directory + "/" + process + "/output/validation_Dec9.root";
-		//std::string filename = directory + "_Moriond/" + process + "/output/Moriond_prediction.root";
 		std::string filename = directory + "/" + process + "/output/Moriond_prediction_fixedFakes.root";
+		//std::string filename = "/home/thomassen/tmp/20160301/" + mass + "/" + process + "/output/OfficialResults.root";
 		
 		PhysicsContribution* signal = new PhysicsContribution("signal", filename, xsec*br*filterEff*k, TString::Format("Seesaw%d", i), false, "treeR", -1, 0);
 		signal->addWeight("WEIGHT[0]");
@@ -161,14 +170,15 @@ void SeesawInclusiveBins13(std::string mass = "420", TString ofname = "test.root
 	setupBackgroundMC(assembler);
 	setupBackgroundDD(assembler, "", true);
 	
-	TString bundleName = TString::Format("#splitline{Seesaw [X]}{(m_{#Sigma} = %s GeV)}", mass.c_str());
+	//TString bundleName = TString::Format("#splitline{Seesaw [X]}{(m_{#Sigma} = %s GeV)}", mass.c_str());
+	TString bundleName = "Seesaw";
 	assembler->addBundle(new Bundle("signal", bundleName));
 	assembler->addBundle(new Bundle("signal", "SignalBundle"));
 	assembler->getBundle("SignalBundle")->addComponent(assembler->getBundle(bundleName));
 	
 	for(const auto &signal : signals) {
 		applyUncertaintiesAndScaleFactors(assembler, signal);
-		signal->addFlatUncertainty("lumi", 0.046);
+		signal->addFlatUncertainty("lumi", 0.027);
 		//signal->addFlatUncertainty("signalXsec", 0.3);
 		assembler->addContribution(signal);
 		assembler->getBundle(bundleName)->addComponent(signal);
@@ -199,8 +209,8 @@ void SeesawInclusiveBins13(std::string mass = "420", TString ofname = "test.root
 	assembler->project("LT+MET", true)->print();
 	
 	assembler->setRange("AIC", 0, 0);
-/*	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV")->SaveAs("LT+MET.pdf");
-	//makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV", "Simulation Preliminary", true)->SaveAs("LT+MET.pdf");
+/*	//makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV")->SaveAs("LT+MET.pdf");
+	makeNicePlot(assembler->project("LT+MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(true), "L_{T} + E_{T}^{miss}", "GeV", "Simulation Preliminary", true)->SaveAs("LT+MET.pdf"); return;
 	assembler->setRange("AIC");
 	assembler->setRange("LT+MET", -50, 350);
 	makeNicePlot(assembler->project("MET", true)->bundle(assembler->getBundle("SignalBundle"))->plot(false), "E_{T}^{miss} [GeV]")->SaveAs("LTMET0to350_MET.pdf");
@@ -248,6 +258,9 @@ void SeesawInclusiveBins13(std::string mass = "420", TString ofname = "test.root
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ", 1, 1);
 	addMETchannels(channels, assembler, "L3DYz1");
+	//makeNicePlot(assembler->project("MET", true)->plot(true), "E_{T}^{miss}", "GeV")->SaveAs("../nicePlots/L3DYz1_MET.pdf");
+	//makeNicePlot(assembler->project("MT", true)->plot(true), "M_{T}", "GeV")->SaveAs("../nicePlots/L3DYz1_MT.pdf");
+	//makeNicePlot(assembler->project("LT", true)->plot(true), "L_{T}", "GeV")->SaveAs("../nicePlots/L3DYz1_LT.pdf");
 	
 	assembler->setRange("NOSSF", 1, 1);
 	assembler->setRange("ONZ"); // reset ONZ requirement (i.e. all on and off Z)
