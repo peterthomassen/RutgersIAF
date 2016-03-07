@@ -4,7 +4,6 @@
 //
 //////////////////////////////////////////////////////////
 
-
 void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("isPhoton",            new ObjectVariableValue<TString>("INPUTTYPE",  "photon"));
   handler->addObjectVariable("isVertex",            new ObjectVariableValue<TString>("INPUTTYPE",  "vertex"));
@@ -13,7 +12,7 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("uncertaintyNoShift",  new ObjectVariableValue<TString>("uncertainty","NoShift"));
   handler->addObjectVariable("levelType1",          new ObjectVariableValue<TString>("level",      "Type1"));
   handler->addObjectVariable("INPUTTAGslimmedMETs", new ObjectVariableValue<TString>("INPUTTAG",   "slimmedMETs"));
-
+  handler->addObjectVariable("isMC",                new ObjectVariableValue<TString>("INPUTTYPE",  "mc"));
 
   // --------------------------------------------------------------------------------------------------------------
   /////////////////////////////
@@ -51,9 +50,9 @@ void setupObjectVariables(BaseHandler* handler){
 
 
   // --------------------------------------------------------------------------------------------------------------
-  ///////////////////////////
-  ////Isolation Variables////
-  ///////////////////////////
+  /////////////////////////
+  ///Isolation Variables///
+  /////////////////////////
   ObjectVariableEffectiveArea* areaEl = new ObjectVariableEffectiveArea("ELECTRON_AREA");
   areaEl->addArea(1,     0.1752);
   areaEl->addArea(1.479, 0.1862);
@@ -102,14 +101,14 @@ void setupObjectVariables(BaseHandler* handler){
   //
   // ADDING MUON PF-ISO-DR0.4, DB CORRECTED:
   handler->addObjectVariable("MUON_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("pfIsolationR04sumChargedHadronPt","pfIsolationR04sumNeutralHadronEt","pfIsolationR04sumPhotonEt","pfIsolationR04sumPUPt","MUON_TOTALISODB0p4","isMuon"),false);
-  handler->addObjectVariable("MUON_RELISO", new ObjectVariableRelIso("MUON_RELISO","MUON_totalIsoDB0p4"));
+  handler->addObjectVariable("MUON_RELISO", new ObjectVariableRelIso("MUON_RELISO","MUON_TOTALISODB0p4"));
   //
   // ADDING ELECTRON CUT-ID PF-ISO, RHO CORRECTED:
   // https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleEffAreaPFIsoCut.cc#L71
   // https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/RecoEgamma/ElectronIdentification/python/Identification/cutBasedElectronID_tools.py#L262
   handler->addObjectVariable("RHO_ALL", new ObjectVariableEventVariable<double>("rhoAll",handler));
   handler->addObjectVariable("ELECTRON_CutIDtotalIso", new ObjectVariableRhoCorrectedTotalIso("sumChargedHadronPt","sumNeutralHadronEt","sumPhotonEt","RHO_ALL","ELECTRON_AREA","ELECTRON_CutIDTOTALISO","isElectron"),false);
-  handler->addObjectVariable("ELECTRON_RELISO", new ObjectVariableRelIso("ELECTRON_RELISO","ELECTRON_CutIDtotalIso"));
+  handler->addObjectVariable("ELECTRON_RELISO", new ObjectVariableRelIso("ELECTRON_RELISO","ELECTRON_CutIDTOTALISO"));
   //
   handler->addObjectVariable("RELISO",      new ObjectVariableRelIso("RELISO"));
   handler->addObjectVariable("MINIISO",     new ObjectVariableRelIso("MINIISO","TOTALMINIISO"));
@@ -152,9 +151,9 @@ void setupObjectVariables(BaseHandler* handler){
 
 
   // --------------------------------------------------------------------------------------------------------------
-  //////////////////////
-  ////Muon Variables////
-  //////////////////////
+  ////////////////////
+  ///Muon Variables///
+  ////////////////////
   handler->addObjectVariable("MUON_dxy",               new ObjectVariableInRange<double>("dxy",-0.05,0.05));
   handler->addObjectVariable("MUON_dz",                new ObjectVariableInRange<double>("dz",-0.1,0.1));
   handler->addObjectVariable("MUON_nonprompt",         new ObjectVariableReversed("MUON_dxy","MUON_nonprompt"));
@@ -189,9 +188,9 @@ void setupObjectVariables(BaseHandler* handler){
 
 
   // --------------------------------------------------------------------------------------------------------------
-  //////////////////////////
-  ////Electron Variables////
-  //////////////////////////
+  ////////////////////////
+  ///Electron Variables///
+  ////////////////////////
   handler->addObjectVariable("ELECTRON_ISOLATED",    new ObjectVariableRename<bool>("MULTIISOM", "ELECTRON_ISOLATED"));
   handler->addObjectVariable("ELECTRON_NOTISOLATED", new ObjectVariableReversed("ELECTRON_ISOLATED"));
   //
@@ -339,17 +338,17 @@ void setupObjectVariables(BaseHandler* handler){
 
 
   // --------------------------------------------------------------------------------------------------------------
-  /////////////////////
-  ////Tau Variables////
-  /////////////////////
+  ///////////////////
+  ///Tau Variables///
+  ///////////////////
   handler->addObjectVariable("TAU_nonbyMediumIsolationMVArun2v1DBnewDMwLT", new ObjectVariableReversed("byMediumIsolationMVArun2v1DBnewDMwLT"));
   handler->addObjectVariable("TAU_dz",     new ObjectVariableInRange<double>("dz",-0.2,0.2));
 
 
   // --------------------------------------------------------------------------------------------------------------
-  /////////////////////
-  ////Jet Variables////
-  /////////////////////
+  ///////////////////
+  ///Jet Variables///
+  ///////////////////
   // Loose PF Jet ID : https://twiki.cern.ch/twiki/bin/view/CMS/JetID#Recommendations_for_13_TeV_data
   handler->addObjectVariable("JET_NEUTRALHADRONFRACTION",      new ObjectVariableInRange<double>("neutralHadronEnergyFraction",0,0.99));
   handler->addObjectVariable("JET_NEUTRALEMFRACTION",          new ObjectVariableInRange<double>("neutralEmEnergyFraction", 0,0.99));
@@ -376,7 +375,7 @@ void setupObjectVariables(BaseHandler* handler){
   PFJETID_CENTRAL->addVariable("JET_CHARGEDMULTIPLICITY");
   PFJETID_CENTRAL->addVariable("JET_CHARGEDEMFRACTION");
   PFJETID_CENTRAL->addVariable("JET_CENTRAL");
-  handler->addObjectVariable("PFJETID_TRACKER",PFJETID_TRACKER);//....barrel  jet ID
+  handler->addObjectVariable("PFJETID_CENTRAL",PFJETID_CENTRAL);//....central jet ID
   ObjectVariableCombined* PFJETID_ENDCAP = new ObjectVariableCombined("JET_NEUTRALHADRONFRACTION","JET_NEUTRALEMFRACTION",true);
   PFJETID_ENDCAP->addVariable("JET_NUMBEROFCONSTITUENTS");
   PFJETID_ENDCAP->addVariable("JET_ENDCAP");
@@ -399,9 +398,9 @@ void setupObjectVariables(BaseHandler* handler){
 
 
   // --------------------------------------------------------------------------------------------------------------
-  ///////////////////////
-  ////Track Variables////
-  ///////////////////////
+  /////////////////////
+  ///Track Variables///
+  /////////////////////
   handler->addObjectVariable("TRACK_PFCHARGEDHADRONISO", new ObjectVariableRename<double>("chargedHadronIsoFromPF","PF_CHARGEDHADRONISO"),false);
   handler->addObjectVariable("TRACK_PFNEUTRALHADRONISO", new ObjectVariableRename<double>("neutralHadronIsoFromPF","PF_NEUTRALHADRONISO"),false);
   handler->addObjectVariable("TRACK_PFPHOTONISO",        new ObjectVariableRename<double>("neutralPhotonIsoFromPF","PF_PHOTONISO"),false);
@@ -412,9 +411,9 @@ void setupObjectVariables(BaseHandler* handler){
 
 
   // --------------------------------------------------------------------------------------------------------------
-  ////////////////////////
-  ////Photon Variables////
-  ////////////////////////
+  //////////////////////
+  ///Photon Variables///
+  //////////////////////
   // Cut Based Photon ID: https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
   handler->addObjectVariable("PHOTON_BARREL_hadronicOverEm",        new ObjectVariableInRange<double>("hadronicOverEm",0.0,0.05));
   handler->addObjectVariable("PHOTON_ENDCAP_hadronicOverEm",        new ObjectVariableInRange<double>("hadronicOverEm",0.0,0.05));
@@ -430,18 +429,29 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL","PHOTON_ENDCAP",false,"PHOTON_COMBINED"));
   //
   handler->addObjectVariable("PHOTON_CUT_LOOSEID",  new ObjectVariableValue<bool>("passLooseId",  true));
-  handler->addObjectVariable("PHOTON_CUT_MEDIUMID", new ObjectVariableValue<bool>("passMediumId", true))
+  handler->addObjectVariable("PHOTON_CUT_MEDIUMID", new ObjectVariableValue<bool>("passMediumId", true));
   handler->addObjectVariable("PHOTON_CUT_TIGHTID",  new ObjectVariableValue<bool>("passTightId",  true));
 
 
   // --------------------------------------------------------------------------------------------------------------
-  ///////////////////////
-  ////Vertex Variables///
-  ///////////////////////
+  //////////////////////
+  ///Vertex Variables///
+  //////////////////////
   handler->addObjectVariable("VERTEX_NDOF",   new ObjectVariableInRange<double>("ndof",4,100000));
   handler->addObjectVariable("VERTEX_Z",      new ObjectVariableInRange<double>("z",-24,24));
   handler->addObjectVariable("VERTEX_RHO",    new ObjectVariableInRange<double>("rho",-4,4));
   handler->addObjectVariable("VERTEX_NOTFAKE",new ObjectVariableReversed("isFake"));
+
+
+  // --------------------------------------------------------------------------------------------------------------
+  ///////////////////////
+  ///Trigger Variables///
+  ///////////////////////
+  handler->addObjectVariable("ACCEPT",      new ObjectVariableRename<bool>("accept","ACCEPT"));
+  handler->addObjectVariable("TRIGGERNAME", new ObjectVariableRename<TString>("triggerName","TRIGGERNAME"));
+  handler->addObjectVariable("Accepted",    new ObjectVariableValue<bool>("ACCEPT", true));
+  handler->addObjectVariable("WasRun",      new ObjectVariableValue<bool>("wasrun", true));
+
 
 }
 
