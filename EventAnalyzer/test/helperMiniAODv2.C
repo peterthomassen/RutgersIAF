@@ -59,10 +59,10 @@
 //
 #include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsCommon.C"
 #include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsMatrix.C"
-#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsRA7.C"
+//#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsRA7.C"
 //
 #include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_AddEventVariablesMatrix.C"
-#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_AddEventVariablesRA7.C"
+//#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_AddEventVariablesRA7.C"
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------------------------------------
@@ -80,9 +80,10 @@ namespace {
 
 void setupProducts(BaseHandler* handler)
 {
-  setupProductsRA7(handler);//....... Defines goodObjects
-  setupProductsMatrix(handler);//.... Defines goodObjects
-  setupProductsCommon(handler);
+  // Pick one of setupProductsRA7 or setupProductsMatrix, they define "goodObjects"
+  //setupProductsRA7(handler);
+  setupProductsMatrix(handler);
+  setupProductsCommon(handler);//.... Always KEEP
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------
@@ -129,18 +130,17 @@ void setupMET(BaseHandler* handler, bool isMC) {
 // ------------------------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------------------------------------
 
-void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
+void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385) {
 
+  // Pick one of addEventVariablesRA7 or addEventVariablesMatrix:
+  //addEventVariablesRA7(    handler, isMC,  mZ,  zWidth, mW );
   addEventVariablesMatrix( handler, isMC,  mZ,  zWidth, mW );
-  addEventVariablesRA7(    handler, isMC,  mZ,  zWidth, mW );
-
-  handler->addEventVariable("ALWAYSTRUE", new EventVariableConst<bool>(true));
   
   EventVariableThreshold* pt20first = new EventVariableThreshold("PT20first","goodElectrons");
   pt20first->addProduct("goodMuons");
   pt20first->addThreshold(20);
   handler->addEventVariable("PT20first",pt20first);
-  handler->addHandlerCut("PT20first");
+  //handler->addHandlerCut("PT20first");
   
   EventVariableThreshold* pt201512 = new EventVariableThreshold("PT201512","goodElectrons");
   pt201512->addProduct("goodMuons");
@@ -367,10 +367,10 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   handler->addEventVariable("JPRAWGOODJETS",      new EventVariableObjectVariableVector<double>("JPraw",   "goodJets"));
   handler->addEventVariable("CMVARAWGOODJETS",    new EventVariableObjectVariableVector<double>("cMVAraw", "goodJets"));
   //
-  handler->addEventVariable("NGOODFORWARDJETS",   new EventVariableN("NGOODFORWARDJETS",                "goodForwardjets"));
-  handler->addEventVariable("PTGOODFORWARDJETS",  new EventVariableObjectVariableVector<double>("PT",   "goodForwardjets"));
-  handler->addEventVariable("ETAGOODFORWARDJETS", new EventVariableObjectVariableVector<double>("ETA",  "goodForwardjets"));
-  handler->addEventVariable("PHIGOODFORWARDJETS", new EventVariableObjectVariableVector<double>("PHI",  "goodForwardjets"));
+  handler->addEventVariable("NGOODFORWARDJETS",   new EventVariableN("NGOODFORWARDJETS",                "goodForwardJets"));
+  handler->addEventVariable("PTGOODFORWARDJETS",  new EventVariableObjectVariableVector<double>("PT",   "goodForwardJets"));
+  handler->addEventVariable("ETAGOODFORWARDJETS", new EventVariableObjectVariableVector<double>("ETA",  "goodForwardJets"));
+  handler->addEventVariable("PHIGOODFORWARDJETS", new EventVariableObjectVariableVector<double>("PHI",  "goodForwardJets"));
   //
   handler->addEventVariable("NGOODBJETSCSVL",     new EventVariableN("NGOODJETS",                       "goodbJetsCSVL"));
   handler->addEventVariable("PTGOODBJETSCSVL",    new EventVariableObjectVariableVector<double>("PT",   "goodbJetsCSVL"));
@@ -539,7 +539,7 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
   AIC->addVariable("OFFZ");
   handler->addEventVariable("AIC", AIC);
   
-  
+  /*
   if(handler->getMode("singleGoodMuon")) {// fix
     handler->addEventVariable("WRITEEVENT", new EventVariableInRange<int>("NGOODMUONS", 1, 1e6, "GOODMUON"));
   } else if(handler->getMode("theoryMinituples")) {
@@ -550,6 +550,11 @@ void setupVariables2(BaseHandler* handler,bool isMC = false, double mZ = 91, dou
       : new EventVariableCombined("DILEPTONSLOWPT", "MLOWDYCUT", true, "WRITEEVENT");
     handler->addEventVariable("WRITEEVENT", writeEvent);
   }
+  */
+
+  handler->addEventVariable("ALWAYSTRUE", new EventVariableConst<bool>(true));
+  handler->addEventVariable("WRITEEVENT", new EventVariableRename<bool>("ALWAYSTRUE"));
+
 }
 
 
@@ -572,16 +577,16 @@ void setupTriggers(BaseHandler* handler,int mode){
   ///////////////////////////////////
   ///HLT Variables///
   ///////////////////////////////////
-  handler->addObjectVariable("ACCEPT", new ObjectVariableRename<bool>("accept","ACCEPT"));
-  handler->addObjectVariable("TRIGGERNAME", new ObjectVariableRename<TString>("triggerName","TRIGGERNAME"));
+  //handler->addObjectVariable("ACCEPT", new ObjectVariableRename<bool>("accept","ACCEPT"));
+  //handler->addObjectVariable("TRIGGERNAME", new ObjectVariableRename<TString>("triggerName","TRIGGERNAME"));
   
-  handler->addProduct("TRIGGERS","ALL");
-  handler->addObjectVariable("isTrigger", new ObjectVariableValue<TString>("INPUTTYPE", "trigger"));
-  handler->addProductCut("TRIGGERS","isTrigger");
-  handler->addHistogram(new SignatureTH1F_TriggerName("TriggerNames","TRIGGERS"));
+  //handler->addProduct("ALLTRIGGERS","ALL");
+  //handler->addObjectVariable("isTrigger", new ObjectVariableValue<TString>("INPUTTYPE", "trigger"));
+  //handler->addProductCut("TRIGGERS","isTrigger");
+  //handler->addHistogram(new SignatureTH1F_TriggerName("TriggerNames","ALLTRIGGERS"));
   
-  handler->addObjectVariable("Accepted", new ObjectVariableValue<bool>("ACCEPT", true));
-  handler->addObjectVariable("WasRun", new ObjectVariableValue<bool>("wasrun", true));
+  //handler->addObjectVariable("Accepted", new ObjectVariableValue<bool>("ACCEPT", true));
+  //handler->addObjectVariable("WasRun", new ObjectVariableValue<bool>("wasrun", true));
 
   // ------------------------------------------------------------------------
   // ------------------------------------------------------------------------
@@ -895,9 +900,6 @@ void setupTriggers(BaseHandler* handler,int mode){
 
 void setupMCproducts(BaseHandler* handler) {
 	handler->setMode("MC");
-	
-	handler->addObjectVariable("isMC",new ObjectVariableValue<TString>("INPUTTYPE","mc"));
-
 	handler->addProduct("ALLMC","ALL");
 	handler->addProductCut("ALLMC","isMC");
 
@@ -978,28 +980,30 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
 	ObjectComparisonMatchDeltaRCharge* mcMatch = new ObjectComparisonMatchDeltaRCharge(0.1,"genParticle");
 	
 	if(doMatching) {
-		handler->addProductComparison("goodElectrons","MCELECTRONSFROMBOSON",mcMatch,false);
-		handler->addProductComparison("goodMuons","MCMUONSFROMBOSON",mcMatch,false);
-		handler->addProductComparison("goodTaus","MCTAUSFROMBOSON",mcMatch,false);
+	  handler->addProductComparison("goodElectrons","MCELECTRONSFROMBOSON",mcMatch, false);
+	  handler->addProductComparison("goodMuons",    "MCMUONSFROMBOSON",    mcMatch, false);
+	  handler->addProductComparison("goodTaus",     "MCTAUSFROMBOSON",     mcMatch, false);
 	}
 
 	handler->addProduct("goodElectronsMatched","goodElectrons");
-	handler->addProduct("goodMuonsMatched","goodMuons");
+	handler->addProduct("goodMuonsMatched",    "goodMuons");
 
 	handler->addProduct("goodElectronsFromTau","goodElectrons");
-	handler->addProduct("goodMuonsFromTau","goodMuons");
+	handler->addProduct("goodMuonsFromTau",    "goodMuons");
 
 	handler->addProduct("goodElectronsNotMatched","goodElectrons");
-	handler->addProduct("goodMuonsNotMatched","goodMuons");
+	handler->addProduct("goodMuonsNotMatched",    "goodMuons");
 
 
-	handler->addProductComparison("goodElectronsMatched","MCELECTRONSFROMBOSON",mcMatch,false);
-	handler->addProductComparison("goodMuonsMatched","MCMUONSFROMBOSON",mcMatch,false);
-	handler->addProductComparison("goodElectronsFromTau","MCELECTRONSFROMTAU",mcMatch,false);
-	handler->addProductComparison("goodMuonsFromTau","MCMUONSFROMTAU",mcMatch,false);
+	handler->addProductComparison("goodElectronsMatched","MCELECTRONSFROMBOSON",mcMatch, false);
+	handler->addProductComparison("goodMuonsMatched",    "MCMUONSFROMBOSON",    mcMatch, false);
+
+	handler->addProductComparison("goodElectronsFromTau","MCELECTRONSFROMTAU",  mcMatch, false);
+	handler->addProductComparison("goodMuonsFromTau",    "MCMUONSFROMTAU",      mcMatch, false);
 
 	handler->addProductComparison("goodElectronsNotMatched","goodElectronsMatched",deltaR0p1);
 	handler->addProductComparison("goodElectronsNotMatched","goodElectronsFromTau",deltaR0p1);
+	
 	handler->addProductComparison("goodMuonsNotMatched","goodMuonsMatched",deltaR0p1);
 	handler->addProductComparison("goodMuonsNotMatched","goodMuonsFromTau",deltaR0p1);
 

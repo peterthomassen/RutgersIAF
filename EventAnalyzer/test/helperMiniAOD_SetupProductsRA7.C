@@ -4,7 +4,7 @@
 // Objects as used in he RA7 analysis are defined here.
 //
 //////////////////////////////////////////////////////////
-#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupObjectVariables.C"
+//#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupObjectVariables.C"
 
 void setupProductsRA7(BaseHandler* handler)
 {
@@ -12,33 +12,12 @@ void setupProductsRA7(BaseHandler* handler)
 
   handler->addProduct(   "ALLMUONS","ALL");
   handler->addProductCut("ALLMUONS","isMuon");
-
   handler->addProduct(   "ALLELECTRONS","ALL");
   handler->addProductCut("ALLELECTRONS","isElectron");
-
   handler->addProduct(   "ALLTAUS","ALL");
   handler->addProductCut("ALLTAUS","isTau");
-
-  //handler->addProduct(   "ALLPHOTONS","ALL");
-  //handler->addProductCut("ALLPHOTONS","isPhoton");
-  //
-  //handler->addProduct(   "ALLTRACKS","ALL");
-  //handler->addProductCut("ALLTRACKS","isTrack");
-
   handler->addProduct(   "ALLJETS","ALL");
   handler->addProductCut("ALLJETS","isJet");
-
-  //handler->addProduct(   "ALLVERTICES","ALL");
-  //handler->addProductCut("ALLVERTICES","isVertex");
-  //handler->addProduct("ALLRECOVERTICES","ALLVERTICES"); // fix
-  //
-  //handler->addProduct(   "ALLMET","ALL");
-  //handler->addProductCut("ALLMET","isMET");
-  //
-  //handler->addProduct(   "MET","ALLMET");
-  //handler->addProductCut("MET","uncertaintyNoShift");
-  //handler->addProductCut("MET","levelType1");
-  //handler->addProductCut("MET","INPUTTAGslimmedMETs");
 
 
   // --------------------------------------------------------------------------------------------------------------
@@ -93,10 +72,23 @@ void setupProductsRA7(BaseHandler* handler)
 
   // --------------------------------------------------------------------------------------------------------------
   //////////
-  ///Taus///
+  ///Taus///  NOT USED IN RA7 at the moment, not used in object arbitration.
   //////////
+  //https://twiki.cern.ch/twiki/bin/view/CMS/TauIDRecommendation13TeV
+  handler->addProduct(   "looseRA7Taus", "ALLTAUS");
+  handler->addProductCut("looseRA7Taus", "PT20");
+  handler->addProductCut("looseRA7Taus", "ETA2p3");
+  handler->addProductCut("looseRA7Taus", "TAU_dz");
+  handler->addProductCut("looseRA7Taus", "decayModeFindingNewDMs");
+  handler->addProductCut("looseRA7Taus", "againstMuonTight3");
+  handler->addProductCut("looseRA7Taus", "againstElectronTightMVA6");
   //
-  //  N/A
+  handler->addProduct(   "tightRA7Taus", "looseRA7Taus");
+  handler->addProductCut("tightRA7Taus", "byMediumIsolationMVArun2v1DBnewDMwLT") ;
+  //
+  handler->addProduct("goodTaus","tightRA7Taus");
+
+
 
 
   // --------------------------------------------------------------------------------------------------------------

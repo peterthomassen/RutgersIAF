@@ -27,11 +27,11 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   handler->addEventVariable("PTHEEPIDELECTRONS",            new EventVariableObjectVariableVector<double>("PT",       "heepIDElectrons"));
   handler->addEventVariable("ETAHEEPIDELECTRONS",           new EventVariableObjectVariableVector<double>("ETA",      "heepIDElectrons"));
   handler->addEventVariable("PHIHEEPIDELECTRONS",           new EventVariableObjectVariableVector<double>("PHI",      "heepIDElectrons"));
-  handler->addEventVariable("MINIISOHEEPIDELECTRONS",       new EventVariableObjectVariableVector<double>("MINIISO",  "heepidElectrons"));
-  handler->addEventVariable("PTRATIOHEEPIDELECTRONS",       new EventVariableObjectVariableVector<double>("ptRatio",  "heepidElectrons"));
-  handler->addEventVariable("PTRELHEEPIDELECTRONS",         new EventVariableObjectVariableVector<double>("ptRel",    "heepidElectrons"));
-  handler->addEventVariable("RELISOHEEPIDELECTRONS",        new EventVariableObjectVariableVector<double>("RELISO",   "heepidElectrons"));
-  handler->addEventVariable("RELISOCUTIDHEEPIDELECTRONS",   new EventVariableObjectVariableVector<double>("ELECTRON_RELISO", "heepidElectrons"));
+  handler->addEventVariable("MINIISOHEEPIDELECTRONS",       new EventVariableObjectVariableVector<double>("MINIISO",  "heepIDElectrons"));
+  handler->addEventVariable("PTRATIOHEEPIDELECTRONS",       new EventVariableObjectVariableVector<double>("ptRatio",  "heepIDElectrons"));
+  handler->addEventVariable("PTRELHEEPIDELECTRONS",         new EventVariableObjectVariableVector<double>("ptRel",    "heepIDElectrons"));
+  handler->addEventVariable("RELISOHEEPIDELECTRONS",        new EventVariableObjectVariableVector<double>("RELISO",   "heepIDElectrons"));
+  handler->addEventVariable("RELISOCUTIDHEEPIDELECTRONS",   new EventVariableObjectVariableVector<double>("ELECTRON_RELISO", "heepIDElectrons"));
   //
   // Tight Matrix Taus
   handler->addEventVariable("NTIGHTMATRIXTAUS",             new EventVariableN("NTIGHTMATRIXTAUS",                    "tightMatrixTaus"));

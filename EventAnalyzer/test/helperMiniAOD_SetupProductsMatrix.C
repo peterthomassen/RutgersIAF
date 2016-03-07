@@ -4,7 +4,7 @@
 // Objects as used in the Multilepton - Matrix Method analysis are defined here.
 //
 //////////////////////////////////////////////////////////
-#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupObjectVariables.C"
+//#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupObjectVariables.C"
 
 void setupProductsMatrix(BaseHandler* handler)
 {
@@ -12,33 +12,12 @@ void setupProductsMatrix(BaseHandler* handler)
 
   handler->addProduct(   "ALLMUONS","ALL");
   handler->addProductCut("ALLMUONS","isMuon");
-
   handler->addProduct(   "ALLELECTRONS","ALL");
   handler->addProductCut("ALLELECTRONS","isElectron");
-
   handler->addProduct(   "ALLTAUS","ALL");
   handler->addProductCut("ALLTAUS","isTau");
-
-  //handler->addProduct(   "ALLPHOTONS","ALL");
-  //handler->addProductCut("ALLPHOTONS","isPhoton");
-  //
-  //handler->addProduct(   "ALLTRACKS","ALL");
-  //handler->addProductCut("ALLTRACKS","isTrack");
-
   handler->addProduct(   "ALLJETS","ALL");
   handler->addProductCut("ALLJETS","isJet");
-
-  // handler->addProduct(   "ALLVERTICES","ALL");
-  //handler->addProductCut("ALLVERTICES","isVertex");
-  //handler->addProduct("ALLRECOVERTICES","ALLVERTICES"); // fix
-  //
-  //handler->addProduct(   "ALLMET","ALL");
-  //handler->addProductCut("ALLMET","isMET");
-  //
-  //handler->addProduct(   "MET","ALLMET");
-  //handler->addProductCut("MET","uncertaintyNoShift");
-  //handler->addProductCut("MET","levelType1");
-  //handler->addProductCut("MET","INPUTTAGslimmedMETs");
 
 
   // --------------------------------------------------------------------------------------------------------------
