@@ -65,6 +65,9 @@
   <class name="EventVariableMatrixLeptons" ClassVersion="1">
    <version ClassVersion="1" checksum="3631208740"/>
   </class>
+  <class name="EventVariableLeptonLTChecker" ClassVersion="1">
+   <version ClassVersion="1" checksum="902111297"/>
+  </class>
   <class name="EventVariableOS" ClassVersion="1">
    <version ClassVersion="1" checksum="3966592974"/>
   </class>
