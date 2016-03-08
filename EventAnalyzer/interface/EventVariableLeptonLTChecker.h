@@ -6,9 +6,8 @@
 
 class EventVariableLeptonLTChecker : public EventVariable{
  public:
- EventVariableLeptonLTChecker(TString name, TString productname, TString prefix="") : EventVariable(name), m_prefix(prefix) {m_productnames.push_back(productname);}
-
-
+ EventVariableLeptonLTChecker(TString name,  TString productname,  TString prefix,  TString loosename,  TString tightname) :  EventVariable(name),  m_prefix(prefix),  m_loosename(loosename), m_tightname(tightname) {m_productnames.push_back(productname);}
+			     
   void addProduct(TString);
 
   bool calculate(BaseHandler*);
@@ -17,6 +16,8 @@ class EventVariableLeptonLTChecker : public EventVariable{
 
  private:
   TString m_prefix;
+  TString m_loosename;
+  TString m_tightname;
   std::vector<TString> m_productnames;
   bool m_includeFakes;
 

@@ -32,11 +32,12 @@ bool EventVariableLeptonLTChecker::calculate(BaseHandler* handler) {
 
 
   // Store Tight Leptons
+  // (Partial) name of tight collection: m_tightname
   vector<double> PtVectorTight;
   for(int i = 0; i < (int)m_productnames.size(); i++) {
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     string prodname = (string)(m_productnames[i]);
-    if( prodname.find("loose") != std::string::npos ) continue;
+    if( prodname.find(m_loosename) != std::string::npos ) continue;
     for(int j = 0; j < (int)v.size(); j++){
       PtVectorTight.push_back( v[j]->Pt() );
     }
@@ -44,11 +45,12 @@ bool EventVariableLeptonLTChecker::calculate(BaseHandler* handler) {
 
 
   // Store Loose Leptons
+  // (Partial) name of loose collection: m_loosename
   vector<double> PtVectorLoose;
   for(int i = 0; i < (int)m_productnames.size(); i++) {
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     string prodname = (string)(m_productnames[i]);
-    if( prodname.find("good") != std::string::npos ) continue;
+    if( prodname.find(m_tightname) != std::string::npos ) continue;
     for(int j = 0; j < (int)v.size(); j++){
       PtVectorLoose.push_back( v[j]->Pt() );
     }
@@ -66,7 +68,7 @@ bool EventVariableLeptonLTChecker::calculate(BaseHandler* handler) {
   for(int i = 0; i < (int)m_productnames.size(); i++) {
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     string prodname = (string)(m_productnames[i]);
-    if( prodname.find("good") != std::string::npos ) continue;// only use loose lepton collection for the final tagging
+    if( prodname.find(m_tightname) != std::string::npos ) continue;// only use loose lepton collection for the final tagging
     for(int j = 0; j < (int)v.size(); j++){
       v[j]->setVariable("IsTight", (int)(isLooseTightVector.at(j)));
     }

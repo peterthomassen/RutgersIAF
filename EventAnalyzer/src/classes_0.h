@@ -13,6 +13,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOSSF.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixLeptons.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonLTChecker.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonGenChecker.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOS.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableExtreme.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectVariableMax.h"
