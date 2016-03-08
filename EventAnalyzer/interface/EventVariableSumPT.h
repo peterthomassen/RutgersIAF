@@ -6,7 +6,7 @@
 
 class EventVariableSumPT : public EventVariable{
  public:
-  EventVariableSumPT(TString name, TString productname) : EventVariable(name) {m_productnames.push_back(productname);}
+ EventVariableSumPT(TString name, TString productname, int maxNoOfObjects=9999) : EventVariable(name), m_maxNoOfObjects(maxNoOfObjects) {m_productnames.push_back(productname);}
 
   void addProduct(TString);
 
@@ -16,7 +16,7 @@ class EventVariableSumPT : public EventVariable{
 
  private:
   std::vector<TString> m_productnames;
-
+  int m_maxNoOfObjects;
 
 };
 
