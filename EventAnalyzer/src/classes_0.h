@@ -11,8 +11,8 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMixedPairMass.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOSSF.h"
-#include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixLeptons.h"//to be removed
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixWeights3D.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixWeights2D.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonLTChecker.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonGenChecker.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOS.h"

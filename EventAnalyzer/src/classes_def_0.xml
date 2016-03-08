@@ -62,10 +62,10 @@
   <class name="EventVariableOSSF" ClassVersion="1">
    <version ClassVersion="1" checksum="3020714107"/>
   </class>
-  <class name="EventVariableMatrixLeptons" ClassVersion="1">
-   <version ClassVersion="1" checksum="3631208740"/>
-  </class>
   <class name="EventVariableMatrixWeights3D" ClassVersion="1">
+   <version ClassVersion="1" checksum="3549782852"/>
+  </class>
+  <class name="EventVariableMatrixWeights2D" ClassVersion="1">
    <version ClassVersion="1" checksum="3549782852"/>
   </class>
   <class name="EventVariableLeptonLTChecker" ClassVersion="1">
