@@ -86,6 +86,25 @@ void setupProductsMatrix(BaseHandler* handler)
   //////////
   ///Jets///
   //////////
+  // These are not tau-DR overlap cleaned: Light Analysis "LA"
+  handler->addProduct(   "matrixJetsLA", "ALLJETS");
+  handler->addProductCut("matrixJetsLA", "PT30");
+  handler->addProductCut("matrixJetsLA", "ETA2p4");
+  handler->addProductCut("matrixJetsLA", "PFJETID_LOOSE");
+  //
+  handler->addProduct(   "matrixForwardJetsLA", "ALLJETS");
+  handler->addProductCut("matrixForwardJetsLA", "PT30");
+  handler->addProductCut("matrixForwardJetsLA", "JET_not2p4");
+  handler->addProductCut("matrixForwardJetsLA", "PFJETID_LOOSE");
+  //
+  // These derive from matrixJetsLA, matrixForwardJetsLA above, so they are also not tau-DR overlap cleaned:
+  handler->addProduct(   "matrixbJetsCSVLLA", "matrixJetsLA");
+  handler->addProductCut("matrixbJetsCSVLLA", "CSVL");
+  handler->addProduct(   "matrixbJetsCSVMLA", "matrixJetsLA");
+  handler->addProductCut("matrixbJetsCSVMLA", "CSVM");
+  //
+  // --- --- --- --- --- --- --- --- --- ---
+  // These are full ele-mu-tau-DR overlap cleaned:
   handler->addProduct(   "matrixJets", "ALLJETS");
   handler->addProductCut("matrixJets", "PT30");
   handler->addProductCut("matrixJets", "ETA2p4");
@@ -96,6 +115,7 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProductCut("matrixForwardJets", "JET_not2p4");
   handler->addProductCut("matrixForwardJets", "PFJETID_LOOSE");
   //
+  // These derive from matrixJets, matrixForwardJets above, so they are also ele-mu-tau-DR overlap cleaned:
   handler->addProduct(   "matrixbJetsCSVL", "matrixJets");
   handler->addProductCut("matrixbJetsCSVL", "CSVL");
   handler->addProduct(   "matrixbJetsCSVM", "matrixJets");
@@ -126,5 +146,53 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProductComparison("matrixForwardJets",    "looseMatrixMuons",     deltaR0p4);//discard jet
   handler->addProductComparison("matrixForwardJets",    "looseMatrixElectrons", deltaR0p4);//discard jet
   handler->addProductComparison("matrixForwardJets",    "looseMatrixTaus",      deltaR0p4);//discard jet
+  //
+  handler->addProductComparison("matrixJetsLA",         "looseMatrixMuons",     deltaR0p4);//discard jet
+  handler->addProductComparison("matrixJetsLA",         "looseMatrixElectrons", deltaR0p4);//discard jet
+  handler->addProductComparison("matrixForwardJetsLA",  "looseMatrixMuons",     deltaR0p4);//discard jet
+  handler->addProductComparison("matrixForwardJetsLA",  "looseMatrixElectrons", deltaR0p4);//discard jet
+
+
+  // --------------------------------------------------------------------------------------------------------------
+  ///////////////////
+  ///MATRIX METHOD///   Perhaps these are out of place, but need to go here for now:
+  ///////////////////  
+  //
+  // Matrix method specials, mark loose -> tight muons
+  EventVariableLeptonLTChecker* LTMuons = new EventVariableLeptonLTChecker("LTMuons","goodMuons","","good","tightMatrix");//3rd is prefix
+  LTMuons->addProduct("tightMatrixMuons");
+  handler->addEventVariable("LTMuons",LTMuons);
+  //
+  // Matrix method specials, mark loose -> tight electrons
+  EventVariableLeptonLTChecker* LTElectrons = new EventVariableLeptonLTChecker("LTElectrons","goodElectrons","","good","tightMatrix");//3rd is prefix
+  LTElectrons->addProduct("tightMatrixElectrons");
+  handler->addEventVariable("LTElectrons",LTElectrons);
+  //
+  // Matrix method specials, mark loose -> tight taus
+  EventVariableLeptonLTChecker* LTTaus = new EventVariableLeptonLTChecker("LTTaus","goodTaus","","good","tightMatrix");//3rd is prefix
+  LTTaus->addProduct("tightMatrixTaus");
+  handler->addEventVariable("LTTaus",LTTaus);
+  //
+  // Matrix method specials, store 3D MM weights, mark leptons that are used in this calculation.
+  EventVariableMatrixWeights3D* MatrixWeights3D = new EventVariableMatrixWeights3D("MatrixWeights3D","goodMuons","","good","tightMatrix");
+  MatrixWeights3D->addProduct("goodElectrons");
+  MatrixWeights3D->addProduct("goodTaus");
+  MatrixWeights3D->addProduct("tightMatrixMuons");
+  MatrixWeights3D->addProduct("tightMatrixElectrons");
+  MatrixWeights3D->addProduct("tightMatrixTaus");
+  handler->addEventVariable("MATRIXWEIGHTS3D",MatrixWeights3D);
+  handler->addEventVariable("ISMATRIX3DMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep","goodMuons"));
+  handler->addEventVariable("ISMATRIX3DELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep","goodElectrons"));
+  handler->addEventVariable("ISMATRIX3DTAUS",     new EventVariableObjectVariableVector<int>("IsMatrixLep","goodTaus"));
+  //
+  // Matrix method specials, store 3D MM weights, mark leptons that are used in this calculation.
+  // This does not use taus!
+  EventVariableMatrixWeights3D* MatrixWeights3DLA = new EventVariableMatrixWeights3D("MatrixWeights3DLA","goodMuons","LA","good","tightMatrix");
+  MatrixWeights3DLA->addProduct("goodElectrons");
+  MatrixWeights3DLA->addProduct("tightMatrixMuons");
+  MatrixWeights3DLA->addProduct("tightMatrixElectrons");
+  handler->addEventVariable("MATRIXWEIGHTS3DLA",MatrixWeights3DLA);
+  handler->addEventVariable("ISMATRIX3DLAMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLepLA","goodMuons"));
+  handler->addEventVariable("ISMATRIX3DLAELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLepLA","goodElectrons"));
 
 }

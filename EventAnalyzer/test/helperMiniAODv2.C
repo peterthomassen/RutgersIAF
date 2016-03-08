@@ -57,6 +57,11 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableConst.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableDvector.h"
 //
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonLTChecker.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonGenChecker.h"
+//#include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixLeptons.h"//delete
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixWeights3D.h"
+//
 #include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsCommon.C"
 #include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsMatrix.C"
 //#include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsRA7.C"
@@ -204,6 +209,10 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ////////////////////
   ///Muon Variables///
   ////////////////////
+  //EventVariableLeptonLTChecker* LTMuons = new EventVariableLeptonLTChecker("LTMuons","goodMuons","","good","tightMatrix");//3rd is prefix
+  //LTMuons->addProduct("tightMatrixMuons");
+  //handler->addEventVariable("LTMuons",LTMuons);
+  //handler->addEventVariable("ISTIGHTMATRIXMUON",      new EventVariableObjectVariableVector<int>("IsTight",        "goodMuons"));
   handler->addEventVariable("NGOODMUONS",             new EventVariableN("NGOODMUONS",                             "goodMuons"));
   handler->addEventVariable("QGOODMUONS",             new EventVariableObjectVariableVector<int>("CHARGE",         "goodMuons"));
   handler->addEventVariable("PTGOODMUONS",            new EventVariableObjectVariableVector<double>("PT",          "goodMuons"));
@@ -390,7 +399,6 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("WDIJETMASS", new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10));
 
 
-
   // --------------------------------------------------------------------------------------------------------------
   //////////////////////
   ///Photon Variables///
@@ -480,10 +488,25 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   /////////////////////////
   handler->addEventVariable("MT", new EventVariableMT("MT", mZ,"","goodElectrons","goodMuons",""));
   //
-  EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");
+  EventVariableSumPT* LT = new EventVariableSumPT("LT","goodMuons");//sum over all leptons
   LT->addProduct("goodElectrons");
   LT->addProduct("goodTaus");
   handler->addEventVariable("LT",LT);
+  //
+  EventVariableSumPT* LT2 = new EventVariableSumPT("LT2","goodMuons",2);//sum over leading 2 leptons only! (if present)
+  LT2->addProduct("goodElectrons");
+  LT2->addProduct("goodTaus");
+  handler->addEventVariable("LT2",LT2);
+  //
+  EventVariableSumPT* LT3 = new EventVariableSumPT("LT3","goodMuons",3);//sum over leading 3 leptons only! (if present)
+  LT3->addProduct("goodElectrons");
+  LT3->addProduct("goodTaus");
+  handler->addEventVariable("LT3",LT3);
+  //
+  EventVariableSumPT* LT4 = new EventVariableSumPT("LT4","goodMuons",4);//sum over leading 4 leptons only! (if present)
+  LT4->addProduct("goodElectrons");
+  LT4->addProduct("goodTaus");
+  handler->addEventVariable("LT4",LT4);
   //
   EventVariableSumPT* ST = new EventVariableSumPT("ST","goodMuons");
   ST->addProduct("goodElectrons");
@@ -927,44 +950,52 @@ void setupMCproducts(BaseHandler* handler) {
 	handler->addObjectVariable("STATUS1", new ObjectVariableValue<int>("status",1));
 
 
-	ObjectVariableValueInList<int>* isBoson = new ObjectVariableValueInList<int>("pdgId",23);
-	isBoson->addValue(24);
-	isBoson->addValue(-24);
-	isBoson->addValue(25);
+	ObjectVariableValueInList<int>* isBoson = new ObjectVariableValueInList<int>("pdgId",23);//Z
+	isBoson->addValue(24);//W
+	isBoson->addValue(-24);//W
+	isBoson->addValue(25);//H
+	isBoson->addValue(42);//LQ
+	isBoson->addValue(-42);//LQ
 	handler->addObjectVariable("isBOSON",isBoson);
 
 
-	handler->addProduct("BOSONS","ALLMC");
+	handler->addProduct(   "BOSONS","ALLMC");
 	handler->addProductCut("BOSONS","isBOSON");
 
-	handler->addProduct("MCELECTRONS","ALLMC");
+	handler->addProduct(   "MCELECTRONS","ALLMC");
 	handler->addProductCut("MCELECTRONS","ELECTRONPDGID");
 	handler->addProductCut("MCELECTRONS","isLastCopy");
-	handler->addProduct("MCMUONS","ALLMC");
+	//
+	handler->addProduct(   "MCMUONS","ALLMC");
 	handler->addProductCut("MCMUONS","MUONPDGID");
 	handler->addProductCut("MCMUONS","isLastCopy");
-	handler->addProduct("MCTAUS","ALLMC");
+	//
+	handler->addProduct(   "MCTAUS","ALLMC");
 	handler->addProductCut("MCTAUS","TAUPDGID");
 	handler->addProductCut("MCTAUS","isLastCopy");
 
-	handler->addProduct("MCELECTRONSFROMZ","MCELECTRONS");
+	handler->addProduct(   "MCELECTRONSFROMZ","MCELECTRONS");
 	handler->addProductCut("MCELECTRONSFROMZ","MOTHERZ");
-	handler->addProduct("MCMUONSFROMZ","MCMUONS");
+	//
+	handler->addProduct(   "MCMUONSFROMZ","MCMUONS");
 	handler->addProductCut("MCMUONSFROMZ","MOTHERZ");
 
-	handler->addProduct("MCELECTRONSFROMBOSON","MCELECTRONS");
+	handler->addProduct(   "MCELECTRONSFROMBOSON","MCELECTRONS");
 	handler->addProductCut("MCELECTRONSFROMBOSON","MOTHERBOSON");
 	handler->addProductCut("MCELECTRONSFROMBOSON","STATUS1");
-	handler->addProduct("MCMUONSFROMBOSON","MCMUONS");
+	//
+	handler->addProduct(   "MCMUONSFROMBOSON","MCMUONS");
 	handler->addProductCut("MCMUONSFROMBOSON","MOTHERBOSON");
 	handler->addProductCut("MCMUONSFROMBOSON","STATUS1");
-	handler->addProduct("MCTAUSFROMBOSON","MCTAUS");
+	//
+	handler->addProduct(   "MCTAUSFROMBOSON","MCTAUS");
 	handler->addProductCut("MCTAUSFROMBOSON","MOTHERBOSON");
 
-	handler->addProduct("MCELECTRONSFROMTAU","MCELECTRONS");
+	handler->addProduct(   "MCELECTRONSFROMTAU","MCELECTRONS");
 	handler->addProductCut("MCELECTRONSFROMTAU","MOTHERTAU");
 	handler->addProductCut("MCELECTRONSFROMTAU","STATUS1");
-	handler->addProduct("MCMUONSFROMTAU","MCMUONS");
+	//
+	handler->addProduct(   "MCMUONSFROMTAU","MCMUONS");
 	handler->addProductCut("MCMUONSFROMTAU","MOTHERTAU");
 	handler->addProductCut("MCMUONSFROMTAU","STATUS1");
 }
@@ -973,6 +1004,42 @@ void setupMCproducts(BaseHandler* handler) {
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
+  
+	//////////////////////////////////////
+	///Matrix Method: Reco-Gen Matching///  EventVariableLeptonGenChecker  produces "IsGenMatched+suffix"
+	//////////////////////////////////////
+        EventVariableLeptonGenChecker* RecoGenMuons = new EventVariableLeptonGenChecker("RecoGenMuons","goodMuons","");//3rd suffix
+	RecoGenMuons->addProduct("MCMUONSFROMBOSON");
+	RecoGenMuons->addProduct("BOSONS");//used for debugging.
+	handler->addEventVariable("RECOGENMUONS",RecoGenMuons);
+	handler->addEventVariable("ISPROMPTMUON",new EventVariableObjectVariableVector<int>("IsGenMatched","goodMuons"));
+	// ------------------------------------------------------------------------------------------------------------------------
+        EventVariableLeptonGenChecker* RecoGenElectrons = new EventVariableLeptonGenChecker("RecoGenElectrons","goodElectrons","");//3rd suffix
+	RecoGenElectrons->addProduct("MCELECTRONSFROMBOSON");
+	RecoGenElectrons->addProduct("BOSONS");//used for debugging.
+	handler->addEventVariable("RECOGENELECTRONS",RecoGenElectrons);
+	handler->addEventVariable("ISPROMPTELECTRON",new EventVariableObjectVariableVector<int>("IsGenMatched","goodElectrons"));
+	// ------------------------------------------------------------------------------------------------------------------------
+        EventVariableLeptonGenChecker* RecoGenTaus = new EventVariableLeptonGenChecker("RecoGenTaus","goodTaus","");//3rd suffix
+	RecoGenTaus->addProduct("MCTAUSFROMBOSON");
+	RecoGenTaus->addProduct("BOSONS");//used for debugging.
+	handler->addEventVariable("RECOGENTAUS",RecoGenTaus);
+	handler->addEventVariable("ISPROMPTTAU",new EventVariableObjectVariableVector<int>("IsGenMatched","goodTaus"));//WARNING!
+	// WARNING: NEED TO CHECK "ISPROMPTTAU" FOR ELE/MU->TAU FAKES! - SEE BELOW.
+	// ------------------------------------------------------------------------------------------------------------------------
+	// Gen Ele -> Reco Tau (checks for tau fakes)
+        EventVariableLeptonGenChecker* RecoTauGenEles = new EventVariableLeptonGenChecker("RecoTauGenEles","goodTaus","EleFake");//3rd suffix
+	RecoTauGenEles->addProduct("MCELECTRONS");
+	handler->addEventVariable("RECOTAUGENELES",RecoTauGenEles);
+	handler->addEventVariable("ISFAKETAUFROMELE",new EventVariableObjectVariableVector<int>("IsGenMatchedEleFake","goodTaus"));
+        // ------------------------------------------------------------------------------------------------------------------------
+	// Gen Muon -> Reco Tau (checks for tau fakes)
+        EventVariableLeptonGenChecker* RecoTauGenMus = new EventVariableLeptonGenChecker("RecoTauGenMus","goodTaus","MuFake");//3rd suffix
+	RecoTauGenMus->addProduct("MCMUONS");
+	handler->addEventVariable("RECOTAUGENMUS",RecoTauGenMus);
+	handler->addEventVariable("ISFAKETAUFROMMU",new EventVariableObjectVariableVector<int>("IsGenMatchedMuFake","goodTaus"));
+
+
 	////////////////////////
 	///MC matched leptons///
 	////////////////////////

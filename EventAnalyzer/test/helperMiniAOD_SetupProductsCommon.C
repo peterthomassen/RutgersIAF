@@ -252,24 +252,24 @@ void setupProductsCommon(BaseHandler* handler)
   //
   handler->addProductSelfComparison("recoVerticesDrCleaned",deltaR0p05);
   //
-  handler->addProductComparison("basicTracks","goodMuons",deltaR0p3);
-  handler->addProductComparison("basicTracks","goodElectrons",deltaR0p3);
-  handler->addProductComparison("basicTracks","goodTaus",deltaR0p3);
+  handler->addProductComparison("basicTracks", "goodMuons",     deltaR0p3);//clean basicTracks
+  handler->addProductComparison("basicTracks", "goodElectrons", deltaR0p3);
+  handler->addProductComparison("basicTracks", "goodTaus",      deltaR0p3);
 
-  handler->addProductComparison("goodPhotons","goodMuons",deltaR0p1);
-  handler->addProductComparison("goodPhotons","goodElectrons",deltaR0p1);
-  handler->addProductComparison("goodPhotons","goodTaus",deltaR0p1);
-  handler->addProductComparison("goodPhotons","goodTracks",deltaR0p1);
+  handler->addProductComparison("goodPhotons", "goodMuons",     deltaR0p1);//clean goodPhotons 
+  handler->addProductComparison("goodPhotons", "goodElectrons", deltaR0p1);
+  handler->addProductComparison("goodPhotons", "goodTaus",      deltaR0p1);
+  handler->addProductComparison("goodPhotons", "goodTracks",    deltaR0p1);
 
-  handler->addProductComparison("basicJets","goodMuons",deltaR0p3);
-  handler->addProductComparison("basicJets","goodElectrons",deltaR0p3);
+  handler->addProductComparison("basicJets",   "goodMuons",     deltaR0p3);//clean basicJets
+  handler->addProductComparison("basicJets",   "goodElectrons", deltaR0p3);
 
-  handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
-
-  handler->addProductComparison("goodForwardJets","goodMuons",deltaR0p4);
-  handler->addProductComparison("goodForwardJets","goodElectrons",deltaR0p4);
-  handler->addProductComparison("goodForwardJets","goodTaus",deltaR0p4);
+  // For consistencey, these are done in helperMiniAOD_SetupProductsMatrix.C  or  helperMiniAOD_SetupProductsRA7.C
+  //handler->addProductComparison("goodJets","goodMuons",deltaR0p4);
+  //handler->addProductComparison("goodJets","goodElectrons",deltaR0p4);
+  //handler->addProductComparison("goodForwardJets","goodMuons",deltaR0p4);
+  //handler->addProductComparison("goodForwardJets","goodElectrons",deltaR0p4);
+  //handler->addProductComparison("goodForwardJets","goodTaus",deltaR0p4);
 
 
   // --------------------------------------------------------------------------------------------------------------

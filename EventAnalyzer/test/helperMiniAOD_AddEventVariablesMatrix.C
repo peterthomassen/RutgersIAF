@@ -7,6 +7,10 @@
 
 void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ = 91, double zWidth = 10, double mW = 80.385)
 {
+
+  // Loose Matrix Muons (Good Muons)
+  handler->addEventVariable("ISTIGHTMATRIXMUON",            new EventVariableObjectVariableVector<int>("IsTight",     "goodMuons"));
+  //
   // Tight Matrix Muons 
   handler->addEventVariable("NTIGHTMATRIXMUONS",            new EventVariableN("NTIGHTMATRIXMUONS",                   "tightMatrixMuons"));
   handler->addEventVariable("QTIGHTMATRIXMUONS",            new EventVariableObjectVariableVector<int>("CHARGE",      "tightMatrixMuons"));
@@ -20,6 +24,9 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   handler->addEventVariable("PTTIGHTMATRIXELECTRONS",       new EventVariableObjectVariableVector<double>("PT",       "tightMatrixElectrons"));
   handler->addEventVariable("ETATIGHTMATRIXELECTRONS",      new EventVariableObjectVariableVector<double>("ETA",      "tightMatrixElectrons"));
   handler->addEventVariable("PHITIGHTMATRIXELECTRONS",      new EventVariableObjectVariableVector<double>("PHI",      "tightMatrixElectrons"));
+
+  // Loose Matrix Electrons (Good Electrons)
+  handler->addEventVariable("ISTIGHTMATRIXELECTRON",        new EventVariableObjectVariableVector<int>("IsTight",     "goodElectrons"));
   //
   // HEEP ID Electrons
   handler->addEventVariable("NHEEPIDELECTRONS",             new EventVariableN("NHEEPIDELECTRONS",                    "heepIDElectrons"));
@@ -32,6 +39,9 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   handler->addEventVariable("PTRELHEEPIDELECTRONS",         new EventVariableObjectVariableVector<double>("ptRel",    "heepIDElectrons"));
   handler->addEventVariable("RELISOHEEPIDELECTRONS",        new EventVariableObjectVariableVector<double>("RELISO",   "heepIDElectrons"));
   handler->addEventVariable("RELISOCUTIDHEEPIDELECTRONS",   new EventVariableObjectVariableVector<double>("ELECTRON_RELISO", "heepIDElectrons"));
+
+  // Loose Matrix Taus (Good Taus)
+  handler->addEventVariable("ISTIGHTMATRIXTAU",             new EventVariableObjectVariableVector<int>("IsTight",     "goodTaus"));
   //
   // Tight Matrix Taus
   handler->addEventVariable("NTIGHTMATRIXTAUS",             new EventVariableN("NTIGHTMATRIXTAUS",                    "tightMatrixTaus"));
@@ -46,6 +56,28 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   handler->addEventVariable("PTALTTIGHTMATRIXTAUS",         new EventVariableObjectVariableVector<double>("PT",       "altTightMatrixTaus"));
   handler->addEventVariable("ETAALTTIGHTMATRIXTAUS",        new EventVariableObjectVariableVector<double>("ETA",      "altTightMatrixTaus"));
   handler->addEventVariable("PHIALTTIGHTMATRIXTAUS",        new EventVariableObjectVariableVector<double>("PHI",      "altTightMatrixTaus"));
+
+
+  // matrixJetsLA : Non-tau-DR cleaned jet variables
+  handler->addEventVariable("NMATRIXJETSLA",          new EventVariableN("NMATRIXJETSLA",                      "matrixJetsLA"));
+  handler->addEventVariable("PTMATRIXJETSLA",         new EventVariableObjectVariableVector<double>("PT",      "matrixJetsLA"));
+  handler->addEventVariable("ETAMATRIXJETSLA",        new EventVariableObjectVariableVector<double>("ETA",     "matrixJetsLA"));
+  handler->addEventVariable("PHIMATRIXJETSLA",        new EventVariableObjectVariableVector<double>("PHI",     "matrixJetsLA"));
+  handler->addEventVariable("CSVRAWMATRIXJETSLA",     new EventVariableObjectVariableVector<double>("CSVraw",  "matrixJetsLA"));
+  handler->addEventVariable("JPRAWMATRIXJETSLA",      new EventVariableObjectVariableVector<double>("JPraw",   "matrixJetsLA"));
+  handler->addEventVariable("CMVARAWMATRIXJETSLA",    new EventVariableObjectVariableVector<double>("cMVAraw", "matrixJetsLA"));
+  //
+  handler->addEventVariable("NMATRIXFORWARDJETSLA",   new EventVariableN("NMATRIXFORWARDJETSLA",               "matrixForwardJetsLA"));
+  handler->addEventVariable("PTMATRIXFORWARDJETSLA",  new EventVariableObjectVariableVector<double>("PT",      "matrixForwardJetsLA"));
+  handler->addEventVariable("ETAMATRIXFORWARDJETSLA", new EventVariableObjectVariableVector<double>("ETA",     "matrixForwardJetsLA"));
+  handler->addEventVariable("PHIMATRIXFORWARDJETSLA", new EventVariableObjectVariableVector<double>("PHI",     "matrixForwardJetsLA"));
+  //
+  handler->addEventVariable("HTLA",         new EventVariableSumPT("HTLA",     "matrixJetsLA"));
+  handler->addEventVariable("HTCSVLLA",     new EventVariableSumPT("HTCSVLLA", "matrixbJetsCSVLLA"));
+  handler->addEventVariable("HTCSVMLA",     new EventVariableSumPT("HTCSVMLA", "matrixbJetsCSVMLA"));
+  handler->addEventVariable("NBJETSCSVLLA", new EventVariableN("NBJETSCSVLLA", "matrixbJetsCSVLLA"));
+  handler->addEventVariable("NBJETSCSVMLA", new EventVariableN("NBJETSCSVMLA", "matrixbJetsCSVMLA"));
+  handler->addEventVariable("WDIJETMASSLA", new EventVariablePairMass("WDIJETMASSLA", "matrixJetsLA", "WJETLA", mW, 10));
 
 
   //matrix method weights
