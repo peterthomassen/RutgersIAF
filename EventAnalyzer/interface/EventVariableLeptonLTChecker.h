@@ -19,7 +19,6 @@ class EventVariableLeptonLTChecker : public EventVariable{
   TString m_loosename;
   TString m_tightname;
   std::vector<TString> m_productnames;
-  bool m_includeFakes;
 
 
 };

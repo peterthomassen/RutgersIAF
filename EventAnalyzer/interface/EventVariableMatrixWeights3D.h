@@ -16,36 +16,38 @@ class EventVariableMatrixWeights3D : public EventVariable{
 
   void ResetFakePromptRates();
   void ResetLooseTight();
-  //void SetFakePromptRates(double pt1, double pt2, double pt3, int array[3]);
-  void SetFakePromptRates(TLorentzVector, TLorentzVector, TLorentzVector, int array[3]);
+  void SetFakePromptRates(TLorentzVector, TLorentzVector, TLorentzVector, int array[3], TString);
+  void setVariablesToZero(BaseHandler*);
 
-  double mP( double pt, double eta, double jetNconst );
-  double mF( double pt, double eta, double jetNconst );
-  double eP( double pt, double eta, double jetNconst );
-  double eF( double pt, double eta, double jetNconst );
+  float mP( float, float, float, TString );
+  float mF( float, float, float, TString );
+  float eP( float, float, float, TString );
+  float eF( float, float, float, TString );
+  float tP( float, float, float, TString );
+  float tF( float, float, float, TString );
 
-  double p1, p2, p3;
-  double f1, f2, f3;
+  float p1, p2, p3;
+  float f1, f2, f3;
 
-  double nLLL;
-  double nLLT, nLTL, nTLL;
-  double nLTT, nTLT, nTTL;
-  double nTTT;
+  float nLLL;
+  float nLLT, nLTL, nTLL;
+  float nLTT, nTLT, nTTL;
+  float nTTT;
 
   //triple fake
-  double Wfff();
+  float Wfff();
   //double fake
-  double Wffp();
-  double Wfpf();
-  double Wpff();
+  float Wffp();
+  float Wfpf();
+  float Wpff();
   //single fake
-  double Wfpp();
-  double Wpfp();
-  double Wppf();
+  float Wfpp();
+  float Wpfp();
+  float Wppf();
   //zero fake
-  double Wppp();
+  float Wppp();
 
-  double WfakeBckg();
+  float WfakeBckg();
 
   ClassDef(EventVariableMatrixWeights3D,1);
 

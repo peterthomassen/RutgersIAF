@@ -19,30 +19,30 @@ class EventVariableMatrixWeights2D : public EventVariable{
   void SetFakePromptRates(TLorentzVector, TLorentzVector, int array[2], TString);
   void setVariablesToZero(BaseHandler*);
 
-  double mP( double, double, double, TString );
-  double mF( double, double, double, TString );
-  double eP( double, double, double, TString );
-  double eF( double, double, double, TString );
-  double tP( double, double, double, TString );
-  double tF( double, double, double, TString );
+  float mP( float, float, float, TString );
+  float mF( float, float, float, TString );
+  float eP( float, float, float, TString );
+  float eF( float, float, float, TString );
+  float tP( float, float, float, TString );
+  float tF( float, float, float, TString );
 
-  double p1, p2;
-  double f1, f2;
+  float p1, p2;
+  float f1, f2;
 
-  double nLL;
-  double nLT;
-  double nTL;
-  double nTT;
+  float nLL;
+  float nLT;
+  float nTL;
+  float nTT;
 
   //double fake
-  double Wff();
+  float Wff();
   //single fake
-  double Wfp();
-  double Wpf();
+  float Wfp();
+  float Wpf();
   //zero fake
-  double Wpp();
+  float Wpp();
 
-  double WfakeBckg();
+  float WfakeBckg();
 
   ClassDef(EventVariableMatrixWeights2D,1);
 

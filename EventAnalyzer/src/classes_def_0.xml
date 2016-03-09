@@ -63,13 +63,13 @@
    <version ClassVersion="1" checksum="3020714107"/>
   </class>
   <class name="EventVariableMatrixWeights3D" ClassVersion="1">
-   <version ClassVersion="1" checksum="3549782852"/>
+   <version ClassVersion="1" checksum="3770136186"/>
   </class>
   <class name="EventVariableMatrixWeights2D" ClassVersion="1">
-   <version ClassVersion="1" checksum="3549782852"/>
+   <version ClassVersion="1" checksum="2481926423"/>
   </class>
   <class name="EventVariableLeptonLTChecker" ClassVersion="1">
-   <version ClassVersion="1" checksum="902111297"/>
+   <version ClassVersion="1" checksum="3228013719"/>
   </class>
   <class name="EventVariableLeptonGenChecker" ClassVersion="1">
    <version ClassVersion="1" checksum="1186546742"/>

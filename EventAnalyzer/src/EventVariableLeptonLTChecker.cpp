@@ -33,26 +33,26 @@ bool EventVariableLeptonLTChecker::calculate(BaseHandler* handler) {
 
   // Store Tight Leptons
   // (Partial) name of tight collection: m_tightname
-  vector<double> PtVectorTight;
+  vector<float> PtVectorTight;
   for(int i = 0; i < (int)m_productnames.size(); i++) {
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     string prodname = (string)(m_productnames[i]);
     if( prodname.find(m_loosename) != std::string::npos ) continue;
     for(int j = 0; j < (int)v.size(); j++){
-      PtVectorTight.push_back( v[j]->Pt() );
+      PtVectorTight.push_back( (float)(v[j]->Pt()) );
     }
   }
 
 
   // Store Loose Leptons
   // (Partial) name of loose collection: m_loosename
-  vector<double> PtVectorLoose;
+  vector<float> PtVectorLoose;
   for(int i = 0; i < (int)m_productnames.size(); i++) {
     vector<SignatureObject*> v = handler->getProduct(m_productnames[i]);
     string prodname = (string)(m_productnames[i]);
     if( prodname.find(m_tightname) != std::string::npos ) continue;
     for(int j = 0; j < (int)v.size(); j++){
-      PtVectorLoose.push_back( v[j]->Pt() );
+      PtVectorLoose.push_back( (float)(v[j]->Pt()) );
     }
   }
 
@@ -60,7 +60,7 @@ bool EventVariableLeptonLTChecker::calculate(BaseHandler* handler) {
   vector<int> isLooseTightVector;
   for(auto it=begin(PtVectorLoose); it!=end(PtVectorLoose); ++it){
     int isMatched=0;
-    if(std::find(PtVectorTight.begin(), PtVectorTight.end(), *it) != PtVectorTight.end()) isMatched=1;
+    if(std::find(PtVectorTight.begin(), PtVectorTight.end(), (float)(*it)) != PtVectorTight.end()) isMatched=1;
     isLooseTightVector.push_back(isMatched);
   }
 
