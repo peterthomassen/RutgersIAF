@@ -80,6 +80,4 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   handler->addEventVariable("WDIJETMASSLA", new EventVariablePairMass("WDIJETMASSLA", "matrixJetsLA", "WJETLA", mW, 10));
 
 
-  //matrix method weights
-
 }

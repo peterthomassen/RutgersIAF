@@ -174,25 +174,50 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addEventVariable("LTTaus",LTTaus);
   //
   // Matrix method specials, store 3D MM weights, mark leptons that are used in this calculation.
-  EventVariableMatrixWeights3D* MatrixWeights3D = new EventVariableMatrixWeights3D("MatrixWeights3D","goodMuons","","good","tightMatrix");
+  EventVariableMatrixWeights3D* MatrixWeights3D = new EventVariableMatrixWeights3D("MatrixWeights3D","goodMuons","3D","good","tightMatrix");
   MatrixWeights3D->addProduct("goodElectrons");
   MatrixWeights3D->addProduct("goodTaus");
   MatrixWeights3D->addProduct("tightMatrixMuons");
   MatrixWeights3D->addProduct("tightMatrixElectrons");
   MatrixWeights3D->addProduct("tightMatrixTaus");
   handler->addEventVariable("MATRIXWEIGHTS3D",MatrixWeights3D);
-  handler->addEventVariable("ISMATRIX3DMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep","goodMuons"));
-  handler->addEventVariable("ISMATRIX3DELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep","goodElectrons"));
-  handler->addEventVariable("ISMATRIX3DTAUS",     new EventVariableObjectVariableVector<int>("IsMatrixLep","goodTaus"));
+  handler->addEventVariable("ISMATRIX3DMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep3D","goodMuons"));
+  handler->addEventVariable("ISMATRIX3DELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep3D","goodElectrons"));
+  handler->addEventVariable("ISMATRIX3DTAUS",     new EventVariableObjectVariableVector<int>("IsMatrixLep3D","goodTaus"));
+  // >>>> Also produces nLLL%s, Wfff%s, WfakeBckg%s, WfakeBckgPEU%s %s="3D"
   //
   // Matrix method specials, store 3D MM weights, mark leptons that are used in this calculation.
   // This does not use taus!
-  EventVariableMatrixWeights3D* MatrixWeights3DLA = new EventVariableMatrixWeights3D("MatrixWeights3DLA","goodMuons","LA","good","tightMatrix");
+  EventVariableMatrixWeights3D* MatrixWeights3DLA = new EventVariableMatrixWeights3D("MatrixWeights3DLA","goodMuons","3DLA","good","tightMatrix");
   MatrixWeights3DLA->addProduct("goodElectrons");
   MatrixWeights3DLA->addProduct("tightMatrixMuons");
   MatrixWeights3DLA->addProduct("tightMatrixElectrons");
   handler->addEventVariable("MATRIXWEIGHTS3DLA",MatrixWeights3DLA);
-  handler->addEventVariable("ISMATRIX3DLAMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLepLA","goodMuons"));
-  handler->addEventVariable("ISMATRIX3DLAELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLepLA","goodElectrons"));
+  handler->addEventVariable("ISMATRIX3DLAMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep3DLA","goodMuons"));
+  handler->addEventVariable("ISMATRIX3DLAELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep3DLA","goodElectrons"));
+  // >>>> Also produces nLLL%s, Wfff%s, WfakeBckg%s, WfakeBckgPEU%s %s="3DLA"
+  //
+  // 
+  // Matrix method specials, store 2D MM weights, mark leptons that are used in this calculation.
+  EventVariableMatrixWeights2D* MatrixWeights2D = new EventVariableMatrixWeights2D("MatrixWeights2D","goodMuons","2D","good","tightMatrix");
+  MatrixWeights2D->addProduct("goodElectrons");
+  MatrixWeights2D->addProduct("goodTaus");
+  MatrixWeights2D->addProduct("tightMatrixMuons");
+  MatrixWeights2D->addProduct("tightMatrixElectrons");
+  MatrixWeights2D->addProduct("tightMatrixTaus");
+  handler->addEventVariable("MATRIXWEIGHTS2D",MatrixWeights2D);
+  handler->addEventVariable("ISMATRIX2DMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep2D","goodMuons"));
+  handler->addEventVariable("ISMATRIX2DELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep2D","goodElectrons"));
+  handler->addEventVariable("ISMATRIX2DTAUS",     new EventVariableObjectVariableVector<int>("IsMatrixLep2D","goodTaus"));
+  //
+  // Matrix method specials, store 2D MM weights, mark leptons that are used in this calculation.
+  // This does not use taus!
+  EventVariableMatrixWeights2D* MatrixWeights2DLA = new EventVariableMatrixWeights2D("MatrixWeights2DLA","goodMuons","2DLA","good","tightMatrix");
+  MatrixWeights2DLA->addProduct("goodElectrons");
+  MatrixWeights2DLA->addProduct("tightMatrixMuons");
+  MatrixWeights2DLA->addProduct("tightMatrixElectrons");
+  handler->addEventVariable("MATRIXWEIGHTS2DLA",MatrixWeights2DLA);
+  handler->addEventVariable("ISMATRIX2DLAMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep2DLA","goodMuons"));
+  handler->addEventVariable("ISMATRIX2DLAELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep2DLA","goodElectrons"));
 
 }

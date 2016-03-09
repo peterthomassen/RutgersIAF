@@ -59,8 +59,8 @@
 //
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonLTChecker.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonGenChecker.h"
-//#include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixLeptons.h"//delete
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixWeights3D.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMatrixWeights2D.h"
 //
 #include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsCommon.C"
 #include "RutgersIAF/EventAnalyzer/test/helperMiniAOD_SetupProductsMatrix.C"
@@ -209,10 +209,6 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ////////////////////
   ///Muon Variables///
   ////////////////////
-  //EventVariableLeptonLTChecker* LTMuons = new EventVariableLeptonLTChecker("LTMuons","goodMuons","","good","tightMatrix");//3rd is prefix
-  //LTMuons->addProduct("tightMatrixMuons");
-  //handler->addEventVariable("LTMuons",LTMuons);
-  //handler->addEventVariable("ISTIGHTMATRIXMUON",      new EventVariableObjectVariableVector<int>("IsTight",        "goodMuons"));
   handler->addEventVariable("NGOODMUONS",             new EventVariableN("NGOODMUONS",                             "goodMuons"));
   handler->addEventVariable("QGOODMUONS",             new EventVariableObjectVariableVector<int>("CHARGE",         "goodMuons"));
   handler->addEventVariable("PTGOODMUONS",            new EventVariableObjectVariableVector<double>("PT",          "goodMuons"));
@@ -1029,13 +1025,15 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
 	// ------------------------------------------------------------------------------------------------------------------------
 	// Gen Ele -> Reco Tau (checks for tau fakes)
         EventVariableLeptonGenChecker* RecoTauGenEles = new EventVariableLeptonGenChecker("RecoTauGenEles","goodTaus","EleFake");//3rd suffix
-	RecoTauGenEles->addProduct("MCELECTRONS");
+	//RecoTauGenEles->addProduct("MCELECTRONS");
+	RecoTauGenEles->addProduct("MCELECTRONSFROMBOSON");
 	handler->addEventVariable("RECOTAUGENELES",RecoTauGenEles);
 	handler->addEventVariable("ISFAKETAUFROMELE",new EventVariableObjectVariableVector<int>("IsGenMatchedEleFake","goodTaus"));
         // ------------------------------------------------------------------------------------------------------------------------
 	// Gen Muon -> Reco Tau (checks for tau fakes)
         EventVariableLeptonGenChecker* RecoTauGenMus = new EventVariableLeptonGenChecker("RecoTauGenMus","goodTaus","MuFake");//3rd suffix
-	RecoTauGenMus->addProduct("MCMUONS");
+	//RecoTauGenMus->addProduct("MCMUONS");
+	RecoTauGenMus->addProduct("MCMUONSFROMBOSON");
 	handler->addEventVariable("RECOTAUGENMUS",RecoTauGenMus);
 	handler->addEventVariable("ISFAKETAUFROMMU",new EventVariableObjectVariableVector<int>("IsGenMatchedMuFake","goodTaus"));
 
