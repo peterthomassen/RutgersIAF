@@ -328,6 +328,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("QGOODTAUS",            new EventVariableObjectVariableVector<int>("CHARGE",     "goodTaus"));
   handler->addEventVariable("PTGOODTAUS",           new EventVariableObjectVariableVector<double>("PT",      "goodTaus"));
   handler->addEventVariable("ETAGOODTAUS",          new EventVariableObjectVariableVector<double>("ETA",     "goodTaus"));
+  handler->addEventVariable("PHIGOODTAUS",          new EventVariableObjectVariableVector<double>("PHI",     "goodTaus"));
   handler->addEventVariable("fakeRoleGOODTAUS",     new EventVariableObjectVariableVector<int>("fakeRole",   "goodTaus"));
   handler->addEventVariable("TOTALISOGOODTAUS",     new EventVariableObjectVariableVector<double>("TOTALISO","goodTaus"));
   handler->addEventVariable("TOTALMINIISOGOODTAUS", new EventVariableObjectVariableVector<double>("TOTALMINIISO","goodTaus"));
@@ -934,24 +935,26 @@ void setupMCproducts(BaseHandler* handler) {
 	ObjectVariableValueInList<int>* tauPDGID = new ObjectVariableValueInList<int>("pdgId",15);
 	tauPDGID->addValue(-15);
 	handler->addObjectVariable("TAUPDGID",tauPDGID);
-	handler->addObjectVariable("MOTHERZ",new ObjectVariableDescendantOf("allmc",23,handler));
-	handler->addObjectVariable("MOTHERW",new ObjectVariableDescendantOf("allmc",24,handler));
-	handler->addObjectVariable("MOTHERH",new ObjectVariableDescendantOf("allmc",25,handler));
+	//
+	handler->addObjectVariable("MOTHERZ", new ObjectVariableDescendantOf("allmc",23,handler));// allmc  23 
+	handler->addObjectVariable("MOTHERW", new ObjectVariableDescendantOf("allmc",24,handler));
+	handler->addObjectVariable("MOTHERH", new ObjectVariableDescendantOf("allmc",25,handler));
+	handler->addObjectVariable("MOTHERLQ",new ObjectVariableDescendantOf("allmc",42,handler));
+	//
 	ObjectVariableCombined* motherBoson = new ObjectVariableCombined("MOTHERZ","MOTHERW",false);
 	motherBoson->addVariable("MOTHERH");
+	motherBoson->addVariable("MOTHERLQ");
 	handler->addObjectVariable("MOTHERBOSON",motherBoson);
-	
-	handler->addObjectVariable("MOTHERTAU",new ObjectVariableDescendantOf("allmc",15,handler));
-
-	handler->addObjectVariable("STATUS1", new ObjectVariableValue<int>("status",1));
-
-
+	//
+	handler->addObjectVariable("MOTHERTAU",new ObjectVariableDescendantOf("allmc",15,handler));//15
+	handler->addObjectVariable("STATUS1",  new ObjectVariableValue<int>("status",1));
+	//
 	ObjectVariableValueInList<int>* isBoson = new ObjectVariableValueInList<int>("pdgId",23);//Z
-	isBoson->addValue(24);//W
-	isBoson->addValue(-24);//W
-	isBoson->addValue(25);//H
-	isBoson->addValue(42);//LQ
-	isBoson->addValue(-42);//LQ
+	isBoson->addValue(24);//..W
+	isBoson->addValue(-24);//.W
+	isBoson->addValue(25);//..H
+	isBoson->addValue(42);//..LQ
+	isBoson->addValue(-42);//.LQ
 	handler->addObjectVariable("isBOSON",isBoson);
 
 
@@ -1044,58 +1047,75 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
 	ObjectComparisonDeltaR* deltaR0p1 = new ObjectComparisonDeltaR(0.1);
 	ObjectComparisonMatchDeltaRCharge* mcMatch = new ObjectComparisonMatchDeltaRCharge(0.1,"genParticle");
 	
-	if(doMatching) {
-	  handler->addProductComparison("goodElectrons","MCELECTRONSFROMBOSON",mcMatch, false);
-	  handler->addProductComparison("goodMuons",    "MCMUONSFROMBOSON",    mcMatch, false);
-	  handler->addProductComparison("goodTaus",     "MCTAUSFROMBOSON",     mcMatch, false);
-	}
+	// ------------- ------------- ------------- ------------- ------------- -------------
+	// This is not used anymore
+	//if(doMatching) {
+	//  handler->addProductComparison("goodElectrons","MCELECTRONSFROMBOSON",mcMatch, false);
+	//  handler->addProductComparison("goodMuons",    "MCMUONSFROMBOSON",    mcMatch, false);
+	//  handler->addProductComparison("goodTaus",     "MCTAUSFROMBOSON",     mcMatch, false);
+	//}
+	// ------------- ------------- ------------- ------------- ------------- -------------
 
-	handler->addProduct("goodElectronsMatched","goodElectrons");
-	handler->addProduct("goodMuonsMatched",    "goodMuons");
+	handler->addProduct(          "goodElectronsMatched",    "goodElectrons");
+	handler->addProductComparison("goodElectronsMatched",    "MCELECTRONSFROMBOSON",mcMatch, false);
+	//
+	handler->addProduct(          "goodMuonsMatched",        "goodMuons");
+	handler->addProductComparison("goodMuonsMatched",        "MCMUONSFROMBOSON",    mcMatch, false);
+	//
+	handler->addProduct(          "goodElectronsFromTau",    "goodElectrons");
+	handler->addProductComparison("goodElectronsFromTau",    "MCELECTRONSFROMTAU",  mcMatch, false);
+	//
+	handler->addProduct(          "goodMuonsFromTau",        "goodMuons");
+	handler->addProductComparison("goodMuonsFromTau",        "MCMUONSFROMTAU",      mcMatch, false);
 
-	handler->addProduct("goodElectronsFromTau","goodElectrons");
-	handler->addProduct("goodMuonsFromTau",    "goodMuons");
+	handler->addProduct(          "goodElectronsNotMatched", "goodElectrons");
+	handler->addProductComparison("goodElectronsNotMatched", "goodElectronsMatched",deltaR0p1);
+	handler->addProductComparison("goodElectronsNotMatched", "goodElectronsFromTau",deltaR0p1);
+	//
+	handler->addProduct(          "goodMuonsNotMatched",     "goodMuons");
+	handler->addProductComparison("goodMuonsNotMatched",     "goodMuonsMatched",    deltaR0p1);
+	handler->addProductComparison("goodMuonsNotMatched",     "goodMuonsFromTau",    deltaR0p1);
 
-	handler->addProduct("goodElectronsNotMatched","goodElectrons");
-	handler->addProduct("goodMuonsNotMatched",    "goodMuons");
 
-
-	handler->addProductComparison("goodElectronsMatched","MCELECTRONSFROMBOSON",mcMatch, false);
-	handler->addProductComparison("goodMuonsMatched",    "MCMUONSFROMBOSON",    mcMatch, false);
-
-	handler->addProductComparison("goodElectronsFromTau","MCELECTRONSFROMTAU",  mcMatch, false);
-	handler->addProductComparison("goodMuonsFromTau",    "MCMUONSFROMTAU",      mcMatch, false);
-
-	handler->addProductComparison("goodElectronsNotMatched","goodElectronsMatched",deltaR0p1);
-	handler->addProductComparison("goodElectronsNotMatched","goodElectronsFromTau",deltaR0p1);
-	
-	handler->addProductComparison("goodMuonsNotMatched","goodMuonsMatched",deltaR0p1);
-	handler->addProductComparison("goodMuonsNotMatched","goodMuonsFromTau",deltaR0p1);
-
-	//handler->addProductComparison("basicJets","MCELECTRONSFROMBOSON",deltaR0p4);
-	//handler->addProductComparison("basicJets","MCMUONSFROMBOSON",deltaR0p4);
-
-	handler->addProduct("MCMUONSFROMZPOS","MCMUONSFROMZ");
+	handler->addProduct(   "MCMUONSFROMZPOS","MCMUONSFROMZ");
 	handler->addProductCut("MCMUONSFROMZPOS","POSITIVE");
-	handler->addProduct("MCMUONSFROMZNEG","MCMUONSFROMZ");
+	handler->addProduct(   "MCMUONSFROMZNEG","MCMUONSFROMZ");
 	handler->addProductCut("MCMUONSFROMZNEG","NEGATIVE");
 
-	handler->addProduct("MCELECTRONSFROMZPOS","MCELECTRONSFROMZ");
+	handler->addProduct(   "MCELECTRONSFROMZPOS","MCELECTRONSFROMZ");
 	handler->addProductCut("MCELECTRONSFROMZPOS","POSITIVE");
-	handler->addProduct("MCELECTRONSFROMZNEG","MCELECTRONSFROMZ");
+	handler->addProduct(   "MCELECTRONSFROMZNEG","MCELECTRONSFROMZ");
 	handler->addProductCut("MCELECTRONSFROMZNEG","NEGATIVE");
 
-	handler->addEventVariable("N_McMuonsFromZ", new EventVariableN("N_McMuonsFromZ","MCMUONSFROMZ"));
-	handler->addEventVariable("N_McElectronsFromZ", new EventVariableN("N_McElectronsFromZ","MCELECTRONSFROMZ"));
+	handler->addEventVariable("NMCMUONSFROMZ",     new EventVariableN("NMCMUONSFROMZ",    "MCMUONSFROMZ"));
+	handler->addEventVariable("NMCELECTRONSFROMZ", new EventVariableN("NMCELECTRONSFROMZ","MCELECTRONSFROMZ"));
 
-	handler->addEventVariable("N_McTausFromBoson", new EventVariableN("N_McTausFromBoson","MCTAUSFROMBOSON"));
-	handler->addEventVariable("N_McMuonsFromBoson", new EventVariableN("N_McMuonsFromBoson","MCMUONSFROMBOSON"));
-	handler->addEventVariable("N_McElectronsFromBoson", new EventVariableN("N_McElectronsFromBoson","MCELECTRONSFROMBOSON"));
+	handler->addEventVariable("NMCELECTRONSFROMBOSON",   new EventVariableN("NMCELECTRONSFROMBOSON",          "MCELECTRONSFROMBOSON"));
+	handler->addEventVariable("QMCELECTRONSFROMBOSON",   new EventVariableObjectVariableVector<int>("CHARGE", "MCELECTRONSFROMBOSON"));
+	handler->addEventVariable("PTMCELECTRONSFROMBOSON",  new EventVariableObjectVariableVector<double>("PT",  "MCELECTRONSFROMBOSON"));
+	handler->addEventVariable("ETAMCELECTRONSFROMBOSON", new EventVariableObjectVariableVector<double>("ETA", "MCELECTRONSFROMBOSON"));
+	handler->addEventVariable("PHIMCELECTRONSFROMBOSON", new EventVariableObjectVariableVector<double>("PHI", "MCELECTRONSFROMBOSON"));
+	//
+	handler->addEventVariable("NMCMUONSFROMBOSON",       new EventVariableN("NMCMUONSFROMBOSON",              "MCMUONSFROMBOSON"));
+	handler->addEventVariable("QMCMUONSFROMBOSON",       new EventVariableObjectVariableVector<int>("CHARGE", "MCMUONSFROMBOSON"));
+	handler->addEventVariable("PTMCMUONSFROMBOSON",      new EventVariableObjectVariableVector<double>("PT",  "MCMUONSFROMBOSON"));
+	handler->addEventVariable("ETAMCMUONSFROMBOSON",     new EventVariableObjectVariableVector<double>("ETA", "MCMUONSFROMBOSON"));
+	handler->addEventVariable("PHIMCMUONSFROMBOSON",     new EventVariableObjectVariableVector<double>("PHI", "MCMUONSFROMBOSON"));
+	//
+	handler->addEventVariable("NMCTAUSFROMBOSON",        new EventVariableN("NMCTAUSFROMBOSON",               "MCTAUSFROMBOSON"));
+	handler->addEventVariable("QMCTAUSFROMBOSON",        new EventVariableObjectVariableVector<int>("CHARGE", "MCTAUSFROMBOSON"));
+	handler->addEventVariable("PTMCTAUSFROMBOSON",       new EventVariableObjectVariableVector<double>("PT",  "MCTAUSFROMBOSON"));
+	handler->addEventVariable("ETAMCTAUSFROMBOSON",      new EventVariableObjectVariableVector<double>("ETA", "MCTAUSFROMBOSON"));
+	handler->addEventVariable("PHIMCTAUSFROMBOSON",      new EventVariableObjectVariableVector<double>("PHI", "MCTAUSFROMBOSON"));
 
-	handler->addEventVariable("twoMcMuonsFromZ", new EventVariableValue<int>("N_McMuonsFromZ",2));
-	handler->addEventVariable("twoMcElectronsFromZ", new EventVariableValue<int>("N_McElectronsFromZ",2));
+	handler->addEventVariable("HASTWOMCMUONSFROMZ",     new EventVariableValue<int>("NMCMUONSFROMZ",    2));
+	handler->addEventVariable("HASTWOMCELECTRONSFROMZ", new EventVariableValue<int>("NMCELECTRONSFROMZ",2));
 
-	handler->addEventVariable("N_bosons", new EventVariableN("N_bosons","BOSONS"));
+	handler->addEventVariable("NBOSONS",     new EventVariableN("NBOSONS",                        "BOSONS"));
+	handler->addEventVariable("PTBOSONS",    new EventVariableObjectVariableVector<double>("PT",  "BOSONS")); 
+	handler->addEventVariable("ETABOSONS",   new EventVariableObjectVariableVector<double>("ETA", "BOSONS")); 
+	handler->addEventVariable("PHIBOSONS",   new EventVariableObjectVariableVector<double>("PHI", "BOSONS")); 
+	handler->addEventVariable("PDGIDBOSONS", new EventVariableObjectVariableVector<int>( "pdgId", "BOSONS")); 
 
 	EventVariablePairMass* mumcmass = new EventVariablePairMass("MUMCMASS","MCMUONSFROMZ","MUMC_",91,15);
 	handler->addEventVariable("MUMCMASS",mumcmass);
@@ -1104,10 +1124,10 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
 
 	handler->addEventVariable("MAXGENDXY",new EventVariableObjectVariableExtreme<double>("genDxy","ALLMC"));
 
-	handler->addEventVariable("MCMUPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCMUONSFROMZPOS"));
-	handler->addEventVariable("MCMUMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCMUONSFROMZNEG"));
-	handler->addEventVariable("MCELPLUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCELECTRONSFROMZPOS"));
-	handler->addEventVariable("MCELMINUSPT",new  EventVariableObjectVariableExtreme<double>("PT","MCELECTRONSFROMZNEG"));
+	handler->addEventVariable("MCMUPLUSPT",  new EventVariableObjectVariableExtreme<double>("PT","MCMUONSFROMZPOS"));
+	handler->addEventVariable("MCMUMINUSPT", new EventVariableObjectVariableExtreme<double>("PT","MCMUONSFROMZNEG"));
+	handler->addEventVariable("MCELPLUSPT",  new EventVariableObjectVariableExtreme<double>("PT","MCELECTRONSFROMZPOS"));
+	handler->addEventVariable("MCELMINUSPT", new EventVariableObjectVariableExtreme<double>("PT","MCELECTRONSFROMZNEG"));
 
 	TF1* flatWeight = new TF1("flat","1",0,10000000);
 	handler->addEventVariable("FLATWEIGHT",new EventVariableTF1<int>("FLATWEIGHT","RUN",flatWeight));
