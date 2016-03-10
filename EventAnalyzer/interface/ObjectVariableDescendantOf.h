@@ -17,7 +17,7 @@ class SignatureObject;
 
 class ObjectVariableDescendantOf : public ObjectVariable {
  public:
- ObjectVariableDescendantOf(TString pname, int value, BaseHandler* handler, TString variable="pdgId", TString motherIndexVariable="motherIndex", int maxSteps = 30, TString name="DescendantOf"):ObjectVariable(name),m_productname(pname),m_value(value),m_handler(handler),m_variable(variable),m_motherIndexVariable(motherIndexVariable),m_maxSteps(30){}
+ ObjectVariableDescendantOf(TString pname, int value, BaseHandler* handler, TString variable="pdgId", TString motherIndexVariable="motherIndex", int maxSteps = 30, TString name="DescendantOf"):ObjectVariable(name),m_productname(pname),m_value(value),m_handler(handler),m_variable(variable),m_motherIndexVariable(motherIndexVariable),m_maxSteps(maxSteps){}
   virtual ~ObjectVariableDescendantOf() {}
 
   virtual bool calculate(SignatureObject*);
