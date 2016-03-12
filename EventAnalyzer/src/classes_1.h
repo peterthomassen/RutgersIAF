@@ -20,3 +20,4 @@
 #include "RutgersIAF/EventAnalyzer/interface/ProductMakerLeading.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariablePromptFakeWeights.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableDescendantOf.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableMotherOf.h"
