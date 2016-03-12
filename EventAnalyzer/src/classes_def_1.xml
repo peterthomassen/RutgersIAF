@@ -83,4 +83,7 @@
   <class name="ObjectVariableDescendantOf" ClassVersion="1">
    <version ClassVersion="1" checksum="329728494"/>
   </class>
+  <class name="ObjectVariableMotherOf" ClassVersion="1">
+   <version ClassVersion="1" checksum="3633904265"/>
+  </class>
 </lcgdict>
