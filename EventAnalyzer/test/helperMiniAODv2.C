@@ -1033,7 +1033,8 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
   handler->addEventVariable("ISPROMPTELECTRON",new EventVariableObjectVariableVector<int>("IsGenMatched","goodElectrons"));
   // ------------------------------------------------------------------------------------------------------------------------
   EventVariableLeptonGenChecker* RecoGenTaus = new EventVariableLeptonGenChecker("RecoGenTaus","goodTaus","");//3rd suffix
-  RecoGenTaus->addProduct("MCTAUSFROMBOSON");
+  //RecoGenTaus->addProduct("MCTAUSFROMBOSON");
+  RecoGenTaus->addProduct("MCHADRONICTAUSFROMBOSON");
   RecoGenTaus->addProduct("BOSONS");//used for debugging.
   handler->addEventVariable("RECOGENTAUS",RecoGenTaus);
   handler->addEventVariable("ISPROMPTTAU",new EventVariableObjectVariableVector<int>("IsGenMatched","goodTaus"));//WARNING!
@@ -1052,7 +1053,13 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
   RecoTauGenMus->addProduct("MCMUONSFROMBOSON");
   handler->addEventVariable("RECOTAUGENMUS",RecoTauGenMus);
   handler->addEventVariable("ISFAKETAUFROMMU",new EventVariableObjectVariableVector<int>("IsGenMatchedMuFake","goodTaus"));
-  
+  //
+  // Matrix Method Disclaimer:
+  //   Events with all prompt electrons, muons, and taus (as tagged by ISPROMPT flags) are taken from MC in the MM.
+  //   Fake taus as used in the MM mainly include "jet->tau" fakes.
+  //   Fake taus from light-leptons (ele/mu->tau fakes) are generally isolated, so should not be estimated via the MM.
+  //   The "ele/mu->tau fakes" should also be taken from MC
+  //
   
   ////////////////////////
   ///MC matched leptons///
