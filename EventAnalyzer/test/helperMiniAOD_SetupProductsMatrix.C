@@ -72,6 +72,7 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProductCut("looseMatrixTaus", "decayModeFindingNewDMs");
   handler->addProductCut("looseMatrixTaus", "againstMuonTight3");
   handler->addProductCut("looseMatrixTaus", "againstElectronTightMVA6");
+  handler->addProductCut("looseMatrixTaus", "byVLooseIsolationMVArun2v1DBnewDMwLT") ;
   //
   handler->addProduct(   "tightMatrixTaus", "looseMatrixTaus");
   handler->addProductCut("tightMatrixTaus", "byMediumIsolationMVArun2v1DBnewDMwLT") ;
