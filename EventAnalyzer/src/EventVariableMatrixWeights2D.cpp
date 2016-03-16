@@ -273,57 +273,154 @@ void EventVariableMatrixWeights2D::ResetLooseTight(){
 // ---------------------------------------------------------------------------------------------------------------------
 
 float EventVariableMatrixWeights2D::mF( float pt, float eta, float njet, TString var ){
-  float unc=0;
-  if(var=="up"     ) unc=0;
-  if(var=="down"   ) unc=0;
-  if(var=="central") unc=0;
+  float uncU=0;
+  float uncD=0;
+  if(      pt < 10 ){ uncU = 0;      uncD = 0;     }
+  else if( pt < 20 ){ uncU = 0.002;  uncD = 0.002; }
+  else if( pt < 40 ){ uncU = 0.003;  uncD = 0.004; }
+  else if( pt < 70 ){ uncU = 0.007;  uncD = 0.007; }
+  else if( pt <100 ){ uncU = 0.020;  uncD = 0.020; }
+  else if( pt <150 ){ uncU = 0.050;  uncD = 0.050; }
+  else{               uncU = 0.100;  uncD = 0.100; }
   //
-  return 0.1+unc;  
+  float central=0;
+  if(      pt < 10 ) central = 0;
+  else if( pt < 20 ) central = 0.014;
+  else if( pt < 40 ) central = 0.008;
+  else if( pt < 70 ) central = 0.014;
+  else if( pt <100 ) central = 0.040;
+  else               central = 0.100;
+  //
+  float unc=0;
+  if(var=="up"     ) unc = uncU;
+  if(var=="down"   ) unc = uncD;
+  if(var=="central") unc = 0;
+  //
+  return central+unc;
 }
 
 float EventVariableMatrixWeights2D::mP( float pt, float eta, float njet, TString var ){
-  float unc=0;
-  if(var=="up"     ) unc=0;
-  if(var=="down"   ) unc=0;
-  if(var=="central") unc=0;
+  float uncU=0;
+  float uncD=0;
+  if(      pt < 10 ){ uncU = 0;     uncD = 0;    }
+  else if( pt < 15 ){ uncU = 0.08;  uncD = 0.08; }
+  else if( pt < 20 ){ uncU = 0.05;  uncD = 0.05; }
+  else if( pt < 30 ){ uncU = 0.04;  uncD = 0.04; }
+  else if( pt < 40 ){ uncU = 0.03;  uncD = 0.03; }
+  else if( pt < 50 ){ uncU = 0.01;  uncD = 0.01; }
+  else{               uncU = 0.00;  uncD = 0.01; }
   //
-  return 0.95+unc;  
+  float central=0;
+  if(      pt < 10 ) central = 0;
+  else if( pt < 15 ) central = 0.83;
+  else if( pt < 20 ) central = 0.90;
+  else if( pt < 30 ) central = 0.94;
+  else if( pt < 40 ) central = 0.97;
+  else if( pt < 50 ) central = 0.99;
+  else               central = 1.00;
+  //
+  float unc=0;
+  if(var=="up"     ) unc = uncU;
+  if(var=="down"   ) unc = uncD;
+  if(var=="central") unc = 0;
+  //
+  return central+unc;
 }
 
 float EventVariableMatrixWeights2D::eF( float pt, float eta, float njet, TString var ){
-  float unc=0;
-  if(var=="up"     ) unc=0;
-  if(var=="down"   ) unc=0;
-  if(var=="central") unc=0;
+  float uncU=0;
+  float uncD=0;
+  if(      pt < 10 ){ uncU = 0;     uncD = 0;    }
+  else if( pt < 30 ){ uncU = 0.03;  uncD = 0.03; }
+  else if( pt <150 ){ uncU = 0.08;  uncD = 0.05; }
+  else{               uncU = 0.05;  uncD = 0.05; }
   //
-  return 0.2+unc;  
+  float central=0;
+  if(      pt < 10 ) central = 0;
+  else if( pt < 30 ) central = 0.07;
+  else if( pt <150 ) central = 0.12;
+  else               central = 0.25;
+  //
+  float unc=0;
+  if(var=="up"     ) unc = uncU;
+  if(var=="down"   ) unc = uncD;
+  if(var=="central") unc = 0;
+  //
+  return central+unc;
 }
 
 float EventVariableMatrixWeights2D::eP( float pt, float eta, float njet, TString var ){
-  float unc=0;
-  if(var=="up"     ) unc=0;
-  if(var=="down"   ) unc=0;
-  if(var=="central") unc=0;
+  float uncU=0;
+  float uncD=0;
+  if(      pt < 10 ){ uncU = 0;     uncD = 0;    }
+  else if( pt < 15 ){ uncU = 0.10;  uncD = 0.10; }
+  else if( pt < 20 ){ uncU = 0.07;  uncD = 0.07; }
+  else if( pt < 30 ){ uncU = 0.05;  uncD = 0.05; }
+  else if( pt < 40 ){ uncU = 0.03;  uncD = 0.03; }
+  else if( pt < 50 ){ uncU = 0.03;  uncD = 0.03; }
+  else if( pt < 70 ){ uncU = 0.03;  uncD = 0.03; }
+  else{               uncU = 0.00;  uncD = 0.05; }
   //
-  return 0.90+unc;  
+  float central=0;
+  if(      pt < 10 ) central = 0;
+  else if( pt < 15 ) central = 0.65;
+  else if( pt < 20 ) central = 0.75;
+  else if( pt < 30 ) central = 0.82;
+  else if( pt < 40 ) central = 0.87;
+  else if( pt < 50 ) central = 0.90;
+  else if( pt < 70 ) central = 0.95;
+  else               central = 1.00;
+  //
+  float unc=0;
+  if(var=="up"     ) unc = uncU;
+  if(var=="down"   ) unc = uncD;
+  if(var=="central") unc = 0;
+  //
+  return central+unc;
 }
 
 float EventVariableMatrixWeights2D::tF( float pt, float eta, float njet, TString var ){
-  float unc=0;
-  if(var=="up"     ) unc=0;
-  if(var=="down"   ) unc=0;
-  if(var=="central") unc=0;
+  float uncU=0;
+  float uncD=0;
+  if(      pt < 20 ){ uncU = 0;     uncD = 0;    }
+  else if( pt < 40 ){ uncU = 0.05;  uncD = 0.05; }
+  else if( pt <150 ){ uncU = 0.05;  uncD = 0.05; }
+  else{               uncU = 0.05;  uncD = 0.05; }
   //
-  return 0.25+unc;
+  float central=0;
+  if(      pt < 20 ) central = 0;
+  else if( pt < 40 ) central = 0.25;
+  else if( pt <150 ) central = 0.20;
+  else               central = 0.30;
+  //
+  float unc=0;
+  if(var=="up"     ) unc = uncU;
+  if(var=="down"   ) unc = uncD;
+  if(var=="central") unc = 0;
+  //
+  return central+unc;
 }
 
 float EventVariableMatrixWeights2D::tP( float pt, float eta, float njet, TString var ){
-  float unc=0;
-  if(var=="up"     ) unc=0;
-  if(var=="down"   ) unc=0;
-  if(var=="central") unc=0;
+  float uncU=0;
+  float uncD=0;
+  if(      pt < 20 ){ uncU = 0;     uncD = 0;    }
+  else if( pt < 25 ){ uncU = 0.05;  uncD = 0.05; }
+  else if( pt < 50 ){ uncU = 0.05;  uncD = 0.05; }
+  else{               uncU = 0.05;  uncD = 0.05; }
   //
-  return 0.85+unc;
+  float central=0;
+  if(      pt < 20 ) central = 0;
+  else if( pt < 25 ) central = 0.75;
+  else if( pt < 50 ) central = 0.85;
+  else               central = 0.95;
+  //
+  float unc=0;
+  if(var=="up"     ) unc = uncU;
+  if(var=="down"   ) unc = uncD;
+  if(var=="central") unc = 0;
+  //
+  return central+unc;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
