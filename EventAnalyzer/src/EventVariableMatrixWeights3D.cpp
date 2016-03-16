@@ -148,6 +148,16 @@ bool EventVariableMatrixWeights3D::calculate(BaseHandler* handler) {
     handler->setVariable( TString::Format("Wppf%s",      m_suffix.Data()), Wppf()      );//single fake
     handler->setVariable( TString::Format("Wppp%s",      m_suffix.Data()), Wppp()      );//    no fake
     handler->setVariable( TString::Format("WfakeBckg%s", m_suffix.Data()), WfakeBckg() );// total fake
+    // More info for debugging
+    int LeptonTypeVal = LeptonType[0]*(int)100+LeptonType[1]*(int)10+LeptonType[2];
+    handler->setVariable( TString::Format("LeptonTypeVal%s",  m_suffix.Data()), LeptonTypeVal );//Lepton type specifier
+    handler->setVariable( TString::Format("p1%s",             m_suffix.Data()), p1            );//p1 value - these are globally defined & calculated.
+    handler->setVariable( TString::Format("p2%s",             m_suffix.Data()), p2            );//p2 value
+    handler->setVariable( TString::Format("p3%s",             m_suffix.Data()), p3            );//p3 value
+    handler->setVariable( TString::Format("f1%s",             m_suffix.Data()), f1            );//f1 value
+    handler->setVariable( TString::Format("f2%s",             m_suffix.Data()), f2            );//f2 value
+    handler->setVariable( TString::Format("f3%s",             m_suffix.Data()), f3            );//f3 value
+    //
     //
     // Store variation weights (just the final fake-bckg weights)
     //  We need p/f systematics as well (12 new WfakeBckg values, one for each muon,electron,tau P/F rate variation):
