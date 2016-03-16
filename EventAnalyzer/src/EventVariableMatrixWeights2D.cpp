@@ -293,7 +293,7 @@ float EventVariableMatrixWeights2D::mF( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -321,7 +321,7 @@ float EventVariableMatrixWeights2D::mP( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -343,7 +343,7 @@ float EventVariableMatrixWeights2D::eF( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -373,7 +373,7 @@ float EventVariableMatrixWeights2D::eP( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -395,7 +395,7 @@ float EventVariableMatrixWeights2D::tF( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -417,7 +417,7 @@ float EventVariableMatrixWeights2D::tP( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;

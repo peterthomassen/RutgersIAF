@@ -315,7 +315,7 @@ float EventVariableMatrixWeights3D::mF( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;  
@@ -343,7 +343,7 @@ float EventVariableMatrixWeights3D::mP( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -365,7 +365,7 @@ float EventVariableMatrixWeights3D::eF( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;  
@@ -395,7 +395,7 @@ float EventVariableMatrixWeights3D::eP( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -417,7 +417,7 @@ float EventVariableMatrixWeights3D::tF( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
@@ -439,7 +439,7 @@ float EventVariableMatrixWeights3D::tP( float pt, float eta, float njet, TString
   //
   float unc=0;
   if(var=="up"     ) unc = uncU;
-  if(var=="down"   ) unc = uncD;
+  if(var=="down"   ) unc = uncD*(-1.0);
   if(var=="central") unc = 0;
   //
   return central+unc;
