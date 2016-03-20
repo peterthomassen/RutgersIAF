@@ -21,3 +21,4 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariablePromptFakeWeights.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableDescendantOf.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableMotherOf.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableConeConstituents.h"

@@ -185,6 +185,16 @@ void setupObjectVariables(BaseHandler* handler){
   //
   //handler->addObjectVariable("MUON_GOODSEGCOM",new ObjectVariableCombined("MUON_GOODGLOBALSEGCOM","MUON_SEGCOM0p451",false));
   // <<<<
+  //
+  handler->addObjectVariable("PFJETCONST",         new ObjectVariableConeConstituents(0.4,   0, 10, 2.5, handler,true,"numberOfConstituents"));
+  handler->addObjectVariable("PFJETCHMULT",        new ObjectVariableConeConstituents(0.4,   0, 10, 2.5, handler,true,"chargedMultiplicity"));
+  handler->addObjectVariable("PFJETCHHADMULT",     new ObjectVariableConeConstituents(0.4,   0, 10, 2.5, handler,true,"chargedHadronMultiplicity"));
+  handler->addObjectVariable("PFCANDCONE0P3TO1P0", new ObjectVariableConeConstituents(1.0, 0.3,  1, 2.5, handler,false));
+  handler->addObjectVariable("PFCANDCONE0P4TO1P0", new ObjectVariableConeConstituents(1.0, 0.4,  1, 2.5, handler,false));
+  handler->addObjectVariable("PFCANDCONE0TO0P4",   new ObjectVariableConeConstituents(0.4, 0.0,  1, 2.5, handler,false));
+  handler->addObjectVariable("PFCANDCONE0P1TO0P4", new ObjectVariableConeConstituents(0.4, 0.1,  1, 2.5, handler,false));
+  handler->addObjectVariable("PFCANDCONE0TO1P0",   new ObjectVariableConeConstituents(1.0, 0.0,  1, 2.5, handler,false));
+  handler->addObjectVariable("PFCANDCONE0P1TO1P0", new ObjectVariableConeConstituents(1.0, 0.1,  1, 2.5, handler,false));
 
 
   // --------------------------------------------------------------------------------------------------------------

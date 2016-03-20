@@ -224,6 +224,23 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("goodMuonsDgoodJets",     new EventVariableDvector("goodMuons", "goodJets"));
   handler->addEventVariable("goodMuonsDgoodLeptons",  new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   //
+  handler->addEventVariable("PTPFJETGOODMUONS",                   new EventVariableObjectVariableVector<double>("PFJETCONSTSUMET",          "goodMuons"));
+  handler->addEventVariable("NPFJETCONSTGOODMUONS",               new EventVariableObjectVariableVector<int>(   "PFJETCONSTN",              "goodMuons"));
+  handler->addEventVariable("NPFJETCHMULTGOODMUONS",              new EventVariableObjectVariableVector<int>(   "PFJETCHMULTN",             "goodMuons"));
+  handler->addEventVariable("NPFJETCHHADMULTGOODMUONS",           new EventVariableObjectVariableVector<int>(   "PFJETCHHADMULTN",          "goodMuons"));
+  handler->addEventVariable("NPFCANDCONE0P3TO1P0GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P3TO1P0N",      "goodMuons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P3TO1P0GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P3TO1P0SUMET",  "goodMuons"));
+  handler->addEventVariable("NPFCANDCONE0P4TO1P0GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P4TO1P0N",      "goodMuons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P4TO1P0GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P4TO1P0SUMET",  "goodMuons"));
+  handler->addEventVariable("NPFCANDCONE0P1TO1P0GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO1P0N",      "goodMuons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P1TO1P0GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO1P0SUMET",  "goodMuons"));
+  handler->addEventVariable("NPFCANDCONE0TO1P0GOODMUONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO1P0N",        "goodMuons"));
+  handler->addEventVariable("SUMETPFCANDCONE0TO1P0GOODMUONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO1P0SUMET"   , "goodMuons"));
+  handler->addEventVariable("NPFCANDCONE0P1TO0P4GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO0P4N",      "goodMuons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P1TO0P4GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO0P4SUMET",  "goodMuons"));
+  handler->addEventVariable("NPFCANDCONE0TO0P4GOODMUONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO0P4N",        "goodMuons"));
+  handler->addEventVariable("SUMETPFCANDCONE0TO0P4GOODMUONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO0P4SUMET",    "goodMuons"));
+  //
   handler->addEventVariable("QBASICMUONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicMuons"));
   handler->addEventVariable("PTBASICMUONS",      new EventVariableObjectVariableVector<double>("PT",     "basicMuons"));
   handler->addEventVariable("ETABASICMUONS",     new EventVariableObjectVariableVector<double>("ETA",    "basicMuons"));
@@ -280,6 +297,23 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("goodElectronsDgoodPhotons", new EventVariableDvector("goodElectrons", "goodPhotons"));
   handler->addEventVariable("goodElectronsDgoodJets",    new EventVariableDvector("goodElectrons", "goodJets"));
   handler->addEventVariable("goodElectronsDgoodLeptons", new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
+  //
+  handler->addEventVariable("PTPFJETGOODELECTRONS",                   new EventVariableObjectVariableVector<double>("PFJETCONSTSUMET",          "goodElectrons"));
+  handler->addEventVariable("NPFJETCONSTGOODELECTRONS",               new EventVariableObjectVariableVector<int>(   "PFJETCONSTN",              "goodElectrons"));
+  handler->addEventVariable("NPFJETCHMULTGOODELECTRONS",              new EventVariableObjectVariableVector<int>(   "PFJETCHMULTN",             "goodElectrons"));
+  handler->addEventVariable("NPFJETCHHADMULTGOODELECTRONS",           new EventVariableObjectVariableVector<int>(   "PFJETCHHADMULTN",          "goodElectrons"));
+  handler->addEventVariable("NPFCANDCONE0P3TO1P0GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P3TO1P0N",      "goodElectrons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P3TO1P0GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P3TO1P0SUMET",  "goodElectrons"));
+  handler->addEventVariable("NPFCANDCONE0P4TO1P0GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P4TO1P0N",      "goodElectrons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P4TO1P0GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P4TO1P0SUMET",  "goodElectrons"));
+  handler->addEventVariable("NPFCANDCONE0P1TO1P0GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO1P0N",      "goodElectrons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P1TO1P0GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO1P0SUMET",  "goodElectrons"));
+  handler->addEventVariable("NPFCANDCONE0TO1P0GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO1P0N",        "goodElectrons"));
+  handler->addEventVariable("SUMETPFCANDCONE0TO1P0GOODELECTRONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO1P0SUMET"   , "goodElectrons"));
+  handler->addEventVariable("NPFCANDCONE0P1TO0P4GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO0P4N",      "goodElectrons"));
+  handler->addEventVariable("SUMETPFCANDCONE0P1TO0P4GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO0P4SUMET",  "goodElectrons"));
+  handler->addEventVariable("NPFCANDCONE0TO0P4GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO0P4N",        "goodElectrons"));
+  handler->addEventVariable("SUMETPFCANDCONE0TO0P4GOODELECTRONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO0P4SUMET",    "goodElectrons"));
   //
   handler->addEventVariable("QBASICELECTRONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicElectrons"));
   handler->addEventVariable("PTBASICELECTRONS",      new EventVariableObjectVariableVector<double>("PT",     "basicElectrons"));
@@ -342,7 +376,16 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));
   //
   handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
-
+  //
+  handler->addEventVariable("NPFJETCONSTGOODTAUS",               new EventVariableObjectVariableVector<int>(   "PFJETCONSTN",              "goodTaus"));
+  handler->addEventVariable("NPFJETCHMULTGOODTAUS",              new EventVariableObjectVariableVector<int>(   "PFJETCHMULTN",             "goodTaus"));
+  handler->addEventVariable("NPFJETCHHADMULTGOODTAUS",           new EventVariableObjectVariableVector<int>(   "PFJETCHHADMULTN",          "goodTaus"));
+  handler->addEventVariable("NPFCANDCONE0P4TO1P0GOODTAUS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P4TO1P0N",      "goodTaus"));
+  handler->addEventVariable("SUMETPFCANDCONE0P4TO1P0GOODTAUS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P4TO1P0SUMET",  "goodTaus"));
+  handler->addEventVariable("NPFCANDCONE0P1TO1P0GOODTAUS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO1P0N",      "goodTaus"));
+  handler->addEventVariable("SUMETPFCANDCONE0P1TO1P0GOODTAUS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO1P0SUMET",  "goodTaus"));
+  handler->addEventVariable("NPFCANDCONE0TO1P0GOODTAUS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO1P0N",        "goodTaus"));
+  handler->addEventVariable("SUMETPFCANDCONE0TO1P0GOODTAUS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO1P0SUMET"   , "goodTaus"));
 
 
   // --------------------------------------------------------------------------------------------------------------
