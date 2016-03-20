@@ -166,10 +166,6 @@ void setupMCValidation(BaseHandler* handler) {
 	handler->addEventVariable("MCTAUSFROMZPhi", new EventVariableObjectVariableVector<double>("PHI","MCTAUSFROMZ"));	
 	
 	//Mother W
-	ObjectVariableValueInList<int>* MotherW = new ObjectVariableValueInList<int>("motherpdgId",24);
-	MotherW->addValue(-24);
-	handler->addObjectVariable("MOTHERW",MotherW);
-
 	handler->addProduct("MCELECTRONSFROMW","MCELECTRONS");
 	handler->addProductCut("MCELECTRONSFROMW","MOTHERW");
 	handler->addEventVariable("MCELECTRONSFROMWM", new EventVariableObjectVariableVector<double>("M","MCELECTRONSFROMW"));

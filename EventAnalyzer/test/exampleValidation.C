@@ -38,16 +38,16 @@ void exampleValidation(const char* infile = "/cms/multilepton/thomassen/2015/MCD
 	handler->setWriter(writer);
 		
 	// If specified, only run over a subset of events. Provide indices in iLo, iHi
-	//if(iLo > 0) handler->setMode("nEntryLow", iLo);
-	//if(iHi > 0) handler->setMode("nEntryHigh", iHi);
+	if(iLo > 0) handler->setMode("nEntryLow", iLo);
+	if(iHi > 0) handler->setMode("nEntryHigh", iHi);
 	
 	// Set up leptons with quality cuts, triggers, analysis variables, ...
-	setupMCproducts(handler);
 	setupProducts(handler);
-	setupMCvariables(handler);
-	setupMCValidation(handler);
 	setupVariables2(handler, isMC);
 	setupTriggers(handler, mode);
+	setupMCproducts(handler);
+	setupMCvariables(handler);
+	setupMCValidation(handler);
 
 	
 	// And send it running ...
