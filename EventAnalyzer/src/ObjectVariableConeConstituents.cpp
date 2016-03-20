@@ -9,7 +9,7 @@ using namespace std;
 
 bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
 {
-  bool isdebug      = true;
+  bool isdebug  = false;
   //
   int    coneConstN    = 0;
   float coneConstSumEt = 0;
