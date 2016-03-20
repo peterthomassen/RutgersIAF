@@ -13,7 +13,9 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
   //
   int    coneConstN    = 0;
   float coneConstSumEt = 0;
-  
+  //
+  if(sigObj->Pt()<=0.01) return false; //protection to suppress "Warning in <TVector3::PseudoRapidity>: transvers momentum = 0! return +/- 10e10"
+  //
   if(m_useMatchedPFJet){
     double dRmin = 9999.0;//dummy large value
     vector<SignatureObject*> jets = m_handler->getProduct("ALL");
@@ -23,21 +25,28 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
       TString inputType;
       bool hasInputType = ijet->getVariable("INPUTTYPE",inputType);
       if( !hasInputType || inputType!="jet" ) continue;
-      if( m_maxEta < fabs(ijet->Eta())   ) continue;
-      if( m_minPt  > ijet->Pt()          ) continue;
+      if( ijet->Pt() <= 0.01                ) continue;
+      if( m_minPt  > ijet->Pt()             ) continue;
+      if( m_maxEta < fabs(ijet->Eta())      ) continue;
       //
+      if(isdebug) cout<<"sigObj->Pt() / ijet->Pt() :: "<<sigObj->Pt()<<" / "<<ijet->Pt()<<endl;
       if(isdebug) cout<<"ijet->Pt(): "<<ijet->Pt()<<endl;
       //
-      TLorentzVector LepSubtractedJet = TLorentzVector(*ijet)-TLorentzVector(*sigObj);
-      double dRJet = TLorentzVector(*sigObj).DeltaR(TLorentzVector(*ijet));
+      double dRJet=TLorentzVector(*sigObj).DeltaR(TLorentzVector(*ijet));
+      //
       if(isdebug) cout<<"dRmin/dRJet/m_coneVetoSize/m_coneSize: "<<dRmin<<"/"<<dRJet<<"/"<<m_coneVetoSize<<"/"<<m_coneSize<<endl;
       //find jetDRmin within the specified DR range
+      //
       if( dRJet < dRmin && dRJet > m_coneVetoSize && dRJet < m_coneSize ){
 	dRmin = dRJet;
 	bool hasMultiplicityName = ijet->getVariable(m_multiplicityName, coneConstN);
 	if( !hasMultiplicityName ) return false;
 	coneConstSumEt=ijet->Pt();
-	if( m_coneVetoSize<0.4 ) coneConstSumEt=LepSubtractedJet.Pt();//correction assuming DR=0.4 jets
+	if( m_coneVetoSize<0.4 ){//jet-lep subtraction if lepton is within the jet cone.
+	  TLorentzVector LepSubtractedJet = TLorentzVector(*ijet)-TLorentzVector(*sigObj);
+	  if( LepSubtractedJet.Pt() <= 0  ) coneConstSumEt=0;
+	  else coneConstSumEt=LepSubtractedJet.Pt();//correction assuming DR=0.4 jets
+	}
 	// ------------------------------------------------------------------
 	// Allowed multiplicityName parameters:
 	//   electronMultiplicity
