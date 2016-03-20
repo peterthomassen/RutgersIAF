@@ -17,36 +17,36 @@ class SignatureObject;
 
 class ObjectVariableConeConstituents : public ObjectVariable {
  public:
-  ObjectVariableConeConstituents(double coneSize,
-				  double coneVetoSize,
-				  double minPt,
-				  double maxEta,
-				  BaseHandler* handler,
-				  bool useMatchedPFJet,
-				  TString multiplicityName="",
-				  TString name="CONECONST"
-				  ):
+ ObjectVariableConeConstituents(//double coneSize,
+				//double coneVetoSize,
+				double minPt,
+				//double maxEta,
+				BaseHandler* handler,
+				bool useMatchedPFJet,
+				//TString multiplicityName="",
+				TString name="CONECONST"
+				):
   ObjectVariable(name),
-    m_coneSize(coneSize),
-    m_coneVetoSize(coneVetoSize),
+    //m_coneSize(coneSize),
+    //m_coneVetoSize(coneVetoSize),
     m_minPt(minPt),
-    m_maxEta(maxEta),
+    //m_maxEta(maxEta),
     m_handler(handler),
-    m_useMatchedPFJet(useMatchedPFJet),
-    m_multiplicityName(multiplicityName){}
+    m_useMatchedPFJet(useMatchedPFJet){}
+    //m_multiplicityName(multiplicityName){}
   
   virtual ~ObjectVariableConeConstituents() {}
   
   virtual bool calculate(SignatureObject*);
   
  private:
-  double       m_coneSize;
-  double       m_coneVetoSize;
+  //double       m_coneSize;
+  //double       m_coneVetoSize;
   double       m_minPt;
-  double       m_maxEta;
+  //double       m_maxEta;
   BaseHandler* m_handler;
   bool         m_useMatchedPFJet;
-  TString      m_multiplicityName;
+  //TString      m_multiplicityName;
  
   ClassDef(ObjectVariableConeConstituents,1);
 

@@ -224,22 +224,19 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("goodMuonsDgoodJets",     new EventVariableDvector("goodMuons", "goodJets"));
   handler->addEventVariable("goodMuonsDgoodLeptons",  new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   //
-  handler->addEventVariable("PTPFJETGOODMUONS",                   new EventVariableObjectVariableVector<double>("PFJETCONSTSUMET",          "goodMuons"));
-  handler->addEventVariable("NPFJETCONSTGOODMUONS",               new EventVariableObjectVariableVector<int>(   "PFJETCONSTN",              "goodMuons"));
-  handler->addEventVariable("NPFJETCHMULTGOODMUONS",              new EventVariableObjectVariableVector<int>(   "PFJETCHMULTN",             "goodMuons"));
-  handler->addEventVariable("NPFJETCHHADMULTGOODMUONS",           new EventVariableObjectVariableVector<int>(   "PFJETCHHADMULTN",          "goodMuons"));
-  handler->addEventVariable("NPFCANDCONE0P3TO1P0GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P3TO1P0N",      "goodMuons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P3TO1P0GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P3TO1P0SUMET",  "goodMuons"));
-  handler->addEventVariable("NPFCANDCONE0P4TO1P0GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P4TO1P0N",      "goodMuons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P4TO1P0GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P4TO1P0SUMET",  "goodMuons"));
-  handler->addEventVariable("NPFCANDCONE0P1TO1P0GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO1P0N",      "goodMuons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P1TO1P0GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO1P0SUMET",  "goodMuons"));
-  handler->addEventVariable("NPFCANDCONE0TO1P0GOODMUONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO1P0N",        "goodMuons"));
-  handler->addEventVariable("SUMETPFCANDCONE0TO1P0GOODMUONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO1P0SUMET"   , "goodMuons"));
-  handler->addEventVariable("NPFCANDCONE0P1TO0P4GOODMUONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO0P4N",      "goodMuons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P1TO0P4GOODMUONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO0P4SUMET",  "goodMuons"));
-  handler->addEventVariable("NPFCANDCONE0TO0P4GOODMUONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO0P4N",        "goodMuons"));
-  handler->addEventVariable("SUMETPFCANDCONE0TO0P4GOODMUONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO0P4SUMET",    "goodMuons"));
+  // ConeConstituents for muons:
+  handler->addEventVariable("JETCORRJETPTGOODMUONS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodMuons"));
+  handler->addEventVariable("JETNOOFCONSTGOODMUONS",      new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",       "goodMuons"));
+  handler->addEventVariable("JETCHMULTGOODMUONS",         new EventVariableObjectVariableVector<int>(   "JETCHMULT",          "goodMuons"));
+  handler->addEventVariable("JETCHHADMULTGOODMUONS",      new EventVariableObjectVariableVector<int>(   "JETCHHADMULT",       "goodMuons"));
+  handler->addEventVariable("CONESUMETDR03GOODMUONS",     new EventVariableObjectVariableVector<double>("CONESUMETDR03",      "goodMuons"));
+  handler->addEventVariable("CONENDR03GOODMUONS",         new EventVariableObjectVariableVector<int>(   "CONENDR03",          "goodMuons"));
+  handler->addEventVariable("CONESUMETDR04GOODMUONS",     new EventVariableObjectVariableVector<double>("CONESUMETDR04",      "goodMuons"));
+  handler->addEventVariable("CONENDR04GOODMUONS",         new EventVariableObjectVariableVector<int>(   "CONENDR04",          "goodMuons"));
+  handler->addEventVariable("CONESUMETDR03TO07GOODMUONS", new EventVariableObjectVariableVector<double>("CONESUMETDR03to07",  "goodMuons"));
+  handler->addEventVariable("CONENDR03TO07GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONENDR03to07",      "goodMuons"));
+  handler->addEventVariable("CONESUMETDR04TO08GOODMUONS", new EventVariableObjectVariableVector<double>("CONESUMETDR04to08",  "goodMuons"));
+  handler->addEventVariable("CONENDR04TO08GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONENDR04to08",      "goodMuons"));
   //
   handler->addEventVariable("QBASICMUONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicMuons"));
   handler->addEventVariable("PTBASICMUONS",      new EventVariableObjectVariableVector<double>("PT",     "basicMuons"));
@@ -298,22 +295,19 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("goodElectronsDgoodJets",    new EventVariableDvector("goodElectrons", "goodJets"));
   handler->addEventVariable("goodElectronsDgoodLeptons", new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   //
-  handler->addEventVariable("PTPFJETGOODELECTRONS",                   new EventVariableObjectVariableVector<double>("PFJETCONSTSUMET",          "goodElectrons"));
-  handler->addEventVariable("NPFJETCONSTGOODELECTRONS",               new EventVariableObjectVariableVector<int>(   "PFJETCONSTN",              "goodElectrons"));
-  handler->addEventVariable("NPFJETCHMULTGOODELECTRONS",              new EventVariableObjectVariableVector<int>(   "PFJETCHMULTN",             "goodElectrons"));
-  handler->addEventVariable("NPFJETCHHADMULTGOODELECTRONS",           new EventVariableObjectVariableVector<int>(   "PFJETCHHADMULTN",          "goodElectrons"));
-  handler->addEventVariable("NPFCANDCONE0P3TO1P0GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P3TO1P0N",      "goodElectrons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P3TO1P0GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P3TO1P0SUMET",  "goodElectrons"));
-  handler->addEventVariable("NPFCANDCONE0P4TO1P0GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P4TO1P0N",      "goodElectrons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P4TO1P0GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P4TO1P0SUMET",  "goodElectrons"));
-  handler->addEventVariable("NPFCANDCONE0P1TO1P0GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO1P0N",      "goodElectrons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P1TO1P0GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO1P0SUMET",  "goodElectrons"));
-  handler->addEventVariable("NPFCANDCONE0TO1P0GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO1P0N",        "goodElectrons"));
-  handler->addEventVariable("SUMETPFCANDCONE0TO1P0GOODELECTRONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO1P0SUMET"   , "goodElectrons"));
-  handler->addEventVariable("NPFCANDCONE0P1TO0P4GOODELECTRONS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO0P4N",      "goodElectrons"));
-  handler->addEventVariable("SUMETPFCANDCONE0P1TO0P4GOODELECTRONS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO0P4SUMET",  "goodElectrons"));
-  handler->addEventVariable("NPFCANDCONE0TO0P4GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO0P4N",        "goodElectrons"));
-  handler->addEventVariable("SUMETPFCANDCONE0TO0P4GOODELECTRONS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO0P4SUMET",    "goodElectrons"));
+  // ConeConstituents for electrons:
+  handler->addEventVariable("JETCORRJETPTGOODELECTRONS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodElectrons"));
+  handler->addEventVariable("JETNOOFCONSTGOODELECTRONS",      new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",       "goodElectrons"));
+  handler->addEventVariable("JETCHMULTGOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "JETCHMULT",          "goodElectrons"));
+  handler->addEventVariable("JETCHHADMULTGOODELECTRONS",      new EventVariableObjectVariableVector<int>(   "JETCHHADMULT",       "goodElectrons"));
+  handler->addEventVariable("CONESUMETDR03GOODELECTRONS",     new EventVariableObjectVariableVector<double>("CONESUMETDR03",      "goodElectrons"));
+  handler->addEventVariable("CONENDR03GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "CONENDR03",          "goodElectrons"));
+  handler->addEventVariable("CONESUMETDR04GOODELECTRONS",     new EventVariableObjectVariableVector<double>("CONESUMETDR04",      "goodElectrons"));
+  handler->addEventVariable("CONENDR04GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "CONENDR04",          "goodElectrons"));
+  handler->addEventVariable("CONESUMETDR03TO07GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONESUMETDR03to07",  "goodElectrons"));
+  handler->addEventVariable("CONENDR03TO07GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONENDR03to07",      "goodElectrons"));
+  handler->addEventVariable("CONESUMETDR04TO08GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONESUMETDR04to08",  "goodElectrons"));
+  handler->addEventVariable("CONENDR04TO08GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONENDR04to08",      "goodElectrons"));
   //
   handler->addEventVariable("QBASICELECTRONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicElectrons"));
   handler->addEventVariable("PTBASICELECTRONS",      new EventVariableObjectVariableVector<double>("PT",     "basicElectrons"));
@@ -377,15 +371,19 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   //
   handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
   //
-  handler->addEventVariable("NPFJETCONSTGOODTAUS",               new EventVariableObjectVariableVector<int>(   "PFJETCONSTN",              "goodTaus"));
-  handler->addEventVariable("NPFJETCHMULTGOODTAUS",              new EventVariableObjectVariableVector<int>(   "PFJETCHMULTN",             "goodTaus"));
-  handler->addEventVariable("NPFJETCHHADMULTGOODTAUS",           new EventVariableObjectVariableVector<int>(   "PFJETCHHADMULTN",          "goodTaus"));
-  handler->addEventVariable("NPFCANDCONE0P4TO1P0GOODTAUS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P4TO1P0N",      "goodTaus"));
-  handler->addEventVariable("SUMETPFCANDCONE0P4TO1P0GOODTAUS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P4TO1P0SUMET",  "goodTaus"));
-  handler->addEventVariable("NPFCANDCONE0P1TO1P0GOODTAUS",       new EventVariableObjectVariableVector<int>(   "PFCANDCONE0P1TO1P0N",      "goodTaus"));
-  handler->addEventVariable("SUMETPFCANDCONE0P1TO1P0GOODTAUS",   new EventVariableObjectVariableVector<double>("PFCANDCONE0P1TO1P0SUMET",  "goodTaus"));
-  handler->addEventVariable("NPFCANDCONE0TO1P0GOODTAUS",         new EventVariableObjectVariableVector<int>(   "PFCANDCONE0TO1P0N",        "goodTaus"));
-  handler->addEventVariable("SUMETPFCANDCONE0TO1P0GOODTAUS",     new EventVariableObjectVariableVector<double>("PFCANDCONE0TO1P0SUMET"   , "goodTaus"));
+  // ConeConstituents for taus:
+  handler->addEventVariable("JETCORRJETPTGOODTAUS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodTaus"));
+  handler->addEventVariable("JETNOOFCONSTGOODTAUS",      new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",       "goodTaus"));
+  handler->addEventVariable("JETCHMULTGOODTAUS",         new EventVariableObjectVariableVector<int>(   "JETCHMULT",          "goodTaus"));
+  handler->addEventVariable("JETCHHADMULTGOODTAUS",      new EventVariableObjectVariableVector<int>(   "JETCHHADMULT",       "goodTaus"));
+  handler->addEventVariable("CONESUMETDR03GOODTAUS",     new EventVariableObjectVariableVector<double>("CONESUMETDR03",      "goodTaus"));
+  handler->addEventVariable("CONENDR03GOODTAUS",         new EventVariableObjectVariableVector<int>(   "CONENDR03",          "goodTaus"));
+  handler->addEventVariable("CONESUMETDR04GOODTAUS",     new EventVariableObjectVariableVector<double>("CONESUMETDR04",      "goodTaus"));
+  handler->addEventVariable("CONENDR04GOODTAUS",         new EventVariableObjectVariableVector<int>(   "CONENDR04",          "goodTaus"));
+  handler->addEventVariable("CONESUMETDR03TO07GOODTAUS", new EventVariableObjectVariableVector<double>("CONESUMETDR03to07",  "goodTaus"));
+  handler->addEventVariable("CONENDR03TO07GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONENDR03to07",      "goodTaus"));
+  handler->addEventVariable("CONESUMETDR04TO08GOODTAUS", new EventVariableObjectVariableVector<double>("CONESUMETDR04to08",  "goodTaus"));
+  handler->addEventVariable("CONENDR04TO08GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONENDR04to08",      "goodTaus"));
 
 
   // --------------------------------------------------------------------------------------------------------------
