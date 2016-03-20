@@ -7,16 +7,25 @@
 #include "helperMiniAODv2.C"
 
 void exampleAnalysisTree_v2Test(
-			 //const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent10000.root"
-			 //, const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent10000_EAout.root"
-			 const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent20000.root"
-                         , const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent20000_EAout.root"
+		       	 //const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent49552.root"
+			 //, const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent49552_EAoutTEST.root"
+			 //
+			 //const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent49552.root"
+		         //, const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent49552_EAout.root"
+			 //const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent40000.root"
+			 //, const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent40000_EAout.root"
+			 const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent40000.root"
+			 , const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent40000_EAoutTEST.root"
+			 //const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent20000.root"
+                         //, const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_local_numEvent20000_EAout.root"
 			 //const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_local_numEvent30000.root"
                          //, const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_local_numEvent30000_EAout.root"
+			 //const char* ifname="/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8_local_numEvent30000.root"
+                         //, const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8_local_numEvent30000_EAout.root"
 			 , const char* json = ""
 			 , int mode = 0
 			 , Int_t iLo = 0    // change this to start running here
-			 , Int_t iHi = 200     // change this to stop running here
+			 , Int_t iHi = 10     // change this to stop running here
 			 , Int_t noFakes = 0
 			 , bool isMC = true
 ) {
