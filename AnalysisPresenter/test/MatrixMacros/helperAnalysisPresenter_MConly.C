@@ -7,6 +7,8 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
+// ----------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------------------
 // Load library, see https://root.cern.ch/phpBB2/viewtopic.php?f=3&t=19471
 namespace {
   int loadMyLibraryTriggerFunc() {
@@ -15,7 +17,9 @@ namespace {
   }
   int loadMyLibraryTrigger = loadMyLibraryTriggerFunc();
 }
-
+// ----------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------------------
+/*
 void applyUncertaintiesAndScaleFactors(Assembler* assembler, PhysicsContribution* contribution) {
 	if(!contribution->isMC()) {
 		return;
@@ -35,26 +39,30 @@ void applyUncertaintiesAndScaleFactors(Assembler* assembler, PhysicsContribution
 		contribution->addVariation("METunc", make_pair("MET", "0.5 * (18.5*sqrt(2)) * sqrt(-log(rndm())) * cos(6.2831853 * rndm()) + _MET"));
 	}
 }
-
+*/
+// ----------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------------------
 void init(Assembler* assembler) {
 	TH1::AddDirectory(false);
 	TH1::SetDefaultSumw2(true);
 	//gStyle->SetErrorX(0);
-	
+	//
 	assembler->addBundle(new Bundle("data", "Data", false, 1));
+	//
 
-	assembler->addBundle(new Bundle("background", "Misidentified", false, 42));
 	assembler->addBundle(new Bundle("background", "presentationBundle"));
-	assembler->addBundle(new Bundle("background", "fakePresentationBundle"));
-	
-	assembler->addBundle(new Bundle("background", "TrackFakes", false, kGreen - 3));
-	assembler->addBundle(new Bundle("background", "PhotonFakes", false, kBlue - 7));
-	
-
-	assembler->addBundle(new Bundle("background", "DYJets", false, 2));
-	assembler->addBundle(new Bundle("background", "WZ", false, 38));
-	assembler->addBundle(new Bundle("background", "Higgs", false, 38));
-	assembler->addBundle(new Bundle("background", "Rare MC", false, 33));
+	//
+	assembler->addBundle(new Bundle("background", "Misidentified",                 false, 42));
+	//
+	assembler->addBundle(new Bundle("background", "QCD_Pt-170to300_MuEnrichedPt5", false, 2));
+	assembler->addBundle(new Bundle("background", "QCD_Pt-170to300_EMEnriched",    false, 2));
+	assembler->addBundle(new Bundle("background", "TTJets_DiLept",                 false, 2));
+	assembler->addBundle(new Bundle("background", "DYJets",                        false, 2));
+	assembler->addBundle(new Bundle("background", "WJetsToLNu",                    false, 2));
+	//
+	assembler->addBundle(new Bundle("background", "WZ",      false, 38 ));
+	assembler->addBundle(new Bundle("background", "Higgs",   false, 38 ));
+	assembler->addBundle(new Bundle("background", "Rare MC", false, 33 ));
 }
 
 std::string getDataFileName() {
@@ -62,38 +70,22 @@ std::string getDataFileName() {
 }
 
 void prepare(Assembler* assembler) {
-        /*
-	Bundle* fakeBundle = assembler->getBundle("Misidentified");
-	for(const auto &bundleName : {"TrackFakes", "PhotonFakes"}) {
-		Bundle* bundle = assembler->getBundle(bundleName);
-		if(bundle->getComponents().size() > 0) {
-			fakeBundle->addComponent(bundle);
-		}
-	}
-        */	
+
         Bundle* presentationBundle = assembler->getBundle("presentationBundle");
-	//for(const auto &bundleName : {"Misidentified", "WZ", "Higgs", "Rare MC", "DYJets"}) {
-	for(const auto &bundleName : {"DYJets"}) {
+	for(const auto &bundleName : {"TTJets_DiLept"}) {
 		Bundle* bundle = assembler->getBundle(bundleName);
 		if(bundle->getComponents().size() > 0) {
 			presentationBundle->addComponent(bundle);
 		}
 	}
-	/*	
-	Bundle* fakePresentationBundle = assembler->getBundle("fakePresentationBundle");
-	for(const auto &bundleName : {"TrackFakes", "PhotonFakes", "WZ", "Higgs", "Rare MC"}) {
-		Bundle* bundle = assembler->getBundle(bundleName);
-		if(bundle->getComponents().size() > 0) {
-			fakePresentationBundle->addComponent(bundle);
-		}
-	}
-	*/	
+	//
 	if(assembler->getDefaultBundle()) {
 		assembler->getDefaultBundle()->print();
 	}
 
 }
 
+/*
 void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool applyEventVetos = false) {
   cout<<"setupData RUN"<<endl;
   //std::string prefix = "/cms/thomassen/2015/Analysis/data/results/";
@@ -170,7 +162,9 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	}
 	assembler->setPileupHistogram(hPileup, hPileupUnc);
 }
+*/
 
+/*
 void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false) {
   cout<<"setupDataSingle RUN"<<endl;
 	std::string prefix = "/cms/thomassen/2014/Analysis/data/histograms/";
@@ -181,6 +175,7 @@ void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false
 	
 	assembler->addContribution(data);
 }
+*/
 
 void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = true, bool onlyTTF = false) {
   cout<<"setupBackgroundMC RUN"<<endl;
@@ -191,69 +186,35 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	std::string infix = "";
 	std::string suffix = ".simulation.root";
 	
-	double xsec_dy10to50 = 18610. * 1.32;
-	double xsec_dy50 = 6025.2 * 1.32;
-		double dxsec_dy50 = sqrt(pow(39.6, 2) + pow(225, 2));
-	// double xsec_ttS = 0; // MCM * BR: 670.3 * 0.322;
-	double xsec_ttF = 87.31; // MCM * BR: 670.3 * 0.105;
-		double dxsec_ttF = sqrt(pow(3.07, 2) + pow(3.68, 2));
-	double xsec_tt = 831.76;
-		double dxsec_tt = sqrt(pow(29.20 , 2) + pow(35.06, 2));
-	double xsec_WZTo3LNu = 4.42965; // PHYS14: 43.871*(0.3257*0.10095);
-	double xsec_WZJets = 5.263;
-	double xsec_zz = 1.212; // from MCM; // PHYS14: 1.218;
-	double xsec_ttw = 0.2043; // PHYS14: 2.232
-	double xsec_ttz = 0.2529; // PHYS14: 1.152
-	double xsec_glugluHtoZZto4L = 0.01212;
-	double xsec_vbf_HtoZZto4L = 0.001034;
-	double xsec_WWZ = 0.1651;
-	double xsec_WZZ = 0.05565;
-	double xsec_ZZZ = 0.01398;
+	double xsec_dummy    = 1;
+
 	
 	std::vector<PhysicsContribution*> mc;
 	std::vector<PhysicsContribution*> mcH;
 	std::vector<PhysicsContribution*> mcRare;
 
-	cout<<"Add DYJetsToLL_M-50"<<endl;	
-	PhysicsContribution* dyjetstollM50 = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dy50, "DYJetsToLL_M-50", false, "treeR", -1, 0);
-	cout<<"Add DYJetsToLL_M-50 - debug 2"<<endl;
-	//dyjetstollM50->setNominalWeight("genEventInfo_weight[0]");
-	cout<<"Add DYJetsToLL_M-50 - debug 3"<<endl;
-	//dyjetstollM50->addWeight("!ONZ");
-	//dyjetstollM50->addWeight("0.945"); // normalization
-	//assembler->getBundle("DYJets")->addComponent(dyjetstollM50);
-	cout<<"Add DYJetsToLL_M-50 - debug 4"<<endl;
-	mc.push_back(dyjetstollM50);
-	cout<<"Add DYJetsToLL_M-50 - debug 5"<<endl;
+	//PhysicsContribution* dyjetstollM50 = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dummy, "DYJetsToLL_M-50", false, "treeR", -1, 0);
+	//mc.push_back(dyjetstollM50);
 
-	/*
-	cout<<"Add WZTo3LNu"<<endl;
-	PhysicsContribution* wz = new PhysicsContribution("backgroundMC", prefix + "WZTo3LNu" + infix + suffix, xsec_WZTo3LNu, "WZTo3LNu", false, "treeR", -1, 0);
-	wz->setNominalWeight("genEventInfo_weight[0]");
-	wz->addWeight("!ONZ");
-	wz->addWeight("0.945"); // normalization
-	if(!assembler->getMode("noWZsystematics")) {
-		wz->addFlatUncertainty("normalizationWZ", 0.055); // size of scale factor (< statistical)
-		wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
-		wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
-	}
-	assembler->getBundle("WZ")->addComponent(wz);
-	mc.push_back(wz);
-	*/
+	PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTJets_DiLept" + infix + suffix, xsec_dummy, "TTJets_DiLept", false, "treeR", -1, 0);
+	mc.push_back(ttjetsdilep);
+
 	
 	for(auto &contribution : mc) {
 	  //contribution->addWeight("WEIGHT[0]");
-		//contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
-		//applyUncertaintiesAndScaleFactors(assembler, contribution);
-		assembler->addContribution(contribution);
+	  //contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
+	  //applyUncertaintiesAndScaleFactors(assembler, contribution);
+	  assembler->addContribution(contribution);
 	}
 
 
-	PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "DYJetsToLL_M-50" + infix + suffix, 2300, "2.3/fb@13TeV");
+	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "DYJetsToLL_M-50" + infix + suffix, 2300, "2.3/fb@13TeV");
+	PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTJets_DiLept" + infix + suffix, 2300, "2.3/fb@13TeV");
 	dataDummy->addWeight("0");
 	assembler->addContribution(dataDummy);
 }
 
+/*
 void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = true) {
         //std::string prefix = "/cms/thomassen/2015/Analysis/data/results/";
         std::string prefix = "";
@@ -339,6 +300,10 @@ void setupFakeRates(Assembler* assembler) {
 		" * (nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 	);
 }
+*/
+
+// ----------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------------------
 
 #include <TCanvas.h>
 #include <TLatex.h>
