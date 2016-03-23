@@ -89,4 +89,7 @@
   <class name="ObjectVariableConeConstituents" ClassVersion="1">
    <version ClassVersion="1" checksum="1332179439"/>
   </class>
+  <class name="ObjectComparisonDisplacedVertex" ClassVersion="1">
+   <version ClassVersion="1" checksum="1957736109"/>
+  </class>
 </lcgdict>
