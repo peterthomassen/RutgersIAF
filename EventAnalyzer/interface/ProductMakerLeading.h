@@ -4,7 +4,7 @@
 
 class ProductMakerLeading : public ProductMaker{
  public:
-  ProductMakerLeading(TString,TString,TString,int);
+  ProductMakerLeading(TString,TString,TString,int,bool);
   virtual ~ProductMakerLeading() {}
 
   virtual std::vector<SignatureObject*> makeProduct(BaseHandler*);
@@ -12,6 +12,7 @@ class ProductMakerLeading : public ProductMaker{
  private:
   TString m_varname;
   int m_nToKeep;
+  bool m_reverse;
 
   virtual std::vector<SignatureObject*> sortAndCut(std::vector<SignatureObject*>);
 

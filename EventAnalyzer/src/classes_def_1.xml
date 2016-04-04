@@ -75,7 +75,7 @@
    <version ClassVersion="1" checksum="3563230538"/>
   </class>
   <class name="ProductMakerLeading" ClassVersion="1">
-   <version ClassVersion="1" checksum="3441259708"/>
+   <version ClassVersion="1" checksum="2462775370"/>
   </class>
   <class name="EventVariablePromptFakeWeights" ClassVersion="1">
    <version ClassVersion="1" checksum="4225158186"/>
@@ -88,5 +88,11 @@
   </class>
   <class name="ObjectVariableConeConstituents" ClassVersion="1">
    <version ClassVersion="1" checksum="1332179439"/>
+  </class>
+  <class name="ObjectComparisonDisplacedVertex" ClassVersion="1">
+   <version ClassVersion="1" checksum="1957736109"/>
+  </class>
+  <class name="ObjectVariableConeCorrectedPt" ClassVersion="1">
+   <version ClassVersion="1" checksum="3786509328"/>
   </class>
 </lcgdict>

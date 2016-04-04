@@ -63,16 +63,30 @@ def SetLegendStyle( legend ) :
     legend.SetTextSize(0.045)
     legend.SetTextFont(42)
 
+# --------------------------------------------------------------------------------
+#promptfake="Prompt"
+promptfake="Fake"
+
+leptonType="Electron"
+#leptonType="Muon"
+#leptonType="Tau"
+
+#inputsample="DYJetsToLL_M-50"
+inputsample="TTJets_DiLept"
+
+#maxPt=100
+maxPt=200
+# --------------------------------------------------------------------------------
 
 # Extract the loose and tight histograms
-looseFile = TFile("LooseMuons.root","READ")
-tightFile = TFile("TightMuons.root","READ")
+looseFile = TFile("Loose"+leptonType+"s"+promptfake+".root","READ")
+tightFile = TFile("Tight"+leptonType+"s"+promptfake+".root","READ")
 
 looseFile.ls()
 tightFile.ls()
 
-looseHisto=looseFile.Get("DYJetsToLL_M-50")
-tightHisto=tightFile.Get("DYJetsToLL_M-50")
+looseHisto=looseFile.Get(inputsample)
+tightHisto=tightFile.Get(inputsample)
 
 print "Sanity Check"
 print "looseHisto: ",looseHisto.GetEntries()
@@ -92,9 +106,9 @@ can1.Clear(); can1.cd()
 SetgStyle(); can1.SetLogx(0); can1.SetLogy(1); gStyle.SetOptStat(0); can1.SetTickx(1); can1.SetTicky(1)
 SetHistoStyle(Frame)
 Frame.Draw("HIST")
-Frame.GetXaxis().SetTitle("Muon pT (GeV)")
+Frame.GetXaxis().SetTitle(leptonType+" pT (GeV)")
 Frame.GetYaxis().SetTitle("Count")
-Frame.GetXaxis().SetRangeUser(0,100)
+Frame.GetXaxis().SetRangeUser(0,maxPt)
 Frame.GetYaxis().SetRangeUser(0.1,2000)
 SetHistoStyle(looseHisto)
 looseHisto.SetLineColor(2)
@@ -103,18 +117,20 @@ SetHistoStyle(tightHisto)
 tightHisto.SetLineColor(4)
 tightHisto.Draw("HISTsame")
 can1.RedrawAxis()
-can1.Print("MCRatePlotter.pdf(")
+can1.Print("MCRatePlotter_"+leptonType+"_"+promptfake+".pdf(")
 
 can1.Clear(); can1.cd()
 SetgStyle(); can1.SetLogx(0); can1.SetLogy(0); gStyle.SetOptStat(0); can1.SetTickx(1); can1.SetTicky(1); can1.SetGridx(1); can1.SetGridy(1)
+if "Fake" in promptfake : can1.SetLogy(1)
 SetHistoStyle(Frame)
 Frame.Draw("HIST")
-Frame.GetXaxis().SetTitle("Muon pT (GeV)")
+Frame.GetXaxis().SetTitle(leptonType+" pT (GeV)")
 Frame.GetYaxis().SetTitle("Tight/Loose Ratio")
-Frame.GetXaxis().SetRangeUser(0,100)
+Frame.GetXaxis().SetRangeUser(0,maxPt)
 Frame.GetYaxis().SetRangeUser(0,1.05)
+if "Fake" in promptfake: Frame.GetYaxis().SetRangeUser(0.005,1)
 MuonRatio.SetMarkerStyle(9)
 MuonRatio.SetMarkerSize(0.8)
 MuonRatio.Draw("Psame")
 can1.RedrawAxis()
-can1.Print("MCRatePlotter.pdf)")
+can1.Print("MCRatePlotter_"+leptonType+"_"+promptfake+".pdf)")

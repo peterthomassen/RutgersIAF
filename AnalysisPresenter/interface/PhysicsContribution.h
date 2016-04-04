@@ -44,6 +44,7 @@ public:
 	std::set<PhysicsContribution::metadata_t> getMeta() const;
 	TString getSelectionString() const;
 	std::map<TString, std::pair<TString, THnBase*>> getUncertaintyMap() const;
+	void setAlias(TString, TString);
 	
 	bool isMC() const;
 	
@@ -93,6 +94,8 @@ private:
 	std::map<TString, std::pair<TString, TString>> m_variationMap;
 	std::vector<TString> m_weights;
 	std::unordered_set<std::string> m_vetoEvents;
+	std::map<TString,TString> m_aliases;
+
 	
 	THnBase* fillContentVariation(TTree*, THnBase*, std::string, TString, double scale = 1.0, TH1D* hPileupWeights = 0);
 	

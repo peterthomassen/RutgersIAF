@@ -187,6 +187,10 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	}
 	TTree* treeR = (TTree*)f.Get(m_treeRname);
 	treeR->SetWeight(1);
+
+	for(auto &alias : m_aliases){
+	  treeR->SetAlias(alias.first,alias.second);
+	}
 	
 	TH1D* hPileupMC = (TH1D*)f.Get("noCutSignature_TrueNumInteractions");
 	TH1D* hPileupWeights = 0;
@@ -767,4 +771,9 @@ void PhysicsContribution::setRanges(std::vector<std::pair<int, int>> ranges) {
 			}
 		}
 	}
+}
+
+void PhysicsContribution::setAlias(TString aliasName, TString aliasFormula)
+{
+  m_aliases[aliasName] = aliasFormula;
 }

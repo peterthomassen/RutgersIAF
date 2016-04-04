@@ -5,11 +5,12 @@ using namespace std;
 
 ClassImp(ProductMakerLeading)
 
-ProductMakerLeading::ProductMakerLeading(TString source,TString name, TString varname, int nToKeep) : ProductMaker(source,name)
+ProductMakerLeading::ProductMakerLeading(TString source,TString name, TString varname, int nToKeep, bool reverse=false) : ProductMaker(source,name)
 {
   m_varname = varname;
   m_nToKeep = nToKeep;
   m_handler = NULL;
+  m_reverse = reverse;
 }
 
 vector<SignatureObject*> ProductMakerLeading::makeProduct(BaseHandler* handler)
@@ -43,5 +44,6 @@ vector<SignatureObject*> ProductMakerLeading::sortAndCut(vector<SignatureObject*
   for(int k = 0; k < (int)source.size() && k < m_nToKeep; k++){
     product.push_back(source[k]);
   }
+  if(m_reverse)reverse(product.begin(),product.end());
   return product;
 }
