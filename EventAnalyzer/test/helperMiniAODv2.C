@@ -681,6 +681,10 @@ void setupTriggers(BaseHandler* handler,int mode){
   //    DiMuHTHLT
   //    DiEleHTHLT
   //    MuEleHTHLT
+  //    -------------- Photon Triggers
+  //    SinglePhotonHLT
+  //    DiPhoton60HLTdata <<<< for DATA only
+  //    DiPhoton85HLT
   // ------------------------------------------------------------------------
   std::vector< vector<pair<string, string> > > RutgersHLT;
   // All-muon paths
@@ -801,6 +805,21 @@ void setupTriggers(BaseHandler* handler,int mode){
   MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4"));
   RutgersHLT.push_back(MuEleHTHLT);
   // ------------------------------------------------------------------------
+  // Single and double photon paths
+  std::vector< pair<string, string> > SinglePhotonHLT;
+  SinglePhotonHLT.push_back(std::make_pair("HLT_Photon175_v1"));
+  SinglePhotonHLT.push_back(std::make_pair("HLT_Photon175_v2"));
+  SinglePhotonHLT.push_back(std::make_pair("HLT_Photon175_v3"));
+  RutgersHLT.push_back(SinglePhotonHLT);
+  std::vector< pair<string, string> > DiPhoton60HLTdata;
+  DiPhoton60HLTdata.push_back(std::make_pair("HLT_DoublePhoton60_v1"));
+  RutgersHLT.push_back(DiPhoton60HLTdata);
+  std::vector< pair<string, string> > DiPhoton85HLT;
+  DiPhoton85HLT.push_back(std::make_pair("HLT_DoublePhoton85_v1"));
+  DiPhoton85HLT.push_back(std::make_pair("HLT_DoublePhoton85_v2"));
+  RutgersHLT.push_back(DiPhoton85HLT);
+  // ------------------------------------------------------------------------
+
 
   // Store all *individual* HLTpaths and HLTpath groups as specified above:
   for(unsigned int i=0; i<RutgersHLT.size(); i++){
