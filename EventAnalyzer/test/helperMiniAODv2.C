@@ -56,6 +56,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableRename.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableConst.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableDvector.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableConeCorrectedPt.h"
 //
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonLTChecker.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLeptonGenChecker.h"
@@ -223,6 +224,8 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("goodMuonsDgoodPhotons",  new EventVariableDvector("goodMuons", "goodPhotons"));
   handler->addEventVariable("goodMuonsDgoodJets",     new EventVariableDvector("goodMuons", "goodJets"));
   handler->addEventVariable("goodMuonsDgoodLeptons",  new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
+
+  handler->addEventVariable("CONECORRECTEDPTGOODMUONS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodMuons"));
   //
   // ConeConstituents for muons:
   handler->addEventVariable("JETCORRJETPTGOODMUONS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodMuons"));
@@ -294,6 +297,8 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("goodElectronsDgoodPhotons", new EventVariableDvector("goodElectrons", "goodPhotons"));
   handler->addEventVariable("goodElectronsDgoodJets",    new EventVariableDvector("goodElectrons", "goodJets"));
   handler->addEventVariable("goodElectronsDgoodLeptons", new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
+
+  handler->addEventVariable("CONECORRECTEDPTGOODELECTRONS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodElectrons"));
   //
   // ConeConstituents for electrons:
   handler->addEventVariable("JETCORRJETPTGOODELECTRONS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodElectrons"));
@@ -371,6 +376,8 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   //
   handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
   //
+
+  handler->addEventVariable("CONECORRECTEDPTGOODTaus",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodTaus"));
   // ConeConstituents for taus:
   handler->addEventVariable("JETCORRJETPTGOODTAUS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodTaus"));
   handler->addEventVariable("JETNOOFCONSTGOODTAUS",      new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",       "goodTaus"));

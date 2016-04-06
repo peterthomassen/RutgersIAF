@@ -17,6 +17,8 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   handler->addEventVariable("PTTIGHTMATRIXMUONS",           new EventVariableObjectVariableVector<double>("PT",       "tightMatrixMuons"));
   handler->addEventVariable("ETATIGHTMATRIXMUONS",          new EventVariableObjectVariableVector<double>("ETA",      "tightMatrixMuons"));
   handler->addEventVariable("PHITIGHTMATRIXMUONS",          new EventVariableObjectVariableVector<double>("PHI",      "tightMatrixMuons"));
+
+  handler->addEventVariable("CONECORRECTEDPTTIGHTMATRIXMUONS",           new EventVariableObjectVariableVector<double>("conecorrectedPt",       "tightMatrixMuons"));
   //
   // Tight Matrix Electrons   
   handler->addEventVariable("NTIGHTMATRIXELECTRONS",        new EventVariableN("NTIGHTMATRIXELECTRONS",               "tightMatrixElectrons"));
@@ -28,6 +30,9 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   // Loose Matrix Electrons (Good Electrons)
   handler->addEventVariable("ISTIGHTMATRIXELECTRON",        new EventVariableObjectVariableVector<int>("IsTight",     "goodElectrons"));
   //
+
+  handler->addEventVariable("CONECORRECTEDPTTIGHTMATRIXELECTRONS",       new EventVariableObjectVariableVector<double>("conecorrectedPt",       "tightMatrixElectrons"));
+
   // HEEP ID Electrons
   handler->addEventVariable("NHEEPIDELECTRONS",             new EventVariableN("NHEEPIDELECTRONS",                    "heepIDElectrons"));
   handler->addEventVariable("QHEEPIDELECTRONS",             new EventVariableObjectVariableVector<int>("CHARGE",      "heepIDElectrons"));
@@ -57,7 +62,7 @@ void addEventVariablesMatrix(BaseHandler* handler,bool isMC = false, double mZ =
   handler->addEventVariable("ETAALTTIGHTMATRIXTAUS",        new EventVariableObjectVariableVector<double>("ETA",      "altTightMatrixTaus"));
   handler->addEventVariable("PHIALTTIGHTMATRIXTAUS",        new EventVariableObjectVariableVector<double>("PHI",      "altTightMatrixTaus"));
 
-
+  handler->addEventVariable("CONECORRECTEDPTTIGHTMATRIXTAUS",            new EventVariableObjectVariableVector<double>("conecorrectedPt",       "tightMatrixTaus"));
   // matrixJetsLA : Non-tau-DR cleaned jet variables
   handler->addEventVariable("NMATRIXJETSLA",          new EventVariableN("NMATRIXJETSLA",                      "matrixJetsLA"));
   handler->addEventVariable("PTMATRIXJETSLA",         new EventVariableObjectVariableVector<double>("PT",      "matrixJetsLA"));
