@@ -807,16 +807,16 @@ void setupTriggers(BaseHandler* handler,int mode){
   // ------------------------------------------------------------------------
   // Single and double photon paths
   std::vector< pair<string, string> > SinglePhotonHLT;
-  SinglePhotonHLT.push_back(std::make_pair("HLT_Photon175_v1"));
-  SinglePhotonHLT.push_back(std::make_pair("HLT_Photon175_v2"));
-  SinglePhotonHLT.push_back(std::make_pair("HLT_Photon175_v3"));
+  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v1"));
+  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v2"));
+  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v3"));
   RutgersHLT.push_back(SinglePhotonHLT);
   std::vector< pair<string, string> > DiPhoton60HLTdata;
-  DiPhoton60HLTdata.push_back(std::make_pair("HLT_DoublePhoton60_v1"));
+  DiPhoton60HLTdata.push_back(std::make_pair("DiPhoton60HLTdata","HLT_DoublePhoton60_v1"));
   RutgersHLT.push_back(DiPhoton60HLTdata);
   std::vector< pair<string, string> > DiPhoton85HLT;
-  DiPhoton85HLT.push_back(std::make_pair("HLT_DoublePhoton85_v1"));
-  DiPhoton85HLT.push_back(std::make_pair("HLT_DoublePhoton85_v2"));
+  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v1"));
+  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v2"));
   RutgersHLT.push_back(DiPhoton85HLT);
   // ------------------------------------------------------------------------
 
