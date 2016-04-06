@@ -50,6 +50,8 @@ void setupObjectVariables(BaseHandler* handler){
   //
   handler->addObjectVariable("JET",           new ObjectVariableConeConstituents(10,handler,true));//jet matching, with given jet pt cut
   handler->addObjectVariable("CONE",          new ObjectVariableConeConstituents( 1,handler,false));//PF candidates in cone, with a given pt cut
+  //
+  handler->addObjectVariable("conecorrectedPt", new ObjectVariableConeCorrectedPt("PT","MINIISO","ptRatio","ptRel",0.4,0,0,"conecorrectedPt"));
 
   // --------------------------------------------------------------------------------------------------------------
   /////////////////////////
@@ -455,8 +457,6 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("Accepted",    new ObjectVariableValue<bool>("ACCEPT", true));
   handler->addObjectVariable("WasRun",      new ObjectVariableValue<bool>("wasrun", true));
   
-  ObjectVariableConeCorrectedPt* cpt = new ObjectVariableConeCorrectedPt("PT","MINIISO","ptRatio","ptRel",0.4,0,0,"conecorrectedPt");
-  handler->addObjectVariable("conecorrectedPt",cpt);
 }
 
 
