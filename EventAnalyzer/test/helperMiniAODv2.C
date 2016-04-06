@@ -210,22 +210,22 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ////////////////////
   ///Muon Variables///
   ////////////////////
-  handler->addEventVariable("NGOODMUONS",             new EventVariableN("NGOODMUONS",                             "goodMuons"));
-  handler->addEventVariable("QGOODMUONS",             new EventVariableObjectVariableVector<int>("CHARGE",         "goodMuons"));
-  handler->addEventVariable("PTGOODMUONS",            new EventVariableObjectVariableVector<double>("PT",          "goodMuons"));
-  handler->addEventVariable("ETAGOODMUONS",           new EventVariableObjectVariableVector<double>("ETA",         "goodMuons"));
-  handler->addEventVariable("PHIGOODMUONS",           new EventVariableObjectVariableVector<double>("PHI",         "goodMuons"));
-  handler->addEventVariable("MINIISOGOODMUONS",       new EventVariableObjectVariableVector<double>("MINIISO",     "goodMuons"));
-  handler->addEventVariable("PTRATIOGOODMUONS",       new EventVariableObjectVariableVector<double>("ptRatio",     "goodMuons"));
-  handler->addEventVariable("PTRELGOODMUONS",         new EventVariableObjectVariableVector<double>("ptRel",       "goodMuons"));
-  handler->addEventVariable("RELISOGOODMUONS",        new EventVariableObjectVariableVector<double>("RELISO",      "goodMuons"));
-  handler->addEventVariable("RELISODBDR0p4GOODMUONS", new EventVariableObjectVariableVector<double>("MUON_RELISO", "goodMuons"));
-  handler->addEventVariable("fakeRoleGOODMUONS",      new EventVariableObjectVariableVector<int>("fakeRole",  "goodMuons"));
-  handler->addEventVariable("goodMuonsDgoodPhotons",  new EventVariableDvector("goodMuons", "goodPhotons"));
-  handler->addEventVariable("goodMuonsDgoodJets",     new EventVariableDvector("goodMuons", "goodJets"));
-  handler->addEventVariable("goodMuonsDgoodLeptons",  new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
-
+  handler->addEventVariable("NGOODMUONS",              new EventVariableN("NGOODMUONS",                                "goodMuons"));
+  handler->addEventVariable("QGOODMUONS",              new EventVariableObjectVariableVector<int>("CHARGE",            "goodMuons"));
+  handler->addEventVariable("PTGOODMUONS",             new EventVariableObjectVariableVector<double>("PT",             "goodMuons"));
+  handler->addEventVariable("ETAGOODMUONS",            new EventVariableObjectVariableVector<double>("ETA",            "goodMuons"));
+  handler->addEventVariable("PHIGOODMUONS",            new EventVariableObjectVariableVector<double>("PHI",            "goodMuons"));
+  handler->addEventVariable("MINIISOGOODMUONS",        new EventVariableObjectVariableVector<double>("MINIISO",        "goodMuons"));
+  handler->addEventVariable("PTRATIOGOODMUONS",        new EventVariableObjectVariableVector<double>("ptRatio",        "goodMuons"));
+  handler->addEventVariable("PTRELGOODMUONS",          new EventVariableObjectVariableVector<double>("ptRel",          "goodMuons"));
+  handler->addEventVariable("RELISOGOODMUONS",         new EventVariableObjectVariableVector<double>("RELISO",         "goodMuons"));
+  handler->addEventVariable("RELISODBDR0p4GOODMUONS",  new EventVariableObjectVariableVector<double>("MUON_RELISO",    "goodMuons"));
   handler->addEventVariable("CONECORRECTEDPTGOODMUONS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodMuons"));
+  //
+  handler->addEventVariable("fakeRoleGOODMUONS",       new EventVariableObjectVariableVector<int>("fakeRole",  "goodMuons"));
+  handler->addEventVariable("goodMuonsDgoodPhotons",   new EventVariableDvector("goodMuons", "goodPhotons"));
+  handler->addEventVariable("goodMuonsDgoodJets",      new EventVariableDvector("goodMuons", "goodJets"));
+  handler->addEventVariable("goodMuonsDgoodLeptons",   new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   //
   // ConeConstituents for muons:
   handler->addEventVariable("JETCORRJETPTGOODMUONS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodMuons"));
@@ -283,22 +283,24 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ////////////////////////
   ///Electron Variables///
   ////////////////////////
-  handler->addEventVariable("NGOODELECTRONS",            new EventVariableN("NGOODELECTRONS",                             "goodElectrons"));
-  handler->addEventVariable("QGOODELECTRONS",            new EventVariableObjectVariableVector<int>("CHARGE",             "goodElectrons"));
-  handler->addEventVariable("PTGOODELECTRONS",           new EventVariableObjectVariableVector<double>("PT",              "goodElectrons"));
-  handler->addEventVariable("ETAGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ETA",             "goodElectrons"));
-  handler->addEventVariable("PHIGOODELECTRONS",          new EventVariableObjectVariableVector<double>("PHI",             "goodElectrons"));
-  handler->addEventVariable("MINIISOGOODELECTRONS",      new EventVariableObjectVariableVector<double>("MINIISO",         "goodElectrons"));
-  handler->addEventVariable("PTRATIOGOODELECTRONS",      new EventVariableObjectVariableVector<double>("ptRatio",         "goodElectrons"));
-  handler->addEventVariable("PTRELGOODELECTRONS",        new EventVariableObjectVariableVector<double>("ptRel",           "goodElectrons"));
-  handler->addEventVariable("RELISOGOODELECTRONS",       new EventVariableObjectVariableVector<double>("RELISO",          "goodElectrons"));
-  handler->addEventVariable("RELISOCUTIDGOODELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RELISO", "goodElectrons"));
-  handler->addEventVariable("fakeRoleGOODELECTRONS",     new EventVariableObjectVariableVector<int>("fakeRole",  "goodElectrons"));
-  handler->addEventVariable("goodElectronsDgoodPhotons", new EventVariableDvector("goodElectrons", "goodPhotons"));
-  handler->addEventVariable("goodElectronsDgoodJets",    new EventVariableDvector("goodElectrons", "goodJets"));
-  handler->addEventVariable("goodElectronsDgoodLeptons", new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
+  handler->addEventVariable("NGOODELECTRONS",              new EventVariableN("NGOODELECTRONS",                             "goodElectrons"));
+  handler->addEventVariable("QGOODELECTRONS",              new EventVariableObjectVariableVector<int>("CHARGE",             "goodElectrons"));
+  handler->addEventVariable("PTGOODELECTRONS",             new EventVariableObjectVariableVector<double>("PT",              "goodElectrons"));
+  handler->addEventVariable("ETAGOODELECTRONS",            new EventVariableObjectVariableVector<double>("ETA",             "goodElectrons"));
+  handler->addEventVariable("PHIGOODELECTRONS",            new EventVariableObjectVariableVector<double>("PHI",             "goodElectrons"));
+  handler->addEventVariable("MINIISOGOODELECTRONS",        new EventVariableObjectVariableVector<double>("MINIISO",         "goodElectrons"));
+  handler->addEventVariable("PTRATIOGOODELECTRONS",        new EventVariableObjectVariableVector<double>("ptRatio",         "goodElectrons"));
+  handler->addEventVariable("PTRELGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ptRel",           "goodElectrons"));
+  handler->addEventVariable("RELISOGOODELECTRONS",         new EventVariableObjectVariableVector<double>("RELISO",          "goodElectrons"));
+  handler->addEventVariable("RELISOCUTIDGOODELECTRONS",    new EventVariableObjectVariableVector<double>("ELECTRON_RELISO", "goodElectrons"));
+  handler->addEventVariable("CONECORRECTEDPTGOODELECTRONS",new EventVariableObjectVariableVector<double>("conecorrectedPt", "goodElectrons"));
+  //
+  handler->addEventVariable("fakeRoleGOODELECTRONS",       new EventVariableObjectVariableVector<int>("fakeRole",  "goodElectrons"));
+  handler->addEventVariable("goodElectronsDgoodPhotons",   new EventVariableDvector("goodElectrons", "goodPhotons"));
+  handler->addEventVariable("goodElectronsDgoodJets",      new EventVariableDvector("goodElectrons", "goodJets"));
+  handler->addEventVariable("goodElectronsDgoodLeptons",   new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
 
-  handler->addEventVariable("CONECORRECTEDPTGOODELECTRONS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodElectrons"));
+
   //
   // ConeConstituents for electrons:
   handler->addEventVariable("JETCORRJETPTGOODELECTRONS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodElectrons"));
@@ -357,15 +359,16 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ///////////////////
   ///Tau Variables///
   ///////////////////
-  handler->addEventVariable("NGOODTAUS",            new EventVariableN("NGOODTAUS",                          "goodTaus"));
-  handler->addEventVariable("QGOODTAUS",            new EventVariableObjectVariableVector<int>("CHARGE",     "goodTaus"));
-  handler->addEventVariable("PTGOODTAUS",           new EventVariableObjectVariableVector<double>("PT",      "goodTaus"));
-  handler->addEventVariable("ETAGOODTAUS",          new EventVariableObjectVariableVector<double>("ETA",     "goodTaus"));
-  handler->addEventVariable("PHIGOODTAUS",          new EventVariableObjectVariableVector<double>("PHI",     "goodTaus"));
-  handler->addEventVariable("fakeRoleGOODTAUS",     new EventVariableObjectVariableVector<int>("fakeRole",   "goodTaus"));
-  handler->addEventVariable("TOTALISOGOODTAUS",     new EventVariableObjectVariableVector<double>("TOTALISO","goodTaus"));
-  handler->addEventVariable("TOTALMINIISOGOODTAUS", new EventVariableObjectVariableVector<double>("TOTALMINIISO","goodTaus"));
-  handler->addEventVariable("MINIISOGOODTAUS",      new EventVariableObjectVariableVector<double>("MINIISO","goodTaus"));
+  handler->addEventVariable("NGOODTAUS",              new EventVariableN("NGOODTAUS",                                 "goodTaus"));
+  handler->addEventVariable("QGOODTAUS",              new EventVariableObjectVariableVector<int>("CHARGE",            "goodTaus"));
+  handler->addEventVariable("PTGOODTAUS",             new EventVariableObjectVariableVector<double>("PT",             "goodTaus"));
+  handler->addEventVariable("ETAGOODTAUS",            new EventVariableObjectVariableVector<double>("ETA",            "goodTaus"));
+  handler->addEventVariable("PHIGOODTAUS",            new EventVariableObjectVariableVector<double>("PHI",            "goodTaus"));
+  handler->addEventVariable("fakeRoleGOODTAUS",       new EventVariableObjectVariableVector<int>("fakeRole",          "goodTaus"));
+  handler->addEventVariable("TOTALISOGOODTAUS",       new EventVariableObjectVariableVector<double>("TOTALISO",       "goodTaus"));
+  handler->addEventVariable("TOTALMINIISOGOODTAUS",   new EventVariableObjectVariableVector<double>("TOTALMINIISO",   "goodTaus"));
+  handler->addEventVariable("MINIISOGOODTAUS",        new EventVariableObjectVariableVector<double>("MINIISO",        "goodTaus"));
+  handler->addEventVariable("CONECORRECTEDPTGOODTAUS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodTaus"));
   //
   handler->addEventVariable("NBASICTAUS",        new EventVariableN("NBASICTAUS",                         "basicTaus"));
   handler->addEventVariable("PTBASICTAUS",       new EventVariableObjectVariableVector<double>("PT",      "basicTaus"));
@@ -376,8 +379,6 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   //
   handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
   //
-
-  handler->addEventVariable("CONECORRECTEDPTGOODTaus",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodTaus"));
   // ConeConstituents for taus:
   handler->addEventVariable("JETCORRJETPTGOODTAUS",      new EventVariableObjectVariableVector<double>("JETCORRJETPT",       "goodTaus"));
   handler->addEventVariable("JETNOOFCONSTGOODTAUS",      new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",       "goodTaus"));
