@@ -51,6 +51,7 @@ chmod a+x $runScript
 echo "#!/bin/bash" >> $runScript
 echo "export VO_CMS_SW_DIR=/cms/base/cmssoft" >> $runScript
 echo "export COIN_FULL_INDIRECT_RENDERING=1" >> $runScript
+echo "setenv HOME /home/"$USER >> $runScript
 echo 'echo $VO_CMS_SW_DIR' >> $runScript
 echo 'source $VO_CMS_SW_DIR/cmsset_default.sh' >> $runScript
 echo "cd $CMSDIR" >> $runScript
@@ -66,6 +67,7 @@ echo 'Requirements = (Arch == "X86_64")' >> $condorFile
 echo "Executable = $runScript" >> $condorFile
 echo "should_transfer_files = NO" >> $condorFile
 echo "Notification=never" >> $condorFile
+echo "x509userproxy = /home/"$USER"/proxy" >> $condorFile 
 echo "" >> $condorFile
 echo "" >> $condorFile
 
