@@ -19,6 +19,7 @@ bool EventVariableMT::calculate(BaseHandler* handler) {
   
   double MT = 0;
   double MLL = 0;
+  double WPT = 0;
   
   TLorentzVector ll;
   TLorentzVector wl;
@@ -192,8 +193,10 @@ bool EventVariableMT::calculate(BaseHandler* handler) {
 
   MLL = ll.M();
   MT = sqrt(2*metv.Pt() * wl.Pt() * ( 1 - cos(wl.DeltaPhi(metv))));
+  WPT = sqrt(pow(metv.X()+wl.X(),2) + pow(metv.Y()+wl.Y(),2));
   
   handler->setVariable(TString::Format("%sMT",  m_prefix.Data()), MT);
   handler->setVariable(TString::Format("%sMLL", m_prefix.Data()), MLL);
+  handler->setVariable(TString::Format("%sWPT", m_prefix.Data()), WPT);
   return true;
   }
