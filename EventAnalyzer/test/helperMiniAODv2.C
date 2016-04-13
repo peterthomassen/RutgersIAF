@@ -240,6 +240,22 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONENDR03TO07GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONENDR03to07",      "goodMuons"));
   handler->addEventVariable("CONESUMETDR04TO08GOODMUONS", new EventVariableObjectVariableVector<double>("CONESUMETDR04to08",  "goodMuons"));
   handler->addEventVariable("CONENDR04TO08GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONENDR04to08",      "goodMuons"));
+  handler->addEventVariable("CONESUMETDR01TO08GOODMUONS", new EventVariableObjectVariableVector<double>("CONESUMETDR01to08",  "goodMuons"));
+  handler->addEventVariable("CONENDR01TO08GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONENDR01to08",      "goodMuons"));
+  handler->addEventVariable("CONESUMETDR02TO08GOODMUONS", new EventVariableObjectVariableVector<double>("CONESUMETDR02to08",  "goodMuons"));
+  handler->addEventVariable("CONENDR02TO08GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONENDR02to08",      "goodMuons"));
+  handler->addEventVariable("CONECHSUMETDR03GOODMUONS",     new EventVariableObjectVariableVector<double>("CONECHSUMETDR03",      "goodMuons"));
+  handler->addEventVariable("CONECHNDR03GOODMUONS",         new EventVariableObjectVariableVector<int>(   "CONECHNDR03",          "goodMuons"));
+  handler->addEventVariable("CONECHSUMETDR04GOODMUONS",     new EventVariableObjectVariableVector<double>("CONECHSUMETDR04",      "goodMuons"));
+  handler->addEventVariable("CONECHNDR04GOODMUONS",         new EventVariableObjectVariableVector<int>(   "CONECHNDR04",          "goodMuons"));
+  handler->addEventVariable("CONECHSUMETDR03TO07GOODMUONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR03to07",  "goodMuons"));
+  handler->addEventVariable("CONECHNDR03TO07GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR03to07",      "goodMuons"));
+  handler->addEventVariable("CONECHSUMETDR04TO08GOODMUONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR04to08",  "goodMuons"));
+  handler->addEventVariable("CONECHNDR04TO08GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR04to08",      "goodMuons"));
+  handler->addEventVariable("CONECHSUMETDR01TO08GOODMUONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR01to08",  "goodMuons"));
+  handler->addEventVariable("CONECHNDR01TO08GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR01to08",      "goodMuons"));
+  handler->addEventVariable("CONECHSUMETDR02TO08GOODMUONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR02to08",  "goodMuons"));
+  handler->addEventVariable("CONECHNDR02TO08GOODMUONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR02to08",      "goodMuons"));
   //
   handler->addEventVariable("QBASICMUONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicMuons"));
   handler->addEventVariable("PTBASICMUONS",      new EventVariableObjectVariableVector<double>("PT",     "basicMuons"));
@@ -315,6 +331,22 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONENDR03TO07GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONENDR03to07",      "goodElectrons"));
   handler->addEventVariable("CONESUMETDR04TO08GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONESUMETDR04to08",  "goodElectrons"));
   handler->addEventVariable("CONENDR04TO08GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONENDR04to08",      "goodElectrons"));
+  handler->addEventVariable("CONESUMETDR01TO08GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONESUMETDR01to08",  "goodElectrons"));
+  handler->addEventVariable("CONENDR01TO08GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONENDR01to08",      "goodElectrons"));
+  handler->addEventVariable("CONESUMETDR02TO08GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONESUMETDR02to08",  "goodElectrons"));
+  handler->addEventVariable("CONENDR02TO08GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONENDR02to08",      "goodElectrons"));
+  handler->addEventVariable("CONECHSUMETDR03GOODELECTRONS",     new EventVariableObjectVariableVector<double>("CONECHSUMETDR03",      "goodElectrons"));
+  handler->addEventVariable("CONECHNDR03GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "CONECHNDR03",          "goodElectrons"));
+  handler->addEventVariable("CONECHSUMETDR04GOODELECTRONS",     new EventVariableObjectVariableVector<double>("CONECHSUMETDR04",      "goodElectrons"));
+  handler->addEventVariable("CONECHNDR04GOODELECTRONS",         new EventVariableObjectVariableVector<int>(   "CONECHNDR04",          "goodElectrons"));
+  handler->addEventVariable("CONECHSUMETDR03TO07GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR03to07",  "goodElectrons"));
+  handler->addEventVariable("CONECHNDR03TO07GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR03to07",      "goodElectrons"));
+  handler->addEventVariable("CONECHSUMETDR04TO08GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR04to08",  "goodElectrons"));
+  handler->addEventVariable("CONECHNDR04TO08GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR04to08",      "goodElectrons"));
+  handler->addEventVariable("CONECHSUMETDR01TO08GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR01to08",  "goodElectrons"));
+  handler->addEventVariable("CONECHNDR01TO08GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR01to08",      "goodElectrons"));
+  handler->addEventVariable("CONECHSUMETDR02TO08GOODELECTRONS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR02to08",  "goodElectrons"));
+  handler->addEventVariable("CONECHNDR02TO08GOODELECTRONS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR02to08",      "goodElectrons"));
   //
   handler->addEventVariable("QBASICELECTRONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicElectrons"));
   handler->addEventVariable("PTBASICELECTRONS",      new EventVariableObjectVariableVector<double>("PT",     "basicElectrons"));
@@ -392,6 +424,22 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONENDR03TO07GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONENDR03to07",      "goodTaus"));
   handler->addEventVariable("CONESUMETDR04TO08GOODTAUS", new EventVariableObjectVariableVector<double>("CONESUMETDR04to08",  "goodTaus"));
   handler->addEventVariable("CONENDR04TO08GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONENDR04to08",      "goodTaus"));
+  handler->addEventVariable("CONESUMETDR01TO08GOODTAUS", new EventVariableObjectVariableVector<double>("CONESUMETDR01to08",  "goodTaus"));
+  handler->addEventVariable("CONENDR01TO08GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONENDR01to08",      "goodTaus"));
+  handler->addEventVariable("CONESUMETDR02TO08GOODTAUS", new EventVariableObjectVariableVector<double>("CONESUMETDR02to08",  "goodTaus"));
+  handler->addEventVariable("CONENDR02TO08GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONENDR02to08",      "goodTaus"));
+  handler->addEventVariable("CONECHSUMETDR03GOODTAUS",     new EventVariableObjectVariableVector<double>("CONECHSUMETDR03",      "goodTaus"));
+  handler->addEventVariable("CONECHNDR03GOODTAUS",         new EventVariableObjectVariableVector<int>(   "CONECHNDR03",          "goodTaus"));
+  handler->addEventVariable("CONECHSUMETDR04GOODTAUS",     new EventVariableObjectVariableVector<double>("CONECHSUMETDR04",      "goodTaus"));
+  handler->addEventVariable("CONECHNDR04GOODTAUS",         new EventVariableObjectVariableVector<int>(   "CONECHNDR04",          "goodTaus"));
+  handler->addEventVariable("CONECHSUMETDR03TO07GOODTAUS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR03to07",  "goodTaus"));
+  handler->addEventVariable("CONECHNDR03TO07GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR03to07",      "goodTaus"));
+  handler->addEventVariable("CONECHSUMETDR04TO08GOODTAUS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR04to08",  "goodTaus"));
+  handler->addEventVariable("CONECHNDR04TO08GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR04to08",      "goodTaus"));
+  handler->addEventVariable("CONECHSUMETDR01TO08GOODTAUS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR01to08",  "goodTaus"));
+  handler->addEventVariable("CONECHNDR01TO08GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR01to08",      "goodTaus"));
+  handler->addEventVariable("CONECHSUMETDR02TO08GOODTAUS", new EventVariableObjectVariableVector<double>("CONECHSUMETDR02to08",  "goodTaus"));
+  handler->addEventVariable("CONECHNDR02TO08GOODTAUS",     new EventVariableObjectVariableVector<int>(   "CONECHNDR02to08",      "goodTaus"));
 
 
   // --------------------------------------------------------------------------------------------------------------

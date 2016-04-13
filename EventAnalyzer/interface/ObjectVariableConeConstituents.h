@@ -23,6 +23,7 @@ class ObjectVariableConeConstituents : public ObjectVariable {
 				//double maxEta,
 				BaseHandler* handler,
 				bool useMatchedPFJet,
+				bool useChargedPFOnly,
 				//TString multiplicityName="",
 				TString name="CONECONST"
 				):
@@ -32,7 +33,8 @@ class ObjectVariableConeConstituents : public ObjectVariable {
     m_minPt(minPt),
     //m_maxEta(maxEta),
     m_handler(handler),
-    m_useMatchedPFJet(useMatchedPFJet){}
+    m_useMatchedPFJet(useMatchedPFJet),
+    m_useChargedPFOnly(useChargedPFOnly){}
     //m_multiplicityName(multiplicityName){}
   
   virtual ~ObjectVariableConeConstituents() {}
@@ -46,6 +48,7 @@ class ObjectVariableConeConstituents : public ObjectVariable {
   //double       m_maxEta;
   BaseHandler* m_handler;
   bool         m_useMatchedPFJet;
+  bool         m_useChargedPFOnly;
   //TString      m_multiplicityName;
  
   ClassDef(ObjectVariableConeConstituents,1);
