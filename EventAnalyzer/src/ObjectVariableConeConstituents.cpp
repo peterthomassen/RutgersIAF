@@ -14,9 +14,9 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
   int   chargedMultiplicity_Jet       = 0;
   int   chargedHadronMultiplicity_Jet = 0;
   float corrPt_Jet                    = 0;
-  double CSVbtagvalue_Jet              = 0;
-  double  JPbtagvalue_Jet              = 0;
-  double MVAbtagvalue_Jet              = 0;
+  double CSVbtagvalue_Jet             = 0;
+  double  JPbtagvalue_Jet             = 0;
+  double MVAbtagvalue_Jet             = 0;
   //
   // For PFCand matching
   int   coneConstNDR03         = 0;
@@ -31,6 +31,13 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
   float coneConstSumEtDR01to08 = 0;
   int   coneConstNDR02to08     = 0;
   float coneConstSumEtDR02to08 = 0;
+  //
+  TLorentzVector conePFvectorDR03;
+  TLorentzVector conePFvectorDR04;
+  TLorentzVector conePFvectorDR03to07;
+  TLorentzVector conePFvectorDR04to08;
+  TLorentzVector conePFvectorDR01to08;
+  TLorentzVector conePFvectorDR02to08;
   //
   if(sigObj->Pt()<10) return false; //To save time - since we only care about objects with pt>10 GeV (lowest lepton pt cut)
   //
@@ -108,6 +115,14 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
   } else{
     vector<SignatureObject*> pfcands = m_handler->getProduct("ALL");
     // All candidates reconstructed by the ParticleFlow algorithm are saved in MiniAOD in the packedPFCandidates collection.
+    //
+    conePFvectorDR03.SetPtEtaPhiM(0,0,0,0); 
+    conePFvectorDR04.SetPtEtaPhiM(0,0,0,0); 
+    conePFvectorDR03to07.SetPtEtaPhiM(0,0,0,0); 
+    conePFvectorDR04to08.SetPtEtaPhiM(0,0,0,0); 
+    conePFvectorDR01to08.SetPtEtaPhiM(0,0,0,0); 
+    conePFvectorDR02to08.SetPtEtaPhiM(0,0,0,0); 
+    //
     for(auto const &ipf : pfcands){
       TString inputType;
       int     PFcharge=0;
@@ -119,29 +134,41 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
       if( ipf->Pt() < 0.01       ) continue;//redundant protection
       if( fabs(ipf->Eta()) > 2.5 ) continue;
       // 
-     double dRpf = TLorentzVector(*sigObj).DeltaR(TLorentzVector(*ipf));
+      double dRpf = TLorentzVector(*sigObj).DeltaR(TLorentzVector(*ipf));
       //
       //count pfcands within the specified DR range
-      if(               dRpf < 0.3 ){ coneConstNDR03++;     coneConstSumEtDR03 +=  (float)ipf->Pt(); }
-      if(               dRpf < 0.4 ){ coneConstNDR04++;     coneConstSumEtDR04 +=  (float)ipf->Pt(); }
-      if( dRpf > 0.3 && dRpf < 0.7 ){ coneConstNDR03to07++; coneConstSumEtDR03to07 +=  (float)ipf->Pt(); }
-      if( dRpf > 0.4 && dRpf < 0.8 ){ coneConstNDR04to08++; coneConstSumEtDR04to08 +=  (float)ipf->Pt(); }
-      if( dRpf > 0.1 && dRpf < 0.8 ){ coneConstNDR01to08++; coneConstSumEtDR01to08 +=  (float)ipf->Pt(); }
-      if( dRpf > 0.2 && dRpf < 0.8 ){ coneConstNDR02to08++; coneConstSumEtDR02to08 +=  (float)ipf->Pt(); }
+      if(               dRpf < 0.3 ){ coneConstNDR03++;     coneConstSumEtDR03 +=  (float)ipf->Pt();     conePFvectorDR03 += TLorentzVector(*ipf);     }
+      if(               dRpf < 0.4 ){ coneConstNDR04++;     coneConstSumEtDR04 +=  (float)ipf->Pt();     conePFvectorDR04 += TLorentzVector(*ipf);     }
+      if( dRpf > 0.3 && dRpf < 0.7 ){ coneConstNDR03to07++; coneConstSumEtDR03to07 +=  (float)ipf->Pt(); conePFvectorDR03to07 += TLorentzVector(*ipf); }
+      if( dRpf > 0.4 && dRpf < 0.8 ){ coneConstNDR04to08++; coneConstSumEtDR04to08 +=  (float)ipf->Pt(); conePFvectorDR04to08 += TLorentzVector(*ipf); }
+      if( dRpf > 0.1 && dRpf < 0.8 ){ coneConstNDR01to08++; coneConstSumEtDR01to08 +=  (float)ipf->Pt(); conePFvectorDR01to08 += TLorentzVector(*ipf); }
+      if( dRpf > 0.2 && dRpf < 0.8 ){ coneConstNDR02to08++; coneConstSumEtDR02to08 +=  (float)ipf->Pt(); conePFvectorDR02to08 += TLorentzVector(*ipf); }
       //   
     }
-    sigObj->setVariable(TString::Format("%sNDR03",         getName().Data()), coneConstNDR03          );
-    sigObj->setVariable(TString::Format("%sSUMETDR03",     getName().Data()), coneConstSumEtDR03      );
-    sigObj->setVariable(TString::Format("%sNDR04",         getName().Data()), coneConstNDR04          );
-    sigObj->setVariable(TString::Format("%sSUMETDR04",     getName().Data()), coneConstSumEtDR04      );
-    sigObj->setVariable(TString::Format("%sNDR03to07",     getName().Data()), coneConstNDR03to07      );
-    sigObj->setVariable(TString::Format("%sSUMETDR03to07", getName().Data()), coneConstSumEtDR03to07  );
-    sigObj->setVariable(TString::Format("%sNDR04to08",     getName().Data()), coneConstNDR04to08      );
-    sigObj->setVariable(TString::Format("%sSUMETDR04to08", getName().Data()), coneConstSumEtDR04to08  );
-    sigObj->setVariable(TString::Format("%sNDR01to08",     getName().Data()), coneConstNDR01to08      );
-    sigObj->setVariable(TString::Format("%sSUMETDR01to08", getName().Data()), coneConstSumEtDR01to08  );
-    sigObj->setVariable(TString::Format("%sNDR02to08",     getName().Data()), coneConstNDR02to08      );
-    sigObj->setVariable(TString::Format("%sSUMETDR02to08", getName().Data()), coneConstSumEtDR02to08  );
+    sigObj->setVariable(TString::Format("%sNDR03",         getName().Data()), coneConstNDR03            );
+    sigObj->setVariable(TString::Format("%sSUMETDR03",     getName().Data()), coneConstSumEtDR03        );
+    sigObj->setVariable(TString::Format("%sNDR04",         getName().Data()), coneConstNDR04            );
+    sigObj->setVariable(TString::Format("%sSUMETDR04",     getName().Data()), coneConstSumEtDR04        );
+    sigObj->setVariable(TString::Format("%sNDR03to07",     getName().Data()), coneConstNDR03to07        );
+    sigObj->setVariable(TString::Format("%sSUMETDR03to07", getName().Data()), coneConstSumEtDR03to07    );
+    sigObj->setVariable(TString::Format("%sNDR04to08",     getName().Data()), coneConstNDR04to08        );
+    sigObj->setVariable(TString::Format("%sSUMETDR04to08", getName().Data()), coneConstSumEtDR04to08    );
+    sigObj->setVariable(TString::Format("%sNDR01to08",     getName().Data()), coneConstNDR01to08        );
+    sigObj->setVariable(TString::Format("%sSUMETDR01to08", getName().Data()), coneConstSumEtDR01to08    );
+    sigObj->setVariable(TString::Format("%sNDR02to08",     getName().Data()), coneConstNDR02to08        );
+    sigObj->setVariable(TString::Format("%sSUMETDR02to08", getName().Data()), coneConstSumEtDR02to08    );
+    sigObj->setVariable(TString::Format("%sPTDR03",        getName().Data()), conePFvectorDR03.Pt()     );
+    sigObj->setVariable(TString::Format("%sPTDR04",        getName().Data()), conePFvectorDR04.Pt()     );
+    sigObj->setVariable(TString::Format("%sPTDR03to07",    getName().Data()), conePFvectorDR03to07.Pt() );
+    sigObj->setVariable(TString::Format("%sPTDR04to08",    getName().Data()), conePFvectorDR04to08.Pt() );
+    sigObj->setVariable(TString::Format("%sPTDR01to08",    getName().Data()), conePFvectorDR01to08.Pt() );
+    sigObj->setVariable(TString::Format("%sPTDR02to08",    getName().Data()), conePFvectorDR02to08.Pt() );
+    sigObj->setVariable(TString::Format("%sMASSDR03",      getName().Data()), conePFvectorDR03.M()      );
+    sigObj->setVariable(TString::Format("%sMASSDR04",      getName().Data()), conePFvectorDR04.M()      );
+    sigObj->setVariable(TString::Format("%sMASSDR03to07",  getName().Data()), conePFvectorDR03to07.M()  );
+    sigObj->setVariable(TString::Format("%sMASSDR04to08",  getName().Data()), conePFvectorDR04to08.M()  );
+    sigObj->setVariable(TString::Format("%sMASSDR01to08",  getName().Data()), conePFvectorDR01to08.M()  );
+    sigObj->setVariable(TString::Format("%sMASSDR02to08",  getName().Data()), conePFvectorDR02to08.M()  );
     //
     if(isdebug) cout<<"        coneConstNDR03: "<< coneConstNDR03         <<endl;
     if(isdebug) cout<<"    coneConstSumEtDR03: "<< coneConstSumEtDR03     <<endl;
