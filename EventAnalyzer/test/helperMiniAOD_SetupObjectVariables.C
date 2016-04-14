@@ -52,9 +52,6 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("CONE",          new ObjectVariableConeConstituents( 1,handler,false,false));//PF candidates in cone, with a given pt cut
   handler->addObjectVariable("CONECH",        new ObjectVariableConeConstituents( 2,handler,false, true));//CHARGED PF candidates in cone, with a given pt cut
   //
-  // single line does not work here?
-  ObjectVariableConeCorrectedPt* cpt = new ObjectVariableConeCorrectedPt("PT","MINIISO","ptRatio","ptRel",0.4,0,0,"conecorrectedPt");
-  handler->addObjectVariable("conecorrectedPt",cpt);
   
   // --------------------------------------------------------------------------------------------------------------
   /////////////////////////
@@ -459,6 +456,7 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("TRIGGERNAME", new ObjectVariableRename<TString>("triggerName","TRIGGERNAME"));
   handler->addObjectVariable("Accepted",    new ObjectVariableValue<bool>("ACCEPT", true));
   handler->addObjectVariable("WasRun",      new ObjectVariableValue<bool>("wasrun", true));
+  handler->addObjectVariable("conecorrectedPt", new ObjectVariableConeCorrectedPt("PT","MINIISO","ptRatio","ptRel",0.4,0,0,"conecorrectedPt"));
   
 }
 
