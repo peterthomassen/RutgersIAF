@@ -456,6 +456,12 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("TRIGGERNAME", new ObjectVariableRename<TString>("triggerName","TRIGGERNAME"));
   handler->addObjectVariable("Accepted",    new ObjectVariableValue<bool>("ACCEPT", true));
   handler->addObjectVariable("WasRun",      new ObjectVariableValue<bool>("wasrun", true));
+  
+  //...................................................................................................................  
+  //////////////////////
+  ///CONECORRECTEDPT////
+  //////////////////////
+  //This should be declared after PT, MINIISO, ptRatio and ptRel
   handler->addObjectVariable("conecorrectedPt", new ObjectVariableConeCorrectedPt("PT","MINIISO","ptRatio","ptRel",0.4,0,0,"conecorrectedPt"));
   
 }
