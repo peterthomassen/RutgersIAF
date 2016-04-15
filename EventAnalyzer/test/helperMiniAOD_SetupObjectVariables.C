@@ -36,10 +36,11 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("NEGATIVE",      new ObjectVariableInRange<int>("charge",-10,0,"CHARGENEG"));
   //
   handler->addObjectVariable("PT",            new ObjectVariableMethod("PT", &SignatureObject::Pt)); 
-  handler->addObjectVariable("PT6",           new ObjectVariableInRange<double>("PT",6.0,10000.0,"PT6"));
-  handler->addObjectVariable("PT7",           new ObjectVariableInRange<double>("PT",7.0,10000.0,"PT7"));
-  handler->addObjectVariable("PT20",          new ObjectVariableInRange<double>("PT",20.0,10000.0,"PT20"));
-  handler->addObjectVariable("PT30",          new ObjectVariableInRange<double>("PT",30.0,10000.0,"PT30"));
+  handler->addObjectVariable("PT6",           new ObjectVariableInRange<double>("PT", 6.0,100000.0,"PT6"));
+  handler->addObjectVariable("PT7",           new ObjectVariableInRange<double>("PT", 7.0,100000.0,"PT7"));
+  handler->addObjectVariable("PT20",          new ObjectVariableInRange<double>("PT",20.0,100000.0,"PT20"));
+  handler->addObjectVariable("PT30",          new ObjectVariableInRange<double>("PT",30.0,100000.0,"PT30"));
+  handler->addObjectVariable("PT35",          new ObjectVariableInRange<double>("PT",35.0,100000.0,"PT35"));
   handler->addObjectVariable("PT40",          new ObjectVariableInRange<double>("PT",40.0,100000.0));
   //
   handler->addObjectVariable("CHARGE",        new ObjectVariableRename<int>("charge","CHARGE"));

@@ -53,7 +53,7 @@ void setupProductsMatrix(BaseHandler* handler)
   //
   // https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Selection_Cuts_HEEP_V6_0_Recomme
   handler->addProduct(   "heepIDElectrons", "ALLELECTRONS");
-  handler->addProductCut("heepIDElectrons", "PT35");
+  handler->addProductCut("heepIDElectrons", "PT35");//HEEPID does have a built-in 35GeV pT cut, this is just to make it explicit.
   handler->addProductCut("heepIDElectrons", "ETA2p5");
   handler->addProductCut("heepIDElectrons", "ELECTRON_HEEPID");
   //
