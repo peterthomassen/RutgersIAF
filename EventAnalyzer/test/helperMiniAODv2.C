@@ -450,17 +450,17 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("ETAGOODTAUS",            new EventVariableObjectVariableVector<double>("ETA",            "goodTaus"));
   handler->addEventVariable("PHIGOODTAUS",            new EventVariableObjectVariableVector<double>("PHI",            "goodTaus"));
   handler->addEventVariable("fakeRoleGOODTAUS",       new EventVariableObjectVariableVector<int>("fakeRole",          "goodTaus"));
-  handler->addEventVariable("TOTALISOGOODTAUS",       new EventVariableObjectVariableVector<double>("TOTALISO",       "goodTaus"));
-  handler->addEventVariable("TOTALMINIISOGOODTAUS",   new EventVariableObjectVariableVector<double>("TOTALMINIISO",   "goodTaus"));
-  handler->addEventVariable("MINIISOGOODTAUS",        new EventVariableObjectVariableVector<double>("MINIISO",        "goodTaus"));
+  //handler->addEventVariable("TOTALISOGOODTAUS",       new EventVariableObjectVariableVector<double>("TOTALISO",       "goodTaus"));//these are not very meaningful for taus
+  //handler->addEventVariable("TOTALMINIISOGOODTAUS",   new EventVariableObjectVariableVector<double>("TOTALMINIISO",   "goodTaus"));//taus need a hollow cone
+  //handler->addEventVariable("MINIISOGOODTAUS",        new EventVariableObjectVariableVector<double>("MINIISO",        "goodTaus"));
   handler->addEventVariable("CONECORRECTEDPTGOODTAUS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodTaus"));
   //
   handler->addEventVariable("NBASICTAUS",        new EventVariableN("NBASICTAUS",                         "basicTaus"));
   handler->addEventVariable("PTBASICTAUS",       new EventVariableObjectVariableVector<double>("PT",      "basicTaus"));
   handler->addEventVariable("ETABASICTAUS",      new EventVariableObjectVariableVector<double>("ETA",     "basicTaus"));
   handler->addEventVariable("PHIBASICTAUS",      new EventVariableObjectVariableVector<double>("PHI",     "basicTaus"));
-  handler->addEventVariable("RELISOBASICTAUS",   new EventVariableObjectVariableVector<double>("RELISO",  "basicTaus"));
-  handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));
+  //handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));//these are not very meaningful for taus
+  //handler->addEventVariable("RELISOBASICTAUS",   new EventVariableObjectVariableVector<double>("RELISO",  "basicTaus"));//taus need a hollow cone
   //
   handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
   //
@@ -533,9 +533,9 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CSVRAWBASICJETS",  new EventVariableObjectVariableVector<double>("CSVraw",  "basicJets"));
   handler->addEventVariable("JPRAWBASICJETS",   new EventVariableObjectVariableVector<double>("JPraw",   "basicJets"));
   handler->addEventVariable("CMVARAWBASICJETS", new EventVariableObjectVariableVector<double>("cMVAraw", "basicJets"));
-  handler->addEventVariable("TOTALMULTBASICJETS",         new EventVariableObjectVariableVector<double>("numberOfConstituents",        "basicJets"));
-  handler->addEventVariable("CHARMULTBASICJETS",          new EventVariableObjectVariableVector<double>("chargedMultiplicity",         "basicJets"));
-  handler->addEventVariable("NEUTMULTBASICJETS",          new EventVariableObjectVariableVector<double>("neutralMultiplicity",         "basicJets"));
+  handler->addEventVariable("TOTALMULTBASICJETS",         new EventVariableObjectVariableVector<int>(   "numberOfConstituents",        "basicJets"));
+  handler->addEventVariable("CHARMULTBASICJETS",          new EventVariableObjectVariableVector<int>(   "chargedMultiplicity",         "basicJets"));
+  handler->addEventVariable("NEUTMULTBASICJETS",          new EventVariableObjectVariableVector<int>(   "neutralMultiplicity",         "basicJets"));
   handler->addEventVariable("MUONENERGYFRACBASICJETS",    new EventVariableObjectVariableVector<double>("muonEnergyFraction",          "basicJets"));
   handler->addEventVariable("CHARHADENERGYFRACBASICJETS", new EventVariableObjectVariableVector<double>("chargedHadronEnergyFraction", "basicJets"));
   handler->addEventVariable("CHAREMENERGYFRACBASICJETS",  new EventVariableObjectVariableVector<double>("chargedEmEnergyFraction",     "basicJets"));
@@ -632,8 +632,8 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("NINCLUSIVETRACKS",       new EventVariableN("NINCLUSIVETRACKS",                  "inclusiveTracks"));
   handler->addEventVariable("PTINCLUSIVETRACKS",      new EventVariableObjectVariableVector<double>("PT",     "inclusiveTracks"));
   handler->addEventVariable("ETAINCLUSIVETRACKS",     new EventVariableObjectVariableVector<double>("ETA",    "inclusiveTracks"));
-  handler->addEventVariable("RELISOINCLUSIVETRACKS",  new EventVariableObjectVariableVector<double>("RELISO", "inclusiveTracks"));
   handler->addEventVariable("MINIISOINCLUSIVETRACKS", new EventVariableObjectVariableVector<double>("MINIISO","inclusiveTracks"));
+  handler->addEventVariable("RELISOINCLUSIVETRACKS",  new EventVariableObjectVariableVector<double>("RELISO", "inclusiveTracks"));
   handler->addEventVariable("PTRATIOINCLUSIVETRACKS", new EventVariableObjectVariableVector<double>("ptRatio","inclusiveTracks"));
   handler->addEventVariable("PTRELINCLUSIVETRACKS",   new EventVariableObjectVariableVector<double>("ptRel",  "inclusiveTracks"));
   //  

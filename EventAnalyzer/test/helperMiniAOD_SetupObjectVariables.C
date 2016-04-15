@@ -98,10 +98,10 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_totalIso", new ObjectVariableRhoCorrectedTotalIso("sumChargedHadronPt","sumNeutralHadronEt","sumPhotonEt","RHO","ELECTRON_AREA","TOTALISO"),false);
   handler->addObjectVariable("MUON_totalIso", new ObjectVariableRhoCorrectedTotalIso("pfIsolationR03sumChargedHadronPt","pfIsolationR03sumNeutralHadronEt","pfIsolationR03sumPhotonEt","RHO","MUON_AREA","TOTALISO"),false);
   handler->addObjectVariable("TRACK_totalIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronIsoFromPF","neutralHadronIsoFromPF","neutralPhotonIsoFromPF","RHO","MUON_AREA","TOTALISO","isTrack"),false);
+  // TotalMiniIso's:
   handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO","isElectron"),false);
   handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isMuon"),false);
   handler->addObjectVariable("TRACK_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isTrack"),false);
-  handler->addObjectVariable("TAU_totalMiniIso", new ObjectVariableDeltaBetaCorrectedTotalIso("chargedHadronMiniIso","","photonMiniIso","puCorrPtSum","TOTALMINIISO","isTau"),false);
   //
   // ADDING MUON PF-ISO-DR0.4, DB CORRECTED:
   handler->addObjectVariable("MUON_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("pfIsolationR04sumChargedHadronPt","pfIsolationR04sumNeutralHadronEt","pfIsolationR04sumPhotonEt","pfIsolationR04sumPUPt","MUON_TOTALISODB0p4","isMuon"),false);
@@ -339,7 +339,6 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_CUT_MEDIUMID", new ObjectVariableValue<bool>("passCutBasedMediumId", true));
   handler->addObjectVariable("ELECTRON_CUT_TIGHTID",  new ObjectVariableValue<bool>("passCutBasedTightId",  true));
   handler->addObjectVariable("ELECTRON_HEEPID",       new ObjectVariableValue<bool>("passHEEP",             true));
-
 
 
   // --------------------------------------------------------------------------------------------------------------
