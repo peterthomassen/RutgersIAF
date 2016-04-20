@@ -163,12 +163,12 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
     sigObj->setVariable(TString::Format("%sPTDR04to08",    getName().Data()), conePFvectorDR04to08.Pt() );
     sigObj->setVariable(TString::Format("%sPTDR01to08",    getName().Data()), conePFvectorDR01to08.Pt() );
     sigObj->setVariable(TString::Format("%sPTDR02to08",    getName().Data()), conePFvectorDR02to08.Pt() );
-    sigObj->setVariable(TString::Format("%sMASSDR03",      getName().Data()), conePFvectorDR03.M()      );
-    sigObj->setVariable(TString::Format("%sMASSDR04",      getName().Data()), conePFvectorDR04.M()      );
-    sigObj->setVariable(TString::Format("%sMASSDR03to07",  getName().Data()), conePFvectorDR03to07.M()  );
-    sigObj->setVariable(TString::Format("%sMASSDR04to08",  getName().Data()), conePFvectorDR04to08.M()  );
-    sigObj->setVariable(TString::Format("%sMASSDR01to08",  getName().Data()), conePFvectorDR01to08.M()  );
-    sigObj->setVariable(TString::Format("%sMASSDR02to08",  getName().Data()), conePFvectorDR02to08.M()  );
+    sigObj->setVariable(TString::Format("%sMASSDR03",      getName().Data()), (     (coneConstNDR03>1) ?     conePFvectorDR03.M() : (float)0 )   );//Protection against
+    sigObj->setVariable(TString::Format("%sMASSDR04",      getName().Data()), (     (coneConstNDR04>1) ?     conePFvectorDR04.M() : (float)0 )   );//one particle (LorentzV)
+    sigObj->setVariable(TString::Format("%sMASSDR03to07",  getName().Data()), ( (coneConstNDR03to07>1) ? conePFvectorDR03to07.M() : (float)0 )   );//in cone of interest.
+    sigObj->setVariable(TString::Format("%sMASSDR04to08",  getName().Data()), ( (coneConstNDR04to08>1) ? conePFvectorDR04to08.M() : (float)0 )   );//OR we get artificially 
+    sigObj->setVariable(TString::Format("%sMASSDR01to08",  getName().Data()), ( (coneConstNDR01to08>1) ? conePFvectorDR01to08.M() : (float)0 )   );//small +ve & -ve
+    sigObj->setVariable(TString::Format("%sMASSDR02to08",  getName().Data()), ( (coneConstNDR02to08>1) ? conePFvectorDR02to08.M() : (float)0 )   );//values!
     //
     if(isdebug) cout<<"        coneConstNDR03: "<< coneConstNDR03         <<endl;
     if(isdebug) cout<<"    coneConstSumEtDR03: "<< coneConstSumEtDR03     <<endl;
