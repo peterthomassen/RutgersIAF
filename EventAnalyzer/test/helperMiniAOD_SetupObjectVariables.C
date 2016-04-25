@@ -50,7 +50,7 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("PHI",           new ObjectVariableMethod("PHI", &SignatureObject::Phi)); 
   //
   handler->addObjectVariable("JET",           new ObjectVariableConeConstituents(10,handler,true,false));//jet matching, with given jet pt cut
-  handler->addObjectVariable("CONE",          new ObjectVariableConeConstituents( 1,handler,false,false));//PF candidates in cone, with a given pt cut
+  handler->addObjectVariable("CONE",          new ObjectVariableConeConstituents( 1.5,handler,false,false));//PF candidates in cone, with a given pt cut
   handler->addObjectVariable("CONECH",        new ObjectVariableConeConstituents( 2,handler,false, true));//CHARGED PF candidates in cone, with a given pt cut
   //
   
