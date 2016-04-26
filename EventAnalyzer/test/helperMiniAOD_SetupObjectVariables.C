@@ -36,10 +36,11 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("NEGATIVE",      new ObjectVariableInRange<int>("charge",-10,0,"CHARGENEG"));
   //
   handler->addObjectVariable("PT",            new ObjectVariableMethod("PT", &SignatureObject::Pt)); 
-  handler->addObjectVariable("PT6",           new ObjectVariableInRange<double>("PT",6.0,10000.0,"PT6"));
-  handler->addObjectVariable("PT7",           new ObjectVariableInRange<double>("PT",7.0,10000.0,"PT7"));
-  handler->addObjectVariable("PT20",          new ObjectVariableInRange<double>("PT",20.0,10000.0,"PT20"));
-  handler->addObjectVariable("PT30",          new ObjectVariableInRange<double>("PT",30.0,10000.0,"PT30"));
+  handler->addObjectVariable("PT6",           new ObjectVariableInRange<double>("PT", 6.0,100000.0,"PT6"));
+  handler->addObjectVariable("PT7",           new ObjectVariableInRange<double>("PT", 7.0,100000.0,"PT7"));
+  handler->addObjectVariable("PT20",          new ObjectVariableInRange<double>("PT",20.0,100000.0,"PT20"));
+  handler->addObjectVariable("PT30",          new ObjectVariableInRange<double>("PT",30.0,100000.0,"PT30"));
+  handler->addObjectVariable("PT35",          new ObjectVariableInRange<double>("PT",35.0,100000.0,"PT35"));
   handler->addObjectVariable("PT40",          new ObjectVariableInRange<double>("PT",40.0,100000.0));
   //
   handler->addObjectVariable("CHARGE",        new ObjectVariableRename<int>("charge","CHARGE"));
@@ -49,7 +50,7 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("PHI",           new ObjectVariableMethod("PHI", &SignatureObject::Phi)); 
   //
   handler->addObjectVariable("JET",           new ObjectVariableConeConstituents(10,handler,true,false));//jet matching, with given jet pt cut
-  handler->addObjectVariable("CONE",          new ObjectVariableConeConstituents( 1,handler,false,false));//PF candidates in cone, with a given pt cut
+  handler->addObjectVariable("CONE",          new ObjectVariableConeConstituents( 1.5,handler,false,false));//PF candidates in cone, with a given pt cut
   handler->addObjectVariable("CONECH",        new ObjectVariableConeConstituents( 2,handler,false, true));//CHARGED PF candidates in cone, with a given pt cut
   //
   
@@ -98,10 +99,10 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_totalIso", new ObjectVariableRhoCorrectedTotalIso("sumChargedHadronPt","sumNeutralHadronEt","sumPhotonEt","RHO","ELECTRON_AREA","TOTALISO"),false);
   handler->addObjectVariable("MUON_totalIso", new ObjectVariableRhoCorrectedTotalIso("pfIsolationR03sumChargedHadronPt","pfIsolationR03sumNeutralHadronEt","pfIsolationR03sumPhotonEt","RHO","MUON_AREA","TOTALISO"),false);
   handler->addObjectVariable("TRACK_totalIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronIsoFromPF","neutralHadronIsoFromPF","neutralPhotonIsoFromPF","RHO","MUON_AREA","TOTALISO","isTrack"),false);
+  // TotalMiniIso's:
   handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO","isElectron"),false);
   handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isMuon"),false);
   handler->addObjectVariable("TRACK_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isTrack"),false);
-  handler->addObjectVariable("TAU_totalMiniIso", new ObjectVariableDeltaBetaCorrectedTotalIso("chargedHadronMiniIso","","photonMiniIso","puCorrPtSum","TOTALMINIISO","isTau"),false);
   //
   // ADDING MUON PF-ISO-DR0.4, DB CORRECTED:
   handler->addObjectVariable("MUON_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("pfIsolationR04sumChargedHadronPt","pfIsolationR04sumNeutralHadronEt","pfIsolationR04sumPhotonEt","pfIsolationR04sumPUPt","MUON_TOTALISODB0p4","isMuon"),false);
@@ -339,7 +340,6 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_CUT_MEDIUMID", new ObjectVariableValue<bool>("passCutBasedMediumId", true));
   handler->addObjectVariable("ELECTRON_CUT_TIGHTID",  new ObjectVariableValue<bool>("passCutBasedTightId",  true));
   handler->addObjectVariable("ELECTRON_HEEPID",       new ObjectVariableValue<bool>("passHEEP",             true));
-
 
 
   // --------------------------------------------------------------------------------------------------------------
