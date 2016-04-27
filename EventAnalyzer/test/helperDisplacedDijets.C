@@ -1043,6 +1043,8 @@ void setupListVariablesAndHistograms(AdvancedHandler* handler)
   variables.push_back("METDELTAR");
   variables.push_back("METANGLE_dPHI");
   variables.push_back("METANGLE_dANGLE");
+  variables.push_back("trackEnergy");
+  variables.push_back("trackMass");
 
   variablesInt.push_back("nMatchedTracks");
   variablesInt.push_back("nCleanMatchedTracks");  
