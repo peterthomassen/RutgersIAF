@@ -121,7 +121,7 @@ bool EventVariableMatrixWeights3D::calculate(BaseHandler* handler) {
     if( LTint==101 ) nTLT=1;
     if( LTint== 11 ) nLTT=1;
     if( LTint==100 ) nTLL=1;
-    if( LTint==010 ) nLTL=1;
+    if( LTint== 10 ) nLTL=1;
     if( LTint==  1 ) nLLT=1;
     if( LTint==  0 ) nLLL=1;
     //
