@@ -57,7 +57,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 	for(size_t i = 0; i < inputFiles.size(); ++i) {
 		cout << ((i % 10 == 9) ? '|' : '.') << flush;
 		
-		TFile* f = new TFile(inputFiles[i]);
+		TFile* f = TFile::Open(inputFiles[i]);
 		TTree* curTree = (TTree*)(f->Get(treeName));
 		outfile->cd();
 		
@@ -434,7 +434,7 @@ int main( int argc, char **argv )
    }
    
    std::set<TString> treeRnames;
-   TFile* f = new TFile(vInputFiles[0]);
+   TFile* f = TFile::Open(vInputFiles[0]);
    TIterator* fi = f->GetListOfKeys()->MakeIterator();
    TNamed* treeRname;
    while( (treeRname = (TNamed*)fi->Next()) ) {
@@ -447,7 +447,7 @@ int main( int argc, char **argv )
    delete treeRname;
    delete fi;
    f->Close();
-   
+
    merger.SetNotrees(noTrees);
    for(auto &treeName : treeRnames) {
       merger.AddObjectNames(treeName.Data());
