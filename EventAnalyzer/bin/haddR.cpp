@@ -418,7 +418,7 @@ int main( int argc, char **argv )
 	  }
    }
    
-   if(merger.GetMaxOpenedFies() < (int)vInputFiles.size() + 1) {
+   if(merger.GetMaxOpenedFiles() < (int)vInputFiles.size() + 1) {
 	   cout << "hadd too many input files. Consider going step by step." << endl;
 	   return 1;
    }
