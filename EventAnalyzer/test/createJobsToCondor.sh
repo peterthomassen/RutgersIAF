@@ -20,11 +20,21 @@ inC=$1
 inSampleName=$2
 inSampleDir=$3
 
+############
+####Uncomment following line for using files from grid
+############You will need to have your grid certificate installed
+##################
+#voms-proxy-init --out $HOME/proxy
+#xrootdTag="root://cmsxrootd.fnal.gov//"
+#xrootdTag="root://xrootd-cms.infn.it//"
+xrootdTag=""
+
 MAINDIR=`pwd`
 SCRIPTDIR=`pwd`
 mkdir -p /cms/multilepton/$USER/CondorLogs/
 LOGDIR=/cms/multilepton/$USER/CondorLogs
 CMSDIR=$CMSSW_BASE/src
+
 
 # Specify input files here:
 inputFolder=$inSampleName
@@ -51,7 +61,7 @@ chmod a+x $runScript
 echo "#!/bin/bash" >> $runScript
 echo "export VO_CMS_SW_DIR=/cms/base/cmssoft" >> $runScript
 echo "export COIN_FULL_INDIRECT_RENDERING=1" >> $runScript
-echo "setenv HOME /home/"$USER >> $runScript
+echo "export HOME="$HOME >> $runScript
 echo 'echo $VO_CMS_SW_DIR' >> $runScript
 echo 'source $VO_CMS_SW_DIR/cmsset_default.sh' >> $runScript
 echo "cd $CMSDIR" >> $runScript
@@ -67,7 +77,8 @@ echo 'Requirements = (Arch == "X86_64")' >> $condorFile
 echo "Executable = $runScript" >> $condorFile
 echo "should_transfer_files = NO" >> $condorFile
 echo "Notification=never" >> $condorFile
-echo "x509userproxy = /home/"$USER"/proxy" >> $condorFile 
+echo "use_x509userproxy = true" >> $condorFile
+echo "x509userproxy = $HOME/proxy" >> $condorFile 
 echo "" >> $condorFile
 echo "" >> $condorFile
 
