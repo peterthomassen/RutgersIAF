@@ -209,6 +209,7 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_MISSINGHITS0", new ObjectVariableValue<int>(  "numberOfLostHits",0  ));
   handler->addObjectVariable("ELECTRON_MISSINGHITS1", new ObjectVariableInRange<int>("numberOfLostHits",0,1));
   handler->addObjectVariable("ELECTRON_MISSINGHITS2", new ObjectVariableInRange<int>("numberOfLostHits",0,2));
+  handler->addObjectVariable("ELECTRON_MISSINGHITS3", new ObjectVariableInRange<int>("numberOfLostHits",0,3));
   //
   handler->addObjectVariable("ELECTRON_passConversionVeto",new ObjectVariableValue<bool>("passConversionVeto",true));
   //
@@ -293,7 +294,46 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_MVA_RA7FO",    electron_mva_RA7FO);
   handler->addObjectVariable("ELECTRON_MVA_RA7TIGHT", electron_mva_tight);
   //
-  // This is the manual cut based  electron isolation LOOSE WP, **without** the relIsoWithEA:
+  // This is the manual cut based  electron ID VETO WP, **without** the relIsoWithEA:
+  // The isolation requirement is built into the ID value flags, so can't use passCutBasedVetoId for looseMatrixElectrons.
+  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
+  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p0114", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.0114));
+  handler->addObjectVariable("ELECTRON_deltaEtaIn_0p0152",       new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.0152,0.0152));
+  handler->addObjectVariable("ELECTRON_deltaPhiIn_0p216",        new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.216,0.216));
+  handler->addObjectVariable("ELECTRON_hcalOverEcal_0p181",      new ObjectVariableInRange<double>("hcalOverEcal",0,0.181));
+  handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p207",  new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.207,0.207));
+  handler->addObjectVariable("ELECTRON_dxy_0p0564",              new ObjectVariableInRange<double>("dxy",-0.0564,0.0564));
+  handler->addObjectVariable("ELECTRON_dz_0p472",                new ObjectVariableInRange<double>("dxy",-0.472,0.472));
+  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p0352", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.0352));
+  handler->addObjectVariable("ELECTRON_deltaEtaIn_0p0113",       new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.0113,0.0113));
+  handler->addObjectVariable("ELECTRON_deltaPhiIn_0p237",        new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.237,0.237));
+  handler->addObjectVariable("ELECTRON_hcalOverEcal_0p116",      new ObjectVariableInRange<double>("hcalOverEcal",0,0.116));
+  handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p174",  new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.174,0.174));
+  handler->addObjectVariable("ELECTRON_dxy_0p222",               new ObjectVariableInRange<double>("dxy",-0.222,0.222));
+  handler->addObjectVariable("ELECTRON_dz_0p921",                new ObjectVariableInRange<double>("dxy",-0.921,0.921));
+  ObjectVariableCombined* electron_cutIDVetoNoIso_barrel = new ObjectVariableCombined("BARREL","ELECTRON_full5x5_sigmaIetaIeta_0p0114",true);
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_deltaEtaIn_0p0152");
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_deltaPhiIn_0p216");
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_hcalOverEcal_0p181");
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_1oEm1oPcorrected_0p207");
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_dxy_0p0564");
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_dz_0p472");
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_MISSINGHITS2");
+  electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_passConversionVeto");
+  handler->addObjectVariable("ELECTRON_CUTIDVETONOISO_BARREL",electron_cutIDVetoNoIso_barrel);
+  ObjectVariableCombined* electron_cutIDVetoNoIso_endcap = new ObjectVariableCombined("ENDCAP","ELECTRON_full5x5_sigmaIetaIeta_0p0352",true);
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_deltaEtaIn_0p0113");
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_deltaPhiIn_0p237");
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_hcalOverEcal_0p116");
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_1oEm1oPcorrected_0p174");
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_dxy_0p222");
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_dz_0p921");
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_MISSINGHITS3");
+  electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_passConversionVeto");
+  handler->addObjectVariable("ELECTRON_CUTIDVETONOISO_ENDCAP",electron_cutIDVetoNoIso_endcap);
+  handler->addObjectVariable("ELECTRON_CUTIDVETONOISO", new ObjectVariableCombined("ELECTRON_CUTIDVETONOISO_BARREL","ELECTRON_CUTIDVETONOISO_ENDCAP",false));
+  //
+  // This is the manual cut based  electron ID LOOSE WP, **without** the relIsoWithEA:
   // The isolation requirement is built into the ID value flags, so can't use passCutBasedLooseId for looseMatrixElectrons.
   // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
   handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p0103", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.0103));

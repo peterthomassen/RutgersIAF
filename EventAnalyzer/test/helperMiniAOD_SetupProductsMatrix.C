@@ -46,10 +46,12 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProduct(   "looseMatrixElectrons", "ALLELECTRONS");
   handler->addProductCut("looseMatrixElectrons", "PT10");
   handler->addProductCut("looseMatrixElectrons", "ETA2p5");
-  handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUTIDLOOSENOISO");
+  //handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUTIDLOOSENOISO");
+  handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUTIDVETONOISO");
   //
   handler->addProduct(   "tightMatrixElectrons", "looseMatrixElectrons");
-  handler->addProductCut("tightMatrixElectrons", "ELECTRON_CUT_LOOSEID");
+  //handler->addProductCut("tightMatrixElectrons", "ELECTRON_CUT_LOOSEID");
+  handler->addProductCut("tightMatrixElectrons", "ELECTRON_CUT_MEDIUMID");
   //
   // https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Selection_Cuts_HEEP_V6_0_Recomme
   handler->addProduct(   "heepIDElectrons", "ALLELECTRONS");
