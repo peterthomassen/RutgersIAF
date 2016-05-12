@@ -422,7 +422,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	if(hasBackground) {
 		ratio = hData->Integral() / hBackground->Integral();
 		
-		TLegend* legend = new TLegend(0.84,0.35,0.98,0.80);
+		TLegend* legend = new TLegend(0.64,0.6,0.98,0.92);
 		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
 		TList* hists = m_stacks.find("background")->second.first->GetHists();
 		TIterator* iter = new TListIter(hists, false);
