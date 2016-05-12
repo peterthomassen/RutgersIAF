@@ -7,6 +7,8 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
+#include "RutgersIAF/AnalysisPresenter/test/MatrixMacros/helperAnalysisPresenterMM_WeightFunctions.C"
+
 // ----------------------------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------------------------
 // Load library, see https://root.cern.ch/phpBB2/viewtopic.php?f=3&t=19471
@@ -180,7 +182,13 @@ void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false
 void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = true, bool onlyTTF = false) {
   cout<<"setupBackgroundMC RUN"<<endl;
         //std::string prefix = "/cms/thomassen/2015/Analysis/simulation/results/";
-	std::string prefix = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/EAtreesMatrix/";
+	//std::string prefix = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/EAtreesMatrix/";
+	//std::string prefix = "/cms/multilepton/AnalysisTrees/2016/MC/"; 
+	//std::string prefix = "/tmp/hsaka/";
+        std::string prefix = "/cms/multilepton/hsaka/2016/MC/";
+        //TTTo2L2NuSkim3Mu.simulation.root
+	///tmp/hsaka/DUMMY.simulation.root
+	//DUMMY.simulation.root
 	//std::string prefix = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/EAtreesRA7/";
 	//std::string infix = dilep ? "" : ".3L";
 	std::string infix = "";
@@ -196,21 +204,33 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	//PhysicsContribution* dyjetstollM50 = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dummy, "DYJetsToLL_M-50", false, "treeR", -1, 0);
 	//mc.push_back(dyjetstollM50);
 
-	PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTJets_DiLept" + infix + suffix, xsec_dummy, "TTJets_DiLept", false, "treeR", -1, 0);
+	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_dummy, "TTTo2L2Nu", false, "treeR", -1, 0);
+	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "DUMMY" + infix + suffix, xsec_dummy, "DUMMY", false, "treeR", -1, 0);
+	PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2NuSkim3Mu" + infix + suffix, xsec_dummy, "TTTo2L2NuSkim3Mu", false, "treeR", -1, 0);
+        //assembler->addMatrix(ttjetsdilep);
+        addMatrix(ttjetsdilep);
+	ttjetsdilep->addWeight("fakeBckg");
 	mc.push_back(ttjetsdilep);
 
-	
+
 	for(auto &contribution : mc) {
 	  //contribution->addWeight("WEIGHT[0]");
 	  //contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 	  //applyUncertaintiesAndScaleFactors(assembler, contribution);
+	  //contribution->addWeight("fakeBckg");
+	  //assembler->addMatrix(contribution);
 	  assembler->addContribution(contribution);
 	}
 
 
 	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "DYJetsToLL_M-50" + infix + suffix, 2300, "2.3/fb@13TeV");
-	PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTJets_DiLept" + infix + suffix, 2300, "2.3/fb@13TeV");
-	dataDummy->addWeight("0");
+	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2Nu" + infix + suffix, 2300, "2.3/fb@13TeV");
+	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "DUMMY" + infix + suffix, 2300, "2.3/fb@13TeV");
+	PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2NuSkim3Mu" + infix + suffix, 2300, "2.3/fb@13TeV");
+	//assembler->addMatrix(dataDummy);
+	addMatrix(dataDummy);
+	//dataDummy->addWeight("1");
+	dataDummy->addWeight("nTTT");
 	assembler->addContribution(dataDummy);
 }
 
