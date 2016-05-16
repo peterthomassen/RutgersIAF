@@ -113,6 +113,9 @@
   <class name="EventVariableSmearMET" ClassVersion="1">
    <version ClassVersion="1" checksum="111924114"/>
   </class>
+  <class name="EventVariableSphericity2D" ClassVersion="1">
+   <version ClassVersion="1" checksum="4263649988"/>
+  </class>
   <class name="EventVariableSumPT" ClassVersion="1">
    <version ClassVersion="1" checksum="1462727285"/>
   </class>

@@ -24,6 +24,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableProductAngle.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableReversed.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableSmearMET.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableSphericity2D.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableSumPT.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableTF1.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableTH1.h"
