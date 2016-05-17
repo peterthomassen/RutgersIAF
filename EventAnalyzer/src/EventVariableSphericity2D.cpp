@@ -32,15 +32,13 @@ bool EventVariableSphericity2D::calculate(BaseHandler* handler)
 			c+=py*py/pt;
 		}
 	}
-	double lambda1 = (a + c + sqrt((a-c)*(a-c) + 4*b*b))/2.;
-	double lambda2 = (a + c - sqrt((a-c)*(a-c) + 4*b*b))/2.;
+	
+	double lambdaMin = (a + c - sqrt((a-c)*(a-c) + 4*b*b))/2.;
 
 	if(a+c == 0){
 		return false;
-	}else if(lambda1 > lambda2){
-		handler->setVariable(getName(),(2*lambda2)/(a+c));
 	}else{
-		handler->setVariable(getName(),(2*lambda1)/(a+c));
+		handler->setVariable(getName(),(2*lambdaMin)/(a+c));
 	}
   return true;
 }
