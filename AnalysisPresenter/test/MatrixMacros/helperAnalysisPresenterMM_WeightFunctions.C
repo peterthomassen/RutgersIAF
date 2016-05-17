@@ -10,6 +10,19 @@
 
 void addMatrix(PhysicsContribution* contribution) {
 
+
+  // Check what the lepton types are:
+  contribution->setAlias("is1Mu","((LeptonTypeVal3DLA-LeptonTypeVal3DLA%100)/100)==2");
+  contribution->setAlias("is2Mu","((LeptonTypeVal3DLA%100-LeptonTypeVal3DLA%10)/10)==2");
+  contribution->setAlias("is3Mu","(LeptonTypeVal3DLA%10)==2");
+  contribution->setAlias("is1El","((LeptonTypeVal3DLA-LeptonTypeVal3DLA%100)/100)==1");
+  contribution->setAlias("is2El","((LeptonTypeVal3DLA%100-LeptonTypeVal3DLA%10)/10)==1");
+  contribution->setAlias("is3El","(LeptonTypeVal3DLA%10)==1");
+
+  // Count number of GOODMUONS and GOODELECTRONS to be read in:
+  contribution->setAlias("nMuMM","is1Mu+is2Mu+is3Mu");
+  contribution->setAlias("nElMM","is1El+is2El+is3El");
+
   for( int i=1; i<=3; i++){
     //Lepton = Muon - Valid for RutgersIAF 76X_v2.1 or higher.
     //Pt bins
@@ -79,7 +92,7 @@ void addMatrix(PhysicsContribution* contribution) {
     //muon1 prompt rate:
     contribution->setAlias(TString::Format("%dmp",i),TString::Format("%dmpPT1+%dmpPT2+%dmpPT3+%dmpPT4+%dmpPT5+%dmpPT6",i,i,i,i,i,i));
     //---------------
-  }
+    }
 
   for( int i=1; i<=3; i++){
     //Lepton = Electron - Valid for RutgersIAF 76X_v3.1 or higher (new electron IDs, Loose = Cut Veto ID w/out isolation, Tight = Cut Medium ID w isolation)
@@ -128,33 +141,57 @@ void addMatrix(PhysicsContribution* contribution) {
     //Aux bins - NONE
     //---------------
     //pt prompt rates
-    contribution->setAlias(TString::Format("%depPT1",i),TString::Format("%dePT1*0.85",i)); //Copy of muon prompt rates, "DUMMY values".
-    contribution->setAlias(TString::Format("%depPT2",i),TString::Format("%dePT2*0.92",i)); //To be updated soon!
-    contribution->setAlias(TString::Format("%depPT3",i),TString::Format("%dePT3*0.95",i));
-    contribution->setAlias(TString::Format("%depPT4",i),TString::Format("%dePT4*0.97",i));
-    contribution->setAlias(TString::Format("%depPT5",i),TString::Format("%dePT5*0.98",i));
-    contribution->setAlias(TString::Format("%depPT6",i),TString::Format("%dePT6*0.98",i));
+    contribution->setAlias(TString::Format("%depPT1",i),TString::Format("%dePT1*0.50", i)); // mean values
+    contribution->setAlias(TString::Format("%depPT2",i),TString::Format("%dePT2*0.725",i));
+    contribution->setAlias(TString::Format("%depPT3",i),TString::Format("%dePT3*0.83", i));
+    contribution->setAlias(TString::Format("%depPT4",i),TString::Format("%dePT4*0.88", i));
+    contribution->setAlias(TString::Format("%depPT5",i),TString::Format("%dePT5*0.91", i));
     //---------------
     //electron1 prompt rate:
-    contribution->setAlias(TString::Format("%dep",i),TString::Format("%depPT1+%depPT2+%depPT3+%depPT4+%depPT5+%depPT6",i,i,i,i,i,i));
+    contribution->setAlias(TString::Format("%dep",i),TString::Format("%depPT1+%depPT2+%depPT3+%depPT4+%depPT5",i,i,i,i,i));
     //---------------
   }
 
-  // Check what the lepton types are:
-  contribution->setAlias("is1Mu","((LeptonTypeVal3DLA-LeptonTypeVal3DLA%100)/100)==2");
-  contribution->setAlias("is2Mu","((LeptonTypeVal3DLA%100-LeptonTypeVal3DLA%10)/10)==2");
-  contribution->setAlias("is3Mu","(LeptonTypeVal3DLA%10)==2");
-  contribution->setAlias("is1El","((LeptonTypeVal3DLA-LeptonTypeVal3DLA%100)/100)==1");
-  contribution->setAlias("is2El","((LeptonTypeVal3DLA%100-LeptonTypeVal3DLA%10)/10)==1");
-  contribution->setAlias("is3El","(LeptonTypeVal3DLA%10)==1");
-
+  
   // Set prompt/fake rates:
-  contribution->setAlias("f1","is1Mu*Alt$(1mf,0)+is1El*Alt$(1ef,0)");
-  contribution->setAlias("f2","is2Mu*Alt$(2mf,0)+is2El*Alt$(2ef,0)");
-  contribution->setAlias("f3","is3Mu*Alt$(3mf,0)+is3El*Alt$(3ef,0)");
-  contribution->setAlias("p1","is1Mu*Alt$(1mp,0)+is1El*Alt$(1ep,0)");
-  contribution->setAlias("p2","is2Mu*Alt$(2mp,0)+is2El*Alt$(2ep,0)");
-  contribution->setAlias("p3","is3Mu*Alt$(3mp,0)+is3El*Alt$(3ep,0)");
+  //----------------------------------------------------------------------------------------
+  contribution->setAlias("f1","Alt$(1mf,0)*(LeptonTypeVal3DLA==221)+Alt$(1mf,0)*(LeptonTypeVal3DLA==212)+Alt$(1ef,0)*(LeptonTypeVal3DLA==122)+Alt$(1ef,0)*(LeptonTypeVal3DLA==112)+Alt$(1ef,0)*(LeptonTypeVal3DLA==121)+Alt$(1mf,0)*(LeptonTypeVal3DLA==211)+Alt$(1mf,0)*(LeptonTypeVal3DLA==222)+Alt$(1ef,0)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("f2","Alt$(2mf,0)*(LeptonTypeVal3DLA==221)+Alt$(1ef,0)*(LeptonTypeVal3DLA==212)+Alt$(1mf,0)*(LeptonTypeVal3DLA==122)+Alt$(2ef,0)*(LeptonTypeVal3DLA==112)+Alt$(1mf,0)*(LeptonTypeVal3DLA==121)+Alt$(1ef,0)*(LeptonTypeVal3DLA==211)+Alt$(2mf,0)*(LeptonTypeVal3DLA==222)+Alt$(2ef,0)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("f3","Alt$(1ef,0)*(LeptonTypeVal3DLA==221)+Alt$(2mf,0)*(LeptonTypeVal3DLA==212)+Alt$(2mf,0)*(LeptonTypeVal3DLA==122)+Alt$(1mf,0)*(LeptonTypeVal3DLA==112)+Alt$(2ef,0)*(LeptonTypeVal3DLA==121)+Alt$(2ef,0)*(LeptonTypeVal3DLA==211)+Alt$(3mf,0)*(LeptonTypeVal3DLA==222)+Alt$(3ef,0)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("p1","Alt$(1mp,1)*(LeptonTypeVal3DLA==221)+Alt$(1mp,1)*(LeptonTypeVal3DLA==212)+Alt$(1ep,1)*(LeptonTypeVal3DLA==122)+Alt$(1ep,1)*(LeptonTypeVal3DLA==112)+Alt$(1ep,1)*(LeptonTypeVal3DLA==121)+Alt$(1mp,1)*(LeptonTypeVal3DLA==211)+Alt$(1mp,1)*(LeptonTypeVal3DLA==222)+Alt$(1ep,1)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("p2","Alt$(2mp,1)*(LeptonTypeVal3DLA==221)+Alt$(1ep,1)*(LeptonTypeVal3DLA==212)+Alt$(1mp,1)*(LeptonTypeVal3DLA==122)+Alt$(2ep,1)*(LeptonTypeVal3DLA==112)+Alt$(1mp,1)*(LeptonTypeVal3DLA==121)+Alt$(1ep,1)*(LeptonTypeVal3DLA==211)+Alt$(2mp,1)*(LeptonTypeVal3DLA==222)+Alt$(2ep,1)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("p3","Alt$(1ep,1)*(LeptonTypeVal3DLA==221)+Alt$(2mp,1)*(LeptonTypeVal3DLA==212)+Alt$(2mp,1)*(LeptonTypeVal3DLA==122)+Alt$(1mp,1)*(LeptonTypeVal3DLA==112)+Alt$(2ep,1)*(LeptonTypeVal3DLA==121)+Alt$(2ep,1)*(LeptonTypeVal3DLA==211)+Alt$(3mp,1)*(LeptonTypeVal3DLA==222)+Alt$(3ep,1)*(LeptonTypeVal3DLA==111)");
+  //----------------------------------------------------------------------------------------
+  // 3Mu or 3El
+  /*  
+  contribution->setAlias("f1","Alt$(1mf,0)*(LeptonTypeVal3DLA==222)+Alt$(1ef,0)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("f2","Alt$(2mf,0)*(LeptonTypeVal3DLA==222)+Alt$(2ef,0)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("f3","Alt$(3mf,0)*(LeptonTypeVal3DLA==222)+Alt$(3ef,0)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("p1","Alt$(1mp,1)*(LeptonTypeVal3DLA==222)+Alt$(1ep,1)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("p2","Alt$(2mp,1)*(LeptonTypeVal3DLA==222)+Alt$(2ep,1)*(LeptonTypeVal3DLA==111)");
+  contribution->setAlias("p3","Alt$(3mp,1)*(LeptonTypeVal3DLA==222)+Alt$(3ep,1)*(LeptonTypeVal3DLA==111)");
+  */
+  //--------
+  // El + 2Mu
+  /*
+  contribution->setAlias("f1","Alt$(1mf,0)*(LeptonTypeVal3DLA==221)+Alt$(1mf,0)*(LeptonTypeVal3DLA==212)+Alt$(1ef,0)*(LeptonTypeVal3DLA==122)");
+  contribution->setAlias("f2","Alt$(2mf,0)*(LeptonTypeVal3DLA==221)+Alt$(1ef,0)*(LeptonTypeVal3DLA==212)+Alt$(1mf,0)*(LeptonTypeVal3DLA==122)");
+  contribution->setAlias("f3","Alt$(1ef,0)*(LeptonTypeVal3DLA==221)+Alt$(2mf,0)*(LeptonTypeVal3DLA==212)+Alt$(2mf,0)*(LeptonTypeVal3DLA==122)");
+  contribution->setAlias("p1","Alt$(1mp,1)*(LeptonTypeVal3DLA==221)+Alt$(1mp,1)*(LeptonTypeVal3DLA==212)+Alt$(1ep,1)*(LeptonTypeVal3DLA==122)");
+  contribution->setAlias("p2","Alt$(2mp,1)*(LeptonTypeVal3DLA==221)+Alt$(1ep,1)*(LeptonTypeVal3DLA==212)+Alt$(1mp,1)*(LeptonTypeVal3DLA==122)");
+  contribution->setAlias("p3","Alt$(1ep,1)*(LeptonTypeVal3DLA==221)+Alt$(2mp,1)*(LeptonTypeVal3DLA==212)+Alt$(2mp,1)*(LeptonTypeVal3DLA==122)");
+  */
+  // -------
+  // 2El + Mu
+  /*
+  contribution->setAlias("f1","Alt$(1ef,0)*(LeptonTypeVal3DLA==112)+Alt$(1ef,0)*(LeptonTypeVal3DLA==121)+Alt$(1mf,0)*(LeptonTypeVal3DLA==211)");
+  contribution->setAlias("f2","Alt$(2ef,0)*(LeptonTypeVal3DLA==112)+Alt$(1mf,0)*(LeptonTypeVal3DLA==121)+Alt$(1ef,0)*(LeptonTypeVal3DLA==211)");
+  contribution->setAlias("f3","Alt$(1mf,0)*(LeptonTypeVal3DLA==112)+Alt$(2ef,0)*(LeptonTypeVal3DLA==121)+Alt$(2ef,0)*(LeptonTypeVal3DLA==211)");
+  contribution->setAlias("p1","Alt$(1ep,1)*(LeptonTypeVal3DLA==112)+Alt$(1ep,1)*(LeptonTypeVal3DLA==121)+Alt$(1mp,1)*(LeptonTypeVal3DLA==211)");
+  contribution->setAlias("p2","Alt$(2ep,1)*(LeptonTypeVal3DLA==112)+Alt$(1mp,1)*(LeptonTypeVal3DLA==121)+Alt$(1ep,1)*(LeptonTypeVal3DLA==211)");
+  contribution->setAlias("p3","Alt$(1mp,1)*(LeptonTypeVal3DLA==112)+Alt$(2ep,1)*(LeptonTypeVal3DLA==121)+Alt$(2ep,1)*(LeptonTypeVal3DLA==211)");
+  */
+  //----------------------------------------------------------------------------------------
 
   // Name change:
   contribution->setAlias("nTTT","nTTT3DLA");
@@ -169,11 +206,11 @@ void addMatrix(PhysicsContribution* contribution) {
   // -------------------------------------------------------------------------------------------------------------------- //
   // temporary fix: waiting for https://gitlab.com/Thomassen/RutgersIAF/commit/a7383de85af3d5582fb8a5e79ebfbc34878519d5
   // If first and third matrix leptons are not tight, and the second matrix lepton is tight, manually set nLTL=1
-  for( int i=1; i<=3; i++){
-    contribution->setAlias(TString::Format("m%dTight",i),TString::Format("Alt$(ISTIGHTMATRIXMUON[%d],0)",    i-1));
-    contribution->setAlias(TString::Format("e%dTight",i),TString::Format("Alt$(ISTIGHTMATRIXELECTRON[%d],0)",i-1));
-  }
-  contribution->setAlias("nLTL","(m1Tight+e1Tight+m3Tight+e3Tight==0)*(m2Tight+e2Tight>0)");
+  //for( int i=1; i<=3; i++){
+  //contribution->setAlias(TString::Format("m%dTight",i),TString::Format("Alt$(ISTIGHTMATRIXMUON[%d],0)",    i-1));
+  //contribution->setAlias(TString::Format("e%dTight",i),TString::Format("Alt$(ISTIGHTMATRIXELECTRON[%d],0)",i-1));
+  //}
+  //contribution->setAlias("nLTL","(m1Tight+e1Tight+m3Tight+e3Tight==0)*(m2Tight+e2Tight>0)"); //possibly doesnt work for e-mu mixed case!
   // -------------------------------------------------------------------------------------------------------------------- //
   
   // for sanity check:
