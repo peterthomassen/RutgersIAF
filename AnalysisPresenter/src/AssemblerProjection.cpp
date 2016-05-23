@@ -209,26 +209,37 @@ TH1* AssemblerProjection::getHistogram(TString type) const {
 }
 
 std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString type) const {
-	if(type != "data" || m_typeProjections.at(type).size() > 1) {
-		throw std::runtime_error("meta information currently only supported for one set of data");
+	if(type != "data") {
+		throw std::runtime_error("meta information currently only supported for data");
 	}
+	
+	std::set<PhysicsContribution::metadata_t> s;
+	unsigned int nDuplicates = 0;
 	
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
-	auto contributions = m_typeProjections.at(type)[0]->getPhysicsContributions();
 	
-	if(contributions.size() > 1) {
-		throw std::runtime_error("meta information currently only supported for one set of data");
-	}
-	
-	auto meta = std::set<PhysicsContribution::metadata_t>();
-	for(auto &contribution : contributions) {
-		meta = contribution->getMeta();
+	for(auto &typeProjection : m_typeProjections.at(type)) {
+		for(auto &contribution : typeProjection->getPhysicsContributions()) {
+			for(auto &metadata : contribution->getMeta()) {
+				auto ins = s.insert(metadata);
+				if(!ins.second) {
+					if(nDuplicates < 10) {
+						cout << "Notice: duplicate entry in " << contribution->getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+					}
+					++nDuplicates;
+				}
+			}
+		}
 	}
 	
 	m_assembler->setRanges(ranges);
 	
-	return meta;
+	if(nDuplicates > 0) {
+		cout << "Notice: " << nDuplicates << " duplicate entries in (showing no more than 10)" << endl;
+	}
+	
+	return s;
 }
 
 double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
