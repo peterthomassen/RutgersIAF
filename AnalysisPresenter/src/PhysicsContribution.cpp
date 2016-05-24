@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "TAxis.h"
+#include "TEntryList.h"
 #include "TFile.h"
 #include "TH1D.h"
 #include "THnBase.h"
@@ -287,10 +288,9 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 		}
 	}
 	
-	selection = TString("(") + selection + TString(")");
-	
+	TString weights = "1";
 	for(auto &weight : m_weights) {
-		selection += TString(" * (") + weight + TString(")");
+		weights += TString(" * (") + weight + TString(")");
 	}
 	
 	// I suppose the following could be entirely in the weights mechanism. But now we have this already.
@@ -313,18 +313,18 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 					sum += TString(" + ") + fakerate.first + TString("[0]");
 				}
 				
-				selection += TString::Format(" * pow(%s, %s[0])", fakerate.second.Data(), fakerate.first.Data());
+				weights += TString::Format(" * pow(%s, %s[0])", fakerate.second.Data(), fakerate.first.Data());
 			}
 			
 			// Prune MC
 			if(m_type == "backgroundMC") {
 				if(sum.Length() > 0) {
-					selection += TString::Format(" * pow(-1, %s > 0)", sum.Data());
+					weights += TString::Format(" * pow(-1, %s > 0)", sum.Data());
 				}
 			} else
 			// Only take fake events from backgroundDD input
 			if(m_type == "backgroundDD") {
-				selection += TString::Format(" * (%s > 0)", sum.Data());
+				weights += TString::Format(" * (%s > 0)", sum.Data());
 			} else
 			//
 			{
@@ -339,9 +339,11 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 		}
 	}
 	
-	if(m_debug) cout << selection << endl;
+	if(m_debug) {
+		cout << selection << endl;
+	}
 	
-	int step = 10000;
+	int step = 50000;
 	int n = treeR->GetEntries();
 	
 	// Limit reading of MC such that the scale factor is no less than m_minScale if the sample is randomly distributed (as given by m_unordered).
@@ -356,7 +358,9 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 		cout << "Reading only the first " << n << " of " << treeR->GetEntries() << " events, changing scale = " << scaleOld << " --> " << scale << " (target scale: " << m_minScale << ")" << endl;
 	}
 	m_scale = scale;
-	cout << "scale: " << m_scale << endl;
+	if(m_debug) {
+		cout << "scale: " << m_scale << ", " << flush;
+	}
 	
 	Double_t x[hn->GetNdimensions()];
 	std::string varexpIncarnation = treeR->GetListOfBranches()->FindObject("fakeIncarnation")
@@ -396,6 +400,19 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 	
 	long entryPrev = 0;
 	
+	// Prepare list of events satisfying global selection
+	n = treeR->Draw(">>elist", selection.Data(), "entrylist", n);
+	if(n < 0) {
+		throw std::runtime_error("error selecting events");
+	}
+	TEntryList* elist = (TEntryList*)gDirectory->Get("elist");
+	treeR->SetEntryList(elist);
+	
+	if(m_debug) {
+		cout << n << " events selected" << endl;
+		cout << "weight: " << weights << endl;
+	}
+	
 	for(int k = 0; k < n; k += step) {
 		if(k % (10 * step) == 9 * step) {
 			cout << (int)(10*k/n) << flush;
@@ -407,7 +424,7 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 		}
 		
 		// PT 20141009: I checked that step refers to TTree entries, not entry instances. So we're good even when looping over collections, and always get full events counted properly.
-		long nSelected = treeR->Draw(varexpFull.Data(), selection.Data(), "goff candle", step, k);
+		long nSelected = treeR->Draw(varexpFull.Data(), weights.Data(), "goff candle", step, k);
 		if(nSelected < 0) {
 			throw std::runtime_error("error selecting events");
 		}
@@ -473,6 +490,8 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 	if(variation) {
 		hn->Add(m_hn, -1);
 	}
+	
+	delete elist;
 	
 	return hn;
 }
