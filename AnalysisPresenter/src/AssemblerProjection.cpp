@@ -332,12 +332,15 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->SetLineWidth(1);
 	hData->SetMarkerStyle(9);
 	
-	TH1* hSignal = 0;
+	std::vector<TH1*> hSignals;
 	if(has("signal")) {
-		hSignal = (TH1*)m_stacks.find("signal")->second.first->GetStack()->Last()->Clone();
-		for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
-			double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
-			hSignal->SetBinError(i, sqrt(error2));
+		for(auto const &bundle : m_bundles["signal"]) {
+			TH1* hSignal = (TH1*)bundle.second.first->GetStack()->Last()->Clone();
+			for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
+				double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
+				hSignal->SetBinError(i, sqrt(error2));
+			}
+			hSignals.push_back(hSignal);
 		}
 	}
 	
@@ -374,11 +377,11 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio = (TH1*)hData->Clone("hRatio");
 		hRatioBkg = debug ? (TH1*)hBackgroundErr->Clone("hRatioBkg") : (TH1*)hBackground->Clone("hRatioBkg");
 		
-		if(hSignal) {
-			hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
-		} else {
-			hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())));
+		double signalMax = 0;
+		for(auto const &hSignal : hSignals) {
+			signalMax = max(signalMax, hSignal->GetMaximum());
 		}
+		hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), signalMax))));
 	}
 	
 	hData->SetMaximum(max(log ? 50. : 5., (log ? 5. : 1.5) * hData->GetMaximum()));
@@ -415,10 +418,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			hBackgroundErr->SetMarkerSize(0);
 			hBackgroundErr->Draw("SAME E2");
 		}
-		if(hSignal) {
+		for(auto const &hSignal : hSignals) {
 			hSignal->SetMarkerColor(kWhite);
 			hSignal->SetMarkerStyle(21);
-			hSignal->SetFillColor(kPink);
 			hSignal->SetFillStyle(3008);
 			hSignal->Draw("SAME E2 P");
 		}
@@ -441,6 +443,13 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
 		}
 		delete iter;
+		for(auto const &hSignal : hSignals) {
+			legend->AddEntry((TObject*)0, "", "");
+			hSignal->SetLineColor(kWhite);
+			TString title = hSignal->GetTitle();
+			title.ReplaceAll("[X]", TString::Format("[%.1f]", hSignal->Integral()));
+			legend->AddEntry(hSignal, title.Data(), "FP");
+		}
 		legend->Draw();
 	}
 	
