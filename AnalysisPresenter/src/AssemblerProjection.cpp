@@ -209,26 +209,37 @@ TH1* AssemblerProjection::getHistogram(TString type) const {
 }
 
 std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString type) const {
-	if(type != "data" || m_typeProjections.at(type).size() > 1) {
-		throw std::runtime_error("meta information currently only supported for one set of data");
+	if(type != "data") {
+		throw std::runtime_error("meta information currently only supported for data");
 	}
+	
+	std::set<PhysicsContribution::metadata_t> s;
+	unsigned int nDuplicates = 0;
 	
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
-	auto contributions = m_typeProjections.at(type)[0]->getPhysicsContributions();
 	
-	if(contributions.size() > 1) {
-		throw std::runtime_error("meta information currently only supported for one set of data");
-	}
-	
-	auto meta = std::set<PhysicsContribution::metadata_t>();
-	for(auto &contribution : contributions) {
-		meta = contribution->getMeta();
+	for(auto &typeProjection : m_typeProjections.at(type)) {
+		for(auto &contribution : typeProjection->getPhysicsContributions()) {
+			for(auto &metadata : contribution->getMeta()) {
+				auto ins = s.insert(metadata);
+				if(!ins.second) {
+					if(nDuplicates < 10) {
+						cout << "Notice: duplicate entry in " << contribution->getName() << ": " << metadata.event << " " << metadata.run << " " << metadata.lumi << " " << metadata.fakeIncarnation << endl;
+					}
+					++nDuplicates;
+				}
+			}
+		}
 	}
 	
 	m_assembler->setRanges(ranges);
 	
-	return meta;
+	if(nDuplicates > 0) {
+		cout << "Notice: " << nDuplicates << " duplicate entries in (showing no more than 10)" << endl;
+	}
+	
+	return s;
 }
 
 double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
@@ -321,12 +332,15 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->SetLineWidth(1);
 	hData->SetMarkerStyle(9);
 	
-	TH1* hSignal = 0;
+	std::vector<TH1*> hSignals;
 	if(has("signal")) {
-		hSignal = (TH1*)m_stacks.find("signal")->second.first->GetStack()->Last()->Clone();
-		for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
-			double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
-			hSignal->SetBinError(i, sqrt(error2));
+		for(auto const &bundle : m_bundles["signal"]) {
+			TH1* hSignal = (TH1*)bundle.second.first->GetStack()->Last()->Clone();
+			for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
+				double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
+				hSignal->SetBinError(i, sqrt(error2));
+			}
+			hSignals.push_back(hSignal);
 		}
 	}
 	
@@ -363,11 +377,11 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio = (TH1*)hData->Clone("hRatio");
 		hRatioBkg = debug ? (TH1*)hBackgroundErr->Clone("hRatioBkg") : (TH1*)hBackground->Clone("hRatioBkg");
 		
-		if(hSignal) {
-			hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), hSignal->GetMaximum()))));
-		} else {
-			hData->SetMaximum(max(1., max(hData->GetMaximum(), hBackground->GetMaximum())));
+		double signalMax = 0;
+		for(auto const &hSignal : hSignals) {
+			signalMax = max(signalMax, hSignal->GetMaximum());
 		}
+		hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), signalMax))));
 	}
 	
 	hData->SetMaximum(max(log ? 50. : 5., (log ? 5. : 1.5) * hData->GetMaximum()));
@@ -404,10 +418,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			hBackgroundErr->SetMarkerSize(0);
 			hBackgroundErr->Draw("SAME E2");
 		}
-		if(hSignal) {
+		for(auto const &hSignal : hSignals) {
 			hSignal->SetMarkerColor(kWhite);
 			hSignal->SetMarkerStyle(21);
-			hSignal->SetFillColor(kPink);
 			hSignal->SetFillStyle(3008);
 			hSignal->Draw("SAME E2 P");
 		}
@@ -430,6 +443,13 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
 		}
 		delete iter;
+		for(auto const &hSignal : hSignals) {
+			legend->AddEntry((TObject*)0, "", "");
+			hSignal->SetLineColor(kWhite);
+			TString title = hSignal->GetTitle();
+			title.ReplaceAll("[X]", TString::Format("[%.1f]", hSignal->Integral()));
+			legend->AddEntry(hSignal, title.Data(), "FP");
+		}
 		legend->Draw();
 	}
 	

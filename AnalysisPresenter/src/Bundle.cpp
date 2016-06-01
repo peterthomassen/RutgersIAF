@@ -21,7 +21,7 @@ Bundle::Bundle() {
 	/* no-op */
 }
 
-Bundle::Bundle(TString type, TString name, bool allowNegative, Int_t fillColor) : BaseBundle(type, name, allowNegative, fillColor) {
+Bundle::Bundle(TString type, TString name, bool allowNegative, Int_t fillColor) : BaseBundle(type, name, allowNegative, (fillColor < 0 && type.BeginsWith("signal")) ? kPink : fillColor) {
 }
 
 Bundle::~Bundle() {
