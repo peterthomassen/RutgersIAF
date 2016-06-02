@@ -45,6 +45,7 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 		: lumiOrXsec;
 	delete treeR;
 	f->Close();
+	delete f;
 	
 	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
 		cout << "Warning: " << m_filename << "#" << m_treeRname << " has WEIGHT branch, but is being used as " << m_type << endl;
@@ -251,6 +252,7 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	delete hPileupWeightsUnc;
 	delete treeR;
 	f->Close();
+	delete f;
 	
 	for(auto &flatUncertainty : m_flatUncertaintyMap) {
 		applyFlatUncertainty(flatUncertainty.first);
