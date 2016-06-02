@@ -208,6 +208,26 @@ TH1* AssemblerProjection::getHistogram(TString type) const {
 	return stack ? (TH1*)((TH1*)stack->Last())->Clone() : 0;
 }
 
+std::vector<TH1*> AssemblerProjection::getHistograms(TString type) const {
+	std::vector<TH1*> v;
+	auto it = m_bundles.find(type);
+	if(it != m_bundles.end()) {
+		for(auto const &bundle : it->second) {
+			TH1* h = (TH1*)bundle.second.first->GetStack()->Last()->Clone();
+			for(int i = 0; i < h->GetNbinsX() + 1; ++i) {
+				double error2 = pow(h->GetBinError(i), 2);
+				// Add up systematics for this bundle only
+				for(auto const &uncertaintyName : getUncertaintyNames()) {
+					error2 += pow(getBinSyst(type, i, uncertaintyName, bundle.first), 2);
+				}
+				h->SetBinError(i, sqrt(error2));
+			}
+			v.push_back(h);
+		}
+	}
+	return v;
+}
+
 std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString type) const {
 	if(type != "data") {
 		throw std::runtime_error("meta information currently only supported for data");
@@ -332,17 +352,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	hData->SetLineWidth(1);
 	hData->SetMarkerStyle(9);
 	
-	std::vector<TH1*> hSignals;
-	if(has("signal")) {
-		for(auto const &bundle : m_bundles["signal"]) {
-			TH1* hSignal = (TH1*)bundle.second.first->GetStack()->Last()->Clone();
-			for(int i = 0; i < hSignal->GetNbinsX() + 1; ++i) {
-				double error2 = pow(hSignal->GetBinError(i), 2) + pow(getBinSyst("signal", i), 2);
-				hSignal->SetBinError(i, sqrt(error2));
-			}
-			hSignals.push_back(hSignal);
-		}
-	}
+	std::vector<TH1*> hSignals = getHistograms("signal");
 	
 	TH1* hBackground = 0;
 	TH1* hBackgroundErr = 0;
