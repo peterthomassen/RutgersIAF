@@ -30,6 +30,7 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProductCut("looseMatrixMuons", "MUON_dxy");
   handler->addProductCut("looseMatrixMuons", "MUON_dz");
   handler->addProductCut("looseMatrixMuons", "MUON_MEDIUMID");
+  handler->addProductCut("looseMatrixMuons", "MUON_RELTRKISOVVL");
   //
   handler->addProduct(   "tightMatrixMuons", "looseMatrixMuons");
   handler->addProductCut("tightMatrixMuons", "MUON_IREL0p25");
@@ -46,11 +47,10 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProduct(   "looseMatrixElectrons", "ALLELECTRONS");
   handler->addProductCut("looseMatrixElectrons", "PT10");
   handler->addProductCut("looseMatrixElectrons", "ETA2p5");
-  //handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUTIDLOOSENOISO");
-  handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUTIDVETONOISO");
+  handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUT_VETOIDNOISO");
+  handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUT_TRIGIDISOVL");
   //
   handler->addProduct(   "tightMatrixElectrons", "looseMatrixElectrons");
-  //handler->addProductCut("tightMatrixElectrons", "ELECTRON_CUT_LOOSEID");
   handler->addProductCut("tightMatrixElectrons", "ELECTRON_CUT_MEDIUMID");
   //
   // https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Selection_Cuts_HEEP_V6_0_Recomme
@@ -71,16 +71,16 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProductCut("looseMatrixTaus", "PT20");
   handler->addProductCut("looseMatrixTaus", "ETA2p3");
   handler->addProductCut("looseMatrixTaus", "TAU_dz");
-  handler->addProductCut("looseMatrixTaus", "decayModeFindingNewDMs");
-  handler->addProductCut("looseMatrixTaus", "againstMuonTight3");
-  handler->addProductCut("looseMatrixTaus", "againstElectronTightMVA6");
-  handler->addProductCut("looseMatrixTaus", "byVLooseIsolationMVArun2v1DBnewDMwLT") ;
+  handler->addProductCut("looseMatrixTaus", "TAU_decayModeFindingNewDMs");
+  handler->addProductCut("looseMatrixTaus", "TAU_againstMuonTight3");
+  handler->addProductCut("looseMatrixTaus", "TAU_againstElectronTightMVA6");
+  handler->addProductCut("looseMatrixTaus", "TAU_byVLooseIsolationMVArun2v1DBnewDMwLT") ;
   //
   handler->addProduct(   "tightMatrixTaus", "looseMatrixTaus");
-  handler->addProductCut("tightMatrixTaus", "byMediumIsolationMVArun2v1DBnewDMwLT") ;
+  handler->addProductCut("tightMatrixTaus", "TAU_byMediumIsolationMVArun2v1DBnewDMwLT") ;
   //
   handler->addProduct(   "altTightMatrixTaus", "looseMatrixTaus");
-  handler->addProductCut("altTightMatrixTaus", "byLooseCombinedIsolationDeltaBetaCorr3Hits");// alternate tau collection
+  handler->addProductCut("altTightMatrixTaus", "TAU_byLooseCombinedIsolationDeltaBetaCorr3Hits");// alternate tau collection
   //
   handler->addProduct("goodTaus","looseMatrixTaus");
 

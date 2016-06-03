@@ -32,6 +32,8 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ETA2p4to4p7",   new ObjectVariableCombined("NOTETA2p4", "ETA4p7", true, "ETA2p4to4p7"));
   handler->addObjectVariable("BARREL",        new ObjectVariableInRange<double>("ETA",-1.479,1.479,"barrelEta"));
   handler->addObjectVariable("ENDCAP",        new ObjectVariableReversed("BARREL","endcapEta"));
+  handler->addObjectVariable("BARRELSC",      new ObjectVariableInRange<double>("superClustereta",-1.479,1.479,"barrelEtaSC"));//using the supercluster eta
+  handler->addObjectVariable("ENDCAPSC",      new ObjectVariableReversed("BARRELSC","endcapEtaSC"));//using the supercluster eta
   handler->addObjectVariable("POSITIVE",      new ObjectVariableInRange<int>("charge",0,10,"CHARGEPOS"));
   handler->addObjectVariable("NEGATIVE",      new ObjectVariableInRange<int>("charge",-10,0,"CHARGENEG"));
   //
@@ -108,6 +110,9 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("MUON_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("pfIsolationR04sumChargedHadronPt","pfIsolationR04sumNeutralHadronEt","pfIsolationR04sumPhotonEt","pfIsolationR04sumPUPt","MUON_TOTALISODB0p4","isMuon"),false);
   handler->addObjectVariable("MUON_RELISO", new ObjectVariableRelIso("MUON_RELISO","MUON_TOTALISODB0p4"));
   //
+  // ADDING MUON TRACK REL-ISO FOR THE THE TRIGGER: Mu*_TrkIsoVVL_v
+  handler->addObjectVariable("MUON_RELTRKISO", new ObjectVariableRelIso("MUON_RELTRKISO","trackIso"));
+  //
   // ADDING ELECTRON CUT-ID PF-ISO, RHO CORRECTED:
   // https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleEffAreaPFIsoCut.cc#L71
   // https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/RecoEgamma/ElectronIdentification/python/Identification/cutBasedElectronID_tools.py#L262
@@ -164,14 +169,16 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("MUON_nonprompt",         new ObjectVariableReversed("MUON_dxy","MUON_nonprompt"));
   handler->addObjectVariable("MUON_GLOBALORTRACKER",   new ObjectVariableCombined("isTrackerMuon","isGlobalMuon",false));
   //
-  handler->addObjectVariable("MUON_LOOSEID",  new ObjectVariableValue<bool>("isLooseMuon",  true));
-  handler->addObjectVariable("MUON_MEDIUMID", new ObjectVariableValue<bool>("isMediumMuon", true));
-  handler->addObjectVariable("MUON_TIGHTID",  new ObjectVariableValue<bool>("isTightMuon",  true));
-  handler->addObjectVariable("MUON_SOFTID",   new ObjectVariableValue<bool>("isSoftMuon",   true));
-  handler->addObjectVariable("MUON_HIGHPTID", new ObjectVariableValue<bool>("isHighPtMuon", true));
+  handler->addObjectVariable("MUON_LOOSEID",  new ObjectVariableValue<int>("isLooseMuon",  1));
+  handler->addObjectVariable("MUON_MEDIUMID", new ObjectVariableValue<int>("isMediumMuon", 1));
+  handler->addObjectVariable("MUON_TIGHTID",  new ObjectVariableValue<int>("isTightMuon",  1));
+  handler->addObjectVariable("MUON_SOFTID",   new ObjectVariableValue<int>("isSoftMuon",   1));
+  handler->addObjectVariable("MUON_HIGHPTID", new ObjectVariableValue<int>("isHighPtMuon", 1));
   //
   handler->addObjectVariable("MUON_IREL0p25",new ObjectVariableInRange<double>("MUON_RELISO",0,0.25,"MUON_IREL0p25"));
   handler->addObjectVariable("MUON_IREL0p15",new ObjectVariableInRange<double>("MUON_RELISO",0,0.15,"MUON_IREL0p15"));
+  //
+  handler->addObjectVariable("MUON_RELTRKISOVVL",new ObjectVariableInRange<double>("MUON_RELTRKISO",0,0.4,"MUON_RELTRKISOVVL"));
   //
   // These are not used at the moment >>>>
   //handler->addObjectVariable("MUON_normalizedChi2",    new ObjectVariableInRange<double>("normalizedChi2",0,3));
@@ -232,19 +239,19 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso", new ObjectVariableRelIso("ELECTRON_RelIso_HcalPFClusterIso","HcalPFClusterIso"));
   handler->addObjectVariable("ELECTRON_RelIso_TrackIso",         new ObjectVariableRelIso("ELECTRON_RelIso_TrackIso","TrackIso"));
   //
-  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso_0p45", new ObjectVariableInRange<double>("ELECTRON_RelIso_EcalPFClusterIso",0,0.45));
-  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso_0p25", new ObjectVariableInRange<double>("ELECTRON_RelIso_HcalPFClusterIso",0,0.25));
-  handler->addObjectVariable("ELECTRON_RelIso_TrackIso_0p45",         new ObjectVariableInRange<double>("ELECTRON_RelIso_TrackIso",0,0.2));
+  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso_0p45", new ObjectVariableInRange<double>("ELECTRON_RelIso_EcalPFClusterIso", 0,0.45));
+  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso_0p25", new ObjectVariableInRange<double>("ELECTRON_RelIso_HcalPFClusterIso", 0,0.25));
+  handler->addObjectVariable("ELECTRON_RelIso_TrackIso_0p20",         new ObjectVariableInRange<double>("ELECTRON_RelIso_TrackIso",         0,0.20));
   //
   // Electron trig-id emulation
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/RA7Coordination2015
-  ObjectVariableCombined* electron_IDemu_barrel = new ObjectVariableCombined("BARREL","ELECTRON_full5x5_sigmaIetaIeta_0p011",true);
+  ObjectVariableCombined* electron_IDemu_barrel = new ObjectVariableCombined("BARRELSC","ELECTRON_full5x5_sigmaIetaIeta_0p011",true);
   electron_IDemu_barrel->addVariable("ELECTRON_hcalOverEcal_0p08");
   electron_IDemu_barrel->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
   electron_IDemu_barrel->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p04");
   electron_IDemu_barrel->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
   handler->addObjectVariable("ELECTRON_IDemu_BARREL", electron_IDemu_barrel);
-  ObjectVariableCombined* electron_IDemu_endcap = new ObjectVariableCombined("ENDCAP","ELECTRON_full5x5_sigmaIetaIeta_0p031",true);
+  ObjectVariableCombined* electron_IDemu_endcap = new ObjectVariableCombined("ENDCAPSC","ELECTRON_full5x5_sigmaIetaIeta_0p031",true);
   electron_IDemu_endcap->addVariable("ELECTRON_hcalOverEcal_0p08");
   electron_IDemu_endcap->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
   electron_IDemu_endcap->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p08");
@@ -255,7 +262,7 @@ void setupObjectVariables(BaseHandler* handler){
   // Electron trig-iso emulation
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/RA7Coordination2015
   ObjectVariableCombined* electron_ISOemu = new ObjectVariableCombined("ELECTRON_RelIso_EcalPFClusterIso_0p45","ELECTRON_RelIso_HcalPFClusterIso_0p25",true);
-  electron_ISOemu->addVariable("ELECTRON_RelIso_TrackIso_0p45");
+  electron_ISOemu->addVariable("ELECTRON_RelIso_TrackIso_0p20");
   handler->addObjectVariable("ELECTRON_ISOemu", electron_ISOemu);
   handler->addObjectVariable("ELECTRON_IDISOemu", new ObjectVariableCombined("ELECTRON_IDemu","ELECTRON_ISOemu",true));
   //
@@ -303,15 +310,15 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_hcalOverEcal_0p181",      new ObjectVariableInRange<double>("hcalOverEcal",0,0.181));
   handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p207",  new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.207,0.207));
   handler->addObjectVariable("ELECTRON_dxy_0p0564",              new ObjectVariableInRange<double>("dxy",-0.0564,0.0564));
-  handler->addObjectVariable("ELECTRON_dz_0p472",                new ObjectVariableInRange<double>("dxy",-0.472,0.472));
+  handler->addObjectVariable("ELECTRON_dz_0p472",                new ObjectVariableInRange<double>("dz",-0.472,0.472));
   handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p0352", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.0352));
   handler->addObjectVariable("ELECTRON_deltaEtaIn_0p0113",       new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.0113,0.0113));
   handler->addObjectVariable("ELECTRON_deltaPhiIn_0p237",        new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.237,0.237));
   handler->addObjectVariable("ELECTRON_hcalOverEcal_0p116",      new ObjectVariableInRange<double>("hcalOverEcal",0,0.116));
   handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p174",  new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.174,0.174));
   handler->addObjectVariable("ELECTRON_dxy_0p222",               new ObjectVariableInRange<double>("dxy",-0.222,0.222));
-  handler->addObjectVariable("ELECTRON_dz_0p921",                new ObjectVariableInRange<double>("dxy",-0.921,0.921));
-  ObjectVariableCombined* electron_cutIDVetoNoIso_barrel = new ObjectVariableCombined("BARREL","ELECTRON_full5x5_sigmaIetaIeta_0p0114",true);
+  handler->addObjectVariable("ELECTRON_dz_0p921",                new ObjectVariableInRange<double>("dz",-0.921,0.921));
+  ObjectVariableCombined* electron_cutIDVetoNoIso_barrel = new ObjectVariableCombined("BARRELSC","ELECTRON_full5x5_sigmaIetaIeta_0p0114",true);
   electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_deltaEtaIn_0p0152");
   electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_deltaPhiIn_0p216");
   electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_hcalOverEcal_0p181");
@@ -321,7 +328,7 @@ void setupObjectVariables(BaseHandler* handler){
   electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_MISSINGHITS2");
   electron_cutIDVetoNoIso_barrel->addVariable("ELECTRON_passConversionVeto");
   handler->addObjectVariable("ELECTRON_CUTIDVETONOISO_BARREL",electron_cutIDVetoNoIso_barrel);
-  ObjectVariableCombined* electron_cutIDVetoNoIso_endcap = new ObjectVariableCombined("ENDCAP","ELECTRON_full5x5_sigmaIetaIeta_0p0352",true);
+  ObjectVariableCombined* electron_cutIDVetoNoIso_endcap = new ObjectVariableCombined("ENDCAPSC","ELECTRON_full5x5_sigmaIetaIeta_0p0352",true);
   electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_deltaEtaIn_0p0113");
   electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_deltaPhiIn_0p237");
   electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_hcalOverEcal_0p116");
@@ -331,7 +338,7 @@ void setupObjectVariables(BaseHandler* handler){
   electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_MISSINGHITS3");
   electron_cutIDVetoNoIso_endcap->addVariable("ELECTRON_passConversionVeto");
   handler->addObjectVariable("ELECTRON_CUTIDVETONOISO_ENDCAP",electron_cutIDVetoNoIso_endcap);
-  handler->addObjectVariable("ELECTRON_CUTIDVETONOISO", new ObjectVariableCombined("ELECTRON_CUTIDVETONOISO_BARREL","ELECTRON_CUTIDVETONOISO_ENDCAP",false));
+  handler->addObjectVariable("ELECTRON_CUT_VETOIDNOISO_EA", new ObjectVariableCombined("ELECTRON_CUTIDVETONOISO_BARREL","ELECTRON_CUTIDVETONOISO_ENDCAP",false));
   //
   // This is the manual cut based  electron ID LOOSE WP, **without** the relIsoWithEA:
   // The isolation requirement is built into the ID value flags, so can't use passCutBasedLooseId for looseMatrixElectrons.
@@ -342,15 +349,15 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_hcalOverEcal_0p104",     new ObjectVariableInRange<double>("hcalOverEcal",0,0.104));
   handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p102", new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.102,0.102));
   handler->addObjectVariable("ELECTRON_dxy_0p0261",             new ObjectVariableInRange<double>("dxy",-0.0261,0.0261));
-  handler->addObjectVariable("ELECTRON_dz_0p41",                new ObjectVariableInRange<double>("dxy",-0.41,0.41));
+  handler->addObjectVariable("ELECTRON_dz_0p41",                new ObjectVariableInRange<double>("dz",-0.41,0.41));
   handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p0301", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.0301));
   handler->addObjectVariable("ELECTRON_deltaEtaIn_0p00814",     new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.00814,0.00814));
   handler->addObjectVariable("ELECTRON_deltaPhiIn_0p182",       new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.182,0.182));
   handler->addObjectVariable("ELECTRON_hcalOverEcal_0p0897",    new ObjectVariableInRange<double>("hcalOverEcal",0,0.0897));
   handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p126", new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.126,0.126));
   handler->addObjectVariable("ELECTRON_dxy_0p118",              new ObjectVariableInRange<double>("dxy",-0.118,0.118));
-  handler->addObjectVariable("ELECTRON_dz_0p822",               new ObjectVariableInRange<double>("dxy",-0.822,0.822));
-  ObjectVariableCombined* electron_cutIDLooseNoIso_barrel = new ObjectVariableCombined("BARREL","ELECTRON_full5x5_sigmaIetaIeta_0p0103",true);
+  handler->addObjectVariable("ELECTRON_dz_0p822",               new ObjectVariableInRange<double>("dz",-0.822,0.822));
+  ObjectVariableCombined* electron_cutIDLooseNoIso_barrel = new ObjectVariableCombined("BARRELSC","ELECTRON_full5x5_sigmaIetaIeta_0p0103",true);
   electron_cutIDLooseNoIso_barrel->addVariable("ELECTRON_deltaEtaIn_0p0105");
   electron_cutIDLooseNoIso_barrel->addVariable("ELECTRON_deltaPhiIn_0p115");
   electron_cutIDLooseNoIso_barrel->addVariable("ELECTRON_hcalOverEcal_0p104");
@@ -360,7 +367,7 @@ void setupObjectVariables(BaseHandler* handler){
   electron_cutIDLooseNoIso_barrel->addVariable("ELECTRON_MISSINGHITS2");
   electron_cutIDLooseNoIso_barrel->addVariable("ELECTRON_passConversionVeto");
   handler->addObjectVariable("ELECTRON_CUTIDLOOSENOISO_BARREL",electron_cutIDLooseNoIso_barrel);
-  ObjectVariableCombined* electron_cutIDLooseNoIso_endcap = new ObjectVariableCombined("ENDCAP","ELECTRON_full5x5_sigmaIetaIeta_0p0301",true);
+  ObjectVariableCombined* electron_cutIDLooseNoIso_endcap = new ObjectVariableCombined("ENDCAPSC","ELECTRON_full5x5_sigmaIetaIeta_0p0301",true);
   electron_cutIDLooseNoIso_endcap->addVariable("ELECTRON_deltaEtaIn_0p00814");
   electron_cutIDLooseNoIso_endcap->addVariable("ELECTRON_deltaPhiIn_0p182");
   electron_cutIDLooseNoIso_endcap->addVariable("ELECTRON_hcalOverEcal_0p0897");
@@ -370,24 +377,61 @@ void setupObjectVariables(BaseHandler* handler){
   electron_cutIDLooseNoIso_endcap->addVariable("ELECTRON_MISSINGHITS1");
   electron_cutIDLooseNoIso_endcap->addVariable("ELECTRON_passConversionVeto");
   handler->addObjectVariable("ELECTRON_CUTIDLOOSENOISO_ENDCAP",electron_cutIDLooseNoIso_endcap);
-  handler->addObjectVariable("ELECTRON_CUTIDLOOSENOISO", new ObjectVariableCombined("ELECTRON_CUTIDLOOSENOISO_BARREL","ELECTRON_CUTIDLOOSENOISO_ENDCAP",false));
+  handler->addObjectVariable("ELECTRON_CUT_LOOSEIDNOISO_EA", new ObjectVariableCombined("ELECTRON_CUTIDLOOSENOISO_BARREL","ELECTRON_CUTIDLOOSENOISO_ENDCAP",false));
   //
   // Standard POG-supported ids (MVA, CUT, HEEP) -  MVA not used due to complications with "triggering" and "not triggering" versions.
   //handler->addObjectVariable("ELECTRON_MVA_MEDIUMID", new ObjectVariableValue<bool>("passMediumId",         true));
   //handler->addObjectVariable("ELECTRON_MVA_TIGHTID",  new ObjectVariableValue<bool>("passTightId",          true));
-  handler->addObjectVariable("ELECTRON_CUT_VETOID",   new ObjectVariableValue<bool>("passCutBasedVetoId",   true));
-  handler->addObjectVariable("ELECTRON_CUT_LOOSEID",  new ObjectVariableValue<bool>("passCutBasedLooseId",  true));
-  handler->addObjectVariable("ELECTRON_CUT_MEDIUMID", new ObjectVariableValue<bool>("passCutBasedMediumId", true));
-  handler->addObjectVariable("ELECTRON_CUT_TIGHTID",  new ObjectVariableValue<bool>("passCutBasedTightId",  true));
-  handler->addObjectVariable("ELECTRON_HEEPID",       new ObjectVariableValue<bool>("passHEEP",             true));
-
+  handler->addObjectVariable("ELECTRON_CUT_VETOID",   new ObjectVariableValue<int>("passCutBasedVetoId",   1));
+  handler->addObjectVariable("ELECTRON_CUT_LOOSEID",  new ObjectVariableValue<int>("passCutBasedLooseId",  1));
+  handler->addObjectVariable("ELECTRON_CUT_MEDIUMID", new ObjectVariableValue<int>("passCutBasedMediumId", 1));
+  handler->addObjectVariable("ELECTRON_CUT_TIGHTID",  new ObjectVariableValue<int>("passCutBasedTightId",  1));
+  handler->addObjectVariable("ELECTRON_HEEPID",       new ObjectVariableValue<int>("passHEEP",             1));
+  //
+  // Modified POG-supported CUT-BASED ids (No Isolation)
+  handler->addObjectVariable("ELECTRON_CUT_VETOIDNOISO",   new ObjectVariableValue<int>("passCutBasedVetoIdNoIso",   1));
+  handler->addObjectVariable("ELECTRON_CUT_LOOSIDENOISO",  new ObjectVariableValue<int>("passCutBasedLooseIdNoIso",  1));
+  handler->addObjectVariable("ELECTRON_CUT_MEDIUMIDNOISO", new ObjectVariableValue<int>("passCutBasedMediumIdNoIso", 1));
+  handler->addObjectVariable("ELECTRON_CUT_TIGHTIDNOISO",  new ObjectVariableValue<int>("passCutBasedTightIdNoIso",  1));
+  //
+  // Trigger Emulation (Based on the tighter of  Ele*_CaloIdL_TrackIdL_IsoVL  and  Ele*_CaloIdL_GsfTrkIdVL for a given parameter)
+  handler->addObjectVariable("ELECTRON_CUT_TRIGIDISOVL",   new ObjectVariableValue<int>("passCutBasedTrigIdIsoVL",   1));
 
   // --------------------------------------------------------------------------------------------------------------
   ///////////////////
   ///Tau Variables///
   ///////////////////
-  handler->addObjectVariable("TAU_nonbyMediumIsolationMVArun2v1DBnewDMwLT", new ObjectVariableReversed("byMediumIsolationMVArun2v1DBnewDMwLT"));
-  handler->addObjectVariable("TAU_dz",     new ObjectVariableInRange<double>("dz",-0.2,0.2));
+  handler->addObjectVariable("TAU_decayModeFindingNewDMs",                new ObjectVariableValue<int>("decayModeFindingNewDMs",                1));
+  //
+  handler->addObjectVariable("TAU_byLooseCombinedIsolationDeltaBetaCorr3Hits",  new ObjectVariableValue<int>("byLooseCombinedIsolationDeltaBetaCorr3Hits",  1));
+  handler->addObjectVariable("TAU_byMediumCombinedIsolationDeltaBetaCorr3Hits", new ObjectVariableValue<int>("byMediumCombinedIsolationDeltaBetaCorr3Hits", 1));
+  handler->addObjectVariable("TAU_byTightCombinedIsolationDeltaBetaCorr3Hits",  new ObjectVariableValue<int>("byTightCombinedIsolationDeltaBetaCorr3Hits",  1));
+  //
+  handler->addObjectVariable("TAU_byVLooseIsolationMVArun2v1DBnewDMwLT",  new ObjectVariableValue<int>("byVLooseIsolationMVArun2v1DBnewDMwLT",  1));
+  handler->addObjectVariable("TAU_byLooseIsolationMVArun2v1DBnewDMwLT",   new ObjectVariableValue<int>("byLooseIsolationMVArun2v1DBnewDMwLT",   1));
+  handler->addObjectVariable("TAU_byMediumIsolationMVArun2v1DBnewDMwLT",  new ObjectVariableValue<int>("byMediumIsolationMVArun2v1DBnewDMwLT",  1));
+  handler->addObjectVariable("TAU_byTightIsolationMVArun2v1DBnewDMwLT",   new ObjectVariableValue<int>("byTightIsolationMVArun2v1DBnewDMwLT",   1));
+  handler->addObjectVariable("TAU_byVTightIsolationMVArun2v1DBnewDMwLT",  new ObjectVariableValue<int>("byVTightIsolationMVArun2v1DBnewDMwLT",  1));
+  handler->addObjectVariable("TAU_byVVTightIsolationMVArun2v1DBnewDMwLT", new ObjectVariableValue<int>("byVVTightIsolationMVArun2v1DBnewDMwLT", 1));
+  //
+  handler->addObjectVariable("TAU_byVLooseIsolationMVArun2v1PWnewDMwLT",  new ObjectVariableValue<int>("byVLooseIsolationMVArun2v1PWnewDMwLT",  1));
+  handler->addObjectVariable("TAU_byLooseIsolationMVArun2v1PWnewDMwLT",   new ObjectVariableValue<int>("byLooseIsolationMVArun2v1PWnewDMwLT",   1));
+  handler->addObjectVariable("TAU_byMediumIsolationMVArun2v1PWnewDMwLT",  new ObjectVariableValue<int>("byMediumIsolationMVArun2v1PWnewDMwLT",  1));
+  handler->addObjectVariable("TAU_byTightIsolationMVArun2v1PWnewDMwLT",   new ObjectVariableValue<int>("byTightIsolationMVArun2v1PWnewDMwLT",   1));
+  handler->addObjectVariable("TAU_byVTightIsolationMVArun2v1PWnewDMwLT",  new ObjectVariableValue<int>("byVTightIsolationMVArun2v1PWnewDMwLT",  1));
+  handler->addObjectVariable("TAU_byVVTightIsolationMVArun2v1PWnewDMwLT", new ObjectVariableValue<int>("byVVTightIsolationMVArun2v1PWnewDMwLT", 1));
+  //
+  handler->addObjectVariable("TAU_againstElectronVLooseMVA6",             new ObjectVariableValue<int>("againstElectronVLooseMVA6",             1));
+  handler->addObjectVariable("TAU_againstElectronLooseMVA6",              new ObjectVariableValue<int>("againstElectronLooseMVA6",              1));
+  handler->addObjectVariable("TAU_againstElectronMediumMVA6",             new ObjectVariableValue<int>("againstElectronMediumMVA6",             1));
+  handler->addObjectVariable("TAU_againstElectronTightMVA6",              new ObjectVariableValue<int>("againstElectronTightMVA6",              1));
+  handler->addObjectVariable("TAU_againstElectronVTightMVA6",             new ObjectVariableValue<int>("againstElectronVTightMVA6",             1));
+  //
+  handler->addObjectVariable("TAU_againstMuonLoose3",                     new ObjectVariableValue<int>("againstMuonLoose3",                     1));
+  handler->addObjectVariable("TAU_againstMuonTight3",                     new ObjectVariableValue<int>("againstMuonTight3",                     1));
+  //
+  handler->addObjectVariable("TAU_nonbyMediumIsolationMVArun2v1DBnewDMwLT", new ObjectVariableValue<int>("byMediumIsolationMVArun2v1DBnewDMwLT", 0));
+  handler->addObjectVariable("TAU_dz", new ObjectVariableInRange<double>("dz",-0.2,0.2));
 
 
   // --------------------------------------------------------------------------------------------------------------
@@ -465,10 +509,10 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("PHOTON_BARREL_full5x5_sigmaIetaIeta", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0.0,0.0102));
   handler->addObjectVariable("PHOTON_ENDCAP_full5x5_sigmaIetaIeta", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0.0,0.0274));
   // BARREL : |eta|<1.479   |   ENDCAP : |eta|>1.479
-  ObjectVariableCombined* photon_barrel = new ObjectVariableCombined("BARREL","PHOTON_BARREL_hadronicOverEm",true,"photon_barrel_good");
+  ObjectVariableCombined* photon_barrel = new ObjectVariableCombined("BARRELSC","PHOTON_BARREL_hadronicOverEm",true,"photon_barrel_good");
   photon_barrel->addVariable("PHOTON_BARREL_full5x5_sigmaIetaIeta");
   handler->addObjectVariable("PHOTON_BARREL",photon_barrel);
-  ObjectVariableCombined* photon_endcap = new ObjectVariableCombined("ENDCAP","PHOTON_ENDCAP_hadronicOverEm",true,"photon_endcap_good");
+  ObjectVariableCombined* photon_endcap = new ObjectVariableCombined("ENDCAPSC","PHOTON_ENDCAP_hadronicOverEm",true,"photon_endcap_good");
   photon_endcap->addVariable("PHOTON_ENDCAP_full5x5_sigmaIetaIeta");
   handler->addObjectVariable("PHOTON_ENDCAP",photon_endcap);
   handler->addObjectVariable("PHOTON_COMBINED", new ObjectVariableCombined("PHOTON_BARREL","PHOTON_ENDCAP",false,"PHOTON_COMBINED"));
