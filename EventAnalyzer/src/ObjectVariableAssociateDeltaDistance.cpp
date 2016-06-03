@@ -1,0 +1,3 @@
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateDeltaDistance.h"
+
+ClassImp(ObjectVariableAssociateDeltaDistance)

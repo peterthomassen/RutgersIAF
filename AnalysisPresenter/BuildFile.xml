@@ -1,6 +1,8 @@
 <use   name="rootrflx"/>
 <use   name="CommonTools/Utils"/>
 <Flags LDFLAGS="-lPhysics -lRIO -lNet -lHist -lTree -lMatrix -lProof -lThread -lCore -lMathCore"/>
+<Flags LCG_DICT_HEADER="classes.h"/>
+<Flags LCG_DICT_XML="classes_def.xml"/>
 <export>
   <lib   name="1"/>
 </export>

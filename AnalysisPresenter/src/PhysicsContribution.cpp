@@ -28,12 +28,12 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 		throw std::runtime_error("invalid contribution type");
 	}
 	
-	TFile f(m_filename);
-	if(f.IsZombie()) {
+	TFile* f = TFile::Open(m_filename);
+	if(f->IsZombie()) {
 		cout << "was processing " << m_filename << endl;
 		throw std::runtime_error("could not open contribution root file");
 	}
-	TTree* treeR = (TTree*)f.Get(m_treeRname);
+	TTree* treeR = (TTree*)f->Get(m_treeRname);
 	if(!treeR) {
 		cout << "was processing " << m_filename << ", looking for Rutgers tree " << m_treeRname << endl;
 		throw std::runtime_error("contribution root file does not contain treeR");
@@ -44,7 +44,8 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 		? (1. / lumiOrXsec / treeR->GetWeight())
 		: lumiOrXsec;
 	delete treeR;
-	f.Close();
+	f->Close();
+	delete f;
 	
 	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
 		cout << "Warning: " << m_filename << "#" << m_treeRname << " has WEIGHT branch, but is being used as " << m_type << endl;
@@ -182,18 +183,18 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 		uncertainty.second.second->CalculateErrors(false);
 	}
 	
-	TFile f(m_filename);
-	if(f.IsZombie()) {
+	TFile* f = TFile::Open(m_filename);
+	if(f->IsZombie()) {
 		throw std::runtime_error("couldn't open contribution file");
 	}
-	TTree* treeR = (TTree*)f.Get(m_treeRname);
+	TTree* treeR = (TTree*)f->Get(m_treeRname);
 	treeR->SetWeight(1);
 
 	for(auto &alias : m_aliases){
 	  treeR->SetAlias(alias.first,alias.second);
 	}
 	
-	TH1D* hPileupMC = (TH1D*)f.Get("noCutSignature_TrueNumInteractions");
+	TH1D* hPileupMC = (TH1D*)f->Get("noCutSignature_TrueNumInteractions");
 	TH1D* hPileupWeights = 0;
 	TH1D* hPileupWeightsUnc = 0;
 	if(isMC() && hPileupMC) {
@@ -250,7 +251,8 @@ THnBase* PhysicsContribution::fillContent(const THnBase* hn, std::string varexp,
 	delete hPileupWeights;
 	delete hPileupWeightsUnc;
 	delete treeR;
-	f.Close();
+	f->Close();
+	delete f;
 	
 	for(auto &flatUncertainty : m_flatUncertaintyMap) {
 		applyFlatUncertainty(flatUncertainty.first);
