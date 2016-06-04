@@ -24,4 +24,5 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableConeConstituents.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonDisplacedVertex.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableConeCorrectedPt.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateDeltaDistance.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLinearRadialMoment.h"

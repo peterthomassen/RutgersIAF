@@ -98,4 +98,7 @@
   <class name="EventVariableLinearRadialMoment" ClassVersion="1">
    <version ClassVersion="1" checksum="355292647"/>
   </class>
+  <class name="ObjectVariableAssociateDeltaDistance" ClassVersion="1">
+   <version ClassVersion="1" checksum="3393087882"/>
+  </class>
 </lcgdict>

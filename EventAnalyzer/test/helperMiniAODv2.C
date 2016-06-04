@@ -221,7 +221,11 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("PTRELGOODMUONS",          new EventVariableObjectVariableVector<double>("ptRel",          "goodMuons"));
   handler->addEventVariable("RELISOGOODMUONS",         new EventVariableObjectVariableVector<double>("RELISO",         "goodMuons"));
   handler->addEventVariable("RELISODBDR0p4GOODMUONS",  new EventVariableObjectVariableVector<double>("MUON_RELISO",    "goodMuons"));
+  handler->addEventVariable("RELTRKISOGOODMUONS",      new EventVariableObjectVariableVector<double>("MUON_RELTRKISO", "goodMuons"));
   handler->addEventVariable("CONECORRECTEDPTGOODMUONS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodMuons"));
+  //
+  handler->addEventVariable("ISTIGHTIDGOODMUONS",      new EventVariableObjectVariableVector<int>("MUON_TIGHTID",      "goodMuons"));
+  handler->addEventVariable("ISHIGHPTIDGOODMUONS",     new EventVariableObjectVariableVector<int>("MUON_HIGHPTID",     "goodMuons"));
   //
   handler->addEventVariable("fakeRoleGOODMUONS",       new EventVariableObjectVariableVector<int>("fakeRole",  "goodMuons"));
   handler->addEventVariable("goodMuonsDgoodPhotons",   new EventVariableDvector("goodMuons", "goodPhotons"));
@@ -285,16 +289,23 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONECHPTDR02TO08GOODMUONS",    new EventVariableObjectVariableVector<double>("CONECHPTDR02to08",     "goodMuons"));
   handler->addEventVariable("CONECHMASSDR02TO08GOODMUONS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR02to08",   "goodMuons"));
   //
-  handler->addEventVariable("QBASICMUONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicMuons"));
-  handler->addEventVariable("PTBASICMUONS",      new EventVariableObjectVariableVector<double>("PT",     "basicMuons"));
-  handler->addEventVariable("ETABASICMUONS",     new EventVariableObjectVariableVector<double>("ETA",    "basicMuons"));
-  handler->addEventVariable("PHIBASICMUONS",     new EventVariableObjectVariableVector<double>("PHI",    "basicMuons"));
-  handler->addEventVariable("DXYBASICMUONS",     new EventVariableObjectVariableVector<double>("dxy",    "basicMuons"));
-  handler->addEventVariable("RELISOBASICMUONS",  new EventVariableObjectVariableVector<double>("RELISO", "basicMuons"));
-  handler->addEventVariable("MINIISOBASICMUONS", new EventVariableObjectVariableVector<double>("MINIISO","basicMuons"));
-  handler->addEventVariable("PTRATIOBASICMUONS", new EventVariableObjectVariableVector<double>("ptRatio","basicMuons"));
-  handler->addEventVariable("PTRELBASICMUONS",   new EventVariableObjectVariableVector<double>("ptRel",  "basicMuons"));
-  // -----
+  handler->addEventVariable("QBASICMUONS",          new EventVariableObjectVariableVector<int>("CHARGE",        "basicMuons"));
+  handler->addEventVariable("PTBASICMUONS",         new EventVariableObjectVariableVector<double>("PT",         "basicMuons"));
+  handler->addEventVariable("ETABASICMUONS",        new EventVariableObjectVariableVector<double>("ETA",        "basicMuons"));
+  handler->addEventVariable("PHIBASICMUONS",        new EventVariableObjectVariableVector<double>("PHI",        "basicMuons"));
+  handler->addEventVariable("DXYBASICMUONS",        new EventVariableObjectVariableVector<double>("dxy",        "basicMuons"));
+  handler->addEventVariable("RELISOBASICMUONS",     new EventVariableObjectVariableVector<double>("RELISO",     "basicMuons"));
+  handler->addEventVariable("MINIISOBASICMUONS",    new EventVariableObjectVariableVector<double>("MINIISO",    "basicMuons"));
+  handler->addEventVariable("PTRATIOBASICMUONS",    new EventVariableObjectVariableVector<double>("ptRatio",    "basicMuons"));
+  handler->addEventVariable("PTRELBASICMUONS",      new EventVariableObjectVariableVector<double>("ptRel",      "basicMuons"));
+  handler->addEventVariable("ISLOOSEIDBASICMUONS",  new EventVariableObjectVariableVector<int>("MUON_LOOSEID",  "basicMuons"));
+  handler->addEventVariable("ISMEDIUMIDBASICMUONS", new EventVariableObjectVariableVector<int>("MUON_MEDIUMID", "basicMuons"));
+  handler->addEventVariable("ISTIGHTIDBASICMUONS",  new EventVariableObjectVariableVector<int>("MUON_TIGHTID",  "basicMuons"));
+  handler->addEventVariable("ISSOFTIDBASICMUONS",   new EventVariableObjectVariableVector<int>("MUON_SOFTID",   "basicMuons"));
+  handler->addEventVariable("ISHIGHPTIDBASICMUONS", new EventVariableObjectVariableVector<int>("MUON_HIGHPTID", "basicMuons"));
+  handler->addEventVariable("RELISODBDR0p4BASICMUONS", new EventVariableObjectVariableVector<double>("MUON_RELISO",    "basicMuons"));
+  handler->addEventVariable("RELTRKISOBASICMUONS",     new EventVariableObjectVariableVector<double>("MUON_RELTRKISO", "basicMuons"));
+  //
   handler->addEventVariable("QNONPROMPTMUONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "nonPromptMuons"));
   handler->addEventVariable("PTNONPROMPTMUONS",      new EventVariableObjectVariableVector<double>("PT",     "nonPromptMuons"));
   handler->addEventVariable("ETANONPROMPTMUONS",     new EventVariableObjectVariableVector<double>("ETA",    "nonPromptMuons"));
@@ -327,17 +338,43 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ////////////////////////
   ///Electron Variables///
   ////////////////////////
-  handler->addEventVariable("NGOODELECTRONS",              new EventVariableN("NGOODELECTRONS",                             "goodElectrons"));
-  handler->addEventVariable("QGOODELECTRONS",              new EventVariableObjectVariableVector<int>("CHARGE",             "goodElectrons"));
-  handler->addEventVariable("PTGOODELECTRONS",             new EventVariableObjectVariableVector<double>("PT",              "goodElectrons"));
-  handler->addEventVariable("ETAGOODELECTRONS",            new EventVariableObjectVariableVector<double>("ETA",             "goodElectrons"));
-  handler->addEventVariable("PHIGOODELECTRONS",            new EventVariableObjectVariableVector<double>("PHI",             "goodElectrons"));
-  handler->addEventVariable("MINIISOGOODELECTRONS",        new EventVariableObjectVariableVector<double>("MINIISO",         "goodElectrons"));
-  handler->addEventVariable("PTRATIOGOODELECTRONS",        new EventVariableObjectVariableVector<double>("ptRatio",         "goodElectrons"));
-  handler->addEventVariable("PTRELGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ptRel",           "goodElectrons"));
-  handler->addEventVariable("RELISOGOODELECTRONS",         new EventVariableObjectVariableVector<double>("RELISO",          "goodElectrons"));
-  handler->addEventVariable("RELISOCUTIDGOODELECTRONS",    new EventVariableObjectVariableVector<double>("ELECTRON_RELISO", "goodElectrons"));
-  handler->addEventVariable("CONECORRECTEDPTGOODELECTRONS",new EventVariableObjectVariableVector<double>("conecorrectedPt", "goodElectrons"));
+  handler->addEventVariable("NGOODELECTRONS",                new EventVariableN("NGOODELECTRONS",                              "goodElectrons"));
+  handler->addEventVariable("QGOODELECTRONS",                new EventVariableObjectVariableVector<int>("CHARGE",              "goodElectrons"));
+  handler->addEventVariable("PTGOODELECTRONS",               new EventVariableObjectVariableVector<double>("PT",               "goodElectrons"));
+  handler->addEventVariable("ETAGOODELECTRONS",              new EventVariableObjectVariableVector<double>("ETA",              "goodElectrons"));
+  handler->addEventVariable("PHIGOODELECTRONS",              new EventVariableObjectVariableVector<double>("PHI",              "goodElectrons"));
+  handler->addEventVariable("MINIISOGOODELECTRONS",          new EventVariableObjectVariableVector<double>("MINIISO",          "goodElectrons"));
+  handler->addEventVariable("PTRATIOGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ptRatio",          "goodElectrons"));
+  handler->addEventVariable("PTRELGOODELECTRONS",            new EventVariableObjectVariableVector<double>("ptRel",            "goodElectrons"));
+  handler->addEventVariable("RELISOGOODELECTRONS",           new EventVariableObjectVariableVector<double>("RELISO",           "goodElectrons"));
+  handler->addEventVariable("RELISOCUTIDGOODELECTRONS",      new EventVariableObjectVariableVector<double>("ELECTRON_RELISO",  "goodElectrons"));
+  handler->addEventVariable("CONECORRECTEDPTGOODELECTRONS",  new EventVariableObjectVariableVector<double>("conecorrectedPt",  "goodElectrons"));
+  handler->addEventVariable("ECALPFCLUSTERRELISOGOODELECTRONS", new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_EcalPFClusterIso", "goodElectrons"));
+  handler->addEventVariable("HCALPFCLUSTERRELISOGOODELECTRONS", new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_HcalPFClusterIso", "goodElectrons"));
+  handler->addEventVariable("TRACKRELISOGOODELECTRONS",         new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_TrackIso",         "goodElectrons"));
+  //
+  handler->addEventVariable("SCETAGOODELECTRONS",                new EventVariableObjectVariableVector<double>("superClustereta",                "goodElectrons"));
+  handler->addEventVariable("FULL5X5SIGMAIETAIETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("full5x5_sigmaIetaIeta",          "goodElectrons"));
+  handler->addEventVariable("DETAGOODELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaEtaSuperClusterTrackAtVtx", "goodElectrons"));
+  handler->addEventVariable("DPHIGOODELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaPhiSuperClusterTrackAtVtx", "goodElectrons"));
+  handler->addEventVariable("HOVEREGOODELECTRONS",               new EventVariableObjectVariableVector<double>("hcalOverEcal",                   "goodElectrons"));
+  handler->addEventVariable("OOEMOOPGOODELECTRONS",              new EventVariableObjectVariableVector<double>("1oEm1oPcorrected",               "goodElectrons"));
+  handler->addEventVariable("DXYGOODELECTRONS",                  new EventVariableObjectVariableVector<double>("dxy",                            "goodElectrons"));
+  handler->addEventVariable("DZGOODELECTRONS",                   new EventVariableObjectVariableVector<double>("dz",                             "goodElectrons"));
+  handler->addEventVariable("QCTFGOODELECTRONS",                 new EventVariableObjectVariableVector<int>("ctfTrackCharge",                    "goodElectrons"));
+  handler->addEventVariable("QSCPIXGOODELECTRONS",               new EventVariableObjectVariableVector<int>("scPixCharge",                       "goodElectrons"));
+  handler->addEventVariable("QGSFGOODELECTRONS",                 new EventVariableObjectVariableVector<int>("gsfTrackCharge",                    "goodElectrons"));
+  handler->addEventVariable("ISALLQCONSISTENTGOODELECTRONS",     new EventVariableObjectVariableVector<int>("isGsfCtfScPixChargeConsistent",     "goodElectrons"));
+  handler->addEventVariable("ISCUTVETOIDGOODELECTRONS",          new EventVariableObjectVariableVector<int>("passCutBasedVetoId",                "goodElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDGOODELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedLooseId",               "goodElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDGOODELECTRONS",        new EventVariableObjectVariableVector<int>("passCutBasedMediumId",              "goodElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDGOODELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedTightId",               "goodElectrons"));
+  handler->addEventVariable("ISHEEPIDGOODELECTRONS",             new EventVariableObjectVariableVector<int>("passHEEP",                          "goodElectrons"));
+  handler->addEventVariable("ISCUTVETOIDNOISOGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedVetoIdNoIso",           "goodElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",          "goodElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDNOISOGOODELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",         "goodElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",          "goodElectrons"));
+  handler->addEventVariable("ISCUTTRIGIDISOVLGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",           "goodElectrons"));
   //
   handler->addEventVariable("fakeRoleGOODELECTRONS",       new EventVariableObjectVariableVector<int>("fakeRole",  "goodElectrons"));
   handler->addEventVariable("goodElectronsDgoodPhotons",   new EventVariableDvector("goodElectrons", "goodPhotons"));
@@ -401,16 +438,40 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONECHPTDR02TO08GOODELECTRONS",    new EventVariableObjectVariableVector<double>("CONECHPTDR02to08",     "goodElectrons"));
   handler->addEventVariable("CONECHMASSDR02TO08GOODELECTRONS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR02to08",   "goodElectrons"));
   //
-  handler->addEventVariable("QBASICELECTRONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "basicElectrons"));
-  handler->addEventVariable("PTBASICELECTRONS",      new EventVariableObjectVariableVector<double>("PT",     "basicElectrons"));
-  handler->addEventVariable("ETABASICELECTRONS",     new EventVariableObjectVariableVector<double>("ETA",    "basicElectrons"));
-  handler->addEventVariable("PHIBASICELECTRONS",     new EventVariableObjectVariableVector<double>("PHI",    "basicElectrons"));
-  handler->addEventVariable("RELISOBASICELECTRONS",  new EventVariableObjectVariableVector<double>("RELISO", "basicElectrons"));
-  handler->addEventVariable("MINIISOBASICELECTRONS", new EventVariableObjectVariableVector<double>("MINIISO","basicElectrons"));
-  handler->addEventVariable("PTRATIOBASICELECTRONS", new EventVariableObjectVariableVector<double>("ptRatio","basicElectrons"));
-  handler->addEventVariable("PTRELBASICELECTRONS",   new EventVariableObjectVariableVector<double>("ptRel",  "basicElectrons"));
-  handler->addEventVariable("DXYBASICELECTRONS",     new EventVariableObjectVariableVector<double>("dxy",    "basicElectrons"));
-  // -----
+  handler->addEventVariable("QBASICELECTRONS",                    new EventVariableObjectVariableVector<int>("CHARGE",                            "basicElectrons"));
+  handler->addEventVariable("PTBASICELECTRONS",                   new EventVariableObjectVariableVector<double>("PT",                             "basicElectrons"));
+  handler->addEventVariable("ETABASICELECTRONS",                  new EventVariableObjectVariableVector<double>("ETA",                            "basicElectrons"));
+  handler->addEventVariable("PHIBASICELECTRONS",                  new EventVariableObjectVariableVector<double>("PHI",                            "basicElectrons"));
+  handler->addEventVariable("RELISOBASICELECTRONS",               new EventVariableObjectVariableVector<double>("RELISO",                         "basicElectrons"));
+  handler->addEventVariable("MINIISOBASICELECTRONS",              new EventVariableObjectVariableVector<double>("MINIISO",                        "basicElectrons"));
+  handler->addEventVariable("PTRATIOBASICELECTRONS",              new EventVariableObjectVariableVector<double>("ptRatio",                        "basicElectrons"));
+  handler->addEventVariable("PTRELBASICELECTRONS",                new EventVariableObjectVariableVector<double>("ptRel",                          "basicElectrons"));
+  handler->addEventVariable("SCETABASICELECTRONS",                new EventVariableObjectVariableVector<double>("superClustereta",                "basicElectrons"));
+  handler->addEventVariable("FULL5X5SIGMAIETAIETABASICELECTRONS", new EventVariableObjectVariableVector<double>("full5x5_sigmaIetaIeta",          "basicElectrons"));
+  handler->addEventVariable("DETABASICELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaEtaSuperClusterTrackAtVtx", "basicElectrons"));
+  handler->addEventVariable("DPHIBASICELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaPhiSuperClusterTrackAtVtx", "basicElectrons"));
+  handler->addEventVariable("HOVEREBASICELECTRONS",               new EventVariableObjectVariableVector<double>("hcalOverEcal",                   "basicElectrons"));
+  handler->addEventVariable("OOEMOOPBASICELECTRONS",              new EventVariableObjectVariableVector<double>("1oEm1oPcorrected",               "basicElectrons"));
+  handler->addEventVariable("DXYBASICELECTRONS",                  new EventVariableObjectVariableVector<double>("dxy",                            "basicElectrons"));
+  handler->addEventVariable("DZBASICELECTRONS",                   new EventVariableObjectVariableVector<double>("dz",                             "basicElectrons"));
+  handler->addEventVariable("QCTFBASICELECTRONS",                 new EventVariableObjectVariableVector<int>("ctfTrackCharge",                    "basicElectrons"));
+  handler->addEventVariable("QSCPIXBASICELECTRONS",               new EventVariableObjectVariableVector<int>("scPixCharge",                       "basicElectrons"));
+  handler->addEventVariable("QGSFBASICELECTRONS",                 new EventVariableObjectVariableVector<int>("gsfTrackCharge",                    "basicElectrons"));
+  handler->addEventVariable("ISALLQCONSISTENTBASICELECTRONS",     new EventVariableObjectVariableVector<int>("isGsfCtfScPixChargeConsistent",     "basicElectrons"));
+  handler->addEventVariable("ISCUTVETOIDBASICELECTRONS",          new EventVariableObjectVariableVector<int>("passCutBasedVetoId",                "basicElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDBASICELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedLooseId",               "basicElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDBASICELECTRONS",        new EventVariableObjectVariableVector<int>("passCutBasedMediumId",              "basicElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDBASICELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedTightId",               "basicElectrons"));
+  handler->addEventVariable("ISHEEPIDBASICELECTRONS",             new EventVariableObjectVariableVector<int>("passHEEP",                          "basicElectrons"));
+  handler->addEventVariable("ISCUTVETOIDNOISOBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedVetoIdNoIso",           "basicElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",          "basicElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDNOISOBASICELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",         "basicElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",          "basicElectrons"));
+  handler->addEventVariable("ISCUTTRIGIDISOVLBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",           "basicElectrons"));
+  handler->addEventVariable("ECALPFCLUSTERRELISOBASICELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_EcalPFClusterIso", "basicElectrons"));
+  handler->addEventVariable("HCALPFCLUSTERRELISOBASICELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_HcalPFClusterIso", "basicElectrons"));
+  handler->addEventVariable("TRACKRELISOBASICELECTRONS",          new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_TrackIso",         "basicElectrons"));
+  //
   handler->addEventVariable("QNONPROMPTELECTRONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "nonPromptElectrons"));
   handler->addEventVariable("PTNONPROMPTELECTRONS",      new EventVariableObjectVariableVector<double>("PT",     "nonPromptElectrons"));
   handler->addEventVariable("ETANONPROMPTELECTRONS",     new EventVariableObjectVariableVector<double>("ETA",    "nonPromptElectrons"));
@@ -450,17 +511,60 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("ETAGOODTAUS",            new EventVariableObjectVariableVector<double>("ETA",            "goodTaus"));
   handler->addEventVariable("PHIGOODTAUS",            new EventVariableObjectVariableVector<double>("PHI",            "goodTaus"));
   handler->addEventVariable("fakeRoleGOODTAUS",       new EventVariableObjectVariableVector<int>("fakeRole",          "goodTaus"));
-  //handler->addEventVariable("TOTALISOGOODTAUS",       new EventVariableObjectVariableVector<double>("TOTALISO",       "goodTaus"));//these are not very meaningful for taus
-  //handler->addEventVariable("TOTALMINIISOGOODTAUS",   new EventVariableObjectVariableVector<double>("TOTALMINIISO",   "goodTaus"));//taus need a hollow cone
-  //handler->addEventVariable("MINIISOGOODTAUS",        new EventVariableObjectVariableVector<double>("MINIISO",        "goodTaus"));
+  //handler->addEventVariable("TOTALISOGOODTAUS",     new EventVariableObjectVariableVector<double>("TOTALISO",       "goodTaus"));//not very meaningful for taus
+  //handler->addEventVariable("TOTALMINIISOGOODTAUS", new EventVariableObjectVariableVector<double>("TOTALMINIISO",   "goodTaus"));//taus need a hollow cone
+  //handler->addEventVariable("MINIISOGOODTAUS",      new EventVariableObjectVariableVector<double>("MINIISO",        "goodTaus"));
   handler->addEventVariable("CONECORRECTEDPTGOODTAUS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodTaus"));
   //
-  handler->addEventVariable("NBASICTAUS",        new EventVariableN("NBASICTAUS",                         "basicTaus"));
-  handler->addEventVariable("PTBASICTAUS",       new EventVariableObjectVariableVector<double>("PT",      "basicTaus"));
-  handler->addEventVariable("ETABASICTAUS",      new EventVariableObjectVariableVector<double>("ETA",     "basicTaus"));
-  handler->addEventVariable("PHIBASICTAUS",      new EventVariableObjectVariableVector<double>("PHI",     "basicTaus"));
-  //handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));//these are not very meaningful for taus
+  handler->addEventVariable("VLOOSEISOMVARUN2DBGOODTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1DBnewDMwLT",   "goodTaus"));
+  handler->addEventVariable("LOOSEISOMVARUN2DBGOODTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1DBnewDMwLT",    "goodTaus"));
+  handler->addEventVariable("MEDIUMISOMVARUN2DBGOODTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1DBnewDMwLT",   "goodTaus"));
+  handler->addEventVariable("TIGHTISOMVARUN2DBGOODTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1DBnewDMwLT",    "goodTaus"));
+  handler->addEventVariable("VTIGHTISOMVARUN2DBGOODTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1DBnewDMwLT",   "goodTaus"));
+  handler->addEventVariable("VVTIGHTISOMVARUN2DBGOODTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1DBnewDMwLT",  "goodTaus"));
+  handler->addEventVariable("VLOOSEISOMVARUN2PWGOODTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1PWnewDMwLT",   "goodTaus"));
+  handler->addEventVariable("LOOSEISOMVARUN2PWGOODTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1PWnewDMwLT",    "goodTaus"));
+  handler->addEventVariable("MEDIUMISOMVARUN2PWGOODTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1PWnewDMwLT",   "goodTaus"));
+  handler->addEventVariable("TIGHTISOMVARUN2PWGOODTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1PWnewDMwLT",    "goodTaus"));
+  handler->addEventVariable("VTIGHTISOMVARUN2PWGOODTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1PWnewDMwLT",   "goodTaus"));
+  handler->addEventVariable("VVTIGHTISOMVARUN2PWGOODTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1PWnewDMwLT",  "goodTaus"));
+  handler->addEventVariable("VLOOSEANTIELEMVA6GOODTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVLooseMVA6",              "goodTaus"));
+  handler->addEventVariable("LOOSEANTIELEMVA6GOODTAUS",    new EventVariableObjectVariableVector<int>("againstElectronLooseMVA6",               "goodTaus"));
+  handler->addEventVariable("MEDIUMANTIELEMVA6GOODTAUS",   new EventVariableObjectVariableVector<int>("againstElectronMediumMVA6",              "goodTaus"));
+  handler->addEventVariable("TIGHTANTIELEMVA6GOODTAUS",    new EventVariableObjectVariableVector<int>("againstElectronTightMVA6",               "goodTaus"));
+  handler->addEventVariable("VTIGHTANTIELEMVA6GOODTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVTightMVA6",              "goodTaus"));
+  handler->addEventVariable("LOOSEANTIMU3GOODTAUS",        new EventVariableObjectVariableVector<int>("againstMuonLoose3",                      "goodTaus"));
+  handler->addEventVariable("TIGHTANTIMU3GOODTAUS",        new EventVariableObjectVariableVector<int>("againstMuonTight3",                      "goodTaus"));
+  //
+  handler->addEventVariable("NBASICTAUS",          new EventVariableN("NBASICTAUS",                         "basicTaus"));
+  handler->addEventVariable("PTBASICTAUS",         new EventVariableObjectVariableVector<double>("PT",      "basicTaus"));
+  handler->addEventVariable("ETABASICTAUS",        new EventVariableObjectVariableVector<double>("ETA",     "basicTaus"));
+  handler->addEventVariable("PHIBASICTAUS",        new EventVariableObjectVariableVector<double>("PHI",     "basicTaus"));
+  //handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));//not very meaningful for taus
   //handler->addEventVariable("RELISOBASICTAUS",   new EventVariableObjectVariableVector<double>("RELISO",  "basicTaus"));//taus need a hollow cone
+  handler->addEventVariable("VLOOSEISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("LOOSEISOMVARUN2DBBASICTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1DBnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("MEDIUMISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("TIGHTISOMVARUN2DBBASICTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1DBnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("VTIGHTISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("VVTIGHTISOMVARUN2DBBASICTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1DBnewDMwLT",  "basicTaus"));
+  handler->addEventVariable("VLOOSEISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("LOOSEISOMVARUN2PWBASICTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1PWnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("MEDIUMISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("TIGHTISOMVARUN2PWBASICTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1PWnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("VTIGHTISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("VVTIGHTISOMVARUN2PWBASICTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1PWnewDMwLT",  "basicTaus"));
+  handler->addEventVariable("VLOOSEANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVLooseMVA6",              "basicTaus"));
+  handler->addEventVariable("LOOSEANTIELEMVA6BASICTAUS",    new EventVariableObjectVariableVector<int>("againstElectronLooseMVA6",               "basicTaus"));
+  handler->addEventVariable("MEDIUMANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronMediumMVA6",              "basicTaus"));
+  handler->addEventVariable("TIGHTANTIELEMVA6BASICTAUS",    new EventVariableObjectVariableVector<int>("againstElectronTightMVA6",               "basicTaus"));
+  handler->addEventVariable("VTIGHTANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVTightMVA6",              "basicTaus"));
+  handler->addEventVariable("LOOSEANTIMU3BASICTAUS",        new EventVariableObjectVariableVector<int>("againstMuonLoose3",                      "basicTaus"));
+  handler->addEventVariable("TIGHTANTIMU3BASICTAUS",        new EventVariableObjectVariableVector<int>("againstMuonTight3",                      "basicTaus"));
+  //
+  handler->addEventVariable("LOOSECOMBINEDISODBCORR3HITSBASICTAUS", new EventVariableObjectVariableVector<int>("byLooseCombinedIsolationDeltaBetaCorr3Hits", "basicTaus"));
+  handler->addEventVariable("MEDIUMCOMBINEDISODBCORR3HITSBASICTAUS",new EventVariableObjectVariableVector<int>("byMediumCombinedIsolationDeltaBetaCorr3Hits", "basicTaus"));
+  handler->addEventVariable("TIGHTCOMBINEDISODBCORR3HITSBASICTAUS"  new EventVariableObjectVariableVector<int>("byTightCombinedIsolationDeltaBetaCorr3Hits"   "basicTaus"));
   //
   handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
   //

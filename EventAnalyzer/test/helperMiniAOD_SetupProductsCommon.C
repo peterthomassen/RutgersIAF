@@ -43,22 +43,25 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProduct(   "basicMuons", "ALLMUONS");
   handler->addProductCut("basicMuons", "PT5");
   handler->addProductCut("basicMuons", "ETA2p4");
-  handler->addProductCut("basicMuons", "isPFMuon");
-  handler->addProductCut("basicMuons", "MUON_GLOBALORTRACKER");
   handler->addProductCut("basicMuons", "MUON_dz");
+  handler->addProductCut("basicMuons", "MUON_dxy");//"prompt-ness" cut
+  handler->addProductCut("basicMuons", "MUON_LOOSEID");
   //
-  handler->addProduct(      "nonPromptMuons", "basicMuons");
-  handler->addProductCut(   "nonPromptMuons", "MUON_nonprompt");
-  handler->addProduct(   "isoNonPromptMuons", "basicMuons");
+  handler->addProduct(   "nonPromptMuons", "ALLMUONS");
+  handler->addProductCut("nonPromptMuons", "PT5");
+  handler->addProductCut("nonPromptMuons", "ETA2p4");
+  handler->addProductCut("nonPromptMuons", "MUON_dz");
+  handler->addProductCut("nonPromptMuons", "MUON_nonprompt");//reversed MUON_dxy cut
+  handler->addProductCut("nonPromptMuons", "MUON_LOOSEID");
+  //
+  handler->addProduct(   "isoNonPromptMuons", "nonPromptMuons");
   handler->addProductCut("isoNonPromptMuons", "IREL0p15");
-  handler->addProductCut("isoNonPromptMuons", "MUON_nonprompt");
   //
-  handler->addProduct(   "nonPromptNonIsoMuons", "basicMuons");
+  handler->addProduct(   "nonPromptNonIsoMuons", "nonPromptMuons");
   handler->addProductCut("nonPromptNonIsoMuons", "NOTIREL0p15");
-  handler->addProductCut("nonPromptNonIsoMuons", "MUON_nonprompt");  
-  handler->addProduct(      "promptNonIsoMuons", "basicMuons");
-  handler->addProductCut(   "promptNonIsoMuons", "NOTIREL0p15");
-  handler->addProductCut(   "promptNonIsoMuons", "MUON_dxy");
+  //
+  handler->addProduct(   "promptNonIsoMuons", "basicMuons");
+  handler->addProductCut("promptNonIsoMuons", "NOTIREL0p15");
 
 
   // --------------------------------------------------------------------------------------------------------------
@@ -68,21 +71,29 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProduct(   "basicElectrons", "ALLELECTRONS");
   handler->addProductCut("basicElectrons", "PT7");
   handler->addProductCut("basicElectrons", "ETA2p5");
-  handler->addProductCut("basicElectrons", "ELECTRON_CUT_VETOID");//very loose ele id
+  handler->addProductCut("basicElectrons", "ELECTRON_dz");
+  handler->addProductCut("basicElectrons", "ELECTRON_dxy");//"prompt-ness" cut 
+  handler->addProductCut("basicElectrons", "ELECTRON_CUT_VETOIDNOISO");//very loose ele id, no isolation
   //
-  handler->addProduct(      "isoNonPromptElectrons", "basicElectrons");
-  handler->addProductCut(   "isoNonPromptElectrons", "ELECTRON_ISOLATED");// equal to MULTIISOM
-  handler->addProductCut(   "isoNonPromptElectrons", "ELECTRON_NONPROMPT");
-  handler->addProduct(         "nonPromptElectrons", "basicElectrons");
-  handler->addProductCut(      "nonPromptElectrons", "ELECTRON_NONPROMPT");
+  handler->addproduct(   "nonPromptElectrons", "ALLELECTRONS");
+  handler->addProductCut("nonPromptElectrons", "PT7");
+  handler->addProductCut("nonPromptElectrons", "ETA2p5");
+  handler->addProductCut("nonPromptElectrons", "ELECTRON_dz");
+  handler->addProductCut("nonPromptElectrons", "ELECTRON_NONPROMPT");//reversed ELECTRON_dxy cut 
   //
-  handler->addProduct(   "nonPromptNonIsoElectrons", "basicElectrons");
+  handler->addProduct(   "isoNonPromptElectrons", "nonPromptElectrons");
+  handler->addProductCut("isoNonPromptElectrons", "ELECTRON_ISOLATED");// equal to MULTIISOM
+  //
+  handler->addProduct(   "nonPromptNonIsoElectrons", "nonPromptElectrons");
   handler->addProductCut("nonPromptNonIsoElectrons", "ELECTRON_NOTISOLATED");
-  handler->addProductCut("nonPromptNonIsoElectrons", "ELECTRON_NONPROMPT");
-  handler->addProduct(      "promptNonIsoElectrons", "basicElectrons");
-  handler->addProductCut(   "promptNonIsoElectrons", "ELECTRON_NOTISOLATED");
-  handler->addProductCut(   "promptNonIsoElectrons", "ELECTRON_PROMPT");
-  handler->addProductCut(   "promptNonIsoElectrons", "SIP3D_4sigma");
+  //
+  handler->addProduct(   "promptNonIsoElectrons", "ALLELECTRONS");
+  handler->addProductCut("promptNonIsoElectrons", "PT7");
+  handler->addProductCut("promptNonIsoElectrons", "ETA2p5");
+  handler->addProductCut("promptNonIsoElectrons", "ELECTRON_dz");
+  handler->addProductCut("promptNonIsoElectrons", "ELECTRON_PROMPT");// same as ELECTRON_dxy cut 
+  handler->addProductCut("promptNonIsoElectrons", "ELECTRON_NOTISOLATED");
+  handler->addProductCut("promptNonIsoElectrons", "SIP3D_4sigma");
 
 
   // --------------------------------------------------------------------------------------------------------------
@@ -94,10 +105,11 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProductCut("basicTaus", "PT20");
   handler->addProductCut("basicTaus", "ETA2p3");
   handler->addProductCut("basicTaus", "TAU_dz");
-  handler->addProductCut("basicTaus", "decayModeFindingNewDMs");
+  handler->addProductCut("basicTaus", "TAU_decayModeFindingNewDMs");
+  //
   handler->addProduct(   "nonIsoTaus", "basicTaus");
-  handler->addProductCut("nonIsoTaus", "againstMuonTight3");
-  handler->addProductCut("nonIsoTaus", "againstElectronTightMVA6");
+  handler->addProductCut("nonIsoTaus", "TAU_againstMuonTight3");
+  handler->addProductCut("nonIsoTaus", "TAU_againstElectronTightMVA6");
   handler->addProductCut("nonIsoTaus", "TAU_nonbyMediumIsolationMVArun2v1DBnewDMwLT");
 
 

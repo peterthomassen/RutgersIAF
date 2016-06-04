@@ -36,6 +36,7 @@ public:
 	double getBinSyst(TString type, int i, TString name, TString bundleName) const;
 	std::vector<TString> getBundleNames(TString type) const;
 	TH1* getHistogram(TString type) const;
+	std::vector<TH1*> getHistograms(TString type) const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
 	double getMoment(TString type, int k = 1, bool center = false) const;
 	std::vector<std::pair<int, int>> getRanges() const;

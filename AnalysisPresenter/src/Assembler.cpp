@@ -210,6 +210,10 @@ void Assembler::process(std::string varexp, TString selection, bool ApplyMCNorma
 		contribution->fillContent(hs, varexp, selection, scale, m_hPileup.first, m_hPileup.second);
 		contribution->getMeta();
 	}
+	
+	// Print out information about duplicates
+	channel("")->getMeta();
+	
 	delete hs;
 }
 
@@ -229,8 +233,8 @@ AssemblerProjection* Assembler::project(const char* name, const bool binForOverf
 
 void Assembler::save() {
 	m_outfile->cd();
-	cerr << "Currently only saving THn of first data file" << endl;
-	m_contributions["data"][0]->getContent()->Write("data");
+//	cerr << "Currently only saving THn of first data file" << endl;
+//	m_contributions["data"][0]->getContent()->Write("data");
 	this->Write("assembler");
 	m_outfile->Flush();
 }
