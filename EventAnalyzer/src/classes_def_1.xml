@@ -95,4 +95,7 @@
   <class name="ObjectVariableConeCorrectedPt" ClassVersion="1">
    <version ClassVersion="1" checksum="3786509328"/>
   </class>
+  <class name="EventVariableLinearRadialMoment" ClassVersion="1">
+   <version ClassVersion="1" checksum="355292647"/>
+  </class>
 </lcgdict>
