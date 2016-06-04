@@ -12,7 +12,7 @@ void produceAnalysisTreev2(
 			 , Int_t iLo = 0      // change this to start running here
 			 , Int_t iHi = -1     // change this to stop running here
 			 , Int_t noFakes = 0
-			 , bool isMC = false
+			 , bool isMC = true
 ) {
         // Check if the declated variables isMC and trig-mode make sense:
 	assert(!(isMC && mode > 0));
@@ -52,18 +52,19 @@ void produceAnalysisTreev2(
 	
 	//bool matchingFlag = !(input.Contains("/TTJets") || input.Contains("/TTTo2L") || input.Contains("/DYJets") || input.Contains("/WWTo2L"));
 	//bool matchingFlag = !(input.Contains("/TTJets") || input.Contains("/TTTo2L") || input.Contains("/DYJets") || input.Contains("/WWTo2L") || input.Contains("/WJets"));
-	/*
+
+
 	if(!single && !theory && !matchingFlag && noFakes == 0) {
-		cout << "Setting fake modes ..." << endl;
-		
-		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTracks") , "trackFakeCombination");
-		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakePhotons"), "photonFakeCombination");
-//		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTaus")   , "tauFakeCombination");
-        }*/
+	  cout << "Setting fake modes ..." << endl;
+	  handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTracks") , "trackFakeCombination");
+	  handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakePhotons"), "photonFakeCombination");
+	  //handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTaus")   , "tauFakeCombination");
+        }
 	
-//	handler->setDebugMode(true);
-//	handler->addPrintModule(new PrintModuleEverything("everything"));
-//	setupPrintElectrons(handler);
+	//handler->setDebugMode(true);
+	//handler->addPrintModule(new PrintModuleEverything("everything"));
+	//setupPrintElectrons(handler);
+
 	setupProducts(handler);
 	setupVariables(handler, isMC);
 	setupTriggers(handler, mode);

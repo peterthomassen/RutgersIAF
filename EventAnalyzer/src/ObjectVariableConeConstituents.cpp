@@ -13,6 +13,7 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
   int   numberOfConstituents_Jet      = 0;
   int   chargedMultiplicity_Jet       = 0;
   int   chargedHadronMultiplicity_Jet = 0;
+  double linearRadialMoment_Jet       = 0;
   float corrPt_Jet                    = 0;
   double CSVbtagvalue_Jet             = 0;
   double  JPbtagvalue_Jet             = 0;
@@ -63,12 +64,13 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
       //
       if( dRJet < dRmin ){ //find nearest jet
 	dRmin = dRJet;
-	bool hasMultiplicity1 = ijet->getVariable( "numberOfConstituents",      numberOfConstituents_Jet      );
-	bool hasMultiplicity2 = ijet->getVariable( "chargedMultiplicity",       chargedMultiplicity_Jet       );
-	bool hasMultiplicity3 = ijet->getVariable( "chargedHadronMultiplicity", chargedHadronMultiplicity_Jet );
-	bool hasBtagValue1    = ijet->getVariable( "pfCombinedInclusiveSecondaryVertexV2BJetTags", CSVbtagvalue_Jet );
-	bool hasBtagValue2    = ijet->getVariable( "pfJetProbabilityBJetTags",                      JPbtagvalue_Jet );
-	bool hasBtagValue3    = ijet->getVariable( "pfCombinedMVAV2BJetTags",                      MVAbtagvalue_Jet );
+	bool hasMultiplicity1      = ijet->getVariable( "numberOfConstituents",                          numberOfConstituents_Jet );
+	bool hasMultiplicity2      = ijet->getVariable( "chargedMultiplicity",                            chargedMultiplicity_Jet );
+	bool hasMultiplicity3      = ijet->getVariable( "chargedHadronMultiplicity",                chargedHadronMultiplicity_Jet );
+	bool hasLinearRadialMoment = ijet->getVariable( "linearRadialMoment",                              linearRadialMoment_Jet );
+	bool hasBtagValue1         = ijet->getVariable( "pfCombinedInclusiveSecondaryVertexV2BJetTags",          CSVbtagvalue_Jet );
+	bool hasBtagValue2         = ijet->getVariable( "pfJetProbabilityBJetTags",                               JPbtagvalue_Jet );
+	bool hasBtagValue3         = ijet->getVariable( "pfCombinedMVAV2BJetTags",                               MVAbtagvalue_Jet );
 	if( !hasBtagValue1 ) CSVbtagvalue_Jet = -1;//reduntant protection, but not sure if low pt jets have btag info
 	if( !hasBtagValue2 )  JPbtagvalue_Jet = -1;//reduntant protection, but not sure if low pt jets have btag info
 	if( !hasBtagValue3 ) MVAbtagvalue_Jet = -1;//reduntant protection, but not sure if low pt jets have btag info
@@ -84,7 +86,7 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
 	//   neutralHadronMultiplicity
 	//   numberOfConstituents (=chargedMultiplicity+neutralMultiplicity)
 	// ------------------------------------------------------------------
-	if( !hasMultiplicity1 || !hasMultiplicity2 || !hasMultiplicity3 ) return false;
+	if( !hasMultiplicity1 || !hasMultiplicity2 || !hasMultiplicity3 || !hasLinearRadialMoment ) return false;
 	//
 	corrPt_Jet=ijet->Pt();
 	if( dRJet<0.4 ){//jet-lep subtraction if lepton is within the jet cone.
@@ -101,11 +103,13 @@ bool ObjectVariableConeConstituents::calculate(SignatureObject* sigObj)
     sigObj->setVariable(TString::Format("%sNOOFCONST",  getName().Data()), numberOfConstituents_Jet      );
     sigObj->setVariable(TString::Format("%sCHMULT",     getName().Data()), chargedMultiplicity_Jet       );
     sigObj->setVariable(TString::Format("%sCHHADMULT",  getName().Data()), chargedHadronMultiplicity_Jet );
+    sigObj->setVariable(TString::Format("%sLRM",        getName().Data()), linearRadialMoment_Jet        );
     sigObj->setVariable(TString::Format("%sCORRJETPT",  getName().Data()), corrPt_Jet                    );
     //
     if(isdebug) cout<<"     numberOfConstituents_Jet: "<< numberOfConstituents_Jet      <<endl;
     if(isdebug) cout<<"      chargedMultiplicity_Jet: "<< chargedMultiplicity_Jet       <<endl;
     if(isdebug) cout<<"chargedHadronMultiplicity_Jet: "<< chargedHadronMultiplicity_Jet <<endl;
+    if(isdebug) cout<<"       linearRadialMoment_Jet: "<< linearRadialMoment_Jet        <<endl;
     if(isdebug) cout<<"                   corrPt_Jet: "<< corrPt_Jet                    <<endl;
     if(isdebug) cout<<"             CSVbtagvalue_Jet: "<< CSVbtagvalue_Jet              <<endl;
     if(isdebug) cout<<"              JPbtagvalue_Jet: "<<  JPbtagvalue_Jet              <<endl;
