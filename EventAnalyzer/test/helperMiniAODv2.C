@@ -20,6 +20,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableTriggerWeight.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableValue.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableChangeType.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableCombined.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
@@ -236,8 +237,8 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("PHIGOODMUONS",            new EventVariableObjectVariableVector<double>("PHI",            "goodMuons"));
   handler->addEventVariable("RELISODBDR0p4GOODMUONS",  new EventVariableObjectVariableVector<double>("MUON_RELISO",    "goodMuons"));
   handler->addEventVariable("RELTRKISOGOODMUONS",      new EventVariableObjectVariableVector<double>("MUON_RELTRKISO", "goodMuons"));
-  handler->addEventVariable("ISTIGHTIDGOODMUONS",      new EventVariableObjectVariableVector<int>("MUON_TIGHTID",      "goodMuons"));
-  handler->addEventVariable("ISHIGHPTIDGOODMUONS",     new EventVariableObjectVariableVector<int>("MUON_HIGHPTID",     "goodMuons"));
+  handler->addEventVariable("ISTIGHTIDGOODMUONS",      new EventVariableObjectVariableVector<int>("isTightMuon",       "goodMuons"));
+  handler->addEventVariable("ISHIGHPTIDGOODMUONS",     new EventVariableObjectVariableVector<int>("isHighPtMuon",      "goodMuons"));
   handler->addEventVariable("MINIISOGOODMUONS",        new EventVariableObjectVariableVector<double>("MINIISO",        "goodMuons"));
   handler->addEventVariable("PTRATIOGOODMUONS",        new EventVariableObjectVariableVector<double>("ptRatio",        "goodMuons"));
   handler->addEventVariable("PTRELGOODMUONS",          new EventVariableObjectVariableVector<double>("ptRel",          "goodMuons"));
@@ -308,16 +309,17 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONECHPTDR02TO08GOODMUONS",    new EventVariableObjectVariableVector<double>("CONECHPTDR02to08",     "goodMuons"));
   handler->addEventVariable("CONECHMASSDR02TO08GOODMUONS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR02to08",   "goodMuons"));
   //
+  handler->addEventVariable("NBASICMUONS",             new EventVariableN("NBASICMUONS",                               "basicMuons"));
   handler->addEventVariable("QBASICMUONS",             new EventVariableObjectVariableVector<int>("CHARGE",            "basicMuons"));
   handler->addEventVariable("PTBASICMUONS",            new EventVariableObjectVariableVector<double>("PT",             "basicMuons"));
   handler->addEventVariable("ETABASICMUONS",           new EventVariableObjectVariableVector<double>("ETA",            "basicMuons"));
   handler->addEventVariable("PHIBASICMUONS",           new EventVariableObjectVariableVector<double>("PHI",            "basicMuons"));
   handler->addEventVariable("DXYBASICMUONS",           new EventVariableObjectVariableVector<double>("dxy",            "basicMuons"));
-  handler->addEventVariable("ISLOOSEIDBASICMUONS",     new EventVariableObjectVariableVector<int>("MUON_LOOSEID",      "basicMuons"));
-  handler->addEventVariable("ISMEDIUMIDBASICMUONS",    new EventVariableObjectVariableVector<int>("MUON_MEDIUMID",     "basicMuons"));
-  handler->addEventVariable("ISTIGHTIDBASICMUONS",     new EventVariableObjectVariableVector<int>("MUON_TIGHTID",      "basicMuons"));
-  handler->addEventVariable("ISSOFTIDBASICMUONS",      new EventVariableObjectVariableVector<int>("MUON_SOFTID",       "basicMuons"));
-  handler->addEventVariable("ISHIGHPTIDBASICMUONS",    new EventVariableObjectVariableVector<int>("MUON_HIGHPTID",     "basicMuons"));
+  handler->addEventVariable("ISLOOSEIDBASICMUONS",     new EventVariableObjectVariableVector<int>("isLooseMuon",       "basicMuons"));
+  handler->addEventVariable("ISMEDIUMIDBASICMUONS",    new EventVariableObjectVariableVector<int>("isMediumMuon",      "basicMuons"));
+  handler->addEventVariable("ISTIGHTIDBASICMUONS",     new EventVariableObjectVariableVector<int>("isTightMuon",       "basicMuons"));
+  handler->addEventVariable("ISSOFTIDBASICMUONS",      new EventVariableObjectVariableVector<int>("isSoftMuon",        "basicMuons"));
+  handler->addEventVariable("ISHIGHPTIDBASICMUONS",    new EventVariableObjectVariableVector<int>("isHighPtMuon",      "basicMuons"));
   handler->addEventVariable("RELISODBDR0p4BASICMUONS", new EventVariableObjectVariableVector<double>("MUON_RELISO",    "basicMuons"));
   handler->addEventVariable("RELTRKISOBASICMUONS",     new EventVariableObjectVariableVector<double>("MUON_RELTRKISO", "basicMuons"));
   handler->addEventVariable("RELISOBASICMUONS",        new EventVariableObjectVariableVector<double>("RELISO",         "basicMuons"));
@@ -371,7 +373,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("ISCUTLOOSEIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",            "goodElectrons"));
   handler->addEventVariable("ISCUTMEDIUMIDNOISOGOODELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",           "goodElectrons"));
   handler->addEventVariable("ISCUTTIGHTIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",            "goodElectrons"));
-  handler->addEventVariable("ISCUTTRIGIDISOVLGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",             "goodElectrons"));
+  handler->addEventVariable("ISCUTTRIGIDISOVLGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",             "goodElectrons"));//Missing in first set of 80X ntuples
   handler->addEventVariable("ECALPFCLUSTERRELISOGOODELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_EcalPFClusterIso", "goodElectrons"));
   handler->addEventVariable("HCALPFCLUSTERRELISOGOODELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_HcalPFClusterIso", "goodElectrons"));
   handler->addEventVariable("TRACKRELISOGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_TrackIso",         "goodElectrons"));
@@ -457,6 +459,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONECHPTDR02TO08GOODELECTRONS",    new EventVariableObjectVariableVector<double>("CONECHPTDR02to08",     "goodElectrons"));
   handler->addEventVariable("CONECHMASSDR02TO08GOODELECTRONS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR02to08",   "goodElectrons"));
   //
+  handler->addEventVariable("NBASICELECTRONS",                    new EventVariableN("NBASICELECTRONS",                                             "basicElectrons"));
   handler->addEventVariable("QBASICELECTRONS",                    new EventVariableObjectVariableVector<int>("CHARGE",                              "basicElectrons"));
   handler->addEventVariable("PTBASICELECTRONS",                   new EventVariableObjectVariableVector<double>("PT",                               "basicElectrons"));
   handler->addEventVariable("ETABASICELECTRONS",                  new EventVariableObjectVariableVector<double>("ETA",                              "basicElectrons"));
@@ -486,7 +489,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("ISCUTLOOSEIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",            "basicElectrons"));
   handler->addEventVariable("ISCUTMEDIUMIDNOISOBASICELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",           "basicElectrons"));
   handler->addEventVariable("ISCUTTIGHTIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",            "basicElectrons"));
-  handler->addEventVariable("ISCUTTRIGIDISOVLBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",             "basicElectrons"));
+  handler->addEventVariable("ISCUTTRIGIDISOVLBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",             "basicElectrons"));//Missing in first set of 80X ntuples
   handler->addEventVariable("ECALPFCLUSTERRELISOBASICELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_EcalPFClusterIso", "basicElectrons"));
   handler->addEventVariable("HCALPFCLUSTERRELISOBASICELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_HcalPFClusterIso", "basicElectrons"));
   handler->addEventVariable("TRACKRELISOBASICELECTRONS",          new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_TrackIso",         "basicElectrons"));
@@ -529,8 +532,12 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("PTGOODTAUS",                  new EventVariableObjectVariableVector<double>("PT",                                  "goodTaus"));
   handler->addEventVariable("ETAGOODTAUS",                 new EventVariableObjectVariableVector<double>("ETA",                                 "goodTaus"));
   handler->addEventVariable("PHIGOODTAUS",                 new EventVariableObjectVariableVector<double>("PHI",                                 "goodTaus"));
-  handler->addEventVariable("fakeRoleGOODTAUS",            new EventVariableObjectVariableVector<int>("fakeRole",                               "goodTaus"));
-  handler->addEventVariable("CONECORRECTEDPTGOODTAUS",     new EventVariableObjectVariableVector<double>("conecorrectedPt",                     "goodTaus"));
+  handler->addEventVariable("fakeRoleGOODTAUS",            new EventVariableObjectVariableVector<int>("fakeRole",                               "goodTaus")); 
+  handler->addEventVariable("MINIISOGOODTAUS",             new EventVariableObjectVariableVector<double>("MINIISO",                             "goodTaus"));//this + next 3 lines are not necessarly..
+  handler->addEventVariable("PTRATIOGOODTAUS",             new EventVariableObjectVariableVector<double>("ptRatio",                             "goodTaus"));//..relevant for taus, but are kept since..
+  handler->addEventVariable("PTRELGOODTAUS",               new EventVariableObjectVariableVector<double>("ptRel",                               "goodTaus"));//..they are needed for the conecorrectedPt..
+  handler->addEventVariable("RELISOGOODTAUS",              new EventVariableObjectVariableVector<double>("RELISO",                              "goodTaus"));//..calculation.
+  handler->addEventVariable("CONECORRECTEDPTGOODTAUS",     new EventVariableObjectVariableVector<double>("conecorrectedPt",                     "goodTaus"));//
   handler->addEventVariable("VLOOSEISOMVARUN2DBGOODTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1DBnewDMwLT",   "goodTaus"));
   handler->addEventVariable("LOOSEISOMVARUN2DBGOODTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1DBnewDMwLT",    "goodTaus"));
   handler->addEventVariable("MEDIUMISOMVARUN2DBGOODTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1DBnewDMwLT",   "goodTaus"));
@@ -635,7 +642,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   // additional "non-mva" Comb Iso DB Corr variables 
   handler->addEventVariable("LOOSECOMBINEDISODBCORR3HITSBASICTAUS", new EventVariableObjectVariableVector<int>("byLooseCombinedIsolationDeltaBetaCorr3Hits",  "basicTaus"));
   handler->addEventVariable("MEDIUMCOMBINEDISODBCORR3HITSBASICTAUS",new EventVariableObjectVariableVector<int>("byMediumCombinedIsolationDeltaBetaCorr3Hits", "basicTaus"));
-  handler->addEventVariable("TIGHTCOMBINEDISODBCORR3HITSBASICTAUS"  new EventVariableObjectVariableVector<int>("byTightCombinedIsolationDeltaBetaCorr3Hits"   "basicTaus"));
+  handler->addEventVariable("TIGHTCOMBINEDISODBCORR3HITSBASICTAUS", new EventVariableObjectVariableVector<int>("byTightCombinedIsolationDeltaBetaCorr3Hits",  "basicTaus"));
   //
   handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
 
@@ -1246,8 +1253,24 @@ void setupTriggers(BaseHandler* handler,int mode){
     ObjectVariableValueInList<TString>* isHLTgroup = new ObjectVariableValueInList<TString>("TRIGGERNAME","placeHolderHLTname");
     // "placeHolderHLTname" in the above line just makes looping over & adding individual hltpaths to isHLTgroup below easier.
     for(unsigned int j=0; j<HLTgroup.size(); j++){
-      TString   HLTname = HLTgroup.at(j).second;
-      isHLTgroup->addValue(HLTname);
+      TString   HLTpathName = HLTgroup.at(j).second;
+      isHLTgroup->addValue(HLTpathName);
+      // ---------------------------------------------
+      // Storing all individual HLT paths here (as specified above):
+      TString isHLTpathName = TString::Format("is%s",HLTpathName.Data());
+      handler->addProduct(HLTpathName,"goodtriggers");
+      //
+      ObjectVariableValue<TString>* isHLTpath = new ObjectVariableValue<TString>("TRIGGERNAME",HLTpathName.Data());
+      handler->addObjectVariable(isHLTpathName,isHLTpath);
+      handler->addProductCut(HLTpathName,isHLTpathName);
+      //
+      TString nnamepath = TString::Format("N%s",HLTpathName.Data());
+      EventVariableN* HLTpathCount = new EventVariableN(nnamepath,HLTpathName);// count
+      handler->addEventVariable(nnamepath,HLTpathCount);
+      TString acceptnamepath =  TString::Format("ACCEPT_%s",HLTpathName.Data());
+      handler->addEventVariable(acceptnamepath,new EventVariableInRange<int>(nnamepath,1,100000));//...........................ACCEPT true/false
+      handler->addEventVariable(TString::Format("REJECT_%s",HLTpathName.Data()),new EventVariableReversed(acceptnamepath));//..REJECT true/false
+      // ---------------------------------------------
     }
     //
     handler->addObjectVariable(isHLTgroupName,isHLTgroup);
@@ -1255,25 +1278,9 @@ void setupTriggers(BaseHandler* handler,int mode){
     TString nname = TString::Format("N%s",HLTgroupName.Data());
     handler->addEventVariable(nname,new EventVariableN(nname,HLTgroupName));// count
     TString acceptname = TString::Format("ACCEPT_%s",HLTgroupName.Data());
-    handler->addEventVariable(acceptname,new EventVariableInRange<int>(nname,1,100000));//............................ACCEPT true/false
+    handler->addEventVariable(acceptname,new EventVariableInRange<int>(nname,1,100000));//................................ACCEPT true/false
     handler->addEventVariable(TString::Format("REJECT_%s",HLTgroupName.Data()),new EventVariableReversed(acceptname));//..REJECT true/false
     //
-    // ------------------------------------------------------------------------
-    // Store all HLT path names specified above
-    TString   HLTpathName = HLTgroup.at(0).second;
-    TString isHLTpathName = TString::Format("is%s",HLTpathName.Data());
-    handler->addProduct(HLTpathName,"goodtriggers");
-    //
-    ObjectVariableValue<TString>* isHLTpath = new ObjectVariableValue<TString>("TRIGGERNAME",HLTpathName.Data());
-    handler->addObjectVariable(isHLTpathName,isHLTpath);
-    handler->addProductCut(HLTpathName,isHLTpathName);
-    //
-    TString nnamepath = TString::Format("N%s",HLTpathName.Data());
-    EventVariableN* HLTpathCount = new EventVariableN(nnamepath,HLTpathName);// count
-    handler->addEventVariable(nnamepath,HLTpathCount);
-    TString acceptnamepath =  TString::Format("ACCEPT_%s",HLTpathName.Data());
-    handler->addEventVariable(acceptnamepath,new EventVariableInRange<int>(nnamepath,1,100000));//.......................ACCEPT true/false
-    handler->addEventVariable(TString::Format("REJECT_%s",HLTpathName.Data()),new EventVariableReversed(acceptnamepath));//..REJECT true/false
   }
   // ------------------------------------------------------------------------
   // ------------------------------------------------------------------------  
@@ -1488,6 +1495,7 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
   //////////////////////////////////////
   ///Matrix Method: Reco-Gen Matching///  EventVariableLeptonGenChecker  produces "IsGenMatched+suffix"
   //////////////////////////////////////
+  // first lets do these gen-reco match checks for goodLeptons:
   EventVariableLeptonGenChecker* RecoGenMuons = new EventVariableLeptonGenChecker("RecoGenMuons","goodMuons","");//3rd suffix
   RecoGenMuons->addProduct("MCMUONSFROMBOSON");
   RecoGenMuons->addProduct("BOSONS");//used for debugging.
@@ -1521,6 +1529,41 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
   RecoTauGenMus->addProduct("MCMUONSFROMBOSON");
   handler->addEventVariable("RECOTAUGENMUS",RecoTauGenMus);
   handler->addEventVariable("ISFAKETAUFROMMU",new EventVariableObjectVariableVector<int>("IsGenMatchedMuFake","goodTaus"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------------------------------------------
+  // then do these gen-reco match checks for basicLeptons:
+  EventVariableLeptonGenChecker* BasicRecoGenMuons = new EventVariableLeptonGenChecker("BasicRecoGenMuons","basicMuons","");//3rd suffix
+  RecoGenMuons->addProduct("MCMUONSFROMBOSON");
+  RecoGenMuons->addProduct("BOSONS");//used for debugging.
+  handler->addEventVariable("BASICRECOGENMUONS",BasicRecoGenMuons);
+  handler->addEventVariable("ISPROMPTBASICMUON",new EventVariableObjectVariableVector<int>("IsGenMatched","basicMuons"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  EventVariableLeptonGenChecker* BasicRecoGenElectrons = new EventVariableLeptonGenChecker("BasicRecoGenElectrons","basicElectrons","");//3rd suffix
+  RecoGenElectrons->addProduct("MCELECTRONSFROMBOSON");
+  RecoGenElectrons->addProduct("BOSONS");//used for debugging.
+  handler->addEventVariable("BASICRECOGENELECTRONS",BasicRecoGenElectrons);
+  handler->addEventVariable("ISPROMPTBASICELECTRON",new EventVariableObjectVariableVector<int>("IsGenMatched","basicElectrons"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  EventVariableLeptonGenChecker* BasicRecoGenTaus = new EventVariableLeptonGenChecker("BasicRecoGenTaus","basicTaus","");//3rd suffix
+  RecoGenTaus->addProduct("MCHADRONICTAUSFROMBOSON");
+  RecoGenTaus->addProduct("BOSONS");//used for debugging.
+  handler->addEventVariable("BASICRECOGENTAUS",BasicRecoGenTaus);
+  handler->addEventVariable("ISPROMPTBASICTAU",new EventVariableObjectVariableVector<int>("IsGenMatched","basicTaus"));//WARNING!
+  // WARNING: NEED TO CHECK "ISPROMPTTAU" FOR ELE/MU->TAU FAKES! - SEE BELOW.
+  // ------------------------------------------------------------------------------------------------------------------------
+  // Gen Ele -> Reco Tau (checks for tau fakes)
+  EventVariableLeptonGenChecker* BasicRecoTauGenEles = new EventVariableLeptonGenChecker("BasicRecoTauGenEles","basicTaus","EleFake");//3rd suffix
+  //RecoTauGenEles->addProduct("MCELECTRONS");
+  RecoTauGenEles->addProduct("MCELECTRONSFROMBOSON");
+  handler->addEventVariable("BASICRECOTAUGENELES",BasicRecoTauGenEles);
+  handler->addEventVariable("ISFAKEBASICTAUFROMELE",new EventVariableObjectVariableVector<int>("IsGenMatchedEleFake","basicTaus"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  // Gen Muon -> Reco Tau (checks for tau fakes)
+  EventVariableLeptonGenChecker* BasicRecoTauGenMus = new EventVariableLeptonGenChecker("BasicRecoTauGenMus","basicTaus","MuFake");//3rd suffix
+  //RecoTauGenMus->addProduct("MCMUONS");
+  RecoTauGenMus->addProduct("MCMUONSFROMBOSON");
+  handler->addEventVariable("BASICRECOTAUGENMUS",BasicRecoTauGenMus);
+  handler->addEventVariable("ISFAKEBASICTAUFROMMU",new EventVariableObjectVariableVector<int>("IsGenMatchedMuFake","basicTaus"));
   //
   // Matrix Method Disclaimer:
   //   Events with all prompt electrons, muons, and taus (as tagged by ISPROMPT flags) are taken from MC in the MM.

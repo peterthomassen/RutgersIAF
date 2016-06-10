@@ -75,7 +75,7 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProductCut("basicElectrons", "ELECTRON_dxy");//"prompt-ness" cut 
   handler->addProductCut("basicElectrons", "ELECTRON_CUT_VETOIDNOISO");//very loose ele id, no isolation
   //
-  handler->addproduct(   "nonPromptElectrons", "ALLELECTRONS");
+  handler->addProduct(   "nonPromptElectrons", "ALLELECTRONS");
   handler->addProductCut("nonPromptElectrons", "PT7");
   handler->addProductCut("nonPromptElectrons", "ETA2p5");
   handler->addProductCut("nonPromptElectrons", "ELECTRON_dz");
