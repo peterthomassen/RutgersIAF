@@ -9,6 +9,7 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("isVertex",            new ObjectVariableValue<TString>("INPUTTYPE",  "vertex"));
   handler->addObjectVariable("isMET",               new ObjectVariableValue<TString>("INPUTTYPE",  "met"));
   handler->addObjectVariable("isTrigger",           new ObjectVariableValue<TString>("INPUTTYPE",  "trigger"));
+  handler->addObjectVariable("isTriggerObject",     new ObjectVariableValue<TString>("INPUTTYPE",  "triggerobject"));
   handler->addObjectVariable("uncertaintyNoShift",  new ObjectVariableValue<TString>("uncertainty","NoShift"));
   handler->addObjectVariable("levelType1",          new ObjectVariableValue<TString>("level",      "Type1"));
   handler->addObjectVariable("INPUTTAGslimmedMETs", new ObjectVariableValue<TString>("INPUTTAG",   "slimmedMETs"));

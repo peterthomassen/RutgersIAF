@@ -32,6 +32,8 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProductCut("ALLVERTICES","isVertex");
   handler->addProduct(   "ALLTRIGGERS","ALL");
   handler->addProductCut("ALLTRIGGERS","isTrigger");
+  handler->addProduct(   "ALLTRIGGEROBJECTS","ALL");
+  handler->addProductCut("ALLTRIGGEROBJECTS","isTriggerObject");
   handler->addProduct(   "ALLMC","ALL");
   handler->addProductCut("ALLMC","isMC");
 
@@ -248,6 +250,8 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProduct(   "goodtriggers", "ALLTRIGGERS");
   handler->addProductCut("goodtriggers", "Accepted");
   handler->addProductCut("goodtriggers", "WasRun");
+  //
+  handler->addProduct("goodtriggerobjects", "ALLTRIGGEROBJECTS");
   //
   //handler->addHistogram(new SignatureTH1F_TriggerName("TriggerNames","ALLTRIGGERS"));
 

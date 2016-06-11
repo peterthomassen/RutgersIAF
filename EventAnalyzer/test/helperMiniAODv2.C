@@ -913,6 +913,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
 
 
 void setupTriggers(BaseHandler* handler,int mode){
+
   // --------------------------------------------------------------------------------------------------------------
   ///////////////////////////////////
   ///HLT-related Offline Variables///
@@ -1069,6 +1070,18 @@ void setupTriggers(BaseHandler* handler,int mode){
   EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v4"));
   EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v5"));
   RutgersHLT.push_back(EleHLT);
+  std::vector< pair<string, string> > EleHLTprescaled;
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v4"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v5"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v1"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v2"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v3"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v4"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v5"));
+  RutgersHLT.push_back(EleHLTprescaled);
   std::vector< pair<string, string> > IsoDiEleHLT;//Analysis Trigger
   IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"));
   IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"));
@@ -1285,9 +1298,49 @@ void setupTriggers(BaseHandler* handler,int mode){
   // ------------------------------------------------------------------------
   // ------------------------------------------------------------------------  
 
+  //std::vector< vector<pair<string, string> > > RutgersTrigObjects;
+  std::vector<string>  RutgersTrigObjects;
+  RutgersTrigObjects.push_back("HLT_IsoMu22_v");
+  RutgersTrigObjects.push_back("HLT_IsoTkMu22_v");
+  RutgersTrigObjects.push_back("HLT_Mu45_eta2p1_v");
+  RutgersTrigObjects.push_back("HLT_Mu50_v");
+  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
+  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
+  RutgersTrigObjects.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+  RutgersTrigObjects.push_back("HLT_Mu20_v");//............prescaled control trigger & trig-obj.
+  RutgersTrigObjects.push_back("HLT_TkMu20_v");//..........prescaled control trigger & trig-obj.
+  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_v");//..prescaled control trigger & trig-obj.
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");//......HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//...HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");//.......HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//....HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8");//........HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//....HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltDiMu9Ele9CaloIdLTrackIdLMuonlegL3Filtered9");//........................HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
+  RutgersTrigObjects.push_back("hltDiMu9Ele9CaloIdLTrackIdLElectronlegDphiFilter");//.....................HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
+  RutgersTrigObjects.push_back("hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered30Q");//........HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
+  RutgersTrigObjects.push_back("hltEle30CaloIdLGsfTrkIdVLDPhiUnseededFilter");//..........................HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
+  RutgersTrigObjects.push_back("hltMu8DiEle12CaloIdLTrackIdLMuonlegL3Filtered8");//.......................HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
+  RutgersTrigObjects.push_back("hltMu8DiEle12CaloIdLTrackIdLElectronlegDphiFilter");//....................HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
 
-  // WORK-IN-PROGRESS: trig tresholds 
+  // Store all *individual* HLT trigger objects as specified above and in BaseAODReader/python/miniAOD_cfi.py
+  for(unsigned int i=0; i<RutgersTrigObjects.size(); i++){
+    TString   trigObjName = RutgersTrigObjects.at(i);
+    //TString isTrigObjName = TString::Format("is%s",trigObjName.Data());
+    //
+    handler->addProduct(trigObjName,"goodtriggerobjects");
+    handler->addEventVariable(TString::Format("N%s",trigObjName.Data()),          new EventVariableN(TString::Format("N%s",trigObjName.Data()),  trigObjName));
+    handler->addEventVariable(TString::Format("PT%s",trigObjName.Data()),         new EventVariableObjectVariableVector<double>("PT",            trigObjName));
+    handler->addEventVariable(TString::Format("ETA%s",trigObjName.Data()),        new EventVariableObjectVariableVector<double>("ETA",           trigObjName));
+    handler->addEventVariable(TString::Format("PHI%s",trigObjName.Data()),        new EventVariableObjectVariableVector<double>("PHI",           trigObjName));
+  }
 
+
+  // Offline Trigger Tresholds 
   //Offline tresholds for higher trigger efficiencies
   // Single Electron
   EventVariableThreshold* singElTrig = new EventVariableThreshold("singeltrig","goodElectrons");
@@ -1336,12 +1389,12 @@ void setupTriggers(BaseHandler* handler,int mode){
   EventVariableCombined* trigaccept = NULL;
   switch(mode){
   case 1:
-    handler->addEventVariable("TRIGGERACCEPT",new EventVariableRename<bool>("ACCEPT_IsoDiMuHLT"));
-    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DOUBLEMU")));
+    handler->addEventVariable("TRIGGERACCEPT",new EventVariableRename<bool>("ACCEPT_IsoMuEleHLT"));
+    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("MUEG")));
     break;
   case 2:
-    handler->addEventVariable("TRIGGERACCEPT",new EventVariableCombined("ACCEPT_IsoMuEleHLT","REJECT_IsoDiMuHLT",true));
-    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("MUEG")));
+    handler->addEventVariable("TRIGGERACCEPT",new EventVariableCombined("ACCEPT_IsoDiMuHLT","REJECT_IsoMuEleHLT",true));
+    handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("DOUBLEMU")));
     break;
   case 3:
     trigaccept = new EventVariableCombined("ACCEPT_IsoDiEleHLT","REJECT_IsoDiMuHLT",true);
