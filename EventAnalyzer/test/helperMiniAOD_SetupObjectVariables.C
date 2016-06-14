@@ -106,6 +106,9 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO","isElectron"),false);
   handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isMuon"),false);
   handler->addObjectVariable("TRACK_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isTrack"),false);
+  handler->addObjectVariable("TRACK_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("chargedHadronIsoFromPF","neutralHadronIsoFromPF","neutralPhotonIsoFromPF","betaIsoFromPF","TRACK_totalIsoDB0p4","isTrack"),false);//this is muon style tracker isolation
+  handler->addObjectVariable("TRACK_RELISODBCORR",  new ObjectVariableRelIso("TRACK_RELISODBCORR",  "TRACK_totalIsoDB0p4"));
+  handler->addObjectVariable("TRACK_RELISORHOCORR", new ObjectVariableRelIso("TRACK_RELISORHOCORR", "TRACK_totalIso"));
   //
   // ADDING MUON PF-ISO-DR0.4, DB CORRECTED:
   handler->addObjectVariable("MUON_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("pfIsolationR04sumChargedHadronPt","pfIsolationR04sumNeutralHadronEt","pfIsolationR04sumPhotonEt","pfIsolationR04sumPUPt","MUON_TOTALISODB0p4","isMuon"),false);
@@ -489,14 +492,21 @@ void setupObjectVariables(BaseHandler* handler){
   /////////////////////
   ///Track Variables///
   /////////////////////
-  handler->addObjectVariable("TRACK_PFCHARGEDHADRONISO", new ObjectVariableRename<double>("chargedHadronIsoFromPF","PF_CHARGEDHADRONISO"),false);
-  handler->addObjectVariable("TRACK_PFNEUTRALHADRONISO", new ObjectVariableRename<double>("neutralHadronIsoFromPF","PF_NEUTRALHADRONISO"),false);
-  handler->addObjectVariable("TRACK_PFPHOTONISO",        new ObjectVariableRename<double>("neutralPhotonIsoFromPF","PF_PHOTONISO"),false);
-  handler->addObjectVariable("TRACK_BETA",               new ObjectVariableRename<double>("betaIsoFromPF","BETA"),false);
+  handler->addObjectVariable("TRACK_RELCHHADISO",        new ObjectVariableRelIso("TRACK_RELCHHADISO",   "chargedHadronIsoFromPF"));
+  handler->addObjectVariable("TRACK_RELNHADISO",         new ObjectVariableRelIso("TRACK_RELNHADISO",    "neutralHadronIsoFromPF"));
+  handler->addObjectVariable("TRACK_RELPHOTONISO",       new ObjectVariableRelIso("TRACK_RELPHOTONISO",  "neutralPhotonIsoFromPF"));
+  handler->addObjectVariable("TRACK_RELBETAISO",         new ObjectVariableRelIso("TRACK_RELBETAISO",    "betaIsoFromPF"));
+  //
+  handler->addObjectVariable("TRACK_PFCHARGEDHADRONISO", new ObjectVariableRename<double>("chargedHadronIsoFromPF", "PF_CHARGEDHADRONISO"), false);
+  handler->addObjectVariable("TRACK_PFNEUTRALHADRONISO", new ObjectVariableRename<double>("neutralHadronIsoFromPF", "PF_NEUTRALHADRONISO"), false);
+  handler->addObjectVariable("TRACK_PFPHOTONISO",        new ObjectVariableRename<double>("neutralPhotonIsoFromPF", "PF_PHOTONISO"),        false);
+  handler->addObjectVariable("TRACK_BETA",               new ObjectVariableRename<double>("betaIsoFromPF",          "BETA"),                false);
+  //
   handler->addObjectVariable("TRACK_fromPV",             new ObjectVariableInRange<int>("fromPV",2,100000));
   handler->addObjectVariable("TRACK_PROMPT",             new ObjectVariableCombined("TRACK_fromPV","MUON_dxy",true,"TRACK_PROMPT"));
   handler->addObjectVariable("TRACK_NONPROMPT",          new ObjectVariableReversed("TRACK_PROMPT"));
-
+  //
+  handler->addObjectVariable("TRACK_IREL0p25",           new ObjectVariableInRange<double>("TRACK_RELISODBCORR",0,0.25,"TRACK_IREL0p25"));
 
   // --------------------------------------------------------------------------------------------------------------
   //////////////////////

@@ -177,9 +177,11 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProductCut("basicTracksNoCleaning", "trackHighPurity");
   handler->addProductCut("basicTracksNoCleaning", "MUON_dz");
   handler->addProduct(   "basicTracks", "basicTracksNoCleaning");
-  handler->addProduct(   "goodTracks", "basicTracks");
-  handler->addProductCut("goodTracks", "MULTIISOL");
+  //
+  handler->addProduct(   "goodTracks", "basicTracks");//goodTracks (used in proxyMethod)!
+  handler->addProductCut("goodTracks", "TRACK_IREL0p25");//tightMatrix Muon style isolation
   handler->addProductCut("goodTracks", "TRACK_PROMPT");
+  //
   handler->addProduct(   "goodTracksNoCleaning", "basicTracksNoCleaning");
   handler->addProductCut("goodTracksNoCleaning", "IREL0p15");
   handler->addProductCut("goodTracksNoCleaning", "TRACK_PROMPT");

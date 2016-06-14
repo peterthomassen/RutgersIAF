@@ -736,7 +736,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   /////////////////////
   ///Track Variables///
   /////////////////////
-  handler->addEventVariable("NGOODINCLUSIVETRACKS",           new EventVariableN("NGOODTRACKS",                    "goodInclusiveTracks"));
+  handler->addEventVariable("NGOODINCLUSIVETRACKS",           new EventVariableN("NGOODINCLUSIVETRACKS",           "goodInclusiveTracks"));
   handler->addEventVariable("NBASICTRACKS",                   new EventVariableN("NBASICTRACKS",                   "basicTracks"));
   handler->addEventVariable("NISOTRACKS",                     new EventVariableN("NISOTRACKS",                     "isoTracks"));
   handler->addEventVariable("NISOINCLUSIVETRACKS",            new EventVariableN("NISOINCLUSIVETRACKS",            "isoInclusiveTracks"));
@@ -751,15 +751,34 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("NISONONPROMPTINCLUSIVETRACKS7",  new EventVariableN("NISONONPROMPTINCLUSIVETRACKS7",  "isoNonPromptInclusiveTracks7"));
   handler->addEventVariable("NPROMPTNONISOINCLUSIVETRACKS7",  new EventVariableN("NPROMPTNONISOINCLUSIVETRACKS7",  "promptNonIsoInclusiveTracks7"));
   handler->addEventVariable("NBASICTRACKS7",                  new EventVariableN("NBASICTRACKS7",                  "basicTracks7"));
-  handler->addEventVariable("NISOTRACKS7",                    new EventVariableN("NISOTRACKS7",                    "isoTracks7"));
   handler->addEventVariable("NPROMPTTRACKS7",                 new EventVariableN("NPROMPTTRACKS7",                 "promptTracks7"));
+  handler->addEventVariable("NISOTRACKS7",                    new EventVariableN("NISOTRACKS7",                    "isoTracks7"));
   handler->addEventVariable("NISONONPROMPTTRACKS7",           new EventVariableN("NISONONPROMPTTRACKS7",           "isoNonPromptTracks7"));
   handler->addEventVariable("NPROMPTNONISOTRACKS7",           new EventVariableN("NPROMPTNONISOTRACKS7",           "promptNonIsoTracks7"));
   //
-  handler->addEventVariable("NGOODTRACKS",            new EventVariableN("NGOODTRACKS",                       "goodTracks"));
-  handler->addEventVariable("QGOODTRACKS",            new EventVariableObjectVariableVector<int>("CHARGE",    "goodTracks"));
-  handler->addEventVariable("PTGOODTRACKS",           new EventVariableObjectVariableVector<double>("PT",     "goodTracks"));
-  handler->addEventVariable("ETAGOODTRACKS",          new EventVariableObjectVariableVector<double>("ETA",    "goodTracks"));
+  handler->addEventVariable("NGOODTRACKS",            new EventVariableN("NGOODTRACKS",                                      "goodTracks"));
+  handler->addEventVariable("QGOODTRACKS",            new EventVariableObjectVariableVector<int>("CHARGE",                   "goodTracks"));
+  handler->addEventVariable("PTGOODTRACKS",           new EventVariableObjectVariableVector<double>("PT",                    "goodTracks"));
+  handler->addEventVariable("ETAGOODTRACKS",          new EventVariableObjectVariableVector<double>("ETA",                   "goodTracks"));
+  handler->addEventVariable("PHIGOODTRACKS",          new EventVariableObjectVariableVector<double>("PHI",                   "goodTracks"));
+  handler->addEventVariable("RELISODBCORRGOODTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELISODBCORR",    "goodTracks"));// similar to relPFisoDBcorr Muon style
+  handler->addEventVariable("RELISORHOCORRGOODTRACKS",new EventVariableObjectVariableVector<double>("TRACK_RELISORHOCORR",   "goodTracks"));// similar to relPFisoRHOcorr Electron style
+  handler->addEventVariable("RELCHHADISOGOODTRACKS",  new EventVariableObjectVariableVector<double>("TRACK_RELCHHADISO",     "goodTracks"));// similar to relTrkiso Mu style, or part of relHCALiso Ele style
+  handler->addEventVariable("RELNHADISOGOODTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELNHADISO",      "goodTracks"));// similar to part of relHCALiso Ele style
+  handler->addEventVariable("RELPHOTONISOGOODTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELPHOTONISO",    "goodTracks"));// similar to relECALiso Ele style
+  handler->addEventVariable("RELBETAISOGOODTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELBETAISO",      "goodTracks"));// added just to have relative PU isolation quantity.
+  //
+  handler->addEventVariable("NPROMPTTRACKS",            new EventVariableN("NPROMPTTRACKS",                                    "promptTracks"));
+  handler->addEventVariable("QPROMPTTRACKS",            new EventVariableObjectVariableVector<int>("CHARGE",                   "promptTracks"));
+  handler->addEventVariable("PTPROMPTTRACKS",           new EventVariableObjectVariableVector<double>("PT",                    "promptTracks"));
+  handler->addEventVariable("ETAPROMPTTRACKS",          new EventVariableObjectVariableVector<double>("ETA",                   "promptTracks"));
+  handler->addEventVariable("PHIPROMPTTRACKS",          new EventVariableObjectVariableVector<double>("PHI",                   "promptTracks"));
+  handler->addEventVariable("RELISODBCORRPROMPTTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELISODBCORR",    "promptTracks"));// similar to relPFisoDBcorr Muon style
+  handler->addEventVariable("RELISORHOCORRPROMPTTRACKS",new EventVariableObjectVariableVector<double>("TRACK_RELISORHOCORR",   "promptTracks"));// similar to relPFisoRHOcorr Electron style
+  handler->addEventVariable("RELCHHADISOPROMPTTRACKS",  new EventVariableObjectVariableVector<double>("TRACK_RELCHHADISO",     "promptTracks"));// similar to relTrkiso Mu style, or part of relHCALiso Ele style
+  handler->addEventVariable("RELNHADISOPROMPTTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELNHADISO",      "promptTracks"));// similar to part of relHCALiso Ele style
+  handler->addEventVariable("RELPHOTONISOPROMPTTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELPHOTONISO",    "promptTracks"));// similar to relECALiso Ele style
+  handler->addEventVariable("RELBETAISOPROMPTTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELBETAISO",      "promptTracks"));// added just to have relative PU isolation quantity.
   //
   handler->addEventVariable("NINCLUSIVETRACKS",       new EventVariableN("NINCLUSIVETRACKS",                  "inclusiveTracks"));
   handler->addEventVariable("PTINCLUSIVETRACKS",      new EventVariableObjectVariableVector<double>("PT",     "inclusiveTracks"));
