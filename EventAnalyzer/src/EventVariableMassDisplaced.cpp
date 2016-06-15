@@ -20,9 +20,9 @@ bool EventVariableMassDisplaced::calculate(BaseHandler* handler)
     for(size_t i = 0; i < v.size(); ++i) {
       double px=0,py=0,pz=0,en=0;
       bool isSet_px = v[i]->getVariable(m_pxName,px);
-      bool isSet_py = v[i]->getVariable(m_pyName,px);
-      bool isSet_pz = v[i]->getVariable(m_pzName,px);
-      bool isSet_en = v[i]->getVariable(m_eName,px);
+      bool isSet_py = v[i]->getVariable(m_pyName,py);
+      bool isSet_pz = v[i]->getVariable(m_pzName,pz);
+      bool isSet_en = v[i]->getVariable(m_eName,en);
       if(!isSet_px || !isSet_py || !isSet_pz || !isSet_en)return false;
       TLorentzVector vect(px,py,pz,en);
       sum += vect;
