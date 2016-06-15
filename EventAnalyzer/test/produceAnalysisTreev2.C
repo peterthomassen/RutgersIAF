@@ -5,22 +5,24 @@
 #include "helperMiniAODv2.C"
 
 void produceAnalysisTreev2(
-			   const char* ifname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-May30/CMSSW_8_0_8_patch2/src/RutgersAODReader/BaseAODReader/results_numEvent20000.root"
-			 , const char* ofname = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-May30/CMSSW_8_0_8_patch2/src/RutgersIAF/EventAnalyzer/testEAout20000.root"
-			 , const char* json = ""
-			 , int mode = 0
-			 , Int_t iLo = 0      // change this to start running here
-			 , Int_t iHi = -1     // change this to stop running here
-			 , Int_t noFakes = 0
-			 , bool isMC = false
+			   const char* ifname = "CondorInputSamples/DoubleMuon_Run2016B-PromptReco-v2_MINIAOD/results_1.root"
+			 , const char* ofname = "/tmp/hsaka/results_EAtest.root"
+			 , const char*   json = "json/Cert_271036-274421_13TeV_PromptReco_Collisions16_JSON.txt"
+			 , int           mode = 0       // primary dataset: 1=MUEG, 2=DOUBLEMU, 3=DOUBLEEG, 4=SINGLEMU, 5=SINGLEEL
+			 , Int_t          iLo = 0       // change this to start running here
+			 , Int_t          iHi = -1     // change this to stop  running here
+			 , Int_t      noFakes = 1       // turns on/off the proxyMethod trees with tracks 
+		         , bool          isMC = false   // turns on/off json filtering, some MC-only variables that dont exist for data, etc.
 ) {
+
         // Check if the declated variables isMC and trig-mode make sense:
 	assert(!(isMC && mode > 0));
 	
 	TChain* tree = new TChain("tree");
 	TString input = ifname;
 	bool manual = input.EndsWith(".root");
-	bool single = (mode == 4 || mode == 5);
+	//bool single = (mode == 4 || mode == 5);//not used anymore
+	bool single=false;
 	if(!manual) {
 		input += "/*.root";
 	}
@@ -46,24 +48,26 @@ void produceAnalysisTreev2(
 		writer = new AnalysisTreeWriter(handler);
 	}
 	handler->setWriter(writer);
-	
-	if(!isMC) handler->readGoodRunLumiFromJSON(TString(json));
-	
+
+	//JSON filter
+	//if(!isMC) handler->readGoodRunLumiFromJSON(TString(json));
 	
 	//bool matchingFlag = !(input.Contains("/TTJets") || input.Contains("/TTTo2L") || input.Contains("/DYJets") || input.Contains("/WWTo2L"));
 	//bool matchingFlag = !(input.Contains("/TTJets") || input.Contains("/TTTo2L") || input.Contains("/DYJets") || input.Contains("/WWTo2L") || input.Contains("/WJets"));
-	/*
+	bool matchingFlag=false;//what is this?
+
 	if(!single && !theory && !matchingFlag && noFakes == 0) {
-		cout << "Setting fake modes ..." << endl;
-		
-		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTracks") , "trackFakeCombination");
-		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakePhotons"), "photonFakeCombination");
-//		handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTaus")   , "tauFakeCombination");
-        }*/
-	
-//	handler->setDebugMode(true);
-//	handler->addPrintModule(new PrintModuleEverything("everything"));
-//	setupPrintElectrons(handler);
+	  cout << "Setting fake modes ..." << endl;
+	  handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTracks") , "trackFakeCombination");
+	  handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakePhotons"), "photonFakeCombination");
+	  //handler->setWriter(new AnalysisTreeWriter(handler, "treeRfakeTaus")   , "tauFakeCombination");//proxy method with taus is not ready yet
+        }
+
+	//debugging	
+	//handler->setDebugMode(true);
+	//handler->addPrintModule(new PrintModuleEverything("everything"));
+	//setupPrintElectrons(handler);
+
 	setupProducts(handler);
 	setupVariables(handler, isMC);
 	setupTriggers(handler, mode);

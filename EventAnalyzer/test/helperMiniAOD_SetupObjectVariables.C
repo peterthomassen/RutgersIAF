@@ -9,6 +9,7 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("isVertex",            new ObjectVariableValue<TString>("INPUTTYPE",  "vertex"));
   handler->addObjectVariable("isMET",               new ObjectVariableValue<TString>("INPUTTYPE",  "met"));
   handler->addObjectVariable("isTrigger",           new ObjectVariableValue<TString>("INPUTTYPE",  "trigger"));
+  handler->addObjectVariable("isTriggerObject",     new ObjectVariableValue<TString>("INPUTTYPE",  "triggerobject"));
   handler->addObjectVariable("uncertaintyNoShift",  new ObjectVariableValue<TString>("uncertainty","NoShift"));
   handler->addObjectVariable("levelType1",          new ObjectVariableValue<TString>("level",      "Type1"));
   handler->addObjectVariable("INPUTTAGslimmedMETs", new ObjectVariableValue<TString>("INPUTTAG",   "slimmedMETs"));
@@ -105,6 +106,9 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","ELECTRON_AREA_MINIISO","TOTALMINIISO","isElectron"),false);
   handler->addObjectVariable("MUON_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isMuon"),false);
   handler->addObjectVariable("TRACK_totalMiniIso", new ObjectVariableRhoCorrectedTotalIso("chargedHadronMiniIso","neutralHadronMiniIso","photonMiniIso","RHO","MUON_AREA_MINIISO","TOTALMINIISO","isTrack"),false);
+  handler->addObjectVariable("TRACK_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("chargedHadronIsoFromPF","neutralHadronIsoFromPF","neutralPhotonIsoFromPF","betaIsoFromPF","TRACK_totalIsoDB0p4","isTrack"),false);//this is muon style tracker isolation
+  handler->addObjectVariable("TRACK_RELISODBCORR",  new ObjectVariableRelIso("TRACK_RELISODBCORR",  "TRACK_totalIsoDB0p4"));
+  handler->addObjectVariable("TRACK_RELISORHOCORR", new ObjectVariableRelIso("TRACK_RELISORHOCORR", "TRACK_totalIso"));
   //
   // ADDING MUON PF-ISO-DR0.4, DB CORRECTED:
   handler->addObjectVariable("MUON_totalIsoDB0p4", new ObjectVariableDeltaBetaCorrectedTotalIso("pfIsolationR04sumChargedHadronPt","pfIsolationR04sumNeutralHadronEt","pfIsolationR04sumPhotonEt","pfIsolationR04sumPUPt","MUON_TOTALISODB0p4","isMuon"),false);
@@ -226,42 +230,40 @@ void setupObjectVariables(BaseHandler* handler){
   handler->addObjectVariable("ELECTRON_PROMPT",   new ObjectVariableRename<bool>("ELECTRON_dxy", "ELECTRON_PROMPT"));
   handler->addObjectVariable("ELECTRON_NONPROMPT",new ObjectVariableReversed("ELECTRON_PROMPT"));
   //
-  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p011", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.011));
-  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p031", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.031));
-  handler->addObjectVariable("ELECTRON_hcalOverEcal_0p08",           new ObjectVariableInRange<double>("hcalOverEcal",0,0.08));
-  handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p01",       new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.01,0.01));
-  //
+  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p013", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.013));
+  handler->addObjectVariable("ELECTRON_full5x5_sigmaIetaIeta_0p035", new ObjectVariableInRange<double>("full5x5_sigmaIetaIeta",0,0.035));
+  handler->addObjectVariable("ELECTRON_hcalOverEcal_0p13",           new ObjectVariableInRange<double>("hcalOverEcal",0,0.13));
+  handler->addObjectVariable("ELECTRON_hcalOverEcal_0p10",           new ObjectVariableInRange<double>("hcalOverEcal",0,0.10));
+  //handler->addObjectVariable("ELECTRON_1oEm1oPcorrected_0p01",       new ObjectVariableInRange<double>("1oEm1oPcorrected",-0.01,0.01));
   handler->addObjectVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01", new ObjectVariableInRange<double>("deltaEtaSuperClusterTrackAtVtx",-0.01,0.01));
-  handler->addObjectVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p04", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.04,0.04));
-  handler->addObjectVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p08", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.08,0.08));
+  handler->addObjectVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p07", new ObjectVariableInRange<double>("deltaPhiSuperClusterTrackAtVtx",-0.07,0.07));
   //  
-  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso", new ObjectVariableRelIso("ELECTRON_RelIso_EcalPFClusterIso","EcalPFClusterIso"));
-  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso", new ObjectVariableRelIso("ELECTRON_RelIso_HcalPFClusterIso","HcalPFClusterIso"));
-  handler->addObjectVariable("ELECTRON_RelIso_TrackIso",         new ObjectVariableRelIso("ELECTRON_RelIso_TrackIso","TrackIso"));
-  //
-  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso_0p45", new ObjectVariableInRange<double>("ELECTRON_RelIso_EcalPFClusterIso", 0,0.45));
-  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso_0p25", new ObjectVariableInRange<double>("ELECTRON_RelIso_HcalPFClusterIso", 0,0.25));
+  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso",      new ObjectVariableRelIso("ELECTRON_RelIso_EcalPFClusterIso", "EcalPFClusterIso"));
+  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso",      new ObjectVariableRelIso("ELECTRON_RelIso_HcalPFClusterIso", "HcalPFClusterIso"));
+  handler->addObjectVariable("ELECTRON_RelIso_TrackIso",              new ObjectVariableRelIso("ELECTRON_RelIso_TrackIso",                 "TrackIso"));
+  handler->addObjectVariable("ELECTRON_RelIso_EcalPFClusterIso_0p50", new ObjectVariableInRange<double>("ELECTRON_RelIso_EcalPFClusterIso", 0,0.50));
+  handler->addObjectVariable("ELECTRON_RelIso_HcalPFClusterIso_0p30", new ObjectVariableInRange<double>("ELECTRON_RelIso_HcalPFClusterIso", 0,0.30));
   handler->addObjectVariable("ELECTRON_RelIso_TrackIso_0p20",         new ObjectVariableInRange<double>("ELECTRON_RelIso_TrackIso",         0,0.20));
   //
   // Electron trig-id emulation
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/RA7Coordination2015
-  ObjectVariableCombined* electron_IDemu_barrel = new ObjectVariableCombined("BARRELSC","ELECTRON_full5x5_sigmaIetaIeta_0p011",true);
-  electron_IDemu_barrel->addVariable("ELECTRON_hcalOverEcal_0p08");
+  ObjectVariableCombined* electron_IDemu_barrel = new ObjectVariableCombined("BARRELSC","ELECTRON_full5x5_sigmaIetaIeta_0p013",true);
   electron_IDemu_barrel->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
-  electron_IDemu_barrel->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p04");
-  electron_IDemu_barrel->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
+  electron_IDemu_barrel->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p07");
+  electron_IDemu_barrel->addVariable("ELECTRON_hcalOverEcal_0p13");
+  //electron_IDemu_barrel->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
   handler->addObjectVariable("ELECTRON_IDemu_BARREL", electron_IDemu_barrel);
-  ObjectVariableCombined* electron_IDemu_endcap = new ObjectVariableCombined("ENDCAPSC","ELECTRON_full5x5_sigmaIetaIeta_0p031",true);
-  electron_IDemu_endcap->addVariable("ELECTRON_hcalOverEcal_0p08");
-  electron_IDemu_endcap->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
-  electron_IDemu_endcap->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p08");
-  electron_IDemu_endcap->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
+  ObjectVariableCombined* electron_IDemu_endcap = new ObjectVariableCombined("ENDCAPSC","ELECTRON_full5x5_sigmaIetaIeta_0p035",true);
+  //electron_IDemu_endcap->addVariable("ELECTRON_deltaEtaSuperClusterTrackAtVtx_0p01");
+  //electron_IDemu_endcap->addVariable("ELECTRON_deltaPhiSuperClusterTrackAtVtx_0p07");
+  electron_IDemu_endcap->addVariable("ELECTRON_hcalOverEcal_0p10");
+  //electron_IDemu_endcap->addVariable("ELECTRON_1oEm1oPcorrected_0p01");
   handler->addObjectVariable("ELECTRON_IDemu_ENDCAP", electron_IDemu_endcap);
   handler->addObjectVariable("ELECTRON_IDemu", new ObjectVariableCombined("ELECTRON_IDemu_BARREL","ELECTRON_IDemu_ENDCAP",false));
   //
   // Electron trig-iso emulation
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/RA7Coordination2015
-  ObjectVariableCombined* electron_ISOemu = new ObjectVariableCombined("ELECTRON_RelIso_EcalPFClusterIso_0p45","ELECTRON_RelIso_HcalPFClusterIso_0p25",true);
+  ObjectVariableCombined* electron_ISOemu = new ObjectVariableCombined("ELECTRON_RelIso_EcalPFClusterIso_0p50","ELECTRON_RelIso_HcalPFClusterIso_0p30",true);
   electron_ISOemu->addVariable("ELECTRON_RelIso_TrackIso_0p20");
   handler->addObjectVariable("ELECTRON_ISOemu", electron_ISOemu);
   handler->addObjectVariable("ELECTRON_IDISOemu", new ObjectVariableCombined("ELECTRON_IDemu","ELECTRON_ISOemu",true));
@@ -490,14 +492,21 @@ void setupObjectVariables(BaseHandler* handler){
   /////////////////////
   ///Track Variables///
   /////////////////////
-  handler->addObjectVariable("TRACK_PFCHARGEDHADRONISO", new ObjectVariableRename<double>("chargedHadronIsoFromPF","PF_CHARGEDHADRONISO"),false);
-  handler->addObjectVariable("TRACK_PFNEUTRALHADRONISO", new ObjectVariableRename<double>("neutralHadronIsoFromPF","PF_NEUTRALHADRONISO"),false);
-  handler->addObjectVariable("TRACK_PFPHOTONISO",        new ObjectVariableRename<double>("neutralPhotonIsoFromPF","PF_PHOTONISO"),false);
-  handler->addObjectVariable("TRACK_BETA",               new ObjectVariableRename<double>("betaIsoFromPF","BETA"),false);
+  handler->addObjectVariable("TRACK_RELCHHADISO",        new ObjectVariableRelIso("TRACK_RELCHHADISO",   "chargedHadronIsoFromPF"));
+  handler->addObjectVariable("TRACK_RELNHADISO",         new ObjectVariableRelIso("TRACK_RELNHADISO",    "neutralHadronIsoFromPF"));
+  handler->addObjectVariable("TRACK_RELPHOTONISO",       new ObjectVariableRelIso("TRACK_RELPHOTONISO",  "neutralPhotonIsoFromPF"));
+  handler->addObjectVariable("TRACK_RELBETAISO",         new ObjectVariableRelIso("TRACK_RELBETAISO",    "betaIsoFromPF"));
+  //
+  handler->addObjectVariable("TRACK_PFCHARGEDHADRONISO", new ObjectVariableRename<double>("chargedHadronIsoFromPF", "PF_CHARGEDHADRONISO"), false);
+  handler->addObjectVariable("TRACK_PFNEUTRALHADRONISO", new ObjectVariableRename<double>("neutralHadronIsoFromPF", "PF_NEUTRALHADRONISO"), false);
+  handler->addObjectVariable("TRACK_PFPHOTONISO",        new ObjectVariableRename<double>("neutralPhotonIsoFromPF", "PF_PHOTONISO"),        false);
+  handler->addObjectVariable("TRACK_BETA",               new ObjectVariableRename<double>("betaIsoFromPF",          "BETA"),                false);
+  //
   handler->addObjectVariable("TRACK_fromPV",             new ObjectVariableInRange<int>("fromPV",2,100000));
   handler->addObjectVariable("TRACK_PROMPT",             new ObjectVariableCombined("TRACK_fromPV","MUON_dxy",true,"TRACK_PROMPT"));
   handler->addObjectVariable("TRACK_NONPROMPT",          new ObjectVariableReversed("TRACK_PROMPT"));
-
+  //
+  handler->addObjectVariable("TRACK_IREL0p25",           new ObjectVariableInRange<double>("TRACK_RELISODBCORR",0,0.25,"TRACK_IREL0p25"));
 
   // --------------------------------------------------------------------------------------------------------------
   //////////////////////

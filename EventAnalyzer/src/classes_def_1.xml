@@ -104,4 +104,16 @@
   <class name="EventVariableMassDisplaced" ClassVersion="1">
    <version ClassVersion="1" checksum="3190824306"/>
   </class>
+  <class name="ObjectVariableChangeType<bool,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="2346606090"/>
+  </class>
+  <class name="ObjectVariableChangeType<int,bool>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3700984428"/>
+  </class>
+  <class name="ObjectVariableChangeType<double,int>" ClassVersion="1">
+   <version ClassVersion="1" checksum="1633716391"/>
+  </class>
+  <class name="ObjectVariableChangeType<int,double>" ClassVersion="1">
+   <version ClassVersion="1" checksum="3808281297"/>
+  </class>
 </lcgdict>

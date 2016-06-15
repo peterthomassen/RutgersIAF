@@ -32,6 +32,8 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProductCut("ALLVERTICES","isVertex");
   handler->addProduct(   "ALLTRIGGERS","ALL");
   handler->addProductCut("ALLTRIGGERS","isTrigger");
+  handler->addProduct(   "ALLTRIGGEROBJECTS","ALL");
+  handler->addProductCut("ALLTRIGGEROBJECTS","isTriggerObject");
   handler->addProduct(   "ALLMC","ALL");
   handler->addProductCut("ALLMC","isMC");
 
@@ -75,7 +77,7 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProductCut("basicElectrons", "ELECTRON_dxy");//"prompt-ness" cut 
   handler->addProductCut("basicElectrons", "ELECTRON_CUT_VETOIDNOISO");//very loose ele id, no isolation
   //
-  handler->addproduct(   "nonPromptElectrons", "ALLELECTRONS");
+  handler->addProduct(   "nonPromptElectrons", "ALLELECTRONS");
   handler->addProductCut("nonPromptElectrons", "PT7");
   handler->addProductCut("nonPromptElectrons", "ETA2p5");
   handler->addProductCut("nonPromptElectrons", "ELECTRON_dz");
@@ -175,9 +177,11 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProductCut("basicTracksNoCleaning", "trackHighPurity");
   handler->addProductCut("basicTracksNoCleaning", "MUON_dz");
   handler->addProduct(   "basicTracks", "basicTracksNoCleaning");
-  handler->addProduct(   "goodTracks", "basicTracks");
-  handler->addProductCut("goodTracks", "MULTIISOL");
+  //
+  handler->addProduct(   "goodTracks", "basicTracks");//goodTracks (used in proxyMethod)!
+  handler->addProductCut("goodTracks", "TRACK_IREL0p25");//tightMatrix Muon style isolation
   handler->addProductCut("goodTracks", "TRACK_PROMPT");
+  //
   handler->addProduct(   "goodTracksNoCleaning", "basicTracksNoCleaning");
   handler->addProductCut("goodTracksNoCleaning", "IREL0p15");
   handler->addProductCut("goodTracksNoCleaning", "TRACK_PROMPT");
@@ -248,6 +252,8 @@ void setupProductsCommon(BaseHandler* handler)
   handler->addProduct(   "goodtriggers", "ALLTRIGGERS");
   handler->addProductCut("goodtriggers", "Accepted");
   handler->addProductCut("goodtriggers", "WasRun");
+  //
+  handler->addProduct("goodtriggerobjects", "ALLTRIGGEROBJECTS");
   //
   //handler->addHistogram(new SignatureTH1F_TriggerName("TriggerNames","ALLTRIGGERS"));
 

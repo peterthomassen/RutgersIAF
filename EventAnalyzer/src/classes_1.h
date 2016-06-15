@@ -27,3 +27,4 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateDeltaDistance.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableLinearRadialMoment.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMassDisplaced.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableChangeType.h"

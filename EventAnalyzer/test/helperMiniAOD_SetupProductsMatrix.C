@@ -29,10 +29,11 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProductCut("looseMatrixMuons", "ETA2p4");
   handler->addProductCut("looseMatrixMuons", "MUON_dxy");
   handler->addProductCut("looseMatrixMuons", "MUON_dz");
-  handler->addProductCut("looseMatrixMuons", "MUON_MEDIUMID");
+  handler->addProductCut("looseMatrixMuons", "MUON_LOOSEID");
   handler->addProductCut("looseMatrixMuons", "MUON_RELTRKISOVVL");
   //
   handler->addProduct(   "tightMatrixMuons", "looseMatrixMuons");
+  handler->addProductCut("tightMatrixMuons", "MUON_MEDIUMID");
   handler->addProductCut("tightMatrixMuons", "MUON_IREL0p25");
   //
   handler->addProduct("goodMuons","looseMatrixMuons");
@@ -48,7 +49,8 @@ void setupProductsMatrix(BaseHandler* handler)
   handler->addProductCut("looseMatrixElectrons", "PT10");
   handler->addProductCut("looseMatrixElectrons", "ETA2p5");
   handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUT_VETOIDNOISO");
-  handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUT_TRIGIDISOVL");
+  //handler->addProductCut("looseMatrixElectrons", "ELECTRON_CUT_TRIGIDISOVL"); // will be included in the next round of AODR jobs ( i.e. AODR tag > 80X_v0.2 )
+  handler->addProductCut("looseMatrixElectrons", "ELECTRON_IDISOemu");// this is the same as ELECTRON_CUT_TRIGIDISOVL, but it is computed in test/helperMiniAOD_SetupProductsMatrix.C instead of in AODR.
   //
   handler->addProduct(   "tightMatrixElectrons", "looseMatrixElectrons");
   handler->addProductCut("tightMatrixElectrons", "ELECTRON_CUT_MEDIUMID");
@@ -183,7 +185,7 @@ void setupProductsMatrix(BaseHandler* handler)
   MatrixWeights3D->addProduct("tightMatrixMuons");
   MatrixWeights3D->addProduct("tightMatrixElectrons");
   MatrixWeights3D->addProduct("tightMatrixTaus");
-  handler->addEventVariable("MATRIXWEIGHTS3D",MatrixWeights3D);
+  handler->addEventVariable("MATRIXWEIGHTS3D",MatrixWeights3D);//now we use LUTs, not the EA computed & stored weights!
   handler->addEventVariable("ISMATRIX3DMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep3D","goodMuons"));
   handler->addEventVariable("ISMATRIX3DELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep3D","goodElectrons"));
   handler->addEventVariable("ISMATRIX3DTAUS",     new EventVariableObjectVariableVector<int>("IsMatrixLep3D","goodTaus"));
@@ -195,7 +197,7 @@ void setupProductsMatrix(BaseHandler* handler)
   MatrixWeights3DLA->addProduct("goodElectrons");
   MatrixWeights3DLA->addProduct("tightMatrixMuons");
   MatrixWeights3DLA->addProduct("tightMatrixElectrons");
-  handler->addEventVariable("MATRIXWEIGHTS3DLA",MatrixWeights3DLA);
+  handler->addEventVariable("MATRIXWEIGHTS3DLA",MatrixWeights3DLA);//now we use LUTs, not the EA computed & stored weights!
   handler->addEventVariable("ISMATRIX3DLAMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep3DLA","goodMuons"));
   handler->addEventVariable("ISMATRIX3DLAELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep3DLA","goodElectrons"));
   // >>>> Also produces nLLL%s, Wfff%s, WfakeBckg%s, WfakeBckgPEU%s %s="3DLA"
@@ -208,7 +210,7 @@ void setupProductsMatrix(BaseHandler* handler)
   MatrixWeights2D->addProduct("tightMatrixMuons");
   MatrixWeights2D->addProduct("tightMatrixElectrons");
   MatrixWeights2D->addProduct("tightMatrixTaus");
-  handler->addEventVariable("MATRIXWEIGHTS2D",MatrixWeights2D);
+  handler->addEventVariable("MATRIXWEIGHTS2D",MatrixWeights2D);//now we use LUTs, not the EA computed & stored weights!
   handler->addEventVariable("ISMATRIX2DMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep2D","goodMuons"));
   handler->addEventVariable("ISMATRIX2DELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep2D","goodElectrons"));
   handler->addEventVariable("ISMATRIX2DTAUS",     new EventVariableObjectVariableVector<int>("IsMatrixLep2D","goodTaus"));
@@ -219,7 +221,7 @@ void setupProductsMatrix(BaseHandler* handler)
   MatrixWeights2DLA->addProduct("goodElectrons");
   MatrixWeights2DLA->addProduct("tightMatrixMuons");
   MatrixWeights2DLA->addProduct("tightMatrixElectrons");
-  handler->addEventVariable("MATRIXWEIGHTS2DLA",MatrixWeights2DLA);
+  handler->addEventVariable("MATRIXWEIGHTS2DLA",MatrixWeights2DLA);//now we use LUTs, not the EA computed & stored weights!
   handler->addEventVariable("ISMATRIX2DLAMUONS",    new EventVariableObjectVariableVector<int>("IsMatrixLep2DLA","goodMuons"));
   handler->addEventVariable("ISMATRIX2DLAELECTRONS",new EventVariableObjectVariableVector<int>("IsMatrixLep2DLA","goodElectrons"));
 

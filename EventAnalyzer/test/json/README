@@ -1,0 +1,11 @@
+
+Check the following directory on lxplus for the latest & greatest json files:
+
+    /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/
+
+Alternatively:
+https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2016Analysis
+https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/
+
+File                                                          Lumi      
+Cert_271036-274421_13TeV_PromptReco_Collisions16_JSON.txt     2.07/fb

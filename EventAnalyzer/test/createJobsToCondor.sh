@@ -37,6 +37,7 @@ CMSDIR=$CMSSW_BASE/src
 
 
 # Specify input files here:
+#link to folder with files
 inputFolder=$inSampleName
 #
 datestamp=`date +"%D_%T" | sed 's|/||g' |  sed 's|:||g'`
@@ -68,7 +69,9 @@ echo "cd $CMSDIR" >> $runScript
 echo 'eval `scramv1 runtime -sh` ' >> $runScript
 echo "cd $SCRIPTDIR" >> $runScript
 # Specify .C macro to be run here:
-echo 'root -q -b -l '$inC'\(\"$1\",\"$2\",\"$3\",$4\,$5\,$6\,$7\)' >> $runScript
+echo 'root -q -b -l '$inC'\(\"$1\",\"$2\",\"$3\",$4\,$5\,$6\,$7\,$8\)' >> $runScript
+###echo 'root -q -b -l '$inC'\(\"$1\",\"$2\",\"$3\",$4\,$5\,$6\,$7\)' >> $runScript
+###echo 'root -q -b -l '$inC'\(\"$1\",\"$2\",$3\,$4\,$5\,$6\,$7\)' >> $runScript
 echo "" >> $runScript
 
 echo "universe = vanilla" >> $condorFile
@@ -94,16 +97,30 @@ ls -l $inSampleDir | grep -v total > $tmplist
 while read line
 do
   base=`echo $line | awk '{split($9,array,"_"); print array[1]}'`
-  mode=0
+  # ---------------------------------------------------------------------------------
+  # --------------------------------------------------------------------------------- 
+  # Parameters to be specified by user
+  jsonFile=$MAINDIR"/json/Cert_271036-274421_13TeV_PromptReco_Collisions16_JSON.txt"
+  mode=1 # primary dataset: 1=MUEG, 2=DOUBLEMU, 3=DOUBLEEG, 4=SINGLEMU, 5=SINGLEEL
+  noFakes=0
+  isMC=false
+  suffix="data"
+  #suffix="simulation"
+  # -- -- -- -- -- -- --
+  # These dont need to be modified usually:
   iLo=0
-  iHi=-1
-  noFakes=1
+  iHi=10
+  # --------------------------------------------------------------------------------- 
+  # ---------------------------------------------------------------------------------
+  #
   ofile=`echo $line | awk '{print $9}' | sed 's|.root||g'`
   ifdir=`echo $line | awk '{print $9}'`
-  echo "output = $LOGDIR/\$(Cluster)_simulation_${ifdir}.out" >> $condorFile
-  echo "error = $LOGDIR/\$(Cluster)_simulation_${ifdir}.err" >> $condorFile
-  echo "log = $LOGDIR/\$(Cluster)_simulation_${ifdir}.log" >> $condorFile
-  echo "arguments = CondorSimSamples/$inputFolder/$ifdir CondorPU/${ifdir}.pu.root $OUTDIR/\$(Cluster)_${ofile}_simulation.root $mode $iLo $iHi $noFakes" >> $condorFile
+  echo "output = $LOGDIR/\$(Cluster)_$suffix_${ifdir}.out" >> $condorFile
+  echo "error = $LOGDIR/\$(Cluster)_$suffix_${ifdir}.err" >> $condorFile
+  echo "log = $LOGDIR/\$(Cluster)_$suffix_${ifdir}.log" >> $condorFile
+  ###echo "arguments = CondorSimSamples/$inputFolder/$ifdir CondorPU/${ifdir}.pu.root $OUTDIR/\$(Cluster)_${ofile}_simulation.root $mode $iLo $iHi $noFakes" >> $condorFile
+  ###echo "arguments = CondorSimSamples/$inputFolder/$ifdir  $OUTDIR/\$(Cluster)_${ofile}_simulation.root  $jsonFile $mode $iLo $iHi $noFakes $isMC" >> $condorFile
+  echo "arguments = CondorInputSamples/$inputFolder/$ifdir  $OUTDIR/\$(Cluster)_${ofile}_$suffix.root $jsonFile $mode $iLo $iHi $noFakes $isMC" >> $condorFile
   echo "queue" >> $condorFile
   echo "" >> $condorFile
 done < $tmplist
@@ -118,7 +135,7 @@ echo "To submit jobs:"
 echo "condor_submit submitJobsCondor_"$USER"_"$inputFolder2".condor"
 echo ""
 echo "To watch job progress:"
-echo "watch condor_q | grep "$USER
+echo "watch -n 10 'condor_q "$USER" | grep \";\"'"
 echo ""
 echo "Output  log files: "$LOGDIR
 echo ""

@@ -20,6 +20,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableTH1.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableTriggerWeight.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableValue.h"
+#include "RutgersIAF/EventAnalyzer/interface/ObjectVariableChangeType.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectComparisonDeltaR.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableCombined.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableElectronTotalIso.h"
@@ -146,8 +147,26 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   pt20first->addProduct("goodMuons");
   pt20first->addThreshold(20);
   handler->addEventVariable("PT20first",pt20first);
-  //handler->addHandlerCut("PT20first");
+
+  EventVariableThreshold* pt25first = new EventVariableThreshold("PT25first","goodElectrons");
+  pt25first->addProduct("goodMuons");
+  pt25first->addThreshold(25);
+  handler->addEventVariable("PT25first",pt25first);
   
+  EventVariableThreshold* pt251510 = new EventVariableThreshold("PT251510","goodElectrons");
+  pt251510->addProduct("goodMuons");
+  pt251510->addThreshold(25);
+  pt251510->addThreshold(15);
+  pt251510->addThreshold(10);
+  handler->addEventVariable("PT251510",pt251510);
+
+  EventVariableThreshold* pt252515 = new EventVariableThreshold("PT252515","goodElectrons");
+  pt252515->addProduct("goodMuons");
+  pt252515->addThreshold(25);
+  pt252515->addThreshold(15);
+  pt252515->addThreshold(10);
+  handler->addEventVariable("PT252515",pt252515);
+
   EventVariableThreshold* pt201512 = new EventVariableThreshold("PT201512","goodElectrons");
   pt201512->addProduct("goodMuons");
   pt201512->addThreshold(20);
@@ -216,30 +235,31 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("PTGOODMUONS",             new EventVariableObjectVariableVector<double>("PT",             "goodMuons"));
   handler->addEventVariable("ETAGOODMUONS",            new EventVariableObjectVariableVector<double>("ETA",            "goodMuons"));
   handler->addEventVariable("PHIGOODMUONS",            new EventVariableObjectVariableVector<double>("PHI",            "goodMuons"));
+  handler->addEventVariable("RELISODBDR0p4GOODMUONS",  new EventVariableObjectVariableVector<double>("MUON_RELISO",    "goodMuons"));
+  handler->addEventVariable("RELTRKISOGOODMUONS",      new EventVariableObjectVariableVector<double>("MUON_RELTRKISO", "goodMuons"));
+  handler->addEventVariable("ISTIGHTIDGOODMUONS",      new EventVariableObjectVariableVector<int>("isTightMuon",       "goodMuons"));
+  handler->addEventVariable("ISHIGHPTIDGOODMUONS",     new EventVariableObjectVariableVector<int>("isHighPtMuon",      "goodMuons"));
   handler->addEventVariable("MINIISOGOODMUONS",        new EventVariableObjectVariableVector<double>("MINIISO",        "goodMuons"));
   handler->addEventVariable("PTRATIOGOODMUONS",        new EventVariableObjectVariableVector<double>("ptRatio",        "goodMuons"));
   handler->addEventVariable("PTRELGOODMUONS",          new EventVariableObjectVariableVector<double>("ptRel",          "goodMuons"));
   handler->addEventVariable("RELISOGOODMUONS",         new EventVariableObjectVariableVector<double>("RELISO",         "goodMuons"));
-  handler->addEventVariable("RELISODBDR0p4GOODMUONS",  new EventVariableObjectVariableVector<double>("MUON_RELISO",    "goodMuons"));
-  handler->addEventVariable("RELTRKISOGOODMUONS",      new EventVariableObjectVariableVector<double>("MUON_RELTRKISO", "goodMuons"));
   handler->addEventVariable("CONECORRECTEDPTGOODMUONS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodMuons"));
+  handler->addEventVariable("fakeRoleGOODMUONS",       new EventVariableObjectVariableVector<int>("fakeRole",          "goodMuons"));//is Fake role (track proxy)
   //
-  handler->addEventVariable("ISTIGHTIDGOODMUONS",      new EventVariableObjectVariableVector<int>("MUON_TIGHTID",      "goodMuons"));
-  handler->addEventVariable("ISHIGHPTIDGOODMUONS",     new EventVariableObjectVariableVector<int>("MUON_HIGHPTID",     "goodMuons"));
-  //
-  handler->addEventVariable("fakeRoleGOODMUONS",       new EventVariableObjectVariableVector<int>("fakeRole",  "goodMuons"));
   handler->addEventVariable("goodMuonsDgoodPhotons",   new EventVariableDvector("goodMuons", "goodPhotons"));
   handler->addEventVariable("goodMuonsDgoodJets",      new EventVariableDvector("goodMuons", "goodJets"));
   handler->addEventVariable("goodMuonsDgoodLeptons",   new EventVariableDvector("goodMuons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   //
   // ConeConstituents for muons:
   handler->addEventVariable("JETCORRJETPTGOODMUONS",        new EventVariableObjectVariableVector<double>("JETCORRJETPT",         "goodMuons"));
+  handler->addEventVariable("JETLRMGOODMUONS",              new EventVariableObjectVariableVector<double>("JETLRM",               "goodMuons"));
   handler->addEventVariable("JETNOOFCONSTGOODMUONS",        new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",         "goodMuons"));
   handler->addEventVariable("JETCHMULTGOODMUONS",           new EventVariableObjectVariableVector<int>(   "JETCHMULT",            "goodMuons"));
   handler->addEventVariable("JETCHHADMULTGOODMUONS",        new EventVariableObjectVariableVector<int>(   "JETCHHADMULT",         "goodMuons"));
   handler->addEventVariable("JETCSVRAWGOODMUONS",           new EventVariableObjectVariableVector<double>("JETCSVBTAG",           "goodMuons"));
   handler->addEventVariable("JETJPRAWGOODMUONS",            new EventVariableObjectVariableVector<double>("JETJPBTAG",            "goodMuons"));
   handler->addEventVariable("JETMVARAWGOODMUONS",           new EventVariableObjectVariableVector<double>("JETMVABTAG",           "goodMuons"));
+  //
   handler->addEventVariable("CONESUMETDR03GOODMUONS",       new EventVariableObjectVariableVector<double>("CONESUMETDR03",        "goodMuons"));
   handler->addEventVariable("CONENDR03GOODMUONS",           new EventVariableObjectVariableVector<int>(   "CONENDR03",            "goodMuons"));
   handler->addEventVariable("CONESUMETDR04GOODMUONS",       new EventVariableObjectVariableVector<double>("CONESUMETDR04",        "goodMuons"));
@@ -289,22 +309,23 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONECHPTDR02TO08GOODMUONS",    new EventVariableObjectVariableVector<double>("CONECHPTDR02to08",     "goodMuons"));
   handler->addEventVariable("CONECHMASSDR02TO08GOODMUONS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR02to08",   "goodMuons"));
   //
-  handler->addEventVariable("QBASICMUONS",          new EventVariableObjectVariableVector<int>("CHARGE",        "basicMuons"));
-  handler->addEventVariable("PTBASICMUONS",         new EventVariableObjectVariableVector<double>("PT",         "basicMuons"));
-  handler->addEventVariable("ETABASICMUONS",        new EventVariableObjectVariableVector<double>("ETA",        "basicMuons"));
-  handler->addEventVariable("PHIBASICMUONS",        new EventVariableObjectVariableVector<double>("PHI",        "basicMuons"));
-  handler->addEventVariable("DXYBASICMUONS",        new EventVariableObjectVariableVector<double>("dxy",        "basicMuons"));
-  handler->addEventVariable("RELISOBASICMUONS",     new EventVariableObjectVariableVector<double>("RELISO",     "basicMuons"));
-  handler->addEventVariable("MINIISOBASICMUONS",    new EventVariableObjectVariableVector<double>("MINIISO",    "basicMuons"));
-  handler->addEventVariable("PTRATIOBASICMUONS",    new EventVariableObjectVariableVector<double>("ptRatio",    "basicMuons"));
-  handler->addEventVariable("PTRELBASICMUONS",      new EventVariableObjectVariableVector<double>("ptRel",      "basicMuons"));
-  handler->addEventVariable("ISLOOSEIDBASICMUONS",  new EventVariableObjectVariableVector<int>("MUON_LOOSEID",  "basicMuons"));
-  handler->addEventVariable("ISMEDIUMIDBASICMUONS", new EventVariableObjectVariableVector<int>("MUON_MEDIUMID", "basicMuons"));
-  handler->addEventVariable("ISTIGHTIDBASICMUONS",  new EventVariableObjectVariableVector<int>("MUON_TIGHTID",  "basicMuons"));
-  handler->addEventVariable("ISSOFTIDBASICMUONS",   new EventVariableObjectVariableVector<int>("MUON_SOFTID",   "basicMuons"));
-  handler->addEventVariable("ISHIGHPTIDBASICMUONS", new EventVariableObjectVariableVector<int>("MUON_HIGHPTID", "basicMuons"));
+  handler->addEventVariable("NBASICMUONS",             new EventVariableN("NBASICMUONS",                               "basicMuons"));
+  handler->addEventVariable("QBASICMUONS",             new EventVariableObjectVariableVector<int>("CHARGE",            "basicMuons"));
+  handler->addEventVariable("PTBASICMUONS",            new EventVariableObjectVariableVector<double>("PT",             "basicMuons"));
+  handler->addEventVariable("ETABASICMUONS",           new EventVariableObjectVariableVector<double>("ETA",            "basicMuons"));
+  handler->addEventVariable("PHIBASICMUONS",           new EventVariableObjectVariableVector<double>("PHI",            "basicMuons"));
+  handler->addEventVariable("DXYBASICMUONS",           new EventVariableObjectVariableVector<double>("dxy",            "basicMuons"));
+  handler->addEventVariable("ISLOOSEIDBASICMUONS",     new EventVariableObjectVariableVector<int>("isLooseMuon",       "basicMuons"));
+  handler->addEventVariable("ISMEDIUMIDBASICMUONS",    new EventVariableObjectVariableVector<int>("isMediumMuon",      "basicMuons"));
+  handler->addEventVariable("ISTIGHTIDBASICMUONS",     new EventVariableObjectVariableVector<int>("isTightMuon",       "basicMuons"));
+  handler->addEventVariable("ISSOFTIDBASICMUONS",      new EventVariableObjectVariableVector<int>("isSoftMuon",        "basicMuons"));
+  handler->addEventVariable("ISHIGHPTIDBASICMUONS",    new EventVariableObjectVariableVector<int>("isHighPtMuon",      "basicMuons"));
   handler->addEventVariable("RELISODBDR0p4BASICMUONS", new EventVariableObjectVariableVector<double>("MUON_RELISO",    "basicMuons"));
   handler->addEventVariable("RELTRKISOBASICMUONS",     new EventVariableObjectVariableVector<double>("MUON_RELTRKISO", "basicMuons"));
+  handler->addEventVariable("RELISOBASICMUONS",        new EventVariableObjectVariableVector<double>("RELISO",         "basicMuons"));
+  handler->addEventVariable("MINIISOBASICMUONS",       new EventVariableObjectVariableVector<double>("MINIISO",        "basicMuons"));
+  handler->addEventVariable("PTRATIOBASICMUONS",       new EventVariableObjectVariableVector<double>("ptRatio",        "basicMuons"));
+  handler->addEventVariable("PTRELBASICMUONS",         new EventVariableObjectVariableVector<double>("ptRel",          "basicMuons"));
   //
   handler->addEventVariable("QNONPROMPTMUONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "nonPromptMuons"));
   handler->addEventVariable("PTNONPROMPTMUONS",      new EventVariableObjectVariableVector<double>("PT",     "nonPromptMuons"));
@@ -338,51 +359,51 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ////////////////////////
   ///Electron Variables///
   ////////////////////////
-  handler->addEventVariable("NGOODELECTRONS",                new EventVariableN("NGOODELECTRONS",                              "goodElectrons"));
-  handler->addEventVariable("QGOODELECTRONS",                new EventVariableObjectVariableVector<int>("CHARGE",              "goodElectrons"));
-  handler->addEventVariable("PTGOODELECTRONS",               new EventVariableObjectVariableVector<double>("PT",               "goodElectrons"));
-  handler->addEventVariable("ETAGOODELECTRONS",              new EventVariableObjectVariableVector<double>("ETA",              "goodElectrons"));
-  handler->addEventVariable("PHIGOODELECTRONS",              new EventVariableObjectVariableVector<double>("PHI",              "goodElectrons"));
-  handler->addEventVariable("MINIISOGOODELECTRONS",          new EventVariableObjectVariableVector<double>("MINIISO",          "goodElectrons"));
-  handler->addEventVariable("PTRATIOGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ptRatio",          "goodElectrons"));
-  handler->addEventVariable("PTRELGOODELECTRONS",            new EventVariableObjectVariableVector<double>("ptRel",            "goodElectrons"));
-  handler->addEventVariable("RELISOGOODELECTRONS",           new EventVariableObjectVariableVector<double>("RELISO",           "goodElectrons"));
-  handler->addEventVariable("RELISOCUTIDGOODELECTRONS",      new EventVariableObjectVariableVector<double>("ELECTRON_RELISO",  "goodElectrons"));
-  handler->addEventVariable("CONECORRECTEDPTGOODELECTRONS",  new EventVariableObjectVariableVector<double>("conecorrectedPt",  "goodElectrons"));
-  handler->addEventVariable("ECALPFCLUSTERRELISOGOODELECTRONS", new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_EcalPFClusterIso", "goodElectrons"));
-  handler->addEventVariable("HCALPFCLUSTERRELISOGOODELECTRONS", new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_HcalPFClusterIso", "goodElectrons"));
-  handler->addEventVariable("TRACKRELISOGOODELECTRONS",         new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_TrackIso",         "goodElectrons"));
+  handler->addEventVariable("NGOODELECTRONS",                    new EventVariableN("NGOODELECTRONS",                                              "goodElectrons"));
+  handler->addEventVariable("QGOODELECTRONS",                    new EventVariableObjectVariableVector<int>("CHARGE",                              "goodElectrons"));
+  handler->addEventVariable("PTGOODELECTRONS",                   new EventVariableObjectVariableVector<double>("PT",                               "goodElectrons"));
+  handler->addEventVariable("ETAGOODELECTRONS",                  new EventVariableObjectVariableVector<double>("ETA",                              "goodElectrons"));
+  handler->addEventVariable("PHIGOODELECTRONS",                  new EventVariableObjectVariableVector<double>("PHI",                              "goodElectrons"));
+  handler->addEventVariable("ISCUTVETOIDGOODELECTRONS",          new EventVariableObjectVariableVector<int>("passCutBasedVetoId",                  "goodElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDGOODELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedLooseId",                 "goodElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDGOODELECTRONS",        new EventVariableObjectVariableVector<int>("passCutBasedMediumId",                "goodElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDGOODELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedTightId",                 "goodElectrons"));
+  handler->addEventVariable("ISHEEPIDGOODELECTRONS",             new EventVariableObjectVariableVector<int>("passHEEP",                            "goodElectrons"));
+  handler->addEventVariable("ISCUTVETOIDNOISOGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedVetoIdNoIso",             "goodElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",            "goodElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDNOISOGOODELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",           "goodElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",            "goodElectrons"));
+  handler->addEventVariable("ISCUTTRIGIDISOVLGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",             "goodElectrons"));//Missing in first set of 80X ntuples
+  handler->addEventVariable("ECALPFCLUSTERRELISOGOODELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_EcalPFClusterIso", "goodElectrons"));
+  handler->addEventVariable("HCALPFCLUSTERRELISOGOODELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_HcalPFClusterIso", "goodElectrons"));
+  handler->addEventVariable("TRACKRELISOGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_TrackIso",         "goodElectrons"));
+  handler->addEventVariable("RELISOCUTIDGOODELECTRONS",          new EventVariableObjectVariableVector<double>("ELECTRON_RELISO",                  "goodElectrons"));
+  handler->addEventVariable("MINIISOGOODELECTRONS",              new EventVariableObjectVariableVector<double>("MINIISO",                          "goodElectrons"));
+  handler->addEventVariable("PTRATIOGOODELECTRONS",              new EventVariableObjectVariableVector<double>("ptRatio",                          "goodElectrons"));
+  handler->addEventVariable("PTRELGOODELECTRONS",                new EventVariableObjectVariableVector<double>("ptRel",                            "goodElectrons"));
+  handler->addEventVariable("RELISOGOODELECTRONS",               new EventVariableObjectVariableVector<double>("RELISO",                           "goodElectrons"));
+  handler->addEventVariable("CONECORRECTEDPTGOODELECTRONS",      new EventVariableObjectVariableVector<double>("conecorrectedPt",                  "goodElectrons"));
+  handler->addEventVariable("SCETAGOODELECTRONS",                new EventVariableObjectVariableVector<double>("superClustereta",                  "goodElectrons"));
+  handler->addEventVariable("FULL5X5SIGMAIETAIETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("full5x5_sigmaIetaIeta",            "goodElectrons"));
+  handler->addEventVariable("DETAGOODELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaEtaSuperClusterTrackAtVtx",   "goodElectrons"));
+  handler->addEventVariable("DPHIGOODELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaPhiSuperClusterTrackAtVtx",   "goodElectrons"));
+  handler->addEventVariable("HOVEREGOODELECTRONS",               new EventVariableObjectVariableVector<double>("hcalOverEcal",                     "goodElectrons"));
+  handler->addEventVariable("OOEMOOPGOODELECTRONS",              new EventVariableObjectVariableVector<double>("1oEm1oPcorrected",                 "goodElectrons"));
+  handler->addEventVariable("DXYGOODELECTRONS",                  new EventVariableObjectVariableVector<double>("dxy",                              "goodElectrons"));
+  handler->addEventVariable("DZGOODELECTRONS",                   new EventVariableObjectVariableVector<double>("dz",                               "goodElectrons"));
+  handler->addEventVariable("QCTFGOODELECTRONS",                 new EventVariableObjectVariableVector<int>("ctfTrackCharge",                      "goodElectrons"));
+  handler->addEventVariable("QSCPIXGOODELECTRONS",               new EventVariableObjectVariableVector<int>("scPixCharge",                         "goodElectrons"));
+  handler->addEventVariable("QGSFGOODELECTRONS",                 new EventVariableObjectVariableVector<int>("gsfTrackCharge",                      "goodElectrons"));
+  handler->addEventVariable("ISALLQCONSISTENTGOODELECTRONS",     new EventVariableObjectVariableVector<int>("isGsfCtfScPixChargeConsistent",       "goodElectrons"));
+  handler->addEventVariable("fakeRoleGOODELECTRONS",             new EventVariableObjectVariableVector<int>("fakeRole",                            "goodElectrons"));//is Fake role (track proxy)
   //
-  handler->addEventVariable("SCETAGOODELECTRONS",                new EventVariableObjectVariableVector<double>("superClustereta",                "goodElectrons"));
-  handler->addEventVariable("FULL5X5SIGMAIETAIETAGOODELECTRONS", new EventVariableObjectVariableVector<double>("full5x5_sigmaIetaIeta",          "goodElectrons"));
-  handler->addEventVariable("DETAGOODELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaEtaSuperClusterTrackAtVtx", "goodElectrons"));
-  handler->addEventVariable("DPHIGOODELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaPhiSuperClusterTrackAtVtx", "goodElectrons"));
-  handler->addEventVariable("HOVEREGOODELECTRONS",               new EventVariableObjectVariableVector<double>("hcalOverEcal",                   "goodElectrons"));
-  handler->addEventVariable("OOEMOOPGOODELECTRONS",              new EventVariableObjectVariableVector<double>("1oEm1oPcorrected",               "goodElectrons"));
-  handler->addEventVariable("DXYGOODELECTRONS",                  new EventVariableObjectVariableVector<double>("dxy",                            "goodElectrons"));
-  handler->addEventVariable("DZGOODELECTRONS",                   new EventVariableObjectVariableVector<double>("dz",                             "goodElectrons"));
-  handler->addEventVariable("QCTFGOODELECTRONS",                 new EventVariableObjectVariableVector<int>("ctfTrackCharge",                    "goodElectrons"));
-  handler->addEventVariable("QSCPIXGOODELECTRONS",               new EventVariableObjectVariableVector<int>("scPixCharge",                       "goodElectrons"));
-  handler->addEventVariable("QGSFGOODELECTRONS",                 new EventVariableObjectVariableVector<int>("gsfTrackCharge",                    "goodElectrons"));
-  handler->addEventVariable("ISALLQCONSISTENTGOODELECTRONS",     new EventVariableObjectVariableVector<int>("isGsfCtfScPixChargeConsistent",     "goodElectrons"));
-  handler->addEventVariable("ISCUTVETOIDGOODELECTRONS",          new EventVariableObjectVariableVector<int>("passCutBasedVetoId",                "goodElectrons"));
-  handler->addEventVariable("ISCUTLOOSEIDGOODELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedLooseId",               "goodElectrons"));
-  handler->addEventVariable("ISCUTMEDIUMIDGOODELECTRONS",        new EventVariableObjectVariableVector<int>("passCutBasedMediumId",              "goodElectrons"));
-  handler->addEventVariable("ISCUTTIGHTIDGOODELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedTightId",               "goodElectrons"));
-  handler->addEventVariable("ISHEEPIDGOODELECTRONS",             new EventVariableObjectVariableVector<int>("passHEEP",                          "goodElectrons"));
-  handler->addEventVariable("ISCUTVETOIDNOISOGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedVetoIdNoIso",           "goodElectrons"));
-  handler->addEventVariable("ISCUTLOOSEIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",          "goodElectrons"));
-  handler->addEventVariable("ISCUTMEDIUMIDNOISOGOODELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",         "goodElectrons"));
-  handler->addEventVariable("ISCUTTIGHTIDNOISOGOODELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",          "goodElectrons"));
-  handler->addEventVariable("ISCUTTRIGIDISOVLGOODELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",           "goodElectrons"));
-  //
-  handler->addEventVariable("fakeRoleGOODELECTRONS",       new EventVariableObjectVariableVector<int>("fakeRole",  "goodElectrons"));
   handler->addEventVariable("goodElectronsDgoodPhotons",   new EventVariableDvector("goodElectrons", "goodPhotons"));
   handler->addEventVariable("goodElectronsDgoodJets",      new EventVariableDvector("goodElectrons", "goodJets"));
   handler->addEventVariable("goodElectronsDgoodLeptons",   new EventVariableDvector("goodElectrons", {"goodElectrons", "goodMuons"}, "goodLeptons"));
   //
   // ConeConstituents for electrons:
   handler->addEventVariable("JETCORRJETPTGOODELECTRONS",        new EventVariableObjectVariableVector<double>("JETCORRJETPT",         "goodElectrons"));
+  handler->addEventVariable("JETLRMGOODELECTRONS",              new EventVariableObjectVariableVector<double>("JETLRM",               "goodElectrons"));
   handler->addEventVariable("JETNOOFCONSTGOODELECTRONS",        new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",         "goodElectrons"));
   handler->addEventVariable("JETCHMULTGOODELECTRONS",           new EventVariableObjectVariableVector<int>(   "JETCHMULT",            "goodElectrons"));
   handler->addEventVariable("JETCHHADMULTGOODELECTRONS",        new EventVariableObjectVariableVector<int>(   "JETCHHADMULT",         "goodElectrons"));
@@ -438,49 +459,50 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONECHPTDR02TO08GOODELECTRONS",    new EventVariableObjectVariableVector<double>("CONECHPTDR02to08",     "goodElectrons"));
   handler->addEventVariable("CONECHMASSDR02TO08GOODELECTRONS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR02to08",   "goodElectrons"));
   //
-  handler->addEventVariable("QBASICELECTRONS",                    new EventVariableObjectVariableVector<int>("CHARGE",                            "basicElectrons"));
-  handler->addEventVariable("PTBASICELECTRONS",                   new EventVariableObjectVariableVector<double>("PT",                             "basicElectrons"));
-  handler->addEventVariable("ETABASICELECTRONS",                  new EventVariableObjectVariableVector<double>("ETA",                            "basicElectrons"));
-  handler->addEventVariable("PHIBASICELECTRONS",                  new EventVariableObjectVariableVector<double>("PHI",                            "basicElectrons"));
-  handler->addEventVariable("RELISOBASICELECTRONS",               new EventVariableObjectVariableVector<double>("RELISO",                         "basicElectrons"));
-  handler->addEventVariable("MINIISOBASICELECTRONS",              new EventVariableObjectVariableVector<double>("MINIISO",                        "basicElectrons"));
-  handler->addEventVariable("PTRATIOBASICELECTRONS",              new EventVariableObjectVariableVector<double>("ptRatio",                        "basicElectrons"));
-  handler->addEventVariable("PTRELBASICELECTRONS",                new EventVariableObjectVariableVector<double>("ptRel",                          "basicElectrons"));
-  handler->addEventVariable("SCETABASICELECTRONS",                new EventVariableObjectVariableVector<double>("superClustereta",                "basicElectrons"));
-  handler->addEventVariable("FULL5X5SIGMAIETAIETABASICELECTRONS", new EventVariableObjectVariableVector<double>("full5x5_sigmaIetaIeta",          "basicElectrons"));
-  handler->addEventVariable("DETABASICELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaEtaSuperClusterTrackAtVtx", "basicElectrons"));
-  handler->addEventVariable("DPHIBASICELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaPhiSuperClusterTrackAtVtx", "basicElectrons"));
-  handler->addEventVariable("HOVEREBASICELECTRONS",               new EventVariableObjectVariableVector<double>("hcalOverEcal",                   "basicElectrons"));
-  handler->addEventVariable("OOEMOOPBASICELECTRONS",              new EventVariableObjectVariableVector<double>("1oEm1oPcorrected",               "basicElectrons"));
-  handler->addEventVariable("DXYBASICELECTRONS",                  new EventVariableObjectVariableVector<double>("dxy",                            "basicElectrons"));
-  handler->addEventVariable("DZBASICELECTRONS",                   new EventVariableObjectVariableVector<double>("dz",                             "basicElectrons"));
-  handler->addEventVariable("QCTFBASICELECTRONS",                 new EventVariableObjectVariableVector<int>("ctfTrackCharge",                    "basicElectrons"));
-  handler->addEventVariable("QSCPIXBASICELECTRONS",               new EventVariableObjectVariableVector<int>("scPixCharge",                       "basicElectrons"));
-  handler->addEventVariable("QGSFBASICELECTRONS",                 new EventVariableObjectVariableVector<int>("gsfTrackCharge",                    "basicElectrons"));
-  handler->addEventVariable("ISALLQCONSISTENTBASICELECTRONS",     new EventVariableObjectVariableVector<int>("isGsfCtfScPixChargeConsistent",     "basicElectrons"));
-  handler->addEventVariable("ISCUTVETOIDBASICELECTRONS",          new EventVariableObjectVariableVector<int>("passCutBasedVetoId",                "basicElectrons"));
-  handler->addEventVariable("ISCUTLOOSEIDBASICELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedLooseId",               "basicElectrons"));
-  handler->addEventVariable("ISCUTMEDIUMIDBASICELECTRONS",        new EventVariableObjectVariableVector<int>("passCutBasedMediumId",              "basicElectrons"));
-  handler->addEventVariable("ISCUTTIGHTIDBASICELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedTightId",               "basicElectrons"));
-  handler->addEventVariable("ISHEEPIDBASICELECTRONS",             new EventVariableObjectVariableVector<int>("passHEEP",                          "basicElectrons"));
-  handler->addEventVariable("ISCUTVETOIDNOISOBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedVetoIdNoIso",           "basicElectrons"));
-  handler->addEventVariable("ISCUTLOOSEIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",          "basicElectrons"));
-  handler->addEventVariable("ISCUTMEDIUMIDNOISOBASICELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",         "basicElectrons"));
-  handler->addEventVariable("ISCUTTIGHTIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",          "basicElectrons"));
-  handler->addEventVariable("ISCUTTRIGIDISOVLBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",           "basicElectrons"));
+  handler->addEventVariable("NBASICELECTRONS",                    new EventVariableN("NBASICELECTRONS",                                             "basicElectrons"));
+  handler->addEventVariable("QBASICELECTRONS",                    new EventVariableObjectVariableVector<int>("CHARGE",                              "basicElectrons"));
+  handler->addEventVariable("PTBASICELECTRONS",                   new EventVariableObjectVariableVector<double>("PT",                               "basicElectrons"));
+  handler->addEventVariable("ETABASICELECTRONS",                  new EventVariableObjectVariableVector<double>("ETA",                              "basicElectrons"));
+  handler->addEventVariable("PHIBASICELECTRONS",                  new EventVariableObjectVariableVector<double>("PHI",                              "basicElectrons"));
+  handler->addEventVariable("RELISOBASICELECTRONS",               new EventVariableObjectVariableVector<double>("RELISO",                           "basicElectrons"));
+  handler->addEventVariable("MINIISOBASICELECTRONS",              new EventVariableObjectVariableVector<double>("MINIISO",                          "basicElectrons"));
+  handler->addEventVariable("PTRATIOBASICELECTRONS",              new EventVariableObjectVariableVector<double>("ptRatio",                          "basicElectrons"));
+  handler->addEventVariable("PTRELBASICELECTRONS",                new EventVariableObjectVariableVector<double>("ptRel",                            "basicElectrons"));
+  handler->addEventVariable("SCETABASICELECTRONS",                new EventVariableObjectVariableVector<double>("superClustereta",                  "basicElectrons"));
+  handler->addEventVariable("FULL5X5SIGMAIETAIETABASICELECTRONS", new EventVariableObjectVariableVector<double>("full5x5_sigmaIetaIeta",            "basicElectrons"));
+  handler->addEventVariable("DETABASICELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaEtaSuperClusterTrackAtVtx",   "basicElectrons"));
+  handler->addEventVariable("DPHIBASICELECTRONS",                 new EventVariableObjectVariableVector<double>("deltaPhiSuperClusterTrackAtVtx",   "basicElectrons"));
+  handler->addEventVariable("HOVEREBASICELECTRONS",               new EventVariableObjectVariableVector<double>("hcalOverEcal",                     "basicElectrons"));
+  handler->addEventVariable("OOEMOOPBASICELECTRONS",              new EventVariableObjectVariableVector<double>("1oEm1oPcorrected",                 "basicElectrons"));
+  handler->addEventVariable("DXYBASICELECTRONS",                  new EventVariableObjectVariableVector<double>("dxy",                              "basicElectrons"));
+  handler->addEventVariable("DZBASICELECTRONS",                   new EventVariableObjectVariableVector<double>("dz",                               "basicElectrons"));
+  handler->addEventVariable("QCTFBASICELECTRONS",                 new EventVariableObjectVariableVector<int>("ctfTrackCharge",                      "basicElectrons"));
+  handler->addEventVariable("QSCPIXBASICELECTRONS",               new EventVariableObjectVariableVector<int>("scPixCharge",                         "basicElectrons"));
+  handler->addEventVariable("QGSFBASICELECTRONS",                 new EventVariableObjectVariableVector<int>("gsfTrackCharge",                      "basicElectrons"));
+  handler->addEventVariable("ISALLQCONSISTENTBASICELECTRONS",     new EventVariableObjectVariableVector<int>("isGsfCtfScPixChargeConsistent",       "basicElectrons"));
+  handler->addEventVariable("ISCUTVETOIDBASICELECTRONS",          new EventVariableObjectVariableVector<int>("passCutBasedVetoId",                  "basicElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDBASICELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedLooseId",                 "basicElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDBASICELECTRONS",        new EventVariableObjectVariableVector<int>("passCutBasedMediumId",                "basicElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDBASICELECTRONS",         new EventVariableObjectVariableVector<int>("passCutBasedTightId",                 "basicElectrons"));
+  handler->addEventVariable("ISHEEPIDBASICELECTRONS",             new EventVariableObjectVariableVector<int>("passHEEP",                            "basicElectrons"));
+  handler->addEventVariable("ISCUTVETOIDNOISOBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedVetoIdNoIso",             "basicElectrons"));
+  handler->addEventVariable("ISCUTLOOSEIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedLooseIdNoIso",            "basicElectrons"));
+  handler->addEventVariable("ISCUTMEDIUMIDNOISOBASICELECTRONS",   new EventVariableObjectVariableVector<int>("passCutBasedMediumIdNoIso",           "basicElectrons"));
+  handler->addEventVariable("ISCUTTIGHTIDNOISOBASICELECTRONS",    new EventVariableObjectVariableVector<int>("passCutBasedTightIdNoIso",            "basicElectrons"));
+  handler->addEventVariable("ISCUTTRIGIDISOVLBASICELECTRONS",     new EventVariableObjectVariableVector<int>("passCutBasedTrigIdIsoVL",             "basicElectrons"));//Missing in first set of 80X ntuples
   handler->addEventVariable("ECALPFCLUSTERRELISOBASICELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_EcalPFClusterIso", "basicElectrons"));
   handler->addEventVariable("HCALPFCLUSTERRELISOBASICELECTRONS",  new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_HcalPFClusterIso", "basicElectrons"));
   handler->addEventVariable("TRACKRELISOBASICELECTRONS",          new EventVariableObjectVariableVector<double>("ELECTRON_RelIso_TrackIso",         "basicElectrons"));
   //
-  handler->addEventVariable("QNONPROMPTELECTRONS",       new EventVariableObjectVariableVector<int>("CHARGE",    "nonPromptElectrons"));
-  handler->addEventVariable("PTNONPROMPTELECTRONS",      new EventVariableObjectVariableVector<double>("PT",     "nonPromptElectrons"));
-  handler->addEventVariable("ETANONPROMPTELECTRONS",     new EventVariableObjectVariableVector<double>("ETA",    "nonPromptElectrons"));
-  handler->addEventVariable("PHINONPROMPTELECTRONS",     new EventVariableObjectVariableVector<double>("PHI",    "nonPromptElectrons"));
-  handler->addEventVariable("RELISONONPROMPTELECTRONS",  new EventVariableObjectVariableVector<double>("RELISO", "nonPromptElectrons"));
-  handler->addEventVariable("MINIISONONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("MINIISO","nonPromptElectrons"));
-  handler->addEventVariable("PTRATIONONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("ptRatio","nonPromptElectrons"));  
-  handler->addEventVariable("PTRELNONPROMPTELECTRONS",   new EventVariableObjectVariableVector<double>("ptRel",  "nonPromptElectrons"));
-  handler->addEventVariable("DXYNONPROMPTELECTRONS",     new EventVariableObjectVariableVector<double>("dxy",    "nonPromptElectrons"));
+  handler->addEventVariable("QNONPROMPTELECTRONS",       new EventVariableObjectVariableVector<int>("CHARGE",     "nonPromptElectrons"));
+  handler->addEventVariable("PTNONPROMPTELECTRONS",      new EventVariableObjectVariableVector<double>("PT",      "nonPromptElectrons"));
+  handler->addEventVariable("ETANONPROMPTELECTRONS",     new EventVariableObjectVariableVector<double>("ETA",     "nonPromptElectrons"));
+  handler->addEventVariable("PHINONPROMPTELECTRONS",     new EventVariableObjectVariableVector<double>("PHI",     "nonPromptElectrons"));
+  handler->addEventVariable("RELISONONPROMPTELECTRONS",  new EventVariableObjectVariableVector<double>("RELISO",  "nonPromptElectrons"));
+  handler->addEventVariable("MINIISONONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("MINIISO", "nonPromptElectrons"));
+  handler->addEventVariable("PTRATIONONPROMPTELECTRONS", new EventVariableObjectVariableVector<double>("ptRatio", "nonPromptElectrons"));  
+  handler->addEventVariable("PTRELNONPROMPTELECTRONS",   new EventVariableObjectVariableVector<double>("ptRel",   "nonPromptElectrons"));
+  handler->addEventVariable("DXYNONPROMPTELECTRONS",     new EventVariableObjectVariableVector<double>("dxy",     "nonPromptElectrons"));
   //
   handler->addEventVariable("nINPELECTRONS",   new EventVariableN("nINPELECTRONS",                  "isoNonPromptElectrons"));
   handler->addEventVariable("QINPELECTRONS",   new EventVariableObjectVariableVector<int>("CHARGE", "isoNonPromptElectrons"));
@@ -505,17 +527,17 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   ///////////////////
   ///Tau Variables///
   ///////////////////
-  handler->addEventVariable("NGOODTAUS",              new EventVariableN("NGOODTAUS",                                 "goodTaus"));
-  handler->addEventVariable("QGOODTAUS",              new EventVariableObjectVariableVector<int>("CHARGE",            "goodTaus"));
-  handler->addEventVariable("PTGOODTAUS",             new EventVariableObjectVariableVector<double>("PT",             "goodTaus"));
-  handler->addEventVariable("ETAGOODTAUS",            new EventVariableObjectVariableVector<double>("ETA",            "goodTaus"));
-  handler->addEventVariable("PHIGOODTAUS",            new EventVariableObjectVariableVector<double>("PHI",            "goodTaus"));
-  handler->addEventVariable("fakeRoleGOODTAUS",       new EventVariableObjectVariableVector<int>("fakeRole",          "goodTaus"));
-  //handler->addEventVariable("TOTALISOGOODTAUS",     new EventVariableObjectVariableVector<double>("TOTALISO",       "goodTaus"));//not very meaningful for taus
-  //handler->addEventVariable("TOTALMINIISOGOODTAUS", new EventVariableObjectVariableVector<double>("TOTALMINIISO",   "goodTaus"));//taus need a hollow cone
-  //handler->addEventVariable("MINIISOGOODTAUS",      new EventVariableObjectVariableVector<double>("MINIISO",        "goodTaus"));
-  handler->addEventVariable("CONECORRECTEDPTGOODTAUS",new EventVariableObjectVariableVector<double>("conecorrectedPt","goodTaus"));
-  //
+  handler->addEventVariable("NGOODTAUS",                   new EventVariableN("NGOODTAUS",                                                      "goodTaus"));
+  handler->addEventVariable("QGOODTAUS",                   new EventVariableObjectVariableVector<int>("CHARGE",                                 "goodTaus"));
+  handler->addEventVariable("PTGOODTAUS",                  new EventVariableObjectVariableVector<double>("PT",                                  "goodTaus"));
+  handler->addEventVariable("ETAGOODTAUS",                 new EventVariableObjectVariableVector<double>("ETA",                                 "goodTaus"));
+  handler->addEventVariable("PHIGOODTAUS",                 new EventVariableObjectVariableVector<double>("PHI",                                 "goodTaus"));
+  handler->addEventVariable("fakeRoleGOODTAUS",            new EventVariableObjectVariableVector<int>("fakeRole",                               "goodTaus")); 
+  handler->addEventVariable("MINIISOGOODTAUS",             new EventVariableObjectVariableVector<double>("MINIISO",                             "goodTaus"));//this + next 3 lines are not necessarly..
+  handler->addEventVariable("PTRATIOGOODTAUS",             new EventVariableObjectVariableVector<double>("ptRatio",                             "goodTaus"));//..relevant for taus, but are kept since..
+  handler->addEventVariable("PTRELGOODTAUS",               new EventVariableObjectVariableVector<double>("ptRel",                               "goodTaus"));//..they are needed for the conecorrectedPt..
+  handler->addEventVariable("RELISOGOODTAUS",              new EventVariableObjectVariableVector<double>("RELISO",                              "goodTaus"));//..calculation.
+  handler->addEventVariable("CONECORRECTEDPTGOODTAUS",     new EventVariableObjectVariableVector<double>("conecorrectedPt",                     "goodTaus"));//
   handler->addEventVariable("VLOOSEISOMVARUN2DBGOODTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1DBnewDMwLT",   "goodTaus"));
   handler->addEventVariable("LOOSEISOMVARUN2DBGOODTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1DBnewDMwLT",    "goodTaus"));
   handler->addEventVariable("MEDIUMISOMVARUN2DBGOODTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1DBnewDMwLT",   "goodTaus"));
@@ -536,40 +558,9 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("LOOSEANTIMU3GOODTAUS",        new EventVariableObjectVariableVector<int>("againstMuonLoose3",                      "goodTaus"));
   handler->addEventVariable("TIGHTANTIMU3GOODTAUS",        new EventVariableObjectVariableVector<int>("againstMuonTight3",                      "goodTaus"));
   //
-  handler->addEventVariable("NBASICTAUS",          new EventVariableN("NBASICTAUS",                         "basicTaus"));
-  handler->addEventVariable("PTBASICTAUS",         new EventVariableObjectVariableVector<double>("PT",      "basicTaus"));
-  handler->addEventVariable("ETABASICTAUS",        new EventVariableObjectVariableVector<double>("ETA",     "basicTaus"));
-  handler->addEventVariable("PHIBASICTAUS",        new EventVariableObjectVariableVector<double>("PHI",     "basicTaus"));
-  //handler->addEventVariable("TOTALISOBASICTAUS", new EventVariableObjectVariableVector<double>("TOTALISO","basicTaus"));//not very meaningful for taus
-  //handler->addEventVariable("RELISOBASICTAUS",   new EventVariableObjectVariableVector<double>("RELISO",  "basicTaus"));//taus need a hollow cone
-  handler->addEventVariable("VLOOSEISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
-  handler->addEventVariable("LOOSEISOMVARUN2DBBASICTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1DBnewDMwLT",    "basicTaus"));
-  handler->addEventVariable("MEDIUMISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
-  handler->addEventVariable("TIGHTISOMVARUN2DBBASICTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1DBnewDMwLT",    "basicTaus"));
-  handler->addEventVariable("VTIGHTISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
-  handler->addEventVariable("VVTIGHTISOMVARUN2DBBASICTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1DBnewDMwLT",  "basicTaus"));
-  handler->addEventVariable("VLOOSEISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
-  handler->addEventVariable("LOOSEISOMVARUN2PWBASICTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1PWnewDMwLT",    "basicTaus"));
-  handler->addEventVariable("MEDIUMISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
-  handler->addEventVariable("TIGHTISOMVARUN2PWBASICTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1PWnewDMwLT",    "basicTaus"));
-  handler->addEventVariable("VTIGHTISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
-  handler->addEventVariable("VVTIGHTISOMVARUN2PWBASICTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1PWnewDMwLT",  "basicTaus"));
-  handler->addEventVariable("VLOOSEANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVLooseMVA6",              "basicTaus"));
-  handler->addEventVariable("LOOSEANTIELEMVA6BASICTAUS",    new EventVariableObjectVariableVector<int>("againstElectronLooseMVA6",               "basicTaus"));
-  handler->addEventVariable("MEDIUMANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronMediumMVA6",              "basicTaus"));
-  handler->addEventVariable("TIGHTANTIELEMVA6BASICTAUS",    new EventVariableObjectVariableVector<int>("againstElectronTightMVA6",               "basicTaus"));
-  handler->addEventVariable("VTIGHTANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVTightMVA6",              "basicTaus"));
-  handler->addEventVariable("LOOSEANTIMU3BASICTAUS",        new EventVariableObjectVariableVector<int>("againstMuonLoose3",                      "basicTaus"));
-  handler->addEventVariable("TIGHTANTIMU3BASICTAUS",        new EventVariableObjectVariableVector<int>("againstMuonTight3",                      "basicTaus"));
-  //
-  handler->addEventVariable("LOOSECOMBINEDISODBCORR3HITSBASICTAUS", new EventVariableObjectVariableVector<int>("byLooseCombinedIsolationDeltaBetaCorr3Hits", "basicTaus"));
-  handler->addEventVariable("MEDIUMCOMBINEDISODBCORR3HITSBASICTAUS",new EventVariableObjectVariableVector<int>("byMediumCombinedIsolationDeltaBetaCorr3Hits", "basicTaus"));
-  handler->addEventVariable("TIGHTCOMBINEDISODBCORR3HITSBASICTAUS"  new EventVariableObjectVariableVector<int>("byTightCombinedIsolationDeltaBetaCorr3Hits"   "basicTaus"));
-  //
-  handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
-  //
   // ConeConstituents for taus:
   handler->addEventVariable("JETCORRJETPTGOODTAUS",        new EventVariableObjectVariableVector<double>("JETCORRJETPT",         "goodTaus"));
+  handler->addEventVariable("JETLRMGOODTAUS",              new EventVariableObjectVariableVector<double>("JETLRM",               "goodTaus"));
   handler->addEventVariable("JETNOOFCONSTGOODTAUS",        new EventVariableObjectVariableVector<int>(   "JETNOOFCONST",         "goodTaus"));
   handler->addEventVariable("JETCHMULTGOODTAUS",           new EventVariableObjectVariableVector<int>(   "JETCHMULT",            "goodTaus"));
   handler->addEventVariable("JETCHHADMULTGOODTAUS",        new EventVariableObjectVariableVector<int>(   "JETCHHADMULT",         "goodTaus"));
@@ -624,35 +615,57 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("CONECHMASSDR01TO08GOODTAUS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR01to08",   "goodTaus"));
   handler->addEventVariable("CONECHPTDR02TO08GOODTAUS",    new EventVariableObjectVariableVector<double>("CONECHPTDR02to08",     "goodTaus"));
   handler->addEventVariable("CONECHMASSDR02TO08GOODTAUS",  new EventVariableObjectVariableVector<double>("CONECHMASSDR02to08",   "goodTaus"));
+  //
+  handler->addEventVariable("NBASICTAUS",                   new EventVariableN("NBASICTAUS",                                                     "basicTaus"));
+  handler->addEventVariable("PTBASICTAUS",                  new EventVariableObjectVariableVector<double>("PT",                                  "basicTaus"));
+  handler->addEventVariable("ETABASICTAUS",                 new EventVariableObjectVariableVector<double>("ETA",                                 "basicTaus"));
+  handler->addEventVariable("PHIBASICTAUS",                 new EventVariableObjectVariableVector<double>("PHI",                                 "basicTaus"));
+  handler->addEventVariable("VLOOSEISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("LOOSEISOMVARUN2DBBASICTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1DBnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("MEDIUMISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("TIGHTISOMVARUN2DBBASICTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1DBnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("VTIGHTISOMVARUN2DBBASICTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1DBnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("VVTIGHTISOMVARUN2DBBASICTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1DBnewDMwLT",  "basicTaus"));
+  handler->addEventVariable("VLOOSEISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byVLooseIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("LOOSEISOMVARUN2PWBASICTAUS",   new EventVariableObjectVariableVector<int>("byLooseIsolationMVArun2v1PWnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("MEDIUMISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byMediumIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("TIGHTISOMVARUN2PWBASICTAUS",   new EventVariableObjectVariableVector<int>("byTightIsolationMVArun2v1PWnewDMwLT",    "basicTaus"));
+  handler->addEventVariable("VTIGHTISOMVARUN2PWBASICTAUS",  new EventVariableObjectVariableVector<int>("byVTightIsolationMVArun2v1PWnewDMwLT",   "basicTaus"));
+  handler->addEventVariable("VVTIGHTISOMVARUN2PWBASICTAUS", new EventVariableObjectVariableVector<int>("byVVTightIsolationMVArun2v1PWnewDMwLT",  "basicTaus"));
+  handler->addEventVariable("VLOOSEANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVLooseMVA6",              "basicTaus"));
+  handler->addEventVariable("LOOSEANTIELEMVA6BASICTAUS",    new EventVariableObjectVariableVector<int>("againstElectronLooseMVA6",               "basicTaus"));
+  handler->addEventVariable("MEDIUMANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronMediumMVA6",              "basicTaus"));
+  handler->addEventVariable("TIGHTANTIELEMVA6BASICTAUS",    new EventVariableObjectVariableVector<int>("againstElectronTightMVA6",               "basicTaus"));
+  handler->addEventVariable("VTIGHTANTIELEMVA6BASICTAUS",   new EventVariableObjectVariableVector<int>("againstElectronVTightMVA6",              "basicTaus"));
+  handler->addEventVariable("LOOSEANTIMU3BASICTAUS",        new EventVariableObjectVariableVector<int>("againstMuonLoose3",                      "basicTaus"));
+  handler->addEventVariable("TIGHTANTIMU3BASICTAUS",        new EventVariableObjectVariableVector<int>("againstMuonTight3",                      "basicTaus"));
+  // additional "non-mva" Comb Iso DB Corr variables 
+  handler->addEventVariable("LOOSECOMBINEDISODBCORR3HITSBASICTAUS", new EventVariableObjectVariableVector<int>("byLooseCombinedIsolationDeltaBetaCorr3Hits",  "basicTaus"));
+  handler->addEventVariable("MEDIUMCOMBINEDISODBCORR3HITSBASICTAUS",new EventVariableObjectVariableVector<int>("byMediumCombinedIsolationDeltaBetaCorr3Hits", "basicTaus"));
+  handler->addEventVariable("TIGHTCOMBINEDISODBCORR3HITSBASICTAUS", new EventVariableObjectVariableVector<int>("byTightCombinedIsolationDeltaBetaCorr3Hits",  "basicTaus"));
+  //
+  handler->addEventVariable("NNONISOTAUS", new EventVariableN("NNONISOTAUS","nonIsoTaus"));
 
 
   // --------------------------------------------------------------------------------------------------------------
   ///////////////////
   ///Jet Variables///
   ///////////////////
-  handler->addEventVariable("NBASICJETS",       new EventVariableN("NBASICJETS",                         "basicJets"));
-  handler->addEventVariable("PTBASICJETS",      new EventVariableObjectVariableVector<double>("PT",      "basicJets"));
-  handler->addEventVariable("ETABASICJETS",     new EventVariableObjectVariableVector<double>("ETA",     "basicJets"));
-  handler->addEventVariable("PHIBASICJETS",     new EventVariableObjectVariableVector<double>("PHI",     "basicJets"));
-  handler->addEventVariable("CSVRAWBASICJETS",  new EventVariableObjectVariableVector<double>("CSVraw",  "basicJets"));
-  handler->addEventVariable("JPRAWBASICJETS",   new EventVariableObjectVariableVector<double>("JPraw",   "basicJets"));
-  handler->addEventVariable("CMVARAWBASICJETS", new EventVariableObjectVariableVector<double>("cMVAraw", "basicJets"));
-  handler->addEventVariable("TOTALMULTBASICJETS",         new EventVariableObjectVariableVector<int>(   "numberOfConstituents",        "basicJets"));
-  handler->addEventVariable("CHARMULTBASICJETS",          new EventVariableObjectVariableVector<int>(   "chargedMultiplicity",         "basicJets"));
-  handler->addEventVariable("NEUTMULTBASICJETS",          new EventVariableObjectVariableVector<int>(   "neutralMultiplicity",         "basicJets"));
-  handler->addEventVariable("MUONENERGYFRACBASICJETS",    new EventVariableObjectVariableVector<double>("muonEnergyFraction",          "basicJets"));
-  handler->addEventVariable("CHARHADENERGYFRACBASICJETS", new EventVariableObjectVariableVector<double>("chargedHadronEnergyFraction", "basicJets"));
-  handler->addEventVariable("CHAREMENERGYFRACBASICJETS",  new EventVariableObjectVariableVector<double>("chargedEmEnergyFraction",     "basicJets"));
-  handler->addEventVariable("NEUTHADENERGYFRACBASICJETS", new EventVariableObjectVariableVector<double>("neutralHadronEnergyFraction", "basicJets"));
-  handler->addEventVariable("NEUTEMENERGYFRACBASICJETS",  new EventVariableObjectVariableVector<double>("neutralEmEnergyFraction",     "basicJets"));
-  //
-  handler->addEventVariable("NGOODJETS",          new EventVariableN("NGOODJETS",                          "goodJets"));
-  handler->addEventVariable("PTGOODJETS",         new EventVariableObjectVariableVector<double>("PT",      "goodJets"));
-  handler->addEventVariable("ETAGOODJETS",        new EventVariableObjectVariableVector<double>("ETA",     "goodJets"));
-  handler->addEventVariable("PHIGOODJETS",        new EventVariableObjectVariableVector<double>("PHI",     "goodJets"));
-  handler->addEventVariable("CSVRAWGOODJETS",     new EventVariableObjectVariableVector<double>("CSVraw",  "goodJets"));
-  handler->addEventVariable("JPRAWGOODJETS",      new EventVariableObjectVariableVector<double>("JPraw",   "goodJets"));
-  handler->addEventVariable("CMVARAWGOODJETS",    new EventVariableObjectVariableVector<double>("cMVAraw", "goodJets"));
+  handler->addEventVariable("NGOODJETS",                 new EventVariableN("NGOODJETS",                                              "goodJets"));
+  handler->addEventVariable("PTGOODJETS",                new EventVariableObjectVariableVector<double>("PT",                          "goodJets"));
+  handler->addEventVariable("ETAGOODJETS",               new EventVariableObjectVariableVector<double>("ETA",                         "goodJets"));
+  handler->addEventVariable("PHIGOODJETS",               new EventVariableObjectVariableVector<double>("PHI",                         "goodJets"));
+  handler->addEventVariable("CSVRAWGOODJETS",            new EventVariableObjectVariableVector<double>("CSVraw",                      "goodJets"));
+  handler->addEventVariable("JPRAWGOODJETS",             new EventVariableObjectVariableVector<double>("JPraw",                       "goodJets"));
+  handler->addEventVariable("CMVARAWGOODJETS",           new EventVariableObjectVariableVector<double>("cMVAraw",                     "goodJets"));
+  handler->addEventVariable("TOTALMULTGOODJETS",         new EventVariableObjectVariableVector<int>(   "numberOfConstituents",        "goodJets"));
+  handler->addEventVariable("CHARMULTGOODJETS",          new EventVariableObjectVariableVector<int>(   "chargedMultiplicity",         "goodJets"));
+  handler->addEventVariable("NEUTMULTGOODJETS",          new EventVariableObjectVariableVector<int>(   "neutralMultiplicity",         "goodJets"));
+  handler->addEventVariable("MUONENERGYFRACGOODJETS",    new EventVariableObjectVariableVector<double>("muonEnergyFraction",          "goodJets"));
+  handler->addEventVariable("CHARHADENERGYFRACGOODJETS", new EventVariableObjectVariableVector<double>("chargedHadronEnergyFraction", "goodJets"));
+  handler->addEventVariable("CHAREMENERGYFRACGOODJETS",  new EventVariableObjectVariableVector<double>("chargedEmEnergyFraction",     "goodJets"));
+  handler->addEventVariable("NEUTHADENERGYFRACGOODJETS", new EventVariableObjectVariableVector<double>("neutralHadronEnergyFraction", "goodJets"));
+  handler->addEventVariable("NEUTEMENERGYFRACGOODJETS",  new EventVariableObjectVariableVector<double>("neutralEmEnergyFraction",     "goodJets"));
   //
   handler->addEventVariable("NGOODFORWARDJETS",   new EventVariableN("NGOODFORWARDJETS",                "goodForwardJets"));
   handler->addEventVariable("PTGOODFORWARDJETS",  new EventVariableObjectVariableVector<double>("PT",   "goodForwardJets"));
@@ -669,12 +682,28 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("ETAGOODBJETSCSVM",   new EventVariableObjectVariableVector<double>("ETA",  "goodbJetsCSVM"));
   handler->addEventVariable("PHIGOODBJETSCSVM",   new EventVariableObjectVariableVector<double>("PHI",  "goodbJetsCSVM"));
   //
-  handler->addEventVariable("HT",         new EventVariableSumPT("HT",     "goodJets"));
+  handler->addEventVariable("HT",         new EventVariableSumPT("HT",          "goodJets"));
   handler->addEventVariable("HTCSVL",     new EventVariableSumPT("HTCSVL", "goodbJetsCSVL"));
   handler->addEventVariable("HTCSVM",     new EventVariableSumPT("HTCSVM", "goodbJetsCSVM"));
   handler->addEventVariable("NBJETSCSVL", new EventVariableN("NBJETSCSVL", "goodbJetsCSVL"));
   handler->addEventVariable("NBJETSCSVM", new EventVariableN("NBJETSCSVM", "goodbJetsCSVM"));
   handler->addEventVariable("WDIJETMASS", new EventVariablePairMass("WDIJETMASS", "goodJets", "WJET", mW, 10));
+  //
+  handler->addEventVariable("NBASICJETS",                 new EventVariableN("NBASICJETS",                                             "basicJets"));
+  handler->addEventVariable("PTBASICJETS",                new EventVariableObjectVariableVector<double>("PT",                          "basicJets"));
+  handler->addEventVariable("ETABASICJETS",               new EventVariableObjectVariableVector<double>("ETA",                         "basicJets"));
+  handler->addEventVariable("PHIBASICJETS",               new EventVariableObjectVariableVector<double>("PHI",                         "basicJets"));
+  handler->addEventVariable("CSVRAWBASICJETS",            new EventVariableObjectVariableVector<double>("CSVraw",                      "basicJets"));
+  handler->addEventVariable("JPRAWBASICJETS",             new EventVariableObjectVariableVector<double>("JPraw",                       "basicJets"));
+  handler->addEventVariable("CMVARAWBASICJETS",           new EventVariableObjectVariableVector<double>("cMVAraw",                     "basicJets"));
+  handler->addEventVariable("TOTALMULTBASICJETS",         new EventVariableObjectVariableVector<int>(   "numberOfConstituents",        "basicJets"));
+  handler->addEventVariable("CHARMULTBASICJETS",          new EventVariableObjectVariableVector<int>(   "chargedMultiplicity",         "basicJets"));
+  handler->addEventVariable("NEUTMULTBASICJETS",          new EventVariableObjectVariableVector<int>(   "neutralMultiplicity",         "basicJets"));
+  handler->addEventVariable("MUONENERGYFRACBASICJETS",    new EventVariableObjectVariableVector<double>("muonEnergyFraction",          "basicJets"));
+  handler->addEventVariable("CHARHADENERGYFRACBASICJETS", new EventVariableObjectVariableVector<double>("chargedHadronEnergyFraction", "basicJets"));
+  handler->addEventVariable("CHAREMENERGYFRACBASICJETS",  new EventVariableObjectVariableVector<double>("chargedEmEnergyFraction",     "basicJets"));
+  handler->addEventVariable("NEUTHADENERGYFRACBASICJETS", new EventVariableObjectVariableVector<double>("neutralHadronEnergyFraction", "basicJets"));
+  handler->addEventVariable("NEUTEMENERGYFRACBASICJETS",  new EventVariableObjectVariableVector<double>("neutralEmEnergyFraction",     "basicJets"));
 
 
   // --------------------------------------------------------------------------------------------------------------
@@ -695,20 +724,19 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("PTGOODPHOTONS",   new EventVariableObjectVariableVector<double>("PT",  "goodPhotons"));
   handler->addEventVariable("ETAGOODPHOTONS",  new EventVariableObjectVariableVector<double>("ETA", "goodPhotons"));
   handler->addEventVariable("PHIGOODPHOTONS",  new EventVariableObjectVariableVector<double>("PHI", "goodPhotons"));
+  handler->addEventVariable("MPHOTONS",        new EventVariableMass("MPHOTONS",                    "goodPhotons"));
   //
   handler->addEventVariable("goodPhotonsDgoodJets",      new EventVariableDvector("goodPhotons", "goodJets"));
   handler->addEventVariable("goodPhotonsDgoodTaus",      new EventVariableDvector("goodPhotons", "goodTaus"));
   handler->addEventVariable("goodPhotonsDgoodElectrons", new EventVariableDvector("goodPhotons", "goodElectrons"));
   handler->addEventVariable("goodPhotonsDgoodMuons",     new EventVariableDvector("goodPhotons", "goodMuons"));
-  //
-  handler->addEventVariable("MPHOTONS",   new EventVariableMass("MPHOTONS", "goodPhotons"));
 
   
   // --------------------------------------------------------------------------------------------------------------
   /////////////////////
   ///Track Variables///
   /////////////////////
-  handler->addEventVariable("NGOODINCLUSIVETRACKS",           new EventVariableN("NGOODTRACKS",                    "goodInclusiveTracks"));
+  handler->addEventVariable("NGOODINCLUSIVETRACKS",           new EventVariableN("NGOODINCLUSIVETRACKS",           "goodInclusiveTracks"));
   handler->addEventVariable("NBASICTRACKS",                   new EventVariableN("NBASICTRACKS",                   "basicTracks"));
   handler->addEventVariable("NISOTRACKS",                     new EventVariableN("NISOTRACKS",                     "isoTracks"));
   handler->addEventVariable("NISOINCLUSIVETRACKS",            new EventVariableN("NISOINCLUSIVETRACKS",            "isoInclusiveTracks"));
@@ -723,15 +751,34 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   handler->addEventVariable("NISONONPROMPTINCLUSIVETRACKS7",  new EventVariableN("NISONONPROMPTINCLUSIVETRACKS7",  "isoNonPromptInclusiveTracks7"));
   handler->addEventVariable("NPROMPTNONISOINCLUSIVETRACKS7",  new EventVariableN("NPROMPTNONISOINCLUSIVETRACKS7",  "promptNonIsoInclusiveTracks7"));
   handler->addEventVariable("NBASICTRACKS7",                  new EventVariableN("NBASICTRACKS7",                  "basicTracks7"));
-  handler->addEventVariable("NISOTRACKS7",                    new EventVariableN("NISOTRACKS7",                    "isoTracks7"));
   handler->addEventVariable("NPROMPTTRACKS7",                 new EventVariableN("NPROMPTTRACKS7",                 "promptTracks7"));
+  handler->addEventVariable("NISOTRACKS7",                    new EventVariableN("NISOTRACKS7",                    "isoTracks7"));
   handler->addEventVariable("NISONONPROMPTTRACKS7",           new EventVariableN("NISONONPROMPTTRACKS7",           "isoNonPromptTracks7"));
   handler->addEventVariable("NPROMPTNONISOTRACKS7",           new EventVariableN("NPROMPTNONISOTRACKS7",           "promptNonIsoTracks7"));
   //
-  handler->addEventVariable("NGOODTRACKS",            new EventVariableN("NGOODTRACKS",                       "goodTracks"));
-  handler->addEventVariable("QGOODTRACKS",            new EventVariableObjectVariableVector<int>("CHARGE",    "goodTracks"));
-  handler->addEventVariable("PTGOODTRACKS",           new EventVariableObjectVariableVector<double>("PT",     "goodTracks"));
-  handler->addEventVariable("ETAGOODTRACKS",          new EventVariableObjectVariableVector<double>("ETA",    "goodTracks"));
+  handler->addEventVariable("NGOODTRACKS",            new EventVariableN("NGOODTRACKS",                                      "goodTracks"));
+  handler->addEventVariable("QGOODTRACKS",            new EventVariableObjectVariableVector<int>("CHARGE",                   "goodTracks"));
+  handler->addEventVariable("PTGOODTRACKS",           new EventVariableObjectVariableVector<double>("PT",                    "goodTracks"));
+  handler->addEventVariable("ETAGOODTRACKS",          new EventVariableObjectVariableVector<double>("ETA",                   "goodTracks"));
+  handler->addEventVariable("PHIGOODTRACKS",          new EventVariableObjectVariableVector<double>("PHI",                   "goodTracks"));
+  handler->addEventVariable("RELISODBCORRGOODTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELISODBCORR",    "goodTracks"));// similar to relPFisoDBcorr Muon style
+  handler->addEventVariable("RELISORHOCORRGOODTRACKS",new EventVariableObjectVariableVector<double>("TRACK_RELISORHOCORR",   "goodTracks"));// similar to relPFisoRHOcorr Electron style
+  handler->addEventVariable("RELCHHADISOGOODTRACKS",  new EventVariableObjectVariableVector<double>("TRACK_RELCHHADISO",     "goodTracks"));// similar to relTrkiso Mu style, or part of relHCALiso Ele style
+  handler->addEventVariable("RELNHADISOGOODTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELNHADISO",      "goodTracks"));// similar to part of relHCALiso Ele style
+  handler->addEventVariable("RELPHOTONISOGOODTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELPHOTONISO",    "goodTracks"));// similar to relECALiso Ele style
+  handler->addEventVariable("RELBETAISOGOODTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELBETAISO",      "goodTracks"));// added just to have relative PU isolation quantity.
+  //
+  handler->addEventVariable("NPROMPTTRACKS",            new EventVariableN("NPROMPTTRACKS",                                    "promptTracks"));
+  handler->addEventVariable("QPROMPTTRACKS",            new EventVariableObjectVariableVector<int>("CHARGE",                   "promptTracks"));
+  handler->addEventVariable("PTPROMPTTRACKS",           new EventVariableObjectVariableVector<double>("PT",                    "promptTracks"));
+  handler->addEventVariable("ETAPROMPTTRACKS",          new EventVariableObjectVariableVector<double>("ETA",                   "promptTracks"));
+  handler->addEventVariable("PHIPROMPTTRACKS",          new EventVariableObjectVariableVector<double>("PHI",                   "promptTracks"));
+  handler->addEventVariable("RELISODBCORRPROMPTTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELISODBCORR",    "promptTracks"));// similar to relPFisoDBcorr Muon style
+  handler->addEventVariable("RELISORHOCORRPROMPTTRACKS",new EventVariableObjectVariableVector<double>("TRACK_RELISORHOCORR",   "promptTracks"));// similar to relPFisoRHOcorr Electron style
+  handler->addEventVariable("RELCHHADISOPROMPTTRACKS",  new EventVariableObjectVariableVector<double>("TRACK_RELCHHADISO",     "promptTracks"));// similar to relTrkiso Mu style, or part of relHCALiso Ele style
+  handler->addEventVariable("RELNHADISOPROMPTTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELNHADISO",      "promptTracks"));// similar to part of relHCALiso Ele style
+  handler->addEventVariable("RELPHOTONISOPROMPTTRACKS", new EventVariableObjectVariableVector<double>("TRACK_RELPHOTONISO",    "promptTracks"));// similar to relECALiso Ele style
+  handler->addEventVariable("RELBETAISOPROMPTTRACKS",   new EventVariableObjectVariableVector<double>("TRACK_RELBETAISO",      "promptTracks"));// added just to have relative PU isolation quantity.
   //
   handler->addEventVariable("NINCLUSIVETRACKS",       new EventVariableN("NINCLUSIVETRACKS",                  "inclusiveTracks"));
   handler->addEventVariable("PTINCLUSIVETRACKS",      new EventVariableObjectVariableVector<double>("PT",     "inclusiveTracks"));
@@ -885,6 +932,7 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
 
 
 void setupTriggers(BaseHandler* handler,int mode){
+
   // --------------------------------------------------------------------------------------------------------------
   ///////////////////////////////////
   ///HLT-related Offline Variables///
@@ -901,12 +949,12 @@ void setupTriggers(BaseHandler* handler,int mode){
   ///////////////////////////////////
   //handler->addObjectVariable("ACCEPT", new ObjectVariableRename<bool>("accept","ACCEPT"));
   //handler->addObjectVariable("TRIGGERNAME", new ObjectVariableRename<TString>("triggerName","TRIGGERNAME"));
-  
+  //  
   //handler->addProduct("ALLTRIGGERS","ALL");
   //handler->addObjectVariable("isTrigger", new ObjectVariableValue<TString>("INPUTTYPE", "trigger"));
   //handler->addProductCut("TRIGGERS","isTrigger");
   //handler->addHistogram(new SignatureTH1F_TriggerName("TriggerNames","ALLTRIGGERS"));
-  
+  //
   //handler->addObjectVariable("Accepted", new ObjectVariableValue<bool>("ACCEPT", true));
   //handler->addObjectVariable("WasRun", new ObjectVariableValue<bool>("wasrun", true));
 
@@ -914,7 +962,7 @@ void setupTriggers(BaseHandler* handler,int mode){
   // ------------------------------------------------------------------------
   // HLT bundles
   // These are supposed to include all paths for data and MC.
-  // To be maintained! (Feb 26, 2016)
+  // To be maintained! (Jun 3, 2016)
   // ------------------------------------------------------------------------
   // All available final HLT variables are listed here:
   //    -------------- All Muon
@@ -924,19 +972,22 @@ void setupTriggers(BaseHandler* handler,int mode){
   //    Mu50HLT
   //    IsoDiMuHLT
   //    DiMuHLT
-  //    DiMuSSHLTmc   <<<< for  MC  only
-  //    DiMuSSHLTdata <<<< for DATA only
+  //    DiMuSSHLT
   //    TripleMuHLT
   //    -------------- All Electron
-  //    IsoEleHLTmc   <<<< for  MC  only
-  //    IsoEleHLTdata <<<< for DATA only
+  //    IsoEleHLT
   //    EleHLT
   //    IsoDiEleHLT
   //    DiEleHLT
   //    TripleEleHLT
   //    -------------- Mixed
+  //    IsoMu23Ele8HLTdata
+  //    IsoMu23Ele12HLT
+  //    IsoMu8Ele23HLT
+  //    IsoMuEleHLTdata
   //    IsoMuEleHLT
   //    MuEleHLT
+  //    MuEleHLTdata
   //    MuMuEleHLT
   //    MuEleEleHLT
   //    DiMuHTHLT
@@ -944,106 +995,217 @@ void setupTriggers(BaseHandler* handler,int mode){
   //    MuEleHTHLT
   //    -------------- Photon Triggers
   //    SinglePhotonHLT
-  //    DiPhoton60HLTdata <<<< for DATA only
+  //    SinglePhotonMETHLT
+  //    SinglePhotonHTHLT
+  //    DiPhoton60HLT
   //    DiPhoton85HLT
   // ------------------------------------------------------------------------
   std::vector< vector<pair<string, string> > > RutgersHLT;
   // All-muon paths
   std::vector< pair<string, string> > IsoMuHLT;
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu20_v1"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu20_v2"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu20_v3"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v1"));//these are ORed for higher eff, mentioned in the muon POG Twiki.
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v2"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v3"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu20_v4"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v1"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v2"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v3"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v4"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v5"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v1"));//these are ORed for higher eff, mentioned in the muon POG Twiki.
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v2"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v3"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v4"));
+  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v5"));
   RutgersHLT.push_back(IsoMuHLT);
   std::vector< pair<string, string> > MuHLTprescaled;
   MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v1"));
   MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v2"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v3"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v4"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v5"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v1"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v2"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v3"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v4"));
+  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v5"));
   RutgersHLT.push_back(MuHLTprescaled);
   std::vector< pair<string, string> > Mu45eta2p1HLT;
   Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v1"));
   Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v2"));
+  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v3"));
+  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v4"));
+  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v5"));
   RutgersHLT.push_back(Mu45eta2p1HLT);
   std::vector< pair<string, string> > Mu50HLT;
   Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v1"));
   Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v2"));
+  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v3"));
+  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v4"));
+  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v5"));
   RutgersHLT.push_back(Mu50HLT);
-  std::vector< pair<string, string> > IsoDiMuHLT;
+  std::vector< pair<string, string> > IsoDiMuHLT;//Analysis Trigger
   IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1"));
   IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v3"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v4"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v5"));
   IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"));
   IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v3"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v4"));
+  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v5"));
   RutgersHLT.push_back(IsoDiMuHLT);
   std::vector< pair<string, string> > DiMuHLT;
   DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v1"));
   DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v2"));
+  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v3"));
+  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v4"));
+  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v5"));
   RutgersHLT.push_back(DiMuHLT);
-  std::vector< pair<string, string> > DiMuSSHLTmc;
-  DiMuSSHLTmc.push_back(std::make_pair("DiMuSSHLTmc","HLT_Mu17_Mu8_DZ_v1"));//...........MC and DATA, but not full-lumi in DATA
-  RutgersHLT.push_back(DiMuSSHLTmc);
-  std::vector< pair<string, string> > DiMuSSHLTdata;
-  DiMuSSHLTdata.push_back(std::make_pair("DiMuSSHLTdata","HLT_Mu17_Mu8_SameSign_DZ_v1"));//..DATA-only
-  RutgersHLT.push_back(DiMuSSHLTdata);
+  std::vector< pair<string, string> > DiMuSSHLT;
+  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v1"));
+  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v2"));
+  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v3"));
+  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v4"));
+  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v5"));
+  RutgersHLT.push_back(DiMuSSHLT);
   std::vector< pair<string, string> > TripleMuHLT;
   TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v1"));
   TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v2"));
+  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v3"));
+  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v4"));
+  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v5"));
   RutgersHLT.push_back(TripleMuHLT);
   // ------------------------------------------------------------------------
   // All-electron paths
-  std::vector< pair<string, string> > IsoEleHLTmc;
-  IsoEleHLTmc.push_back(std::make_pair("IsoEleHLTmc","HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));//..MC and DATA, but not full-lumi in DATA
-  RutgersHLT.push_back(IsoEleHLTmc);
-  std::vector< pair<string, string> > IsoEleHLTdata;
-  IsoEleHLTdata.push_back(std::make_pair("IsoEleHLTdata","HLT_Ele23_WPLoose_Gsf_v1"));//...........Data-only
-  IsoEleHLTdata.push_back(std::make_pair("IsoEleHLTdata","HLT_Ele23_WPLoose_Gsf_v2"));//...........Data-only
-  IsoEleHLTdata.push_back(std::make_pair("IsoEleHLTdata","HLT_Ele23_WPLoose_Gsf_v3"));//...........Data-only
-  RutgersHLT.push_back(IsoEleHLTdata);
+  std::vector< pair<string, string> > IsoEleHLT;
+  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v1"));
+  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v2"));
+  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v3"));
+  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v4"));
+  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v5"));
+  RutgersHLT.push_back(IsoEleHLT);
   std::vector< pair<string, string> > EleHLT;
   EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v1"));
   EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v2"));
   EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v3"));
+  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v4"));
+  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v5"));
   RutgersHLT.push_back(EleHLT);
-  std::vector< pair<string, string> > IsoDiEleHLT;
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"));
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"));
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3"));
+  std::vector< pair<string, string> > EleHLTprescaled;
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v4"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v5"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v1"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v2"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v3"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v4"));
+  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v5"));
+  RutgersHLT.push_back(EleHLTprescaled);
+  std::vector< pair<string, string> > IsoDiEleHLT;//Analysis Trigger
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"));
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"));
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3"));
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4"));
+  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v5"));
   RutgersHLT.push_back(IsoDiEleHLT);
   std::vector< pair<string, string> > DiEleHLT;
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v1"));
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v2"));
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v3"));
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v1"));
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v2"));
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v3"));
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v4"));
+  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v5"));
   RutgersHLT.push_back(DiEleHLT);
   std::vector< pair<string, string> > TripleEleHLT;
   TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
   TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v2"));
   TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v3"));
+  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v4"));
+  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v5"));
   RutgersHLT.push_back(TripleEleHLT);
   // ------------------------------------------------------------------------
   // Mixed multi-lepton paths
-  std::vector< pair<string, string> > IsoMuEleHLT;
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
+  std::vector< pair<string, string> > IsoMu23Ele8HLTdata;//Analysis Trigger - Data ONLY!
+  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v4"));
+  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v5"));
+  RutgersHLT.push_back(IsoMu23Ele8HLTdata);
+  std::vector< pair<string, string> > IsoMu23Ele12HLT;//Analysis Trigger 
+  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4"));
+  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v5"));
+  RutgersHLT.push_back(IsoMu23Ele12HLT);
+  std::vector< pair<string, string> > IsoMu8Ele23HLT;//Analysis Trigger
+  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4"));
+  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v5"));
+  RutgersHLT.push_back(IsoMu8Ele23HLT);
+  std::vector< pair<string, string> > IsoMuEleHLTdata;//Analysis Trigger - Data ONLY!
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v5"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v4"));
+  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v5"));
+  RutgersHLT.push_back(IsoMuEleHLTdata);
+  std::vector< pair<string, string> > IsoMuEleHLT;//Analysis Trigger
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v5"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4"));
+  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v5"));
   RutgersHLT.push_back(IsoMuEleHLT);
   std::vector< pair<string, string> > MuEleHLT;
   MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v1"));
   MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v2"));
   MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v3"));
+  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v4"));
+  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v5"));
   RutgersHLT.push_back(MuEleHLT);
+  std::vector< pair<string, string> > MuEleHLTdata;// Data ONLY!
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v1"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v2"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v3"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v4"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v5"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v1"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v2"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v3"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v4"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v5"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v1"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v2"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v3"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v4"));
+  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v5"));
+  RutgersHLT.push_back(MuEleHLTdata);
   std::vector< pair<string, string> > MuMuEleHLT;
   MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1"));
   MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v2"));
   MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v3"));
+  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v4"));
+  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v5"));
   RutgersHLT.push_back(MuMuEleHLT);
   std::vector< pair<string, string> > MuEleEleHLT;
   MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1"));
   MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v2"));
   MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v3"));
+  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v4"));
+  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v5"));
   RutgersHLT.push_back(MuEleEleHLT);
   // ------------------------------------------------------------------------
   // Di-lepton + PFHT paths
@@ -1052,18 +1214,21 @@ void setupTriggers(BaseHandler* handler,int mode){
   DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v2"));
   DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v3"));
   DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v4"));
+  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v5"));
   RutgersHLT.push_back(DiMuHTHLT);
   std::vector< pair<string, string> > DiEleHTHLT;
   DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
   DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v2"));
   DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v3"));
   DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v4"));
+  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v5"));
   RutgersHLT.push_back(DiEleHTHLT);
   std::vector< pair<string, string> > MuEleHTHLT;
   MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
   MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v2"));
   MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v3"));
   MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4"));
+  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v5"));
   RutgersHLT.push_back(MuEleHTHLT);
   // ------------------------------------------------------------------------
   // Single and double photon paths
@@ -1071,13 +1236,36 @@ void setupTriggers(BaseHandler* handler,int mode){
   SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v1"));
   SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v2"));
   SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v3"));
+  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v4"));
+  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v5"));
   RutgersHLT.push_back(SinglePhotonHLT);
-  std::vector< pair<string, string> > DiPhoton60HLTdata;
-  DiPhoton60HLTdata.push_back(std::make_pair("DiPhoton60HLTdata","HLT_DoublePhoton60_v1"));
-  RutgersHLT.push_back(DiPhoton60HLTdata);
+  std::vector< pair<string, string> > SinglePhotonMETHLT;
+  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v1"));
+  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v2"));
+  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v3"));
+  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v4"));
+  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v5"));
+  RutgersHLT.push_back(SinglePhotonMETHLT);
+  std::vector< pair<string, string> > SinglePhotonHTHLT;
+  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v1"));
+  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v2"));
+  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v3"));
+  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v4"));
+  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v5"));
+  RutgersHLT.push_back(SinglePhotonHTHLT);
+  std::vector< pair<string, string> > DiPhoton60HLT;
+  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v1"));
+  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v2"));
+  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v3"));
+  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v4"));
+  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v5"));
+  RutgersHLT.push_back(DiPhoton60HLT);
   std::vector< pair<string, string> > DiPhoton85HLT;
   DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v1"));
   DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v2"));
+  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v3"));
+  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v4"));
+  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v5"));
   RutgersHLT.push_back(DiPhoton85HLT);
   // ------------------------------------------------------------------------
 
@@ -1097,8 +1285,24 @@ void setupTriggers(BaseHandler* handler,int mode){
     ObjectVariableValueInList<TString>* isHLTgroup = new ObjectVariableValueInList<TString>("TRIGGERNAME","placeHolderHLTname");
     // "placeHolderHLTname" in the above line just makes looping over & adding individual hltpaths to isHLTgroup below easier.
     for(unsigned int j=0; j<HLTgroup.size(); j++){
-      TString   HLTname = HLTgroup.at(j).second;
-      isHLTgroup->addValue(HLTname);
+      TString   HLTpathName = HLTgroup.at(j).second;
+      isHLTgroup->addValue(HLTpathName);
+      // ---------------------------------------------
+      // Storing all individual HLT paths here (as specified above):
+      TString isHLTpathName = TString::Format("is%s",HLTpathName.Data());
+      handler->addProduct(HLTpathName,"goodtriggers");
+      //
+      ObjectVariableValue<TString>* isHLTpath = new ObjectVariableValue<TString>("TRIGGERNAME",HLTpathName.Data());
+      handler->addObjectVariable(isHLTpathName,isHLTpath);
+      handler->addProductCut(HLTpathName,isHLTpathName);
+      //
+      TString nnamepath = TString::Format("N%s",HLTpathName.Data());
+      EventVariableN* HLTpathCount = new EventVariableN(nnamepath,HLTpathName);// count
+      handler->addEventVariable(nnamepath,HLTpathCount);
+      TString acceptnamepath =  TString::Format("ACCEPT_%s",HLTpathName.Data());
+      handler->addEventVariable(acceptnamepath,new EventVariableInRange<int>(nnamepath,1,100000));//...........................ACCEPT true/false
+      handler->addEventVariable(TString::Format("REJECT_%s",HLTpathName.Data()),new EventVariableReversed(acceptnamepath));//..REJECT true/false
+      // ---------------------------------------------
     }
     //
     handler->addObjectVariable(isHLTgroupName,isHLTgroup);
@@ -1106,49 +1310,71 @@ void setupTriggers(BaseHandler* handler,int mode){
     TString nname = TString::Format("N%s",HLTgroupName.Data());
     handler->addEventVariable(nname,new EventVariableN(nname,HLTgroupName));// count
     TString acceptname = TString::Format("ACCEPT_%s",HLTgroupName.Data());
-    handler->addEventVariable(acceptname,new EventVariableInRange<int>(nname,1,100000));//............................ACCEPT true/false
+    handler->addEventVariable(acceptname,new EventVariableInRange<int>(nname,1,100000));//................................ACCEPT true/false
     handler->addEventVariable(TString::Format("REJECT_%s",HLTgroupName.Data()),new EventVariableReversed(acceptname));//..REJECT true/false
     //
-    // ------------------------------------------------------------------------
-    // Store all HLT path names specified above
-    TString   HLTpathName = HLTgroup.at(0).second;
-    TString isHLTpathName = TString::Format("is%s",HLTpathName.Data());
-    handler->addProduct(HLTpathName,"goodtriggers");
-    //
-    ObjectVariableValue<TString>* isHLTpath = new ObjectVariableValue<TString>("TRIGGERNAME",HLTpathName.Data());
-    handler->addObjectVariable(isHLTpathName,isHLTpath);
-    handler->addProductCut(HLTpathName,isHLTpathName);
-    //
-    TString nnamepath = TString::Format("N%s",HLTpathName.Data());
-    EventVariableN* HLTpathCount = new EventVariableN(nnamepath,HLTpathName);// count
-    handler->addEventVariable(nnamepath,HLTpathCount);
-    TString acceptnamepath =  TString::Format("ACCEPT_%s",HLTpathName.Data());
-    handler->addEventVariable(acceptnamepath,new EventVariableInRange<int>(nnamepath,1,100000));//.......................ACCEPT true/false
-    handler->addEventVariable(TString::Format("REJECT_%s",HLTpathName.Data()),new EventVariableReversed(acceptnamepath));//..REJECT true/false
   }
   // ------------------------------------------------------------------------
   // ------------------------------------------------------------------------  
 
+  //std::vector< vector<pair<string, string> > > RutgersTrigObjects;
+  std::vector<string>  RutgersTrigObjects;
+  RutgersTrigObjects.push_back("HLT_IsoMu22_v");
+  RutgersTrigObjects.push_back("HLT_IsoTkMu22_v");
+  RutgersTrigObjects.push_back("HLT_Mu45_eta2p1_v");
+  RutgersTrigObjects.push_back("HLT_Mu50_v");
+  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
+  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
+  RutgersTrigObjects.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+  RutgersTrigObjects.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+  RutgersTrigObjects.push_back("HLT_Mu20_v");//............prescaled control trigger & trig-obj.
+  RutgersTrigObjects.push_back("HLT_TkMu20_v");//..........prescaled control trigger & trig-obj.
+  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_v");//..prescaled control trigger & trig-obj.
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");//......HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//...HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");//.......HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//....HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8");//........HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//....HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v
+  RutgersTrigObjects.push_back("hltDiMu9Ele9CaloIdLTrackIdLMuonlegL3Filtered9");//........................HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
+  RutgersTrigObjects.push_back("hltDiMu9Ele9CaloIdLTrackIdLElectronlegDphiFilter");//.....................HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
+  RutgersTrigObjects.push_back("hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered30Q");//........HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
+  RutgersTrigObjects.push_back("hltEle30CaloIdLGsfTrkIdVLDPhiUnseededFilter");//..........................HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
+  RutgersTrigObjects.push_back("hltMu8DiEle12CaloIdLTrackIdLMuonlegL3Filtered8");//.......................HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
+  RutgersTrigObjects.push_back("hltMu8DiEle12CaloIdLTrackIdLElectronlegDphiFilter");//....................HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
 
-  // WORK-IN-PROGRESS: trig tresholds 
+  // Store all *individual* HLT trigger objects as specified above and in BaseAODReader/python/miniAOD_cfi.py
+  for(unsigned int i=0; i<RutgersTrigObjects.size(); i++){
+    TString   trigObjName = RutgersTrigObjects.at(i);
+    //TString isTrigObjName = TString::Format("is%s",trigObjName.Data());
+    //
+    handler->addProduct(trigObjName,"goodtriggerobjects");
+    handler->addEventVariable(TString::Format("N%s",trigObjName.Data()),          new EventVariableN(TString::Format("N%s",trigObjName.Data()),  trigObjName));
+    handler->addEventVariable(TString::Format("PT%s",trigObjName.Data()),         new EventVariableObjectVariableVector<double>("PT",            trigObjName));
+    handler->addEventVariable(TString::Format("ETA%s",trigObjName.Data()),        new EventVariableObjectVariableVector<double>("ETA",           trigObjName));
+    handler->addEventVariable(TString::Format("PHI%s",trigObjName.Data()),        new EventVariableObjectVariableVector<double>("PHI",           trigObjName));
+  }
 
+
+  // Offline Trigger Tresholds 
   //Offline tresholds for higher trigger efficiencies
-  /*
   // Single Electron
   EventVariableThreshold* singElTrig = new EventVariableThreshold("singeltrig","goodElectrons");
-  singElTrig->addThreshold(26);
+  singElTrig->addThreshold(27);
   handler->addEventVariable("SINGELTRIGTHRESHOLD",singElTrig);
 
   // Single Muon
   EventVariableThreshold* singMuTrig = new EventVariableThreshold("singmutrig","goodMuons");
-  singMuTrig->addThreshold(20);
+  singMuTrig->addThreshold(22);
   handler->addEventVariable("SINGMUTRIGTHRESHOLD",singMuTrig);
-  */
 
   // Di-Electron treshold
   EventVariableThreshold* dieltrig = new EventVariableThreshold("dieltrig","goodElectrons");
-  dieltrig->addThreshold(20);
-  dieltrig->addThreshold(15);
+  dieltrig->addThreshold(23);
+  dieltrig->addThreshold(12);
   handler->addEventVariable("DIELTRIGTHRESHOLD",dieltrig);
 
   // Di-Muon treshold
@@ -1158,21 +1384,21 @@ void setupTriggers(BaseHandler* handler,int mode){
   handler->addEventVariable("DIMUTRIGTHRESHOLD",dimutrig);
 
   // Mu-Ele treshold
-  // Leading Electron - Subleading Muon : (20, 8)
+  // Leading Electron - Subleading Muon : (23, 8)
   EventVariableThreshold* ellead = new EventVariableThreshold("ellead","goodElectrons");//........leading ele cut
-  ellead->addThreshold(20);
+  ellead->addThreshold(23);
   handler->addEventVariable("EGMULEADTHRESHOLD",ellead);
   EventVariableThreshold* musublead = new EventVariableThreshold("musublead","goodMuons");//......subleading mu cut
   musublead->addThreshold(8);
   handler->addEventVariable("EGMUSUBLEADTHRESHOLD",musublead);
   handler->addEventVariable("EGMUTHRESHOLD",new EventVariableCombined("EGMULEADTHRESHOLD","EGMUSUBLEADTHRESHOLD",true));
   //
-  // Leading Muon - Subleading Electron : (17,15)
+  // Leading Muon - Subleading Electron : (23, 8)
   EventVariableThreshold* mulead = new EventVariableThreshold("mulead","goodMuons");//............leading mu cut
-  mulead->addThreshold(17);
+  mulead->addThreshold(23);
   handler->addEventVariable("MUEGLEADTHRESHOLD",mulead);
   EventVariableThreshold* elsublead = new EventVariableThreshold("elsublead","goodElectrons");//..subleading ele cut
-  elsublead->addThreshold(15);
+  elsublead->addThreshold(8);
   handler->addEventVariable("MUEGSUBLEADTHRESHOLD",elsublead);
   handler->addEventVariable("MUEGTHRESHOLD",new EventVariableCombined("MUEGLEADTHRESHOLD","MUEGSUBLEADTHRESHOLD",true));
   //
@@ -1204,7 +1430,7 @@ void setupTriggers(BaseHandler* handler,int mode){
     handler->addEventVariable("DATASET",new EventVariableConst<TString>(TString("SINGLEMU")));
     break;
   case 5:
-    trigaccept = new EventVariableCombined("ACCEPT_IsoEleHLTdata","REJECT_IsoDiEleHLT",true);//................DATA ONLY
+    trigaccept = new EventVariableCombined("ACCEPT_IsoEleHLT","REJECT_IsoDiEleHLT",true);
     trigaccept->addVariable("REJECT_IsoMuHLT");
     trigaccept->addVariable("REJECT_IsoDiMuHLT");
     trigaccept->addVariable("REJECT_IsoMuEleHLT");
@@ -1341,6 +1567,7 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
   //////////////////////////////////////
   ///Matrix Method: Reco-Gen Matching///  EventVariableLeptonGenChecker  produces "IsGenMatched+suffix"
   //////////////////////////////////////
+  // first lets do these gen-reco match checks for goodLeptons:
   EventVariableLeptonGenChecker* RecoGenMuons = new EventVariableLeptonGenChecker("RecoGenMuons","goodMuons","");//3rd suffix
   RecoGenMuons->addProduct("MCMUONSFROMBOSON");
   RecoGenMuons->addProduct("BOSONS");//used for debugging.
@@ -1374,6 +1601,41 @@ void setupMCvariables(BaseHandler* handler, bool doMatching = false) {
   RecoTauGenMus->addProduct("MCMUONSFROMBOSON");
   handler->addEventVariable("RECOTAUGENMUS",RecoTauGenMus);
   handler->addEventVariable("ISFAKETAUFROMMU",new EventVariableObjectVariableVector<int>("IsGenMatchedMuFake","goodTaus"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------------------------------------------
+  // then do these gen-reco match checks for basicLeptons:
+  EventVariableLeptonGenChecker* BasicRecoGenMuons = new EventVariableLeptonGenChecker("BasicRecoGenMuons","basicMuons","");//3rd suffix
+  RecoGenMuons->addProduct("MCMUONSFROMBOSON");
+  RecoGenMuons->addProduct("BOSONS");//used for debugging.
+  handler->addEventVariable("BASICRECOGENMUONS",BasicRecoGenMuons);
+  handler->addEventVariable("ISPROMPTBASICMUON",new EventVariableObjectVariableVector<int>("IsGenMatched","basicMuons"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  EventVariableLeptonGenChecker* BasicRecoGenElectrons = new EventVariableLeptonGenChecker("BasicRecoGenElectrons","basicElectrons","");//3rd suffix
+  RecoGenElectrons->addProduct("MCELECTRONSFROMBOSON");
+  RecoGenElectrons->addProduct("BOSONS");//used for debugging.
+  handler->addEventVariable("BASICRECOGENELECTRONS",BasicRecoGenElectrons);
+  handler->addEventVariable("ISPROMPTBASICELECTRON",new EventVariableObjectVariableVector<int>("IsGenMatched","basicElectrons"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  EventVariableLeptonGenChecker* BasicRecoGenTaus = new EventVariableLeptonGenChecker("BasicRecoGenTaus","basicTaus","");//3rd suffix
+  RecoGenTaus->addProduct("MCHADRONICTAUSFROMBOSON");
+  RecoGenTaus->addProduct("BOSONS");//used for debugging.
+  handler->addEventVariable("BASICRECOGENTAUS",BasicRecoGenTaus);
+  handler->addEventVariable("ISPROMPTBASICTAU",new EventVariableObjectVariableVector<int>("IsGenMatched","basicTaus"));//WARNING!
+  // WARNING: NEED TO CHECK "ISPROMPTTAU" FOR ELE/MU->TAU FAKES! - SEE BELOW.
+  // ------------------------------------------------------------------------------------------------------------------------
+  // Gen Ele -> Reco Tau (checks for tau fakes)
+  EventVariableLeptonGenChecker* BasicRecoTauGenEles = new EventVariableLeptonGenChecker("BasicRecoTauGenEles","basicTaus","EleFake");//3rd suffix
+  //RecoTauGenEles->addProduct("MCELECTRONS");
+  RecoTauGenEles->addProduct("MCELECTRONSFROMBOSON");
+  handler->addEventVariable("BASICRECOTAUGENELES",BasicRecoTauGenEles);
+  handler->addEventVariable("ISFAKEBASICTAUFROMELE",new EventVariableObjectVariableVector<int>("IsGenMatchedEleFake","basicTaus"));
+  // ------------------------------------------------------------------------------------------------------------------------
+  // Gen Muon -> Reco Tau (checks for tau fakes)
+  EventVariableLeptonGenChecker* BasicRecoTauGenMus = new EventVariableLeptonGenChecker("BasicRecoTauGenMus","basicTaus","MuFake");//3rd suffix
+  //RecoTauGenMus->addProduct("MCMUONS");
+  RecoTauGenMus->addProduct("MCMUONSFROMBOSON");
+  handler->addEventVariable("BASICRECOTAUGENMUS",BasicRecoTauGenMus);
+  handler->addEventVariable("ISFAKEBASICTAUFROMMU",new EventVariableObjectVariableVector<int>("IsGenMatchedMuFake","basicTaus"));
   //
   // Matrix Method Disclaimer:
   //   Events with all prompt electrons, muons, and taus (as tagged by ISPROMPT flags) are taken from MC in the MM.
