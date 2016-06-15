@@ -101,4 +101,7 @@
   <class name="ObjectVariableAssociateDeltaDistance" ClassVersion="1">
    <version ClassVersion="1" checksum="3393087882"/>
   </class>
+  <class name="EventVariableMassDisplaced" ClassVersion="1">
+   <version ClassVersion="1" checksum="3190824306"/>
+  </class>
 </lcgdict>
