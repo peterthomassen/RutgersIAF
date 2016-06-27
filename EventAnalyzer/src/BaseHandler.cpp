@@ -186,7 +186,11 @@ void BaseHandler::eventLoop(int onlyRun, long int onlyEvent)
 		for(m_trackFakeCombinationIndex = 0; m_trackFakeCombinationIndex <= m_trackFakeCombination; ++m_trackFakeCombinationIndex) {
 			for(m_photonFakeCombinationIndex = 0; m_photonFakeCombinationIndex <= m_photonFakeCombination; ++m_photonFakeCombinationIndex) {
 				for(m_tauFakeCombinationIndex = 0; m_tauFakeCombinationIndex <= m_tauFakeCombination; ++m_tauFakeCombinationIndex) {
-					m_reader->GetEntry(m_currentEntry);
+					int bytes = m_reader->GetEntry(m_currentEntry);
+					if(bytes < 0) {
+						throw std::runtime_error("I/O error in m_reader->GetEntry()");
+					}
+					
 					int run = 0, lumiBlock = 0;
 					long event = 0;
 					bool hasRun = m_reader->getVariable("RUN",run);
