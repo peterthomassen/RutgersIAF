@@ -30,10 +30,12 @@
 #include "TString.h"
 #include "TTree.h"
 #include "TTreeFormula.h"
+#include <boost/foreach.hpp>
+#include <boost/tokenizer.hpp>
 
 using namespace std;
 
-Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const char* treeName, const char* treeCut) {
+Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const char* treeName, const char* treeCut, std::string branchesToDrop) {
 	cout << "Now adding Rutgers tree " << treeName << " ";
 	TFile* outfile = new TFile(targetname, "UPDATE");
 	
@@ -48,6 +50,15 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 	std::unordered_map<std::string, UInt_t> boolIndex;
 	std::vector<std::string> outAliases;
 	std::vector<unsigned char> outBits;
+
+	boost::char_separator<char> sep(":");
+	boost::tokenizer<boost::char_separator<char> > branches(branchesToDrop,sep);
+	std::vector<std::string> branchList;
+	if(branchesToDrop != ""){
+	  BOOST_FOREACH(const string& t, branches){
+	    branchList.push_back(t);
+	  }
+	}
 	
 	double n = 0;
 	bool first = true;
@@ -86,6 +97,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 		TIterator* it = curTree->GetListOfBranches()->MakeIterator();
 		while( (branchElement = (TBranchElement*)it->Next()) ) {
 			std::string branchName = branchElement->GetName();
+			if(find(branchList.begin(),branchList.end(),branchName) != branchList.end())continue;
 			if(branchName == "bits") {
 				if(!curTree->GetListOfAliases()) {
 					throw std::logic_error("trouble reading aliases");
@@ -263,6 +275,7 @@ int main( int argc, char **argv )
       cout << "[unsupported] If the option -n is used, hadd will open at most 'maxopenedfiles' at once, use 0 to request to use the system maximum." << endl;
       cout << "If the option -t is used, the specified tree is used for the Rutgers AnalysisTree treatment (default: treeR)" << endl;
       cout << "If the option -c is used, the specified cut will be applied to the tree during merging (default: no cut)" << endl;
+      cout << "If the option -d is used, the specified branches will be dropped, separated by colon \":\", e.g. \"branch1:branch2\" (default: none dropped)" << endl;
       cout << "When the -f option is specified, one can also specify the compression" <<endl;
       cout << "level of the target file. By default the compression level is 1, but" <<endl;
       cout << "if \"-f0\" is specified, the target file will not be compressed." <<endl;
@@ -280,6 +293,7 @@ int main( int argc, char **argv )
    Int_t verbosity = 99;
    string treeNamePrefix = "treeR";
    string treeCut = "";
+   string branchesToDrop = "";
 
    int outputPlace = 0;
    int ffirst = 2;
@@ -340,6 +354,15 @@ int main( int argc, char **argv )
             cerr << "Error: no cut was provided after -c.\n";
          } else {
             treeCut = argv[a+1];
+	    ++a;
+	    ++ffirst;
+         }
+         ++ffirst;
+      } else if ( strcmp(argv[a],"-d") == 0 ) {
+         if (a+1 >= argc) {
+            cerr << "Error: no cut was provided after -c.\n";
+         } else {
+            branchesToDrop = argv[a+1];
 	    ++a;
 	    ++ffirst;
          }
@@ -455,7 +478,7 @@ int main( int argc, char **argv )
    Bool_t status = merger.PartialMerge(TFileMerger::kAll | TFileMerger::kRegular | TFileMerger::kSkipListed);
    if(!noTrees) {
       for(auto &treeName : treeRnames) {
-	status &= mergeTreeR(targetname, vInputFiles, treeName.Data(),treeCut.c_str());
+	status &= mergeTreeR(targetname, vInputFiles, treeName.Data(),treeCut.c_str(),branchesToDrop);
       }
    }
 
