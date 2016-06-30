@@ -503,10 +503,10 @@ int PhysicsContribution::findBinFromLowEdge(TAxis* axis, double x) {
 	double width = axis->GetBinWidth(bin);
 	double lo = axis->GetBinLowEdge(bin);
 	double hi = axis->GetBinUpEdge(bin);
-	if(x < lo) {
+	if(x < lo - width / 1e6) {
 		cerr << "Error: " << x << " seems to be in the underflow bin of " << axis->GetName() << " axis; please rebin" << endl;
 		throw std::runtime_error("binning error");
-	} else if(x > lo + width / 100 && x < hi - width / 100) {
+	} else if(x > lo + width / 1e6 && x < hi - width / 1e6) {
 		cerr << "Error: " << x << " is not a bin boundary for " << axis->GetName() << " axis (considered boundaries: " << lo << " and " << hi << ")" << endl;
 		throw std::runtime_error("binning error");
 	}
