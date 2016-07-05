@@ -9,13 +9,13 @@
   <version ClassVersion="1" checksum="1546563655"/>
   </class>
   <class name="BaseBundleProjection" ClassVersion="1">
-  <version ClassVersion="1" checksum="2394480325"/>
+  <version ClassVersion="1" checksum="3305862521"/>
   </class>
   <class name="Bundle" ClassVersion="1">
   <version ClassVersion="1" checksum="4056136274"/>
   </class>
   <class name="BundleProjection" ClassVersion="1">
-  <version ClassVersion="1" checksum="2107589882"/>
+  <version ClassVersion="1" checksum="3018972078"/>
   </class>
   <class name="Channel" ClassVersion="1">
   <version ClassVersion="1" checksum="2834470812"/>
@@ -27,6 +27,6 @@
   <version ClassVersion="1" checksum="3881364310"/>
   </class>
   <class name="PhysicsContributionProjection" ClassVersion="1">
-  <version ClassVersion="1" checksum="2624629961"/>
+  <version ClassVersion="1" checksum="3536012157"/>
   </class>
 </lcgdict>

@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "TAxis.h"
-#include "TH1D.h"
+#include "TH1.h"
 #include "THnBase.h"
 
 #include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
@@ -41,7 +41,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	assert(projections.size() > 0);
 	
 	// Prepare main histogram
-	m_histogram = (TH1D*)projections[0]->getHistogram()->Clone();
+	m_histogram = (TH1*)projections[0]->getHistogram()->Clone();
 	m_histogram->Reset();
 	m_histogram->SetTitle(bundle->getName());
 	
@@ -71,7 +71,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : 
 	for(auto &projection : projections) {
 		for(auto &uncertainty : projection->getUncertainties()) {
 			if(m_uncertainties.find(uncertainty.first) == m_uncertainties.end()) {
-				m_uncertainties.insert(make_pair(uncertainty.first, (TH1D*)uncertainty.second->Clone()));
+				m_uncertainties.insert(make_pair(uncertainty.first, (TH1*)uncertainty.second->Clone()));
 			} else {
 				for(int i = 1; i <= uncertainty.second->GetNbinsX() + 1; ++i) {
 					double value = m_uncertainties[uncertainty.first]->GetBinContent(i);

@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "TAxis.h"
-#include "TH1D.h"
+#include "TH1.h"
 #include "THnBase.h"
 
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
@@ -29,7 +29,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	m_histogram = contribution->getContent()->Projection(dim, "E O");
 	
 	if(contribution->getContent(true)) {
-		TH1D* histogramAbs = contribution->getContent(true)->Projection(dim, "E O");
+		TH1* histogramAbs = contribution->getContent(true)->Projection(dim, "E O");
 		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
 			if(histogramAbs->GetBinContent(i) == 0) {
 				continue;
@@ -40,7 +40,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	}
 	
 	for(auto &uncertainty : contribution->getUncertaintyMap()) {
-		TH1D* hProjection = uncertainty.second.second->Projection(dim, "E");
+		TH1* hProjection = uncertainty.second.second->Projection(dim, "E");
 		hProjection->SetName(uncertainty.first);
 		m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
 	}

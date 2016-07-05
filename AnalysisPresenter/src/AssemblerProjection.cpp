@@ -150,7 +150,7 @@ double AssemblerProjection::extractStackBin(THStack* stack, int i, TString name)
 	if(!stack->GetHists()) {
 		return 0;
 	}
-	TH1D* hUncertainty = (TH1D*)stack->GetHists()->FindObject(name);
+	TH1* hUncertainty = (TH1*)stack->GetHists()->FindObject(name);
 	return hUncertainty ? hUncertainty->GetBinContent(i) : 0;
 }
 
@@ -541,7 +541,7 @@ void AssemblerProjection::prepareStacks() {
 	// Combine correlated uncertainties and assemble contributions / bundle components into sorted histogram stack
 	for(const auto &typeProjection : m_typeProjections) {
 		// Intermediate structure for main histogram, and stack for systematic uncertainties (statistical ones are taken care of in main histogram
-		std::vector<std::pair<TH1D*, double>> vh;
+		std::vector<std::pair<TH1*, double>> vh;
 		THStack* hsSyst = new THStack("hsSyst", m_assembler->getVarExp() + TString(" {") + m_assembler->getSelection() + TString("}"));
 		
 		// Bundle-wise structure (for datacard correlation bundles and such)
@@ -564,8 +564,8 @@ void AssemblerProjection::prepareStacks() {
 			
 			for(const auto &uncertainty : baseBundleProjection->getUncertainties()) {
 				// Combine uncertainties into main histograms
-				TH1D* hUncertainty = hsSyst->GetHists()
-					? (TH1D*)hsSyst->GetHists()->FindObject(uncertainty.first)
+				TH1* hUncertainty = hsSyst->GetHists()
+					? (TH1*)hsSyst->GetHists()->FindObject(uncertainty.first)
 					: 0;
 				if(hUncertainty) {
 					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
@@ -575,7 +575,7 @@ void AssemblerProjection::prepareStacks() {
 					}
 				} else {
 					// We need to add a clone because we will manipulate this later
-					hsSyst->Add((TH1D*)uncertainty.second->Clone());
+					hsSyst->Add((TH1*)uncertainty.second->Clone());
 				}
 				
 				// Same in the bundle-wise structure (but uncertainty names can occur only once)
@@ -586,7 +586,7 @@ void AssemblerProjection::prepareStacks() {
 		// Sort by amount of contribution
 		std::sort(vh.begin()
 			, vh.end()
-			, boost::bind(&std::pair<TH1D*, double>::second, _1) < boost::bind(&std::pair<TH1D*, double>::second, _2)
+			, boost::bind(&std::pair<TH1*, double>::second, _1) < boost::bind(&std::pair<TH1*, double>::second, _2)
 		);
 		
 		// Prepare content stack

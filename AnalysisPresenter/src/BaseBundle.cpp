@@ -6,7 +6,6 @@
 
 #include "TAxis.h"
 #include "TFile.h"
-#include "TH1D.h"
 #include "THnBase.h"
 #include "TTree.h"
 
