@@ -217,12 +217,19 @@ void Assembler::process(std::string varexp, TString selection, bool ApplyMCNorma
 	delete hs;
 }
 
-AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow, Bundle* bundle) {
+AssemblerProjection* Assembler::project(std::string varExp, const bool binForOverflow, Bundle* bundle) {
+	std::vector<std::string> varNames;
+	boost::char_separator<char> sep(":");
+	boost::tokenizer<decltype(sep)> tokens(varExp, sep);
+	BOOST_FOREACH(const std::string& t, tokens) {
+		varNames.push_back(t);
+	}
+	
 	if(!bundle) {
 		bundle = getDefaultBundle();
 	}
 	
-	AssemblerProjection* projection = new AssemblerProjection(this, name, binForOverflow);
+	AssemblerProjection* projection = new AssemblerProjection(this, varNames, binForOverflow);
 	
 	if(bundle) {
 		projection = projection->bundle(bundle);
@@ -243,19 +250,7 @@ void Assembler::save(const char* name, const bool binForOverflow) {
 	project(name, binForOverflow);
 	
 	m_outfile->cd();
-/*	if(m_hsProjections["data"].first) {
-		m_hsProjections["data"].first->Write(TString(name) + TString("_data"));
-		m_hsProjections["data"].second->Write(TString(name) + TString("_dataSyst"));
-	}
-	if(m_hsProjections["background"].first) {
-		m_hsProjections["background"].first->Write(TString(name) + TString("_background"));
-		m_hsProjections["background"].second->Write(TString(name) + TString("_backgroundSyst"));
-	}
-	if(m_hsProjections["signal"].first) {
-		m_hsProjections["signal"].first->Write(TString(name) + TString("_signal"));
-		m_hsProjections["signal"].second->Write(TString(name) + TString("_signalSyst"));
-	}
-*/	m_outfile->Flush();
+	m_outfile->Flush();
 }
 
 void Assembler::setDebug(bool debug) {

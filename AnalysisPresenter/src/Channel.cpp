@@ -11,8 +11,8 @@ using namespace std;
 
 ClassImp(Channel)
 
-Channel::Channel(Assembler* assembler, TString name) : AssemblerProjection(assembler, "_", false) {
-	m_name = name; // needs to be specified here because inherited variable is not visible in initialization list
+Channel::Channel(Assembler* assembler, TString name) : AssemblerProjection(assembler, std::vector<std::string>(), false) {
+	m_name = name;
 }
 
 Channel::Channel(const Channel* parent, Bundle* bundle, TString missingName) : AssemblerProjection(parent, bundle, missingName) {
@@ -69,10 +69,10 @@ double Channel::getSyst(TString type, TString name, TString bundleName) const {
 	return getBinSyst(type, 1, name, bundleName);
 }
 
-AssemblerProjection* Channel::project(const char* name, const bool binForOverflow) {
+AssemblerProjection* Channel::project(std::vector<std::string> varNames, const bool binForOverflow) {
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
-	auto projection = new AssemblerProjection(m_assembler, name, binForOverflow);
+	auto projection = new AssemblerProjection(m_assembler, varNames, binForOverflow);
 	m_assembler->setRanges(ranges);
 	
 	return projection;

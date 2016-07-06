@@ -12,8 +12,11 @@
 #include "TStyle.h"
 
 #include <assert.h>
+#include <boost/algorithm/string/join.hpp>
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 #include <boost/range/join.hpp>
+#include <boost/tokenizer.hpp>
 #include <cmath>
 #include <exception>
 
@@ -31,8 +34,8 @@ using namespace std;
 
 ClassImp(AssemblerProjection)
 
-AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_name(name), m_ranges(assembler->getRanges()), m_title(assembler->getVarName(name)) {
-	m_isDistribution = (name != "_");
+AssemblerProjection::AssemblerProjection(Assembler* assembler, std::vector<std::string> varNames, bool binForOverflow) : m_assembler(assembler), m_binForOverflow(binForOverflow), m_ranges(assembler->getRanges()), m_varNames(varNames) {
+	m_name = boost::algorithm::join(m_varNames, ":");
 	
 	// Somehow putting all of this inline in the for loop doesn't work
 	auto vData = m_assembler->getPhysicsContributions("data");
@@ -46,13 +49,13 @@ AssemblerProjection::AssemblerProjection(Assembler* assembler, TString name, boo
 			m_typeProjections.insert(make_pair(contribution->getType(), std::vector<BaseBundleProjection*>()));
 		}
 		
-		m_typeProjections[contribution->getType()].push_back(contribution->project(name, binForOverflow));
+		m_typeProjections[contribution->getType()].push_back(contribution->project(m_varNames, binForOverflow));
 	}
 	
 	prepareStacks();
 }
 
-AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, TString missingName) : m_assembler(parent->m_assembler), m_binForOverflow(parent->m_binForOverflow), m_bundle(bundle), m_isDistribution(parent->m_isDistribution), m_name(parent->m_name), m_parent(parent), m_ranges(parent->m_ranges), m_title(parent->m_title) {
+AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, TString missingName) : m_assembler(parent->m_assembler), m_binForOverflow(parent->m_binForOverflow), m_bundle(bundle), m_parent(parent), m_ranges(parent->m_ranges), m_name(parent->m_name), m_varNames(parent->m_varNames) {
 	auto ranges = m_assembler->getRanges();
 	m_assembler->setRanges(m_ranges);
 	
@@ -68,7 +71,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		
 		std::set<const PhysicsContribution*> contributions;
 		for(auto &component : bundle->getComponents()) {
-			BaseBundleProjection* projection = component->project(isDistribution() ? m_name : "_", m_binForOverflow);
+			BaseBundleProjection* projection = component->project(m_varNames, m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			
 			size_t oldSize = contributions.size();
@@ -82,7 +85,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 		for(auto &contribution : m_assembler->getPhysicsContributions(type)) {
 			if(contributions.find(contribution) == contributions.end()) {
 				if(missingName == "") {
-					auto projection = contribution->project(isDistribution() ? m_name : "_", m_binForOverflow);
+					auto projection = contribution->project(m_varNames, m_binForOverflow);
 					m_typeProjections[type].push_back(projection);
 					
 					size_t oldSize = contributions.size();
@@ -96,7 +99,7 @@ AssemblerProjection::AssemblerProjection(const AssemblerProjection* parent, Bund
 			}
 		}
 		if(missing->getComponents().size() > 0) {
-			auto projection = missing->project(isDistribution() ? m_name : "_", m_binForOverflow);
+			auto projection = missing->project(m_varNames, m_binForOverflow);
 			m_typeProjections[type].push_back(projection);
 			
 			size_t oldSize = contributions.size();
@@ -202,6 +205,10 @@ std::vector<TString> AssemblerProjection::getBundleNames(TString type) const {
 	return bundleNames;
 }
 
+int AssemblerProjection::getDimensionality() const {
+	return m_varNames.size();
+}
+
 TH1* AssemblerProjection::getHistogram(TString type) const {
 	assert(has(type));
 	TObjArray* stack = m_stacks.find(type)->second.first->GetStack();
@@ -302,6 +309,10 @@ std::set<TString> AssemblerProjection::getUncertaintyNames() const {
 	return uncertaintyNames;
 }
 
+std::vector<string> AssemblerProjection::getVarNames() const {
+	return m_varNames;
+}
+
 bool AssemblerProjection::has(TString type) const {
 	return (m_stacks.find(type) != m_stacks.end() && m_stacks.find(type)->second.first->GetHists());
 }
@@ -318,12 +329,14 @@ bool AssemblerProjection::hasOverflowIncluded() const {
 }
 
 bool AssemblerProjection::isDistribution() const {
-	return m_isDistribution;
+	return (getDimensionality() > 0);
 }
 
 TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xmaxFit) {
+	//assert(getDimensionality() <= 1);
+	
 	bool hasBackground = has("background");
-	bool doRatio = hasBackground && !m_assembler->getMode("noRatioPlot");
+	bool doRatio = (getDimensionality() <= 1) && hasBackground && !m_assembler->getMode("noRatioPlot");
 	bool debug = m_assembler->getMode("debug");
 	m_canvas = new TCanvas("c1", "c1", 700, doRatio ? 700 : 490);
 	
@@ -335,11 +348,13 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	pad1->cd();
 	pad1->SetTicks(1, 1);
 	
-	TString title = isDistribution() 
-		? (m_title != m_name)
-			? TString::Format("%s (%s)", m_title.Data(), m_name.Data())
-			: m_title
-		: m_name;
+	TString title = m_name;
+	if(getDimensionality() == 1) {
+		TString name = m_assembler->getVarName(m_varNames.at(0));
+		if(title != name) {
+			title = TString::Format("%s (%s)", name.Data(), m_varNames.at(0).c_str());
+		}
+	}
 	
 	// TODO Not cloning causes segfault ...
 	TH1* hData = (TH1*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
@@ -456,9 +471,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		for(auto const &hSignal : hSignals) {
 			legend->AddEntry((TObject*)0, "", "");
 			hSignal->SetLineColor(kWhite);
-			TString title = hSignal->GetTitle();
-			title.ReplaceAll("[X]", TString::Format("[%.1f]", hSignal->Integral()));
-			legend->AddEntry(hSignal, title.Data(), "FP");
+			TString legendTitle = hSignal->GetTitle();
+			legendTitle.ReplaceAll("[X]", TString::Format("[%.1f]", hSignal->Integral()));
+			legend->AddEntry(hSignal, legendTitle.Data(), "FP");
 		}
 		legend->Draw();
 	}
@@ -604,6 +619,8 @@ void AssemblerProjection::prepareStacks() {
 }
 
 void AssemblerProjection::print() const {
+	assert(getDimensionality() <= 1);
+	
 	double sumData = 0;
 	double sumBackground = 0;
 	double sumBackgroundStat2 = 0;
@@ -623,9 +640,9 @@ void AssemblerProjection::print() const {
 		
 		if(isDistribution()) {
 			if(i < hData->GetNbinsX() || !hasOverflowIncluded()) {
-				cout << m_name << " " << lo << "-" << hi;
+				cout << m_varNames.at(0) << " " << lo << "-" << hi;
 			} else {
-				cout << m_name << " " << lo << "-" << "inf";
+				cout << m_varNames.at(0) << " " << lo << "-" << "inf";
 			}
 		}
 		
@@ -670,7 +687,7 @@ void AssemblerProjection::print() const {
 	if(isDistribution()) {
 		printf("Sum:		%.0f", sumData);
 	} else {
-		printf("%s:	%.0f", m_title.Data(), sumData);
+		printf("%s:	%.0f", m_name.Data(), sumData);
 	}
 	if(has("background")) {
 		// TODO Replace by Poisson error

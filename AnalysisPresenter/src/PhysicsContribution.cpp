@@ -631,12 +631,16 @@ void PhysicsContribution::print(int level) const {
 	cout << prefix << getName() << " (" << m_filename << ", " << m_treeRname << ")" << endl;
 }
 
-BaseBundleProjection* PhysicsContribution::project(const char* varName, const bool binForOverflow) const {
+BaseBundleProjection* PhysicsContribution::project(std::vector<std::string> varNames, const bool binForOverflow) const {
 	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
 	
-	PhysicsContributionProjection* projection = new PhysicsContributionProjection(this, varName, zerostat);
+	PhysicsContributionProjection* projection = new PhysicsContributionProjection(this, varNames, zerostat);
 	
 	if(binForOverflow) {
+		if(varNames.size() != 1) {
+			cout << "varName" << " " << binForOverflow << endl;
+			throw std::runtime_error("incorporating the overflow bin is only supported for 1-d projections");
+		}
 		projection->incorporateOverflow();
 	}
 	

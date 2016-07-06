@@ -18,7 +18,11 @@ BaseBundleProjection::BaseBundleProjection() {
 	/* no-op */
 }
 
-BaseBundleProjection::BaseBundleProjection(const BaseBundle* source, const char* varName) : m_source(source) {
+BaseBundleProjection::BaseBundleProjection(const BaseBundle* source, std::vector<std::string> varNames) : m_source(source), m_varNames(varNames) {
+	if(m_varNames.size() > 2) {
+		cerr << "was processing projection onto " << m_varNames.size() << " axes" << endl;
+		throw std::runtime_error("only 1-d and 2-d projections are supported");
+	}
 }
 
 BaseBundleProjection::~BaseBundleProjection() {

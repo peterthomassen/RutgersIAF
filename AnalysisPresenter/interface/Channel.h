@@ -32,7 +32,7 @@ public:
 	double getSyst(TString type, TString name) const;
 	double getSyst(TString type, TString name, TString bundleName) const;
 	
-	AssemblerProjection* project(const char*, const bool binForOverflow);
+	AssemblerProjection* project(std::vector<std::string> varNames, const bool binForOverflow);
 
 protected:
 

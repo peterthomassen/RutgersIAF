@@ -21,7 +21,7 @@ class AssemblerProjection : public TObject {
 
 public:
 	AssemblerProjection();
-	AssemblerProjection(Assembler* assembler, TString name, bool binForOverflow);
+	AssemblerProjection(Assembler* assembler, std::vector<std::string> varNames, bool binForOverflow);
 	AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, TString missingName);
 	virtual ~AssemblerProjection();
 
@@ -35,12 +35,14 @@ public:
 	double getBinSyst(TString type, int i, TString name) const;
 	double getBinSyst(TString type, int i, TString name, TString bundleName) const;
 	std::vector<TString> getBundleNames(TString type) const;
+	int getDimensionality() const;
 	TH1* getHistogram(TString type) const;
 	std::vector<TH1*> getHistograms(TString type) const;
 	std::set<PhysicsContribution::metadata_t> getMeta(TString type = "data") const;
 	double getMoment(TString type, int k = 1, bool center = false) const;
 	std::vector<std::pair<int, int>> getRanges() const;
 	std::set<TString> getUncertaintyNames() const;
+	std::vector<std::string> getVarNames() const;
 	
 	bool has(TString type) const;
 	bool has(TString type, TString bundleName) const;
@@ -59,11 +61,10 @@ protected:
 	Assembler* m_assembler;
 	bool m_binForOverflow;
 	Bundle* m_bundle = 0;
-	bool m_isDistribution;
-	TString m_name;
 	const AssemblerProjection* m_parent = 0;
 	std::vector<std::pair<int, int>> m_ranges;
-	TString m_title;
+	TString m_name;
+	std::vector<std::string> m_varNames;
 	
 	std::map<TString, std::vector<BaseBundleProjection*>> m_typeProjections;
 	

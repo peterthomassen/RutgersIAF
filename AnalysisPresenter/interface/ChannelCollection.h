@@ -32,11 +32,11 @@ public:
 	void printMeta(TString type = "data") const;
 
 protected:
+	TString m_name;
 	
 private:
 	std::vector<Channel*> m_channels;
 	std::map<TString, std::set<PhysicsContribution::metadata_t>> m_meta;
-	TString m_name;
 	
 	ClassDef(ChannelCollection,1);
 };

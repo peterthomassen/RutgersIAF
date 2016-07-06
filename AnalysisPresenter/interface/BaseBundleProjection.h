@@ -3,6 +3,7 @@
 
 #include <map>
 #include <set>
+#include <string>
 
 #include "TH1.h"
 #include "THnBase.h"
@@ -15,7 +16,7 @@ class BaseBundleProjection : public TObject {
 
 public:
 	BaseBundleProjection();
-	BaseBundleProjection(const BaseBundle*, const char* varName);
+	BaseBundleProjection(const BaseBundle*, std::vector<std::string> varNames);
 	virtual ~BaseBundleProjection();
 	
 	TH1* getHistogram() const;
@@ -27,6 +28,7 @@ public:
 protected:
 	TH1* m_histogram = 0;
 	const BaseBundle* m_source = 0;
+	std::vector<std::string> m_varNames;
 	
 	std::set<const PhysicsContribution*> m_contributions;
 	std::map<TString, TH1*> m_uncertainties;

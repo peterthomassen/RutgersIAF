@@ -18,10 +18,12 @@ PhysicsContributionProjection::PhysicsContributionProjection() {
 	/* no-op */
 }
 
-PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContribution* contribution, const char* varName, const double zerostat) : BaseBundleProjection(contribution, varName) {
-	TAxis* axis = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(varName);
+PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContribution* contribution, std::vector<std::string> varNames, const double zerostat) : BaseBundleProjection(contribution, varNames) {
+	assert(m_varNames.size() <= 1);
+	
+	TAxis* axis = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(m_varNames.size() ? m_varNames[0].c_str() : "_");
 	if(!axis) {
-		cerr << "Could not find axis " << varName << endl;
+		cerr << "Could not find axis " << m_varNames[0] << endl;
 		throw std::runtime_error("");
 	}
 	int dim = contribution->getContent()->GetListOfAxes()->IndexOf(axis);

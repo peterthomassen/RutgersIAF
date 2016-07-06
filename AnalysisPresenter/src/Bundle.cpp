@@ -55,8 +55,8 @@ void Bundle::print(int level) const {
 	}
 }
 
-BaseBundleProjection* Bundle::project(const char* varName, const bool binForOverflow) const {
-	BundleProjection* projection = new BundleProjection(this, varName);
+BaseBundleProjection* Bundle::project(std::vector<std::string> varNames, const bool binForOverflow) const {
+	BundleProjection* projection = new BundleProjection(this, varNames);
 	
 	if(binForOverflow) {
 		projection->incorporateOverflow();

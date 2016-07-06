@@ -41,7 +41,7 @@ public:
 	TString getSelection() const;
 	
 	void process(std::string, TString, bool ApplyMCNormalizationWeights=true);
-	AssemblerProjection* project(const char* name, const bool binForOverflow, Bundle* bundle = 0);
+	AssemblerProjection* project(std::string name, const bool binForOverflow, Bundle* bundle = 0);
 	void save();
 	void save(const char*, const bool binForOverflow = true);
 	
@@ -67,7 +67,6 @@ private:
 	std::map<TString, bool> m_modes;
 	
 	Bundle* m_defaultBundle = 0;
-	AssemblerProjection* m_projection = 0;
 	
 	TString m_varexp;
 	std::map<TString, TString> m_vars;

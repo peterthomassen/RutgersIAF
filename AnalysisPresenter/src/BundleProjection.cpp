@@ -20,12 +20,12 @@ BundleProjection::BundleProjection() {
 	/* no-op */
 }
 
-BundleProjection::BundleProjection(const Bundle* bundle, const char* varName) : BaseBundleProjection(bundle, varName) {
+BundleProjection::BundleProjection(const Bundle* bundle, std::vector<std::string> varNames) : BaseBundleProjection(bundle, varNames) {
 	// Prepare projections of all the bundle components
 	std::vector<BaseBundleProjection*> projections;
 	for(auto &component : bundle->getComponents()) {
 		// Don't make overflow bin visible; this is handled by the code that called us (it will call includeOverflow() on our histogram)
-		BaseBundleProjection* projection = component->project(varName, false);
+		BaseBundleProjection* projection = component->project(m_varNames, false);
 		for(auto contribution : projection->getPhysicsContributions()) {
 			auto insPair = m_contributions.insert(contribution);
 			if(!insPair.second) {
