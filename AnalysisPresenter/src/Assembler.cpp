@@ -82,7 +82,17 @@ void Assembler::addBundle(Bundle* bundle) {
 
 Channel* Assembler::channel(const char* name, Bundle* bundle) {
 	Channel* channel = new Channel(this, name);
-	return channel->bundle(bundle ? bundle : getDefaultBundle());
+	
+	// When a bundle is passed, do not apply default bundles
+	if(bundle) {
+		return channel->bundle(bundle);
+	}
+	
+	for(const auto &defaultBundle : getDefaultBundles()) {
+		channel = channel->bundle(defaultBundle.second);
+	}
+	
+	return channel;
 }
 
 Bundle* Assembler::getBundle(TString name) const {
@@ -91,8 +101,12 @@ Bundle* Assembler::getBundle(TString name) const {
 		: 0;
 }
 
-Bundle* Assembler::getDefaultBundle() const {
-	return m_defaultBundle;
+Bundle* Assembler::getDefaultBundle(TString type) const {
+	return (m_defaultBundles.find(type) != m_defaultBundles.end()) ? m_defaultBundles.at(type) : 0;
+}
+
+std::map<TString, Bundle*> Assembler::getDefaultBundles() const {
+	return m_defaultBundles;
 }
 
 std::vector<PhysicsContribution*> Assembler::getPhysicsContributions(TString type) const {
@@ -217,7 +231,17 @@ AssemblerProjection* Assembler::project(std::string varExp, const bool binForOve
 	}
 	
 	AssemblerProjection* projection = new AssemblerProjection(this, varNames, binForOverflow);
-	return projection->bundle(bundle ? bundle : getDefaultBundle());
+	
+	// When a bundle is passed, do not apply default bundles
+	if(bundle) {
+		return projection->bundle(bundle);
+	}
+	
+	for(const auto &defaultBundle : getDefaultBundles()) {
+		projection = projection->bundle(defaultBundle.second);
+	}
+	
+	return projection;
 }
 
 void Assembler::save() {
@@ -242,9 +266,36 @@ void Assembler::setDebug(bool debug) {
 	}
 }
 
-Bundle* Assembler::setDefaultBundle(Bundle* bundle) {
-	Bundle* prev = getDefaultBundle();
-	m_defaultBundle = bundle;
+std::map<TString, Bundle*> Assembler::setDefaultBundle(Bundle* bundle, TString type) {
+	auto prev = getDefaultBundles();
+	
+	// If type is specified, do not touch other types
+	if(type == "background" || type == "signal") {
+		assert(!bundle || bundle->getType() == type);
+		m_defaultBundles[type] = bundle;
+	// If type is not specified, clear everything but the bundle we've been given (if any)
+	} else if(type == "") {
+		if(bundle) {
+			m_defaultBundles = {{bundle->getType(), bundle}};
+		} else {
+			m_defaultBundles.clear();
+		}
+	} else {
+		throw std::runtime_error("invalid bundle type");
+	}
+	
+	return prev;
+}
+
+std::map<TString, Bundle*> Assembler::setDefaultBundles(std::map<TString, Bundle*> bundles) {
+	// Clear previous bundles
+	auto prev = setDefaultBundle();
+	
+	// Set one by one to make sure the types make sense
+	for(const auto &bundle : bundles) {
+		setDefaultBundle(bundle.second, bundle.first);
+	}
+	
 	return prev;
 }
 
