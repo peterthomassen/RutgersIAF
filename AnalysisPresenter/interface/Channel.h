@@ -19,7 +19,7 @@ public:
 	Channel(const Channel* parent, Bundle* bundle, TString missingName);
 	virtual ~Channel();
 	
-	Channel* bundle(Bundle* bundle, TString missingName = "") const;
+	Channel* bundle(Bundle* bundle, TString missingName = "");
 	
 	void datacard(TString datacardName = "", bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	

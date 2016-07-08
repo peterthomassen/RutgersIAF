@@ -25,7 +25,7 @@ public:
 	AssemblerProjection(const AssemblerProjection* parent, Bundle* bundle, TString missingName);
 	virtual ~AssemblerProjection();
 
-	AssemblerProjection* bundle(Bundle* bundle, TString missingName = "") const;
+	AssemblerProjection* bundle(Bundle* bundle, TString missingName = "");
 	
 	double getBin(TString type, int i) const;
 	double getBin(TString type, int i, TString bundleName) const;

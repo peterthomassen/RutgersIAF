@@ -81,17 +81,8 @@ void Assembler::addBundle(Bundle* bundle) {
 }
 
 Channel* Assembler::channel(const char* name, Bundle* bundle) {
-	if(!bundle) {
-		bundle = getDefaultBundle();
-	}
-	
 	Channel* channel = new Channel(this, name);
-	
-	if(bundle) {
-		channel = channel->bundle(bundle);
-	}
-	
-	return channel;
+	return channel->bundle(bundle ? bundle : getDefaultBundle());
 }
 
 Bundle* Assembler::getBundle(TString name) const {
@@ -225,17 +216,8 @@ AssemblerProjection* Assembler::project(std::string varExp, const bool binForOve
 		varNames.push_back(t);
 	}
 	
-	if(!bundle) {
-		bundle = getDefaultBundle();
-	}
-	
 	AssemblerProjection* projection = new AssemblerProjection(this, varNames, binForOverflow);
-	
-	if(bundle) {
-		projection = projection->bundle(bundle);
-	}
-	
-	return projection;
+	return projection->bundle(bundle ? bundle : getDefaultBundle());
 }
 
 void Assembler::save() {

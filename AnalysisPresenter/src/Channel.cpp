@@ -26,9 +26,8 @@ Channel::~Channel() {
 	/* no-op */
 }
 
-Channel* Channel::bundle(Bundle* bundle, TString missingName) const {
-	assert(bundle);
-	return new Channel(this, bundle, missingName);
+Channel* Channel::bundle(Bundle* bundle, TString missingName) {
+	return bundle ? new Channel(this, bundle, missingName) : this;
 }
 
 void Channel::datacard(TString datacardName, bool isData, double statFactor, double systFactor) {
