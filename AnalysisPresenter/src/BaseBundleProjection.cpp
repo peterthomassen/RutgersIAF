@@ -50,6 +50,8 @@ std::map<TString, TH1*> BaseBundleProjection::getUncertainties() const {
 }
 
 void BaseBundleProjection::incorporateOverflow(TH1* &h) {
+	assert(m_varNames.size() <= 1);
+	
 	// Adapted from http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=6764
 	UInt_t nx = h->GetNbinsX() + 1;
 	Double_t* xbins = new Double_t[nx + 1];

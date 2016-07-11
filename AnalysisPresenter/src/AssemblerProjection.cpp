@@ -5,6 +5,7 @@
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
 #include "Math/QuantFuncMathCore.h"
+#include "TH2.h"
 #include "TLegend.h"
 #include "TLine.h"
 #include "TPad.h"
@@ -14,9 +15,7 @@
 #include <assert.h>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/bind.hpp>
-#include <boost/foreach.hpp>
 #include <boost/range/join.hpp>
-#include <boost/tokenizer.hpp>
 #include <cmath>
 #include <exception>
 
@@ -220,7 +219,7 @@ std::vector<TH1*> AssemblerProjection::getHistograms(TString type) const {
 	if(it != m_bundles.end()) {
 		for(auto const &bundle : it->second) {
 			TH1* h = (TH1*)bundle.second.first->GetStack()->Last()->Clone();
-			for(int i = 0; i < h->GetNbinsX() + 1; ++i) {
+			for(int i = 0; i < h->GetNcells(); ++i) {
 				double error2 = pow(h->GetBinError(i), 2);
 				// Add up systematics for this bundle only
 				for(auto const &uncertaintyName : getUncertaintyNames()) {
@@ -269,6 +268,7 @@ std::set<PhysicsContribution::metadata_t> AssemblerProjection::getMeta(TString t
 }
 
 double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
+	assert(getDimensionality() == 1);
 	double moment = 0;
 	for(int i = 1; i <= h->GetNbinsX(); ++i) {
 		double idx = center
@@ -280,6 +280,7 @@ double AssemblerProjection::getMoment(TH1* h, int k, bool center) const {
 }
 
 double AssemblerProjection::getMoment(TString type, int k, bool center) const {
+	assert(getDimensionality() == 1);
 	assert(has(type));
 	TObjArray* stack = m_stacks.find(type)->second.first->GetStack();
 	if(!stack) {
@@ -332,7 +333,11 @@ bool AssemblerProjection::isDistribution() const {
 }
 
 TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xmaxFit) {
-	//assert(getDimensionality() <= 1);
+	assert(getDimensionality() <= 2);
+	
+	if(getDimensionality() == 2) {
+		return plot2D(log);
+	}
 	
 	bool hasBackground = has("background");
 	bool doRatio = (getDimensionality() <= 1) && hasBackground && !m_assembler->getMode("noRatioPlot");
@@ -374,7 +379,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	TH1* hRatioBkg = 0;
 	if(hasBackground) {
 		hBackground = (TH1*)m_stacks.find("background")->second.first->GetStack()->Last()->Clone("background");
-		for(int i = 0; i < hBackground->GetNbinsX() + 1; ++i) {
+		for(int i = 0; i < hBackground->GetNcells(); ++i) {
 			// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
 			// Those are together to "comprehensive systematic uncertainty"
 			double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
@@ -384,7 +389,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hBackgroundErr = (TH1*)hBackground->Clone("backgroundErr");
 		hBackgroundErr->Reset();
 		const double alpha = 1 - 0.6827;
-		for(int i = 0; i < hBackgroundErr->GetNbinsX() + 1; ++i) {
+		for(int i = 0; i < hBackgroundErr->GetNcells(); ++i) {
 			double n = hBackground->GetBinContent(i);
 			double lo = (n == 0) ? 0 : ROOT::Math::gamma_quantile(alpha/2, n, 1.);
 			double hi = ROOT::Math::gamma_quantile_c(alpha/2, n+1, 1);
@@ -551,6 +556,148 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	return m_canvas;
 }
 
+TCanvas* AssemblerProjection::plot2D(bool log) {
+	assert(getDimensionality() == 2);
+	
+	bool hasBackground = has("background");
+	bool doRatio = hasBackground && !m_assembler->getMode("noRatioPlot");
+	//bool debug = m_assembler->getMode("debug");
+	m_canvas = new TCanvas("c1", "c1", 700, doRatio ? 700 : 490);
+	
+	TPad *pad1 = new TPad("pad1", "pad1", 0, doRatio ? 0.3 : 0, 1, 1);
+	pad1->Draw();
+	pad1->cd();
+	pad1->SetTicks(1, 1);
+	
+	// TODO Not cloning causes segfault ...
+	TH2* hData = (TH2*)m_stacks.find("data")->second.first->GetStack()->Last()->Clone();
+	if(hasOverflowIncluded()) {
+		// Set overflow bin content to make it show up in statistics box
+		auto nEntries = hData->GetEntries();
+		hData->SetBinContent(hData->GetNbinsX() + 1, hData->GetBinContent(hData->GetNbinsX()));
+		hData->SetEntries(nEntries);
+	}
+	hData->SetLineWidth(1);
+	hData->SetMarkerStyle(9);
+	
+	auto hSignals = getHistograms("signal");
+	
+	TH2* hBackground = 0;
+	TH2* hRatio = 0;
+	if(hasBackground) {
+		hBackground = (TH2*)m_stacks.find("background")->second.first->GetStack()->Last()->Clone("background");
+		for(int i = 0; i < hBackground->GetNcells(); ++i) {
+			// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
+			// Those are together to "comprehensive systematic uncertainty"
+			double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
+			hBackground->SetBinError(i, sqrt(error2));
+		}
+		
+		hRatio = (TH2*)hData->Clone("hRatio");
+		
+		double signalMax = 0;
+		for(auto const &hSignal : hSignals) {
+			signalMax = max(signalMax, hSignal->GetMaximum());
+		}
+		hData->SetMaximum(max(1., max(hData->GetMaximum(), max(hBackground->GetMaximum(), signalMax))));
+	}
+	
+	hData->SetMaximum(max(log ? 50. : 5., (log ? 5. : 1.5) * hData->GetMaximum()));
+	if(log) {
+		hData->SetMinimum(hasBackground ? min(0.1, 0.5 * hBackground->GetMinimum(0)) : 0.1);
+		// Make sure the range spans at least one order of magnitude
+		if(hData->GetMinimum() > hData->GetMaximum() / 15) {
+			hData->SetMinimum(hData->GetMaximum() / 15);
+		}
+	} else {
+		hData->SetMinimum(0);
+	}
+	
+	hData->SetLineColor(kRed);
+	
+	THStack* hStack = (THStack*)m_stacks.find("background")->second.first->Clone();
+	hStack->SetMinimum(hData->GetMinimum());
+	hStack->SetMaximum(hData->GetMaximum());
+	hStack->Draw();
+	
+	TString titleX = m_varNames.at(0).c_str();
+	TString nameX = m_assembler->getVarName(m_varNames.at(0));
+	if(titleX != nameX) {
+		titleX = TString::Format("%s (%s)", nameX.Data(), m_varNames.at(0).c_str());
+	}
+	hData->GetXaxis()->SetTitle(titleX);
+	hStack->GetXaxis()->SetTitle(titleX);
+	
+	TString titleY = m_varNames.at(1).c_str();
+	TString nameY = m_assembler->getVarName(m_varNames.at(1));
+	if(titleY != nameY) {
+		titleY = TString::Format("%s (%s)", nameY.Data(), m_varNames.at(1).c_str());
+	}
+	hData->GetYaxis()->SetTitle(titleY);
+	hStack->GetYaxis()->SetTitle(titleY);
+	
+	if(hasBackground) {
+		hStack->Draw("LEGO1");
+		
+		for(auto const &hSignal : hSignals) {
+			hSignal->SetMarkerColor(kWhite);
+			hSignal->SetMarkerStyle(21);
+			hSignal->SetFillStyle(3008);
+			hSignal->Draw("SAME E2 P");
+		}
+	}
+	
+	hData->Draw("EP SAME");
+	
+	gStyle->SetOptStat(111111);
+	pad1->SetLogz(log);
+	pad1->SetPhi(210);
+	
+	double ratio = 0;
+	if(hasBackground) {
+		ratio = hData->Integral() / hBackground->Integral();
+		
+		TLegend* legend = new TLegend(0.64,0.6,0.98,0.92);
+		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
+		TList* hists = m_stacks.find("background")->second.first->GetHists();
+		TIterator* iter = new TListIter(hists, false);
+		while(TH2* obj = (TH2*)iter->Next()) {
+			legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
+		}
+		delete iter;
+		for(auto const &hSignal : hSignals) {
+			legend->AddEntry((TObject*)0, "", "");
+			hSignal->SetLineColor(kWhite);
+			TString legendTitle = hSignal->GetTitle();
+			legendTitle.ReplaceAll("[X]", TString::Format("[%.1f]", hSignal->Integral()));
+			legend->AddEntry(hSignal, legendTitle.Data(), "FP");
+		}
+		legend->Draw();
+	}
+	
+	m_canvas->cd();
+	TPad *pad2 = new TPad("pad2", "pad2", 0, 0, 1, doRatio ? 0.3 : 0);
+	pad2->SetTopMargin(0.025);
+	pad2->Draw();
+	pad2->cd();
+	
+	if(doRatio) {
+		hRatio->Add(hBackground, -1.);
+		hRatio->SetTitle("");
+		hRatio->GetZaxis()->SetTitle("data #minus background");
+		hRatio->SetMinimum();
+		hRatio->SetMaximum();
+		hRatio->Draw("EP");
+		gStyle->SetOptFit(1111);
+		((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
+		hRatio->Draw("EP");
+	}
+	
+	pad2->SetPhi(210);
+	
+	return m_canvas;
+}
+
 void AssemblerProjection::prepareStacks() {
 	// Combine correlated uncertainties and assemble contributions / bundle components into sorted histogram stack
 	for(const auto &typeProjection : m_typeProjections) {
@@ -582,7 +729,7 @@ void AssemblerProjection::prepareStacks() {
 					? (TH1*)hsSyst->GetHists()->FindObject(uncertainty.first)
 					: 0;
 				if(hUncertainty) {
-					for(int j = 1; j <= hUncertainty->GetNbinsX(); ++j) {
+					for(int j = 0; j < hUncertainty->GetNcells(); ++j) {
 						double value = hUncertainty->GetBinContent(j);
 						value = sqrt(value*value + pow(uncertainty.second->GetBinContent(j), 2));
 						hUncertainty->SetBinContent(j, value);
@@ -699,6 +846,8 @@ void AssemblerProjection::print() const {
 }
 
 TString AssemblerProjection::printRA7table() const {
+	assert(getDimensionality() <= 1);
+	
 	double sumData = 0;
 	double sumBackground = 0;
 	double sumBackgroundStat2 = 0;

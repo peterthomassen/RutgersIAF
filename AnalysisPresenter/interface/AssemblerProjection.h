@@ -71,6 +71,7 @@ protected:
 	double extractStackBin(THStack* stack, int i, TString name) const;
 	double addStackBinInQuadrature(THStack* stack, int i) const;
 	double getMoment(TH1* h, int k = 1, bool center = false) const;
+	TCanvas* plot2D(bool log = true);
 
 private:
 	TCanvas* m_canvas = 0;

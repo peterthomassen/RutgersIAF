@@ -46,7 +46,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, std::vector<std::string
 	m_histogram->SetTitle(bundle->getName());
 	
 	// Sum up main histogram, w/ statistical uncertainties
-	for(int i = 1; i <= m_histogram->GetNbinsX() + 1; ++i) {
+	for(int i = 0; i < m_histogram->GetNcells(); ++i) {
 		double zerostat = 0;
 		double stat2 = 0;
 		
@@ -73,7 +73,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, std::vector<std::string
 			if(m_uncertainties.find(uncertainty.first) == m_uncertainties.end()) {
 				m_uncertainties.insert(make_pair(uncertainty.first, (TH1*)uncertainty.second->Clone()));
 			} else {
-				for(int i = 1; i <= uncertainty.second->GetNbinsX() + 1; ++i) {
+				for(int i = 0; i < uncertainty.second->GetNcells(); ++i) {
 					double value = m_uncertainties[uncertainty.first]->GetBinContent(i);
 					value += uncertainty.second->GetBinContent(i);
 					m_uncertainties[uncertainty.first]->SetBinContent(i, value);
@@ -84,7 +84,7 @@ BundleProjection::BundleProjection(const Bundle* bundle, std::vector<std::string
 	
 	// If desired, set negative bins to 0 (this can happen due to fake subtraction etc.)
 	if(!m_source->getAllowNegative() && !m_source->isData()) {
-		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
+		for(int i = 0; i < m_histogram->GetNcells(); ++i) {
 			if(m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
 				for(auto &uncertainty : getUncertainties()) {

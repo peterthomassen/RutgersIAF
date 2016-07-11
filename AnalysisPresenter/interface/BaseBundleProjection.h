@@ -33,7 +33,7 @@ protected:
 	std::set<const PhysicsContribution*> m_contributions;
 	std::map<TString, TH1*> m_uncertainties;
 	
-	static void incorporateOverflow(TH1* &);
+	void incorporateOverflow(TH1* &);
 
 private:
 
