@@ -381,7 +381,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hBackground = (TH1*)m_stacks.find("background")->second.first->GetStack()->Last()->Clone("background");
 		for(int i = 0; i < hBackground->GetNcells(); ++i) {
 			// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
-			// Those are together to "comprehensive systematic uncertainty"
+			// Those are together the "comprehensive systematic uncertainty"
 			double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
 			hBackground->SetBinError(i, sqrt(error2));
 		}
@@ -588,7 +588,7 @@ TCanvas* AssemblerProjection::plot2D(bool log) {
 		hBackground = (TH2*)m_stacks.find("background")->second.first->GetStack()->Last()->Clone("background");
 		for(int i = 0; i < hBackground->GetNcells(); ++i) {
 			// Add up stat. error in the background stack (ideally 0 with infinite MC) and the systematic uncertainties
-			// Those are together to "comprehensive systematic uncertainty"
+			// Those are together the "comprehensive systematic uncertainty"
 			double error2 = pow(hBackground->GetBinError(i), 2) + pow(getBinSyst("background", i), 2);
 			hBackground->SetBinError(i, sqrt(error2));
 		}
@@ -613,8 +613,6 @@ TCanvas* AssemblerProjection::plot2D(bool log) {
 		hData->SetMinimum(0);
 	}
 	
-	hData->SetLineColor(kRed);
-	
 	THStack* hStack = (THStack*)m_stacks.find("background")->second.first->Clone();
 	hStack->SetMinimum(hData->GetMinimum());
 	hStack->SetMaximum(hData->GetMaximum());
@@ -625,16 +623,18 @@ TCanvas* AssemblerProjection::plot2D(bool log) {
 	if(titleX != nameX) {
 		titleX = TString::Format("%s (%s)", nameX.Data(), m_varNames.at(0).c_str());
 	}
-	hData->GetXaxis()->SetTitle(titleX);
+	//hData->GetXaxis()->SetTitle(titleX);
 	hStack->GetXaxis()->SetTitle(titleX);
+	hStack->GetXaxis()->SetTitleOffset(1.6);
 	
 	TString titleY = m_varNames.at(1).c_str();
 	TString nameY = m_assembler->getVarName(m_varNames.at(1));
 	if(titleY != nameY) {
 		titleY = TString::Format("%s (%s)", nameY.Data(), m_varNames.at(1).c_str());
 	}
-	hData->GetYaxis()->SetTitle(titleY);
+	//hData->GetYaxis()->SetTitle(titleY);
 	hStack->GetYaxis()->SetTitle(titleY);
+	hStack->GetYaxis()->SetTitleOffset(1.6);
 	
 	if(hasBackground) {
 		hStack->Draw("LEGO1");
@@ -647,7 +647,12 @@ TCanvas* AssemblerProjection::plot2D(bool log) {
 		}
 	}
 	
-	hData->Draw("EP SAME");
+	hData->SetLineColor(kRed);
+	hData->SetLineWidth(1);
+	hData->SetMarkerColor(kBlack);
+	hData->SetMarkerStyle(8);
+	hData->SetMarkerSize(0.7);
+	hData->Draw("E2 P SAME");
 	
 	gStyle->SetOptStat(111111);
 	pad1->SetLogz(log);
@@ -682,18 +687,28 @@ TCanvas* AssemblerProjection::plot2D(bool log) {
 	pad2->cd();
 	
 	if(doRatio) {
-		hRatio->Add(hBackground, -1.);
+		for(int i = 0; i < hRatio->GetNcells(); ++i) {
+			// Compute residual (t-statistic)
+			double residual = hRatio->GetBinContent(i) - hBackground->GetBinContent(i);
+			double error2 = hBackground->GetBinContent(i); // this is (sqrt(n))^2
+			error2 += pow(hBackground->GetBinError(i), 2);
+			
+			hRatio->SetBinContent(i, residual / sqrt(error2));
+			
+			// Uncertainty on residual doesn't have much meaning
+			hRatio->SetBinError(i, 0);
+		}
 		hRatio->SetTitle("");
-		hRatio->GetZaxis()->SetTitle("data #minus background");
+		hRatio->GetZaxis()->SetTitle("(data #minus background) / uncertainty");
 		hRatio->SetMinimum();
 		hRatio->SetMaximum();
-		hRatio->Draw("EP");
+		hRatio->Draw("COLZ");
 		gStyle->SetOptFit(1111);
 		((TPaveStats*)hRatio->GetListOfFunctions()->FindObject("stats"))->SetOptStat(0);
-		hRatio->Draw("EP");
+		hRatio->Draw("COLZ");
 	}
 	
-	pad2->SetPhi(210);
+	//pad2->SetPhi(210);
 	
 	return m_canvas;
 }
