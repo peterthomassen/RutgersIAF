@@ -39,7 +39,8 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 		}
 		dim2 = contribution->getContent()->GetListOfAxes()->IndexOf(axis2);
 		
-		m_histogram = (TH1*)contribution->getContent()->Projection(dim1, dim2, "E O");
+		// Note that the order here is y, x
+		m_histogram = (TH1*)contribution->getContent()->Projection(dim2, dim1, "E O");
 	}
 	
 	if(contribution->getContent(true)) {
@@ -47,7 +48,8 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 		if(m_varNames.size() <= 1) {
 			histogramAbs = contribution->getContent(true)->Projection(dim1, "E O");
 		} else if(m_varNames.size() == 2) {
-			histogramAbs = (TH1*)contribution->getContent(true)->Projection(dim1, dim2, "E O");
+			// Note that the order here is y, x
+			histogramAbs = (TH1*)contribution->getContent(true)->Projection(dim2, dim1, "E O");
 		}
 		for(int i = 0; i < m_histogram->GetNcells(); ++i) {
 			if(histogramAbs->GetBinContent(i) == 0) {
@@ -59,7 +61,13 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	}
 	
 	for(auto &uncertainty : contribution->getUncertaintyMap()) {
-		TH1* hProjection = uncertainty.second.second->Projection(dim1, "E");
+		TH1* hProjection = 0;
+		if(m_varNames.size() <= 1) {
+			hProjection = uncertainty.second.second->Projection(dim1, "E");
+		} else if(m_varNames.size() == 2) {
+			// Note that the order here is y, x
+			hProjection = (TH1*)uncertainty.second.second->Projection(dim2, dim1, "E");
+		}
 		hProjection->SetName(uncertainty.first);
 		m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
 	}
