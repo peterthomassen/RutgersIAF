@@ -8,6 +8,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableInRange.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableAllPairsMass.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMixedPairMass.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableOSSF.h"

@@ -53,6 +53,9 @@
   <class name="EventVariableMass" ClassVersion="1">
    <version ClassVersion="1" checksum="2508245607"/>
   </class>
+  <class name="EventVariableAllPairsMass" ClassVersion="1">
+   <version ClassVersion="1" checksum="3371939911"/>
+  </class>
   <class name="EventVariableMixedPairMass" ClassVersion="1">
    <version ClassVersion="1" checksum="1091222480"/>
   </class>
