@@ -20,7 +20,7 @@ public:
 	std::vector<BaseBundle*> getComponents() const;
 	
 	void print(int level = 0) const;
-	BaseBundleProjection* project(const char* varName, const bool binForOverflow = false) const;
+	BaseBundleProjection* project(std::vector<std::string> varNames, const bool binForOverflow = false) const;
 
 protected:
 

@@ -31,7 +31,8 @@ public:
 	Channel* channel(const char* name, Bundle* bundle = 0);
 	
 	Bundle* getBundle(TString name) const;
-	Bundle* getDefaultBundle() const;
+	Bundle* getDefaultBundle(TString type = "background") const;
+	std::map<TString, Bundle*> getDefaultBundles() const;
 	double getLumi() const;
 	bool getMode(TString name) const;
 	std::vector<PhysicsContribution*> getPhysicsContributions(TString type) const;
@@ -41,12 +42,13 @@ public:
 	TString getSelection() const;
 	
 	void process(std::string, TString, bool ApplyMCNormalizationWeights=true);
-	AssemblerProjection* project(const char* name, const bool binForOverflow, Bundle* bundle = 0);
+	AssemblerProjection* project(std::string name, const bool binForOverflow, Bundle* bundle = 0);
 	void save();
 	void save(const char*, const bool binForOverflow = true);
 	
 	void setDebug(bool);
-	Bundle* setDefaultBundle(Bundle* bundle);
+	std::map<TString, Bundle*> setDefaultBundle(Bundle* bundle = 0, TString type = "");
+	std::map<TString, Bundle*> setDefaultBundles(std::map<TString, Bundle*> bundles = std::map<TString, Bundle*>());
 	void setFakeRate(TString, TString);
 	bool setMode(TString name, bool value = true);
 	void setPileupHistogram(TH1D* hPileup, TH1D* hPileupUnc = 0);
@@ -66,8 +68,7 @@ private:
 	std::pair<TH1D*, TH1D*> m_hPileup;
 	std::map<TString, bool> m_modes;
 	
-	Bundle* m_defaultBundle = 0;
-	AssemblerProjection* m_projection = 0;
+	std::map<TString, Bundle*> m_defaultBundles;
 	
 	TString m_varexp;
 	std::map<TString, TString> m_vars;

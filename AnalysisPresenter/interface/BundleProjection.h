@@ -11,7 +11,7 @@ class BundleProjection : public BaseBundleProjection {
 
 public:
 	BundleProjection();
-	BundleProjection(const Bundle*, const char* varName);
+	BundleProjection(const Bundle*, std::vector<std::string> varNames);
 	virtual ~BundleProjection();
 
 protected:

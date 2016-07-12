@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "TAxis.h"
-#include "TH1D.h"
+#include "TH1.h"
 #include "THnBase.h"
 
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
@@ -18,19 +18,40 @@ PhysicsContributionProjection::PhysicsContributionProjection() {
 	/* no-op */
 }
 
-PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContribution* contribution, const char* varName, const double zerostat) : BaseBundleProjection(contribution, varName) {
-	TAxis* axis = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(varName);
-	if(!axis) {
-		cerr << "Could not find axis " << varName << endl;
+PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContribution* contribution, std::vector<std::string> varNames, const double zerostat) : BaseBundleProjection(contribution, varNames) {
+	assert(m_varNames.size() <= 2);
+	
+	TAxis* axis1 = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(m_varNames.size() ? m_varNames[0].c_str() : "_");
+	if(!axis1) {
+		cerr << "Could not find axis " << m_varNames[0] << endl;
 		throw std::runtime_error("");
 	}
-	int dim = contribution->getContent()->GetListOfAxes()->IndexOf(axis);
+	int dim1 = contribution->getContent()->GetListOfAxes()->IndexOf(axis1);
 	
-	m_histogram = contribution->getContent()->Projection(dim, "E O");
+	int dim2 = -1;
+	if(m_varNames.size() <= 1) {
+		m_histogram = contribution->getContent()->Projection(dim1, "E O");
+	} else if(m_varNames.size() == 2) {
+		TAxis* axis2 = (TAxis*)contribution->getContent()->GetListOfAxes()->FindObject(m_varNames[1].c_str());
+		if(!axis2) {
+			cerr << "Could not find axis " << m_varNames[1] << endl;
+			throw std::runtime_error("");
+		}
+		dim2 = contribution->getContent()->GetListOfAxes()->IndexOf(axis2);
+		
+		// Note that the order here is y, x
+		m_histogram = (TH1*)contribution->getContent()->Projection(dim2, dim1, "E O");
+	}
 	
 	if(contribution->getContent(true)) {
-		TH1D* histogramAbs = contribution->getContent(true)->Projection(dim, "E O");
-		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
+		TH1* histogramAbs = 0;
+		if(m_varNames.size() <= 1) {
+			histogramAbs = contribution->getContent(true)->Projection(dim1, "E O");
+		} else if(m_varNames.size() == 2) {
+			// Note that the order here is y, x
+			histogramAbs = (TH1*)contribution->getContent(true)->Projection(dim2, dim1, "E O");
+		}
+		for(int i = 0; i < m_histogram->GetNcells(); ++i) {
 			if(histogramAbs->GetBinContent(i) == 0) {
 				continue;
 			}
@@ -40,7 +61,13 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	}
 	
 	for(auto &uncertainty : contribution->getUncertaintyMap()) {
-		TH1D* hProjection = uncertainty.second.second->Projection(dim, "E");
+		TH1* hProjection = 0;
+		if(m_varNames.size() <= 1) {
+			hProjection = uncertainty.second.second->Projection(dim1, "E");
+		} else if(m_varNames.size() == 2) {
+			// Note that the order here is y, x
+			hProjection = (TH1*)uncertainty.second.second->Projection(dim2, dim1, "E");
+		}
 		hProjection->SetName(uncertainty.first);
 		m_uncertainties.insert(make_pair(uncertainty.first, hProjection));
 	}
@@ -52,7 +79,7 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 	m_histogram->SetTitle(title);
 	
 	if(!m_source->isData()) {
-		for(int i = 1; i <= m_histogram->GetXaxis()->GetNbins() + 1; ++i) {
+		for(int i = 0; i < m_histogram->GetNcells(); ++i) {
 			// Set negative bins to 0 (this can happen due to fake subtraction, negative MC weights etc.)
 			if(!m_source->getAllowNegative() && m_histogram->GetBinContent(i) < 0) {
 				m_histogram->SetBinContent(i, 0);
