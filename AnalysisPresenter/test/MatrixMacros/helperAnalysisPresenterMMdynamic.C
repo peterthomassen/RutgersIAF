@@ -7,7 +7,7 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
-#include "RutgersIAF/AnalysisPresenter/test/MatrixMacros/helperAnalysisPresenterMM_LUTfunctions.C"
+#include "RutgersIAF/AnalysisPresenter/test/MatrixMacros/helperAnalysisPresenterMM_WeightFunctions.C"
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 // ----------------------------------------------------------------------------------------------------------------------------------
