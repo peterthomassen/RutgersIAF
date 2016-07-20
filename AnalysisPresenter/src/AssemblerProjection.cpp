@@ -499,19 +499,22 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		}
 		hRatio->GetYaxis()->SetLabelFont(43);
 		hRatio->GetYaxis()->SetLabelSize(16);
-		hRatio->GetYaxis()->SetTitle("data/background");
+		hRatio->GetYaxis()->SetTitle("Obs/Exp");
+		hRatio->GetYaxis()->CenterTitle();
 		hRatio->GetYaxis()->SetTitleSize(0.1);
 		hRatio->GetXaxis()->SetTitleSize(0.1);
-		hRatio->GetYaxis()->SetTitleOffset(0.4);
+		hRatio->GetYaxis()->SetTitleOffset(0.25);
 		hRatio->GetXaxis()->SetTitleOffset(0.8);
+		hRatio->GetXaxis()->SetTickLength(0.1);
 		hRatio->SetFillColor(kBlack);
 		hRatio->SetFillStyle(3001);
 		hRatio->SetMinimum(0);
-		if(hRatio->GetMaximum() < 0.5) {
-			hRatio->SetMaximum(2 * hRatio->GetMaximum());
-		} else if(hRatio->GetMaximum() < 2) {
-			hRatio->SetMaximum(2);
-		}
+		//if(hRatio->GetMaximum() < 0.5) {
+		//	hRatio->SetMaximum(2 * hRatio->GetMaximum());
+		//} else if(hRatio->GetMaximum() < 2) {
+		//	hRatio->SetMaximum(2);
+		//}
+		hRatio->GetYaxis()->SetRangeUser(0,2.5);
 		hRatio->GetYaxis()->SetRangeUser(hRatio->GetMinimum(0), hRatio->GetMaximum());
 		hRatio->Draw("AXIS");
 		double hRatioBkgErrorSum = 0;
