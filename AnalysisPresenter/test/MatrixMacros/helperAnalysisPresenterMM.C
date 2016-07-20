@@ -52,15 +52,15 @@ void init(Assembler* assembler) {
 	assembler->addBundle(new Bundle("data", "Data", false, 1));
 	//
 
-	assembler->addBundle(new Bundle("background", "presentationBundle"));
+	assembler->addBundle(new Bundle("background", "presentationBundle", false, 4));
 	//
 	assembler->addBundle(new Bundle("background", "Misidentified",                 false, 42));
 	//
-	assembler->addBundle(new Bundle("background", "QCD_Pt-170to300_MuEnrichedPt5", false, 2));
-	assembler->addBundle(new Bundle("background", "QCD_Pt-170to300_EMEnriched",    false, 2));
-	assembler->addBundle(new Bundle("background", "TTJets_DiLept",                 false, 2));
-	assembler->addBundle(new Bundle("background", "DYJets",                        false, 2));
-	assembler->addBundle(new Bundle("background", "WJetsToLNu",                    false, 2));
+	assembler->addBundle(new Bundle("background", "QCD_Pt-170to300_MuEnrichedPt5", false, 4));
+	assembler->addBundle(new Bundle("background", "QCD_Pt-170to300_EMEnriched",    false, 4));
+	assembler->addBundle(new Bundle("background", "TTJets_DiLept",                 false, 4));
+	assembler->addBundle(new Bundle("background", "DYJets",                        false, 4));
+	assembler->addBundle(new Bundle("background", "WJetsToLNu",                    false, 4));
 	//
 	assembler->addBundle(new Bundle("background", "WZ",      false, 38 ));
 	assembler->addBundle(new Bundle("background", "Higgs",   false, 38 ));
@@ -181,15 +181,8 @@ void setupDataSingle(Assembler* assembler, bool fake = false, bool dilep = false
 
 void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = true, bool onlyTTF = false) {
   cout<<"setupBackgroundMC RUN"<<endl;
-        //std::string prefix = "/cms/thomassen/2015/Analysis/simulation/results/";
-	//std::string prefix = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/EAtreesMatrix/";
-	//std::string prefix = "/cms/multilepton/AnalysisTrees/2016/MC/"; 
-	//std::string prefix = "/tmp/hsaka/";
-        std::string prefix = "/cms/multilepton/hsaka/2016/MC/";
-        //TTTo2L2NuSkim3Mu.simulation.root
-	///tmp/hsaka/DUMMY.simulation.root
-	//DUMMY.simulation.root
-	//std::string prefix = "/afs/cern.ch/user/h/hsaka/Multilepton/TEST-Mar5/CMSSW_7_6_3_patch2/src/RootFiles/EAtreesRA7/";
+	std::string prefix = "/tmp/hsaka/";
+	//
 	//std::string infix = dilep ? "" : ".3L";
 	std::string infix = "";
 	std::string suffix = ".simulation.root";
@@ -201,23 +194,21 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	std::vector<PhysicsContribution*> mcH;
 	std::vector<PhysicsContribution*> mcRare;
 
-	//PhysicsContribution* dyjetstollM50 = new PhysicsContribution("backgroundMC", prefix + "DYJetsToLL_M-50" + infix + suffix, xsec_dummy, "DYJetsToLL_M-50", false, "treeR", -1, 0);
-	//mc.push_back(dyjetstollM50);
-
-	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu" + infix + suffix, xsec_dummy, "TTTo2L2Nu", false, "treeR", -1, 0);
-	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "DUMMY" + infix + suffix, xsec_dummy, "DUMMY", false, "treeR", -1, 0);
-	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2NuSkim3Mu" + infix + suffix, xsec_dummy, "TTTo2L2NuSkim3Mu", false, "treeR", -1, 0);
+	//PhysicsContribution* mcbckg = new PhysicsContribution("backgroundMC", prefix+"DYJetsToLL_M-50"+infix+suffix, xsec_dummy, "DYJetsToLL_M-50", false, "treeR", 2, 0);
+	PhysicsContribution* mcbckg = new PhysicsContribution("backgroundMC", prefix+"TTTo2L2Nu"+infix+suffix, xsec_dummy, "TTTo2L2Nu", false, "treeR", 4, 0);
+	//PhysicsContribution* mcbckg = new PhysicsContribution("backgroundMC", prefix+"WZTo3LNu"+infix+suffix, xsec_dummy, "WZTo3LNu", false, "treeR", -1, 0);
+	//PhysicsContribution* mcbckg = new PhysicsContribution("backgroundMC", prefix+"WWTo2L2Nu"+infix+suffix, xsec_dummy, "WWTo2L2Nu", false, "treeR", -1, 0);
+	//PhysicsContribution* mcbckg = new PhysicsContribution("backgroundMC", prefix+"TTJets_SingleLeptFromT"+infix+suffix, xsec_dummy, "TTJets_SingleLeptFromT", false, "treeR", -1, 0);
 	//
-	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu_76Xv3-1_3ElSkim" + infix + suffix, xsec_dummy, "TTTo2L2Nu_76Xv3-1_3ElSkim", false, "treeR", -1, 0);
-	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221Skim" + infix + suffix, xsec_dummy, "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221Skim", false, "treeR", -1, 0);
-	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu_76Xv3-1_3MuSkim" + infix + suffix, xsec_dummy, "TTTo2L2Nu_76Xv3-1_3MuSkim", false, "treeR", -1, 0);
-	//PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221and212and122HTLA200Skim" + infix + suffix, xsec_dummy, "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221and212and122HTLA200Skim", false, "treeR", -1, 0);
-	PhysicsContribution* ttjetsdilep = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221and212and122Skim" + infix + suffix, xsec_dummy, "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221and212and122Skim", false, "treeR", -1, 0);
-
-        //assembler->addMatrix(ttjetsdilep);
-        addMatrix(ttjetsdilep);
-	ttjetsdilep->addWeight("fakeBckg");
-	mc.push_back(ttjetsdilep);
+	// MuMuMu
+	mcbckg->addWeight("LUTvalue(PTGOODMUONS[0],ETAGOODMUONS[0],PTGOODMUONS[1],ETAGOODMUONS[1],PTGOODMUONS[2],ETAGOODMUONS[2],((JETNOOFCONSTGOODMUONS[0]>12.5)*100+(JETNOOFCONSTGOODMUONS[1]>12.5)*10+(JETNOOFCONSTGOODMUONS[2]>12.5)),NRECOVERTICES[0],(ISTIGHTMATRIXMUON[0]*100000+ISTIGHTMATRIXMUON[1]*10000+ISTIGHTMATRIXMUON[2]*1000+222))");
+	// ElElEl
+	//mcbckg->addWeight("LUTvalue(PTGOODELECTRONS[0],ETAGOODELECTRONS[0],PTGOODELECTRONS[1],ETAGOODELECTRONS[1],PTGOODELECTRONS[2],ETAGOODELECTRONS[2],((JETNOOFCONSTGOODELECTRONS[0]>12.5)*100+(JETNOOFCONSTGOODELECTRONS[1]>12.5)*10+(JETNOOFCONSTGOODELECTRONS[2]>12.5)),NRECOVERTICES[0],(ISTIGHTMATRIXELECTRON[0]*100000+ISTIGHTMATRIXELECTRON[1]*10000+ISTIGHTMATRIXELECTRON[2]*1000+111))");
+	// MuMuEl
+	//mcbckg->addWeight("LUTvalue(PTGOODMUONS[0],ETAGOODMUONS[0],PTGOODMUONS[1],ETAGOODMUONS[1],PTGOODELECTRONS[0],ETAGOODELECTRONS[0],((JETNOOFCONSTGOODMUONS[0]>12.5)*100+(JETNOOFCONSTGOODMUONS[1]>12.5)*10+(JETNOOFCONSTGOODELECTRONS[0]>12.5)),NRECOVERTICES[0],(ISTIGHTMATRIXMUON[0]*100000+ISTIGHTMATRIXMUON[1]*10000+ISTIGHTMATRIXELECTRON[0]*1000+221))");
+	// LUTs
+	//
+	mc.push_back(mcbckg);
 
 
 	for(auto &contribution : mc) {
@@ -229,21 +220,24 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	  assembler->addContribution(contribution);
 	}
 
-
-	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "DYJetsToLL_M-50" + infix + suffix, 2300, "2.3/fb@13TeV");
-	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2Nu" + infix + suffix, 2300, "2.3/fb@13TeV");
-	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "DUMMY" + infix + suffix, 2300, "2.3/fb@13TeV");
-	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2NuSkim3Mu" + infix + suffix, 2300, "2.3/fb@13TeV");
+	//PhysicsContribution* data = new PhysicsContribution("data", prefix+"DYJetsToLL_M-50"+infix+suffix, 2300, "2.3/fb@13TeV");
+	PhysicsContribution* data = new PhysicsContribution("data", prefix+"TTTo2L2Nu"+infix+suffix, 2300, "2.3/fb@13TeV");
+	//PhysicsContribution* data = new PhysicsContribution("data", prefix+"WZTo3LNu"+infix+suffix, 2300, "2.3/fb@13TeV");
+	//PhysicsContribution* data = new PhysicsContribution("data", prefix+"WWTo2L2Nu"+infix+suffix, 2300, "2.3/fb@13TeV");
+	//PhysicsContribution* data = new PhysicsContribution("data", prefix+"TTJets_SingleLeptFromT"+infix+suffix, 2300, "2.3/fb@13TeV");
 	//
-	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221and212and122HTLA200Skim" + infix + suffix, 2300, "2.3/fb@13TeV");
-	PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221and212and122Skim" + infix + suffix, 2300, "2.3/fb@13TeV");
-	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2Nu_76Xv3-1_LeptonTypeVal3DLA221Skim" + infix + suffix, 2300, "2.3/fb@13TeV");
-	//PhysicsContribution* dataDummy = new PhysicsContribution("data", prefix + "TTTo2L2Nu_76Xv3-1_3MuSkim" + infix + suffix, 2300, "2.3/fb@13TeV");
-	//assembler->addMatrix(dataDummy);
-	addMatrix(dataDummy);
-	//dataDummy->addWeight("1");
-	dataDummy->addWeight("nTTT");
-	assembler->addContribution(dataDummy);
+	// All prompt selection:
+	//data->addWeight("(ISTIGHTMATRIXMUON[0]+ISTIGHTMATRIXMUON[1]+ISTIGHTMATRIXMUON[2]==3)*(ISPROMPTMUON[0]+ISPROMPTMUON[1]+ISPROMPTMUON[2]==3)");
+	// -------------
+	// At least 1 fake selection: 
+	// MuMuMu
+	data->addWeight("(ISTIGHTMATRIXMUON[0]+ISTIGHTMATRIXMUON[1]+ISTIGHTMATRIXMUON[2]==3)*(ISPROMPTMUON[0]+ISPROMPTMUON[1]+ISPROMPTMUON[2]<3)");
+	// ElElEl
+	//data->addWeight("(ISTIGHTMATRIXELECTRON[0]+ISTIGHTMATRIXELECTRON[1]+ISTIGHTMATRIXELECTRON[2]==3)*(ISPROMPTELECTRON[0]+ISPROMPTELECTRON[1]+ISPROMPTELECTRON[2]<3)");
+	// MuMuEl
+	//data->addWeight("(ISTIGHTMATRIXMUON[0]+ISTIGHTMATRIXMUON[1]+ISTIGHTMATRIXELECTRON[0]==3)*(ISPROMPTMUON[0]+ISPROMPTMUON[1]+ISPROMPTELECTRON[0]<3)");
+	// -------------
+	assembler->addContribution(data);
 }
 
 /*
