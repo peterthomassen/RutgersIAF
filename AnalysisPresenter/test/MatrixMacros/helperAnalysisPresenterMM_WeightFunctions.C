@@ -7,7 +7,6 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
-
 // muon prompt rate
 float muPR( float pt, float eta, float aux ){ 
   //
@@ -15,20 +14,21 @@ float muPR( float pt, float eta, float aux ){
   if( pt < 40  )  return 0.9070;
   if( pt < 80  )  return 0.9514;
   if( pt < 120 )  return 0.9693;
-  return 0.9706;
   //
+  return 0.9706;
 }
 
 // muon fake rate
-float muFR( float pt, float eta, float aux, int pu ){
+float muFR( float pt, float eta, float aux, int pu, double ttfrac = 0.5 ){
   //
   float etaFudgeFactor = 1;
   ////if( fabs(eta)<2.5 ) etaFudgeFactor=1.3;
   ////if( fabs(eta)<1.8 ) etaFudgeFactor=1;
   ////if( fabs(eta)<1.2 ) etaFudgeFactor=0.7;
   ////etaFudgeFactor = 1;
-  //if( fabs(eta)<2.5 ) etaFudgeFactor=1.3;
-  //if( fabs(eta)<1.2 ) etaFudgeFactor=1;
+  if( fabs(eta)<2.5 ) etaFudgeFactor=1.5;//fixed on exact 3mu selection in TTtoLLNuNu MC
+  if( fabs(eta)<1.2 ) etaFudgeFactor=1;//fixed on exact 3mu selection in TTtoLLNuNu MC
+  if( fabs(eta)<0.9 ) etaFudgeFactor=0.9;//fixed on exact 3mu selection in TTtoLLNuNu MC
   //if( fabs(eta)<0.9 ) etaFudgeFactor=0.7;
   //
   float puFudgeFactor = 1;
@@ -37,42 +37,37 @@ float muFR( float pt, float eta, float aux, int pu ){
   ////puFudgeFactor = 1;
   //puFudgeFactor=0.032*(pu-20)+1;
   //if( pu>20 )  puFudgeFactor=0.044*(pu-20)+1;
-  puFudgeFactor=0.032*(pu-14)+1;
-  if( pu>14 )  puFudgeFactor=0.028*(pu-14)+1;
+  if( pu<17 )  puFudgeFactor=0.039*(pu-17)+1;//fixed on exact 3mu selection in TTtoLLNuNu MC
+  if( pu>17 )  puFudgeFactor=0.04*(pu-17)+1;//fixed on exact 3mu selection in TTtoLLNuNu MC
   //
-  /*
+  // -------------------- Low Aux
+  double lowAuxDY[5] = { 0.3058, 0.3092, 0.2,    0.2,     0.2    };
+  double lowAuxTT[5] = { 0.2265, 0.2603, 0.3244, 0.4244,  0.4324 };
   if( aux<12.5 ){
-    if( pt < 20  )  return 0.2265*etaFudgeFactor*puFudgeFactor;
-    if( pt < 40  )  return 0.2603*etaFudgeFactor*puFudgeFactor;
-    if( pt < 80  )  return 0.3244*etaFudgeFactor*puFudgeFactor;
-    if( pt < 120 )  return 0.4244*etaFudgeFactor*puFudgeFactor;
-    return 0.4324*etaFudgeFactor*puFudgeFactor;
+    if( pt < 20  )  return (lowAuxDY[0]*(1-ttfrac)+lowAuxTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+    if( pt < 40  )  return (lowAuxDY[1]*(1-ttfrac)+lowAuxTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+    if( pt < 80  )  return (lowAuxDY[2]*(1-ttfrac)+lowAuxTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+    if( pt < 120 )  return (lowAuxDY[3]*(1-ttfrac)+lowAuxTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+    if( pt >=120 )  return (lowAuxDY[4]*(1-ttfrac)+lowAuxTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
   }
-  //
-  if( pt < 20  )  return 0.0724*etaFudgeFactor*puFudgeFactor;
-  if( pt < 40  )  return 0.0775*etaFudgeFactor*puFudgeFactor;
-  if( pt < 80  )  return 0.1001*etaFudgeFactor*puFudgeFactor;
-  if( pt < 120 )  return 0.1405*etaFudgeFactor*puFudgeFactor;
-  return 0.1556*etaFudgeFactor*puFudgeFactor;
-  */
-  //
-  //Lowbin           DYMC          TTbar 
-  // 10.0    0.251572327044     0.159955960994
-  // 20.0    0.217228464419     0.146519116745
-  // 40.0    0.122448979592     0.149385969831
-  // 80.0           -           0.182620202911
-  // 120.0          -           0.169977924945
- //
+  // -------------------- High Aux
+  double highAuxDY[5] = { 0.1069, 0.1294, 0.0689, 0.0689, 0.0689 };
+  double highAuxTT[5] = { 0.0724, 0.0775, 0.1001, 0.1405, 0.1556 };
+  if( pt < 20  )  return (highAuxDY[0]*(1-ttfrac)+highAuxTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt < 40  )  return (highAuxDY[1]*(1-ttfrac)+highAuxTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt < 80  )  return (highAuxDY[2]*(1-ttfrac)+highAuxTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt < 120 )  return (highAuxDY[3]*(1-ttfrac)+highAuxTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt >=120 )  return (highAuxDY[4]*(1-ttfrac)+highAuxTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  // -------------------- Inclusive
+  /*
   double inclDY[5] = { 0.2515, 0.2172, 0.1224, 0.1224, 0.1224 };
   double inclTT[5] = { 0.1599, 0.1465, 0.1493, 0.1826, 0.1699 };
-  //
-  double ttfrac = 0;
-
   if( pt < 20  )  return (inclDY[0]*(1-ttfrac)+inclTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
   if( pt < 40  )  return (inclDY[1]*(1-ttfrac)+inclTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
   if( pt < 80  )  return (inclDY[2]*(1-ttfrac)+inclTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
   if( pt < 120 )  return (inclDY[3]*(1-ttfrac)+inclTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
   if( pt >=120 )  return (inclDY[4]*(1-ttfrac)+inclTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  */
   //
   return 0;
 }
@@ -84,29 +79,27 @@ float elPR( float pt, float eta, float aux ){
   if( pt < 40 )  return 0.7584;
   if( pt < 60 )  return 0.8586;
   if( pt <120 )  return 0.9030;
-  return 0.9186;
   //
-  }
+  return 0.9186;
+}
 
 // electron fake rate
-float elFR( float pt, float eta, float aux, int pu ){ 
+float elFR( float pt, float eta, float aux, int pu, double ttfrac=0 ){ 
   //
   float etaFudgeFactor = 1;
-  //if( fabs(eta)<2.5 ) etaFudgeFactor=1;
-  //if( fabs(eta)<1.8 ) etaFudgeFactor=1;
-  //if( fabs(eta)<1.2 ) etaFudgeFactor=0.8;
+  //if( fabs(eta)<2.5 ) etaFudgeFactor=1.1;
+  if( fabs(eta)<1.2 ) etaFudgeFactor=0.7;
+  //if( fabs(eta)<0.9 ) etaFudgeFactor=0.9;
   //
   float puFudgeFactor = 1;
-  puFudgeFactor=0.045*(pu-16)+1;
-  if( pu < 13 )   puFudgeFactor=0.06*(pu-12)+1;
+  if( pu < 12 ) puFudgeFactor=0.06*(pu-12)+1;
+  if( pu > 12 ) puFudgeFactor=0.035*(pu-12)+1;
   //
   double lowAuxDY[5] = { 0.1044, 0.1214, 0.1096, 0.1372, 0.1111 };
   double lowAuxTT[5] = { 0.1154, 0.1033, 0.1047, 0.1190, 0.1327 };
   //
   double highAuxDY[5] = { 0.0459, 0.0150, 0.0085, 0.0215, 0.0111 };
   double highAuxTT[5] = { 0.0569, 0.0239, 0.0162, 0.0177, 0.0117 };
-  //
-  double ttfrac=0;
   //
   if( aux<12.5 ){
     if( pt < 20 ) return (lowAuxDY[0]*(1-ttfrac)+lowAuxTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;  
@@ -172,7 +165,7 @@ float setMatrixWeights( float p1, float f1, float p2, float f2, float p3, float 
 //		 double pt3, double eta3, int aux3,  
 //		 int isTightAndlepType ){ //10
 
-double LUTvalue( double pt1, double eta1,
+double MMweight( double pt1, double eta1,
 		 double pt2, double eta2,
 		 double pt3, double eta3,
 		 int auxCombined, int pu, 
