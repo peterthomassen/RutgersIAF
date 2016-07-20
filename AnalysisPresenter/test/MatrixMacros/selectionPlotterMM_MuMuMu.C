@@ -7,9 +7,9 @@
 #include "RutgersIAF/AnalysisPresenter/interface/ChannelCollection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
-#include "helperAnalysisPresenterMMdynamic.C"
+#include "helperAnalysisPresenterMM.C"
 
-void selectionPlotterMMwLUT() {
+void selectionPlotterMM_MuMuMu() {
   ///////////////////////
   // Binning/selection //
   ///////////////////////
