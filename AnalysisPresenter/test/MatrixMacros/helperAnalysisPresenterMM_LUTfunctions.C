@@ -27,9 +27,9 @@ float muFR( float pt, float eta, float aux, int pu ){
   ////if( fabs(eta)<1.8 ) etaFudgeFactor=1;
   ////if( fabs(eta)<1.2 ) etaFudgeFactor=0.7;
   ////etaFudgeFactor = 1;
-  if( fabs(eta)<2.5 ) etaFudgeFactor=1.3;
-  if( fabs(eta)<1.2 ) etaFudgeFactor=1;
-  if( fabs(eta)<0.9 ) etaFudgeFactor=0.7;
+  //if( fabs(eta)<2.5 ) etaFudgeFactor=1.3;
+  //if( fabs(eta)<1.2 ) etaFudgeFactor=1;
+  //if( fabs(eta)<0.9 ) etaFudgeFactor=0.7;
   //
   float puFudgeFactor = 1;
   ////puFudgeFactor=0.045*(pu-16)+1;
@@ -56,12 +56,25 @@ float muFR( float pt, float eta, float aux, int pu ){
   return 0.1556*etaFudgeFactor*puFudgeFactor;
   */
   //
-  if( pt < 20  )  return 0.1599*etaFudgeFactor*puFudgeFactor;
-  if( pt < 40  )  return 0.1465*etaFudgeFactor*puFudgeFactor;
-  if( pt < 80  )  return 0.1493*etaFudgeFactor*puFudgeFactor;
-  if( pt < 120 )  return 0.1826*etaFudgeFactor*puFudgeFactor;
-  return 0.1699*etaFudgeFactor*puFudgeFactor;
+  //Lowbin           DYMC          TTbar 
+  // 10.0    0.251572327044     0.159955960994
+  // 20.0    0.217228464419     0.146519116745
+  // 40.0    0.122448979592     0.149385969831
+  // 80.0           -           0.182620202911
+  // 120.0          -           0.169977924945
+ //
+  double inclDY[5] = { 0.2515, 0.2172, 0.1224, 0.1224, 0.1224 };
+  double inclTT[5] = { 0.1599, 0.1465, 0.1493, 0.1826, 0.1699 };
+  //
+  double ttfrac = 0;
 
+  if( pt < 20  )  return (inclDY[0]*(1-ttfrac)+inclTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt < 40  )  return (inclDY[1]*(1-ttfrac)+inclTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt < 80  )  return (inclDY[2]*(1-ttfrac)+inclTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt < 120 )  return (inclDY[3]*(1-ttfrac)+inclTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  if( pt >=120 )  return (inclDY[4]*(1-ttfrac)+inclTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  //
+  return 0;
 }
 
 // electron prompt rate
@@ -79,9 +92,9 @@ float elPR( float pt, float eta, float aux ){
 float elFR( float pt, float eta, float aux, int pu ){ 
   //
   float etaFudgeFactor = 1;
-  if( fabs(eta)<2.5 ) etaFudgeFactor=1;
-  if( fabs(eta)<1.8 ) etaFudgeFactor=1;
-  if( fabs(eta)<1.2 ) etaFudgeFactor=0.8;
+  //if( fabs(eta)<2.5 ) etaFudgeFactor=1;
+  //if( fabs(eta)<1.8 ) etaFudgeFactor=1;
+  //if( fabs(eta)<1.2 ) etaFudgeFactor=0.8;
   //
   float puFudgeFactor = 1;
   puFudgeFactor=0.045*(pu-16)+1;
