@@ -340,13 +340,15 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	}
 	
 	bool hasBackground = has("background");
-	bool doRatio = (getDimensionality() <= 1) && hasBackground && !m_assembler->getMode("noRatioPlot");
+	bool doRatio  = (getDimensionality() <= 1) && hasBackground && !m_assembler->getMode("noRatioPlot");
+	bool doZscore = m_assembler->getMode("ZscorePlot");
 	bool debug = m_assembler->getMode("debug");
-	m_canvas = new TCanvas("c1", "c1", 700, doRatio ? 700 : 490);
+	m_canvas = new TCanvas("c1", "c1", 1200, doRatio ? 750 : 490);
 	
 	TPad *pad1 = new TPad("pad1", "pad1", 0, doRatio ? 0.3 : 0, 1, 1);
 	if(doRatio) {
 		pad1->SetBottomMargin(0.025);
+		pad1->SetRightMargin(0.3);
 	}
 	pad1->Draw();
 	pad1->cd();
@@ -424,7 +426,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hData->SetMinimum(0);
 	}
 	hData->GetXaxis()->SetTitle(title);
-	hData->SetLineColor(kRed);
+	hData->SetLineColor(kBlack);
 	
 	if(doRatio) {
 		hData->GetXaxis()->SetLabelFont(43);
@@ -441,7 +443,7 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hBackground->SetFillStyle(3002);
 		hBackground->Draw("E2 SAME");
 		if(debug) {
-			hBackgroundErr->SetFillColor(kBlue + 2);
+			hBackgroundErr->SetFillColor(kBlack);
 			hBackgroundErr->SetFillStyle(3013);
 			hBackgroundErr->SetMarkerStyle(20);
 			hBackgroundErr->SetMarkerSize(0);
@@ -460,38 +462,23 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 	gStyle->SetOptStat(111111);
 	pad1->SetLogy(log);
 	
-	double ratio = 0;
-	if(hasBackground) {
-		ratio = hData->Integral() / hBackground->Integral();
-		
-		TLegend* legend = new TLegend(0.64,0.6,0.98,0.92);
-		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
-		TList* hists = m_stacks.find("background")->second.first->GetHists();
-		TIterator* iter = new TListIter(hists, false);
-		while(TH1* obj = (TH1*)iter->Next()) {
-			legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
-		}
-		delete iter;
-		for(auto const &hSignal : hSignals) {
-			legend->AddEntry((TObject*)0, "", "");
-			hSignal->SetLineColor(kWhite);
-			TString legendTitle = hSignal->GetTitle();
-			legendTitle.ReplaceAll("[X]", TString::Format("[%.1f]", hSignal->Integral()));
-			legend->AddEntry(hSignal, legendTitle.Data(), "FP");
-		}
-		legend->Draw();
-	}
-	
 	m_canvas->cd();
 	TPad *pad2 = new TPad("pad2", "pad2", 0, 0, 1, doRatio ? 0.3 : 0);
 	pad2->SetTopMargin(0.025);
+	pad2->SetRightMargin(0.3);
+	pad2->SetBottomMargin(0.2);
+	pad2->SetTickx(1);
+	pad2->SetTicky(1);
+	pad2->SetGridy(1);
 	pad2->Draw();
 	pad2->cd();
-	
+
+	double ratio = 0;	
 	if(doRatio) {
+		ratio = hData->Integral() / hBackground->Integral();
 		TLine* line1 = new TLine(hData->GetBinLowEdge(1), 1, hData->GetBinLowEdge(hData->GetNbinsX()+1), 1);
 		TLine* line2 = new TLine(hData->GetBinLowEdge(1), ratio, hData->GetBinLowEdge(hData->GetNbinsX()+1), ratio);
-		line2->SetLineColor(kRed);
+		line2->SetLineColor(kBlack);
 		line2->SetLineWidth(2);
 		hRatio->GetXaxis()->SetTitle(title);
 		hRatio->SetTitle("");
@@ -499,6 +486,9 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			double yield = hBackground->GetBinContent(i);
 			hRatio->SetBinContent(i, (yield == 0) ? 0 : hRatio->GetBinContent(i) / yield);
 			hRatio->SetBinError(i, (yield == 0) ? 0 : hRatio->GetBinError(i) / yield);
+			if(doZscore){
+			  cout<<"Calculate ZScore: "<<endl;
+			}
 		}
 		if(isDistribution()) {
 			hRatio->GetXaxis()->SetLabelFont(43);
@@ -510,6 +500,10 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 		hRatio->GetYaxis()->SetLabelFont(43);
 		hRatio->GetYaxis()->SetLabelSize(16);
 		hRatio->GetYaxis()->SetTitle("data/background");
+		hRatio->GetYaxis()->SetTitleSize(0.1);
+		hRatio->GetXaxis()->SetTitleSize(0.1);
+		hRatio->GetYaxis()->SetTitleOffset(0.4);
+		hRatio->GetXaxis()->SetTitleOffset(0.8);
 		hRatio->SetFillColor(kBlack);
 		hRatio->SetFillStyle(3001);
 		hRatio->SetMinimum(0);
@@ -551,6 +545,29 @@ TCanvas* AssemblerProjection::plot(bool log, TF1* f1, double xminFit, double xma
 			hRatio->Fit(f1, "", "SAME AXIS", xminFit, xmaxFit);
 		}
 		hRatio->Draw("SAME");
+	}
+	
+
+	if(hasBackground) {
+		ratio = hData->Integral() / hBackground->Integral();
+		TLegend* legend = new TLegend(0.73,0.02,0.98,0.68);
+		//TLegend* legend = new TLegend(0.73,0.1,0.98,0.92);
+		legend->SetHeader(TString::Format("%.1f (r = %.3f)", hBackground->Integral(), ratio).Data());
+		TList* hists = m_stacks.find("background")->second.first->GetHists();
+		TIterator* iter = new TListIter(hists, false);
+		while(TH1* obj = (TH1*)iter->Next()) {
+			legend->AddEntry(obj, TString::Format("%s [%.1f]", obj->GetTitle(), obj->Integral()).Data());
+		}
+		delete iter;
+		for(auto const &hSignal : hSignals) {
+			legend->AddEntry((TObject*)0, "", "");
+			hSignal->SetLineColor(kWhite);
+			TString legendTitle = hSignal->GetTitle();
+			legendTitle.ReplaceAll("[X]", TString::Format("[%.1f]", hSignal->Integral()));
+			legend->AddEntry(hSignal, legendTitle.Data(), "FP");
+		}
+		m_canvas->cd();
+		legend->Draw();
 	}
 	
 	return m_canvas;
@@ -647,7 +664,7 @@ TCanvas* AssemblerProjection::plot2D(bool log) {
 		}
 	}
 	
-	hData->SetLineColor(kRed);
+	hData->SetLineColor(kBlack);
 	hData->SetLineWidth(1);
 	hData->SetMarkerColor(kBlack);
 	hData->SetMarkerStyle(8);
