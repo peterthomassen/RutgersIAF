@@ -27,43 +27,53 @@ void selectionPlotterMMwLUT() {
   varexp += ":NRECOVERTICES{-0.5,50.5,51}";
   varexp += ":(Alt$(MOSSF,0)){0,200}";
   //
-  /*
-  varexp += ":(Alt$(PTGOODMUONS[0],0)){0,200,40}"; // Muon Params
-  varexp += ":(Alt$(PTGOODMUONS[1],0)){0,200,40}";
-  varexp += ":(Alt$(PTGOODMUONS[2],0)){0,200,40}";
+  /**/
+  varexp += ":(Alt$(PTGOODMUONS[0],0)){0,200,40}"; // Muon Params 1
+  varexp += ":PTGOODMUONS[0]{0,100,20}"; 
   varexp += ":(Alt$(ETAGOODMUONS[0],-3)){-3,3,20}";
-  varexp += ":(Alt$(ETAGOODMUONS[1],-3)){-3,3,20}";
-  varexp += ":(Alt$(ETAGOODMUONS[2],-3)){-3,3,20}";
   varexp += ":(abs(ETAGOODMUONS[0])){-3,3,20}";
-  varexp += ":(abs(ETAGOODMUONS[1])){-3,3,20}";
-  varexp += ":(abs(ETAGOODMUONS[2])){-3,3,20}";
   varexp += ":(Alt$(ISTIGHTMATRIXMUON[0],0)){-1,2}";
-  varexp += ":(Alt$(ISTIGHTMATRIXMUON[1],0)){-1,2}";
-  varexp += ":(Alt$(ISTIGHTMATRIXMUON[2],0)){-1,2}";
   varexp += ":(Alt$(ISPROMPTMUON[0],0)){-1,2}";
+  //
+  varexp += ":(Alt$(PTGOODMUONS[1],0)){0,200,40}"; // Muon Params 2
+  varexp += ":PTGOODMUONS[1]{0,100,20}"; 
+  varexp += ":(Alt$(ETAGOODMUONS[1],-3)){-3,3,20}";
+  varexp += ":(abs(ETAGOODMUONS[1])){-3,3,20}";
+  varexp += ":(Alt$(ISTIGHTMATRIXMUON[1],0)){-1,2}";
   varexp += ":(Alt$(ISPROMPTMUON[1],0)){-1,2}";
+  //
+  /*
+  varexp += ":(Alt$(PTGOODMUONS[2],0)){0,200,40}"; // Muon Params 3
+  varexp += ":PTGOODMUONS[2]{0,100,20}"; 
+  varexp += ":(Alt$(ETAGOODMUONS[2],-3)){-3,3,20}";
+  varexp += ":(abs(ETAGOODMUONS[2])){-3,3,20}";
+  varexp += ":(Alt$(ISTIGHTMATRIXMUON[2],0)){-1,2}";
   varexp += ":(Alt$(ISPROMPTMUON[2],0)){-1,2}";
   */
   //
   /**/
   varexp += ":(Alt$(PTGOODELECTRONS[0],0)){0,200,40}"; // El Params
-  varexp += ":(Alt$(PTGOODELECTRONS[1],0)){0,200,40}";
-  varexp += ":(Alt$(PTGOODELECTRONS[2],0)){0,200,40}";
-  varexp += ":PTGOODELECTRONS[0]{0,200,20}"; // El Params
-  varexp += ":PTGOODELECTRONS[1]{0,200,20}";
-  varexp += ":PTGOODELECTRONS[2]{0,200,20}";
+  varexp += ":PTGOODELECTRONS[0]{0,100,20}"; 
   varexp += ":(Alt$(ETAGOODELECTRONS[0],-3)){-3,3,20}";
-  varexp += ":(Alt$(ETAGOODELECTRONS[1],-3)){-3,3,20}";
-  varexp += ":(Alt$(ETAGOODELECTRONS[2],-3)){-3,3,20}";
   varexp += ":(abs(ETAGOODELECTRONS[0])){-3,3,20}";
-  varexp += ":(abs(ETAGOODELECTRONS[1])){-3,3,20}";
-  varexp += ":(abs(ETAGOODELECTRONS[2])){-3,3,20}";
   varexp += ":(Alt$(ISTIGHTMATRIXELECTRON[0],0)){-1,2}";
-  varexp += ":(Alt$(ISTIGHTMATRIXELECTRON[1],0)){-1,2}";
-  varexp += ":(Alt$(ISTIGHTMATRIXELECTRON[2],0)){-1,2}";
   varexp += ":(Alt$(ISPROMPTELECTRON[0],0)){-1,2}";
+  //
+  /*
+  varexp += ":(Alt$(PTGOODELECTRONS[1],0)){0,200,40}"; // El Params
+  varexp += ":PTGOODELECTRONS[1]{0,100,20}";
+  varexp += ":(Alt$(ETAGOODELECTRONS[1],-3)){-3,3,20}";
+  varexp += ":(abs(ETAGOODELECTRONS[1])){-3,3,20}";
+  varexp += ":(Alt$(ISTIGHTMATRIXELECTRON[1],0)){-1,2}";
   varexp += ":(Alt$(ISPROMPTELECTRON[1],0)){-1,2}";
+  //
+  varexp += ":(Alt$(PTGOODELECTRONS[2],0)){0,200,40}"; // El Params
+  varexp += ":PTGOODELECTRONS[2]{0,100,20}"; 
+  varexp += ":(Alt$(ETAGOODELECTRONS[2],-3)){-3,3,20}";
+  varexp += ":(abs(ETAGOODELECTRONS[2])){-3,3,20}";
+  varexp += ":(Alt$(ISTIGHTMATRIXELECTRON[2],0)){-1,2}";
   varexp += ":(Alt$(ISPROMPTELECTRON[2],0)){-1,2}";
+  */
   //
   /**/
   varexp += ":LeptonTypeVal3DLA{0,400}";
@@ -116,12 +126,21 @@ void selectionPlotterMMwLUT() {
   //assembler->setRange("NGOODMUONS",      2);//................// 2Mu 1El Selection - Only works because of the haddR skim made on the input files
   //assembler->setRange("NGOODELECTRONS",  1);//................// 2Mu 1El Selection - Only works because of the haddR skim made on the input files
   // ------------------------------------------
-  assembler->setRange("NGOODELECTRONS", 3);//...............// triple El Selection
-  assembler->setRange("LeptonTypeVal3DLA", 111,111);//......// triple El Selection
-  assembler->setRange("(Alt$(PTGOODELECTRONS[0],0))",25);
-  assembler->setRange("(Alt$(PTGOODELECTRONS[1],0))",15);
-  assembler->setRange("(Alt$(PTGOODELECTRONS[2],0))",10);
+  assembler->setRange("NLIGHTLEPTONS",   3,3);
+  assembler->setRange("NGOODELECTRONS",  1,1);
+  assembler->setRange("NGOODMUONS",      2,2);
+  assembler->setRange("LeptonTypeVal3DLA", 221,221);
+  assembler->setRange("(Alt$(PTGOODMUONS[0],0))",25);
+  assembler->setRange("(Alt$(PTGOODMUONS[1],0))",15);
+  assembler->setRange("(Alt$(PTGOODELECTRONS[0],0))",10);
   assembler->setRange("(Alt$(MOSSF,0))",87,95);
+  // ------------------------------------------
+  //assembler->setRange("NGOODELECTRONS", 3);//...............// triple El Selection
+  //assembler->setRange("LeptonTypeVal3DLA", 111,111);//......// triple El Selection
+  //assembler->setRange("(Alt$(PTGOODELECTRONS[0],0))",25);
+  //assembler->setRange("(Alt$(PTGOODELECTRONS[1],0))",15);
+  //assembler->setRange("(Alt$(PTGOODELECTRONS[2],0))",10);
+  //assembler->setRange("(Alt$(MOSSF,0))",87,95);
   // ------------------------------------------
   //assembler->setRange("NGOODMUONS", 3);//...................// triple Mu Selection
   //assembler->setRange("LeptonTypeVal3DLA", 222,222);//......// triple Mu Selection
@@ -170,9 +189,9 @@ void selectionPlotterMMwLUT() {
   //SaveHistograms(assembler->project("NRECOVERTICES",  true )->plot(true),"All_NRECOVERTICES.root");
   //
   //
-  /*
-  assembler->project("(Alt$(PTGOODMUONS[0],0))",   true)->plot(true)->SaveAs("All_PTGOODMUONS1.pdf"); //  Mu Parameters 1
-  //SaveHistograms(assembler->project("(Alt$(PTGOODMUONS[0],0))",   true)->plot(true),"All_PTGOODMUONS1.root");
+
+  assembler->project("PTGOODMUONS[0]",   true)->plot(true)->SaveAs("All_PTGOODMUONS1.pdf"); //  Mu Parameters 1
+  //SaveHistograms(assembler->project("PTGOODMUONS[0]",   true)->plot(true),"All_PTGOODMUONS1.root");
   assembler->project("(Alt$(ETAGOODMUONS[0],-3))", true)->plot(true)->SaveAs("All_ETAGOODMUONS1.pdf");
   //SaveHistograms(assembler->project("(Alt$(ETAGOODMUONS[0],-3))", true)->plot(true),"All_ETAGOODMUONS1.root");
   assembler->project("(Alt$(ISPROMPTMUON[0],0))",   true)->plot(true)->SaveAs("All_ISPROMPTMUON1.pdf"); 
@@ -185,6 +204,7 @@ void selectionPlotterMMwLUT() {
   assembler->project("(Alt$(ISPROMPTMUON[1],0))",   true)->plot(true)->SaveAs("All_ISPROMPTMUON2.pdf"); 
   //SaveHistograms(assembler->project("(Alt$(ISPROMPTMUON[1],0))",   true)->plot(true),"All_ISPROMPTMUON2.root");
   //
+  /*
   assembler->project("(Alt$(PTGOODMUONS[2],0))",   true)->plot(true)->SaveAs("All_PTGOODMUONS3.pdf"); //  Mu Parameters 3
   //SaveHistograms(assembler->project("(Alt$(PTGOODMUONS[2],0))",   true)->plot(true),"All_PTGOODMUONS3.root");
   assembler->project("(Alt$(ETAGOODMUONS[2],-3))", true)->plot(true)->SaveAs("All_ETAGOODMUONS3.pdf");
@@ -195,7 +215,6 @@ void selectionPlotterMMwLUT() {
   */
   // --------------------------------------------------------------
   //
-  /**/
   assembler->project("PTGOODELECTRONS[0]",   true)->plot(true)->SaveAs("All_PTGOODELECTRONS1.pdf"); //  El Parameters 1
   //SaveHistograms(assembler->project("PTGOODELECTRONS[0]",   true)->plot(true),"All_PTGOODELECTRONS1.root");
   assembler->project("(Alt$(ETAGOODELECTRONS[0],-3))", true)->plot(true)->SaveAs("All_ETAGOODELECTRONS1.pdf");
@@ -203,6 +222,7 @@ void selectionPlotterMMwLUT() {
   assembler->project("(Alt$(ISPROMPTELECTRON[0],0))",   true)->plot(true)->SaveAs("All_ISPROMPTELECTRON1.pdf");
   //SaveHistograms(assembler->project("(Alt$(ISPROMPTELECTRON[0],0))",   true)->plot(true),"All_ISPROMPTELECTRON1.root");
   //
+  /*
   assembler->project("PTGOODELECTRONS[1]",   true)->plot(true)->SaveAs("All_PTGOODELECTRONS2.pdf"); //  El Parameters 2
   //SaveHistograms(assembler->project("PTGOODELECTRONS[1]",   true)->plot(true),"All_PTGOODELECTRONS2.root");
   assembler->project("(Alt$(ETAGOODELECTRONS[1],-3))", true)->plot(true)->SaveAs("All_ETAGOODELECTRONS2.pdf");
@@ -216,7 +236,7 @@ void selectionPlotterMMwLUT() {
   //SaveHistograms(assembler->project("(Alt$(ETAGOODELECTRONS[2],-3))", true)->plot(true),"All_ETAGOODELECTRONS3.root");
   assembler->project("(Alt$(ISPROMPTELECTRON[2],0))",   true)->plot(true)->SaveAs("All_ISPROMPTELECTRON3.pdf");
   //SaveHistograms(assembler->project("(Alt$(ISPROMPTELECTRON[2],0))",   true)->plot(true),"All_ISPROMPTELECTRON3.root");
-  /**/
+  */
   
   assembler->setRange();  
   delete assembler;
