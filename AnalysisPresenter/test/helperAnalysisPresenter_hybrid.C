@@ -381,11 +381,17 @@ void setupFakeRates(Assembler* assembler) {
 	if(assembler->getMode("backgroundModel_proxy")) {
 		// In 2012, we found that NGOODJETS and HT binning does not work very well; NPROMPTINCLUSIVETRACK7 binning does a good job at least in 0b regions.
 		assembler->setFakeRate("nTrackFakeMuons",
-			"((NGOODMUONS[0] == 1) * 0.0158 + (NGOODMUONS[0] == 3) * 0.017)"
+			"("
+				"(NGOODMUONS[0] == 1) * 0.0158 + (NGOODMUONS[0] == 3) * 0.017" // measurement done here
+				" + (NGOODMUONS[0] == 2 || NGOODMUONS[0] == 4) * 0.0164" // use average for the other cases
+			")"
 			" * (nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 		);
 		assembler->setFakeRate("nTrackFakeElectrons",
-			"((NGOODELECTRONS[0] == 1) * 0.019 + (NGOODELECTRONS[0] == 3) * 0.019)"
+			"("
+				"(NGOODELECTRONS[0] == 1) * 0.019 + (NGOODELECTRONS[0] == 3) * 0.019" // measurement done here
+				" + (NGOODELECTRONS[0] == 2 || NGOODELECTRONS[0] == 4) * 0.019" // use average for the other cases
+			")"
 			" * (nTrackFakeElectrons[0] + nTrackFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 		);
 	}
@@ -395,12 +401,18 @@ void setupFakeRates(Assembler* assembler) {
 		// AIC reduces the pt of the emitting lepton, and can push on-Z pairs below the Z peak. This causes migration between on-Z/off-Z etc.
 		// Looking at the AIC control region, we find that we should adjust the fake rate outside MLEPTONS = 75..100.
 		assembler->setFakeRate("nPhotonFakeMuons",
-			"((NGOODMUONS[0] == 1) * 0.0105 + (NGOODMUONS[0] == 3) * 0.0115)"
+			"("
+				"(NGOODMUONS[0] == 1) * 0.0105 + (NGOODMUONS[0] == 3) * 0.0115" // measurement done here
+				" + (NGOODMUONS[0] == 2 || NGOODMUONS[0] == 4) * 0.0110" // use average for the other cases
+			")"
 			" * Alt$(Sum$(abs(goodMuonsDRgoodLeptons - 0.5) < 0.1 && fakeRoleGOODMUONS > 0) > 0, 0)" // only stuff emitted close to leptons
 			" * (nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 		);
 		assembler->setFakeRate("nPhotonFakeElectrons",
-			"((NGOODELECTRONS[0] == 1) * 0.0435 + (NGOODELECTRONS[0] == 3) * 0.024)"
+			"("
+				"(NGOODELECTRONS[0] == 1) * 0.0435 + (NGOODELECTRONS[0] == 3) * 0.024" // measurement done here
+				" + (NGOODELECTRONS[0] == 2 || NGOODELECTRONS[0] == 4) * 0.03375" // use average for the other cases
+			")"
 			" * Alt$(Sum$(abs(goodElectronsDRgoodLeptons - 0.5) < 0.1 && fakeRoleGOODELECTRONS > 0) > 0, 0)" // only stuff emitted close to leptons
 			" * (nPhotonFakeElectrons[0] + nPhotonFakeMuons[0] == 1)" // disable multiple proxies (precaution to avoid problems like with taus)
 		);
