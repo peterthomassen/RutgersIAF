@@ -7,7 +7,7 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
-#include "helperAnalysisPresenterMM_WeightFunctions.C"
+#include "MatrixMacros/helperAnalysisPresenterMM_WeightFunctions.C"
 
 // Load library, see https://root.cern.ch/phpBB2/viewtopic.php?f=3&t=19471
 namespace {
