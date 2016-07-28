@@ -87,17 +87,17 @@ void prepare(Assembler* assembler) {
 void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool applyEventVetos = false) {
 	std::string prefix = "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/";
 	std::string body = "DiLeptonData_2016B_273000-274443";
-	std::string infix = dilep ? "" : ".3L";
+	std::string infix = dilep ? ".2L" : ".3L";
 	std::string suffix = ".data.root";
 	
 	PhysicsContribution* data = 0;
 	
 	if(fakeMode == 0) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2790, "2.8/fb@13TeV");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 4336, "4.3/fb@13TeV");
 	} else if(fakeMode == 1) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2790, "2.8/fb@13TeV", false, "treeRfakeTracks");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 4336, "4.3/fb@13TeV", false, "treeRfakeTracks");
 	} else if(fakeMode == 2) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 2790, "2.8/fb@13TeV", false, "treeRfakePhotons");
+		data = new PhysicsContribution("data", prefix + body + infix + suffix, 4336, "4.3/fb@13TeV", false, "treeRfakePhotons");
 	} else {
 		cout << "unsure what to do";
 		exit(1);
@@ -133,7 +133,7 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	
 	// Pile-up weights
 	cout << "Notice: Applying pileup weights" << endl;
-	TFile* f = new TFile("/users/h2/schauhan/PileUpHist/273000-274443_2.793fb_PileupHistogram_xsec69200.root");
+	TFile* f = new TFile("/users/h2/schauhan/PileUpHist/4.34fb_PileupHistogram_xsec69200.root");
 	if(f->IsZombie()) {
 		throw std::runtime_error("couldn't open pileup file");
 	}
@@ -141,7 +141,7 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	TH1D* hPileupUnc = 0;
 	
 	if(assembler->getMode("fullPrecision")) {
-		TFile* fUnc = new TFile("/users/h2/schauhan/PileUpHist/273000-274443_2.793fb_Pileup+5%Histogram_xsec69200.root");
+		TFile* fUnc = new TFile("/users/h2/schauhan/PileUpHist/4.34fb_Pileup+5%Histogram_xsec69200.root");
 		if(fUnc->IsZombie()) {
 			throw std::runtime_error("couldn't open pileup uncertainty file");
 		}
@@ -154,7 +154,7 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 
 void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = true) {
 	std::string prefix = "/cms/heindl/2016/AnalysisTrees/MCData/output/";
-	std::string infix = dilep ? "" : ".3L";
+	std::string infix = dilep ? ".2L" : ".3L";
 	std::string suffix = ".simulation.root";
 	
 	double xsec_dy10to50 = 18610.;
@@ -305,7 +305,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 
 void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = true) {
 	std::string prefix = "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/";
-	std::string body = "DiLeptonData_2016B_273000-274443";
+	std::string body = "DiLeptonData_2016B_273000-275125";
 	std::string suffix = ".3L.data.root";
 	
 	TString nVertexWeight = "1"; // "0.773 + 0.0218 * NVERTICES[0]";
