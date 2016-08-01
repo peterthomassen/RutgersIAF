@@ -81,14 +81,15 @@ void Assembler::addBundle(Bundle* bundle) {
 }
 
 Channel* Assembler::channel(const char* name, Bundle* bundle) {
-	if(!bundle) {
-		bundle = getDefaultBundle();
-	}
-	
 	Channel* channel = new Channel(this, name);
 	
+	// When a bundle is passed, do not apply default bundles
 	if(bundle) {
-		channel = channel->bundle(bundle);
+		return channel->bundle(bundle);
+	}
+	
+	for(const auto &defaultBundle : getDefaultBundles()) {
+		channel = channel->bundle(defaultBundle.second);
 	}
 	
 	return channel;
@@ -100,8 +101,12 @@ Bundle* Assembler::getBundle(TString name) const {
 		: 0;
 }
 
-Bundle* Assembler::getDefaultBundle() const {
-	return m_defaultBundle;
+Bundle* Assembler::getDefaultBundle(TString type) const {
+	return (m_defaultBundles.find(type) != m_defaultBundles.end()) ? m_defaultBundles.at(type) : 0;
+}
+
+std::map<TString, Bundle*> Assembler::getDefaultBundles() const {
+	return m_defaultBundles;
 }
 
 std::vector<PhysicsContribution*> Assembler::getPhysicsContributions(TString type) const {
@@ -217,15 +222,23 @@ void Assembler::process(std::string varexp, TString selection, bool ApplyMCNorma
 	delete hs;
 }
 
-AssemblerProjection* Assembler::project(const char* name, const bool binForOverflow, Bundle* bundle) {
-	if(!bundle) {
-		bundle = getDefaultBundle();
+AssemblerProjection* Assembler::project(std::string varExp, const bool binForOverflow, Bundle* bundle) {
+	std::vector<std::string> varNames;
+	boost::char_separator<char> sep(":");
+	boost::tokenizer<decltype(sep)> tokens(varExp, sep);
+	BOOST_FOREACH(const std::string& t, tokens) {
+		varNames.push_back(t);
 	}
 	
-	AssemblerProjection* projection = new AssemblerProjection(this, name, binForOverflow);
+	AssemblerProjection* projection = new AssemblerProjection(this, varNames, binForOverflow);
 	
+	// When a bundle is passed, do not apply default bundles
 	if(bundle) {
-		projection = projection->bundle(bundle);
+		return projection->bundle(bundle);
+	}
+	
+	for(const auto &defaultBundle : getDefaultBundles()) {
+		projection = projection->bundle(defaultBundle.second);
 	}
 	
 	return projection;
@@ -243,19 +256,7 @@ void Assembler::save(const char* name, const bool binForOverflow) {
 	project(name, binForOverflow);
 	
 	m_outfile->cd();
-/*	if(m_hsProjections["data"].first) {
-		m_hsProjections["data"].first->Write(TString(name) + TString("_data"));
-		m_hsProjections["data"].second->Write(TString(name) + TString("_dataSyst"));
-	}
-	if(m_hsProjections["background"].first) {
-		m_hsProjections["background"].first->Write(TString(name) + TString("_background"));
-		m_hsProjections["background"].second->Write(TString(name) + TString("_backgroundSyst"));
-	}
-	if(m_hsProjections["signal"].first) {
-		m_hsProjections["signal"].first->Write(TString(name) + TString("_signal"));
-		m_hsProjections["signal"].second->Write(TString(name) + TString("_signalSyst"));
-	}
-*/	m_outfile->Flush();
+	m_outfile->Flush();
 }
 
 void Assembler::setDebug(bool debug) {
@@ -265,9 +266,36 @@ void Assembler::setDebug(bool debug) {
 	}
 }
 
-Bundle* Assembler::setDefaultBundle(Bundle* bundle) {
-	Bundle* prev = getDefaultBundle();
-	m_defaultBundle = bundle;
+std::map<TString, Bundle*> Assembler::setDefaultBundle(Bundle* bundle, TString type) {
+	auto prev = getDefaultBundles();
+	
+	// If type is specified, do not touch other types
+	if(type == "background" || type == "signal") {
+		assert(!bundle || bundle->getType() == type);
+		m_defaultBundles[type] = bundle;
+	// If type is not specified, clear everything but the bundle we've been given (if any)
+	} else if(type == "") {
+		if(bundle) {
+			m_defaultBundles = {{bundle->getType(), bundle}};
+		} else {
+			m_defaultBundles.clear();
+		}
+	} else {
+		throw std::runtime_error("invalid bundle type");
+	}
+	
+	return prev;
+}
+
+std::map<TString, Bundle*> Assembler::setDefaultBundles(std::map<TString, Bundle*> bundles) {
+	// Clear previous bundles
+	auto prev = setDefaultBundle();
+	
+	// Set one by one to make sure the types make sense
+	for(const auto &bundle : bundles) {
+		setDefaultBundle(bundle.second, bundle.first);
+	}
+	
 	return prev;
 }
 

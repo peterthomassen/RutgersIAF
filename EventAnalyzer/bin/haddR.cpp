@@ -40,6 +40,7 @@ Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const cha
 	TFile* outfile = new TFile(targetname, "UPDATE");
 	
 	outfile->cd();
+	TTree::SetMaxTreeSize(1LL*1024*1024*1024*1024);
 	TTree* outTree = new TTree(treeName, "");
 	
 	std::unordered_map<std::string, std::vector<double>* >  mapD;

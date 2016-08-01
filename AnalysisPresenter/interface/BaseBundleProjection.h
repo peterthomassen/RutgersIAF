@@ -3,8 +3,9 @@
 
 #include <map>
 #include <set>
+#include <string>
 
-#include "TH1D.h"
+#include "TH1.h"
 #include "THnBase.h"
 #include "TROOT.h"
 
@@ -15,23 +16,24 @@ class BaseBundleProjection : public TObject {
 
 public:
 	BaseBundleProjection();
-	BaseBundleProjection(const BaseBundle*, const char* varName);
+	BaseBundleProjection(const BaseBundle*, std::vector<std::string> varNames);
 	virtual ~BaseBundleProjection();
 	
-	TH1D* getHistogram() const;
+	TH1* getHistogram() const;
 	std::set<const PhysicsContribution*> getPhysicsContributions() const;
 	const BaseBundle* getSource() const;
-	std::map<TString, TH1D*> getUncertainties() const;
+	std::map<TString, TH1*> getUncertainties() const;
 	void incorporateOverflow();
 
 protected:
-	TH1D* m_histogram = 0;
+	TH1* m_histogram = 0;
 	const BaseBundle* m_source = 0;
+	std::vector<std::string> m_varNames;
 	
 	std::set<const PhysicsContribution*> m_contributions;
-	std::map<TString, TH1D*> m_uncertainties;
+	std::map<TString, TH1*> m_uncertainties;
 	
-	static void incorporateOverflow(TH1D* &);
+	void incorporateOverflow(TH1* &);
 
 private:
 

@@ -49,7 +49,7 @@ public:
 	bool isMC() const;
 	
 	void print(int level = 0) const;
-	BaseBundleProjection* project(const char* varName, const bool binForOverflow = false) const;
+	BaseBundleProjection* project(std::vector<std::string> varNames, const bool binForOverflow = false) const;
 	
 	bool setDebug(bool);
 	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);

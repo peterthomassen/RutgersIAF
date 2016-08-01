@@ -19,7 +19,7 @@ public:
 	Channel(const Channel* parent, Bundle* bundle, TString missingName);
 	virtual ~Channel();
 	
-	Channel* bundle(Bundle* bundle, TString missingName = "") const;
+	Channel* bundle(Bundle* bundle, TString missingName = "");
 	
 	void datacard(TString datacardName = "", bool isData = true, double statFactor = 1.00, double systFactor = 1.00);
 	
@@ -32,7 +32,7 @@ public:
 	double getSyst(TString type, TString name) const;
 	double getSyst(TString type, TString name, TString bundleName) const;
 	
-	AssemblerProjection* project(const char*, const bool binForOverflow);
+	AssemblerProjection* project(std::vector<std::string> varNames, const bool binForOverflow);
 
 protected:
 

@@ -13,7 +13,7 @@ class ObjectAssociationDeltaR : public ObjectAssociation {
   virtual ~ObjectAssociationDeltaR() {}
 
   virtual std::pair<bool,double> passCut(SignatureObject* a,SignatureObject* b) const {
-    if(TLorentzVector(*a).DeltaR(TLorentzVector(*b)) < m_deltar){
+    if(a != b && TLorentzVector(*a).DeltaR(TLorentzVector(*b)) < m_deltar){
       return std::make_pair(true,TLorentzVector(*a).DeltaR(TLorentzVector(*b)));
     }
     return std::make_pair(false,1e6);
