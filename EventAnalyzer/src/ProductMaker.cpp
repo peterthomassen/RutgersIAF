@@ -100,7 +100,12 @@ vector<SignatureObject*> ProductMaker::doAssociations(std::vector<SignatureObjec
     TString cname = (*pcIter).first;
     ObjectAssociation* comparison = (*pcIter).second.first;
     bool allowMultiple = (*pcIter).second.second;
-    vector<SignatureObject*> comp_product = m_handler->getProduct(cname);
+    vector<SignatureObject*> comp_product;
+    if (cname == m_name){
+      comp_product = source;
+    }else{
+       comp_product = m_handler->getProduct(cname);
+    }
 
     //loop over all objects in the source product
     for(int k = 0; k < (int)source.size(); k++){
