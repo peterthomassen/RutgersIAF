@@ -157,44 +157,46 @@ void ChannelCollection::datacard(TString datacardName, bool isData, double statF
 	}
 	
 	int nYields = (bundleNamesBkg.size() + bundleNamesSig.size()) * getChannels().size();
-	double statUncertainty[nYields];
-	
-	for(int n = 0; n < nYields; n++) {
-	  statUncertainty[n] = 1;
-	}
-	
-	int loopIndex = 0;
+	std::vector<std::pair<int, double>> statUncertainty;
 	
 	for(auto &channel : getChannels()) {
 		for(auto &bundleName : bundleNamesSig) {
 			double contentSignalStat = channel->getStat("signal", bundleName);
-			double contentSignal = max(minYield, channel->get("signal", bundleName));
-			double ratio = statFactor * contentSignalStat/contentSignal;
-			statUncertainty[loopIndex] += ratio;
-			loopIndex++;
+			double contentSignal = channel->get("signal", bundleName);
+			assert(contentSignalStat > 0 || contentSignal == 0);
+			
+			double sqrtN = (contentSignalStat > 0) ? (contentSignal/contentSignalStat) : 0;
+			int n = pow(statFactor * sqrtN, 2); // Round conservatively (floor)
+			statUncertainty.push_back(make_pair(n, contentSignal));
 		}
 		
 		for(auto &bundleName : bundleNamesBkg) {
 			double contentBackgroundStat = channel->getStat("background", bundleName);
-			double contentBackground = max(minYield, channel->get("background", bundleName));
-			double ratio = statFactor * contentBackgroundStat/contentBackground;
-			statUncertainty[loopIndex] += ratio;
-			loopIndex++;
+			double contentBackground = channel->get("background", bundleName);
+			assert(contentBackgroundStat > 0 || contentBackground == 0);
+			
+			double sqrtN = (contentBackgroundStat > 0) ? (contentBackground/contentBackgroundStat) : 0;
+			int n = pow(statFactor * sqrtN, 2); // Round conservatively (floor)
+			statUncertainty.push_back(make_pair(n, contentBackground));
 		}
 	}
 	
+	datacard << std::fixed << std::setprecision(16);
 	for(int n = 0; n < nYields; n++) {
-		datacard << "Stat" << n + 1 << " lnN";
-	
+		datacard << "Stat" << n + 1 << " gmN " << statUncertainty[n].first;
+		
 		for(int m = 0; m < nYields; m++) {
-		  if(n == m)
-			datacard << '\t' << statUncertainty[n];
-		  else 
-		    datacard << '\t' << 1;
+			if(n == m) {
+				double alpha = (statUncertainty[n].first > 0) ? (statUncertainty[n].second / statUncertainty[n].first) : 0;
+				datacard << '\t' << alpha;
+			} else {
+				datacard << '\t' << 0;
+			}
 		}
 		
 		datacard << endl;
 	}
+	datacard << std::fixed << std::setprecision(3);
 	
 	if(signalXsecUncertainty != 0) {
 		for(int n = 0; n < nYields; n++) {
