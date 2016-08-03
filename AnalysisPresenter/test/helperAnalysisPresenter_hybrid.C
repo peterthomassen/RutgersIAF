@@ -368,7 +368,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 	
 	////// Matrix Method
 	if(assembler->getMode("backgroundModel_MM")) {
-		PhysicsContribution* mm = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "MM", false, "treeR");
+		PhysicsContribution* mm = new PhysicsContribution("backgroundMM", prefix + body + suffix, assembler->getLumi(), "MM", false, "treeR");
 		mm->addWeight("TRIGGERACCEPT");
 		mm->addWeight("MMweight(PTGOODMUONS[0],ETAGOODMUONS[0],PTGOODMUONS[1],ETAGOODMUONS[1],PTGOODMUONS[2],ETAGOODMUONS[2],((JETNOOFCONSTGOODMUONS[0]>12.5)*100+(JETNOOFCONSTGOODMUONS[1]>12.5)*10+(JETNOOFCONSTGOODMUONS[2]>12.5)),NRECOVERTICES[0],(ISTIGHTMATRIXMUON[0]*100000+ISTIGHTMATRIXMUON[1]*10000+ISTIGHTMATRIXMUON[2]*1000+222))");
 		//mm->addWeight("MMweight(PTGOODELECTRONS[0],ETAGOODELECTRONS[0],PTGOODELECTRONS[1],ETAGOODELECTRONS[1],PTGOODELECTRONS[2],ETAGOODELECTRONS[2],((JETNOOFCONSTGOODELECTRONS[0]>12.5)*100+(JETNOOFCONSTGOODELECTRONS[1]>12.5)*10+(JETNOOFCONSTGOODELECTRONS[2]>12.5)),NRECOVERTICES[0],(ISTIGHTMATRIXELECTRON[0]*100000+ISTIGHTMATRIXELECTRON[1]*10000+ISTIGHTMATRIXELECTRON[2]*1000+111))");
