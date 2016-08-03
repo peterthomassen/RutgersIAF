@@ -46,14 +46,6 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 	delete treeR;
 	f->Close();
 	delete f;
-	
-	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
-		cout << "Warning: " << m_filename << "#" << m_treeRname << " has WEIGHT branch, but is being used as " << m_type << endl;
-	}
-	if(!m_MC && (m_type == "signal" || m_type == "backgroundMC")) {
-		cout << "was processing " << m_filename << "#" << m_treeRname << endl;
-		throw std::runtime_error("MC tree does not have a WEIGHT branch");
-	}
 }
 
 PhysicsContribution::~PhysicsContribution() {
@@ -528,10 +520,6 @@ THnBase* PhysicsContribution::getContent(bool absoluteWeights) const {
 	return absoluteWeights ? m_hnAbs : m_hn;
 }
 
-std::map<PhysicsContribution*, std::map<TString, TString>> PhysicsContribution::getEnsembleFakeRateParams() const {
-	return m_ensembleFakeRateParams;
-}
-
 double PhysicsContribution::getLumi() const {
 	return m_lumi;
 }
@@ -657,21 +645,6 @@ bool PhysicsContribution::setDebug(bool debug) {
 	bool oldDebug = m_debug;
 	m_debug = debug;
 	return oldDebug;
-}
-
-void PhysicsContribution::setEnsembleFakeRateParam(PhysicsContribution* contribution, TString varName, TString formula) {
-	if(getType(true) != "backgroundDD") {
-		throw std::runtime_error("ensemble fake rates are meant for data-driven backgrounds only");
-	}
-	
-	if(m_ensembleFakeRateParams.find(contribution) == m_ensembleFakeRateParams.end()) {
-		m_ensembleFakeRateParams.insert(make_pair(contribution, std::map<TString, TString>()));
-	}
-	
-	if(m_ensembleFakeRateParams[contribution].find(varName) != m_ensembleFakeRateParams[contribution].end()) {
-		cout << "Warning: Overwriting ensemble fake rate parametrization for variable " << varName << endl;
-	}
-	m_ensembleFakeRateParams[contribution].insert(make_pair(varName, formula));
 }
 
 void PhysicsContribution::setFakeRate(TString name, TString f) {
