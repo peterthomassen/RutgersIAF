@@ -1,0 +1,38 @@
+universe = vanilla
++AccountingGroup = "group_rutgers.heindl"
+Requirements = (Arch == "X86_64")
+Executable =/cms/multilepton/mheindl/2016/haddCRABhistos_condor.sh
+should_transfer_files = NO
+Notification=never
+
+
+
+error = /cms/multilepton/mheindl/2016/haddR_err/$(Cluster)_MuonEG_2016B_275126-End.err
+log = /cms/multilepton/mheindl/2016/haddR_log/$(Cluster)_MuonEG_2016B_275126-End.log
+output = /cms/multilepton/mheindl/2016/haddR_out/$(Cluster)_MuonEG_2016B_275126-End.out
+arguments = MounEG_2016B_275126-End /cms/multilepton/mheindl/2016/Data/MuonEG/Run2016B-PromptReco-v2_MINIAOD/160722_161435/0000/ Data
+queue
+
+error = /cms/multilepton/mheindl/2016/haddR_err/$(Cluster)_DoubleMuon_2016B_275126-End.err
+log = /cms/multilepton/mheindl/2016/haddR_log/$(Cluster)DoubleMuon_2016B_275126-End.log
+output = /cms/multilepton/mheindl/2016/haddR_out/$(Cluster)DoubleMuon_2016B_275126-End.out
+arguments = DoubleMuon_2016B-275126-End /cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016B-PromptReco-v2_MINIAOD/160728_142841/0000/ Data
+queue
+
+error = /cms/multilepton/mheindl/2016/haddR_err/$(Cluster)_MuonEG_2016D.err
+log = /cms/multilepton/mheindl/2016/haddR_log/$(Cluster)_MuonEG_2016D.log
+output = /cms/multilepton/mheindl/2016/haddR_out/$(Cluster)_MuonEG_2016D.out
+arguments = MounEG_2016D /cms/multilepton/mheindl/2016/Data/MuonEG/Run2016D-PromptReco-v2_MINIAOD/160730_063644/0000/ Data
+queue
+
+error = /cms/multilepton/mheindl/2016/haddR_err/$(Cluster)_DoubleEG_2016D.err
+log = /cms/multilepton/mheindl/2016/haddR_log/$(Cluster)DoubleEG_2016D.log
+output = /cms/multilepton/mheindl/2016/haddR_out/$(Cluster)DoubleEG_2016D.out
+arguments = DoubleEG_2016D /cms/multilepton/mheindl/2016/Data/DoubleEG/Run2016D-PromptReco-v2_MINIAOD/160730_063817/0000/ Data
+queue
+
+error = /cms/multilepton/mheindl/2016/haddR_err/$(Cluster)_DoubleMuon_2016D.err
+log = /cms/multilepton/mheindl/2016/haddR_log/$(Cluster)DoubleMuon_2016D.log
+output = /cms/multilepton/mheindl/2016/haddR_out/$(Cluster)DoubleMuon_2016D.out
+arguments = DoubleMuon_2016D /cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/ Data
+queue
