@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# run this script in a 'screen' session so you can turn off your computer and let this run in the background
 
 haddList=hadded.list
 # list of all hadded samples
