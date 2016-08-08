@@ -8,3 +8,4 @@
 #include "RutgersIAF/AnalysisPresenter/interface/ChannelCollection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContributionProjection.h"
+#include <TH1D.h>
