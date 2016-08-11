@@ -736,8 +736,14 @@ void setupVariables(BaseHandler* handler,bool isMC = false, double mZ = 91, doub
   /////////////////////
   ///Track Variables///
   /////////////////////
-  handler->addEventVariable("NGOODINCLUSIVETRACKS",           new EventVariableN("NGOODINCLUSIVETRACKS",           "goodInclusiveTracks"));
+  //handler->addEventVariable("basicTracksDgoodMuons",          new EventVariableDvector("basicTracks",              "goodMuons"));//these would ve been used for lep ID efficiency measurement. But need to skim on tracks first!
+  //handler->addEventVariable("basicTracksDgoodElectrons",      new EventVariableDvector("basicTracks",              "goodElectrons"));
+  //handler->addEventVariable("PTBASICTRACKS",                  new EventVariableObjectVariableVector<double>("PT",  "basicTracks"));
+  //handler->addEventVariable("ETABASICTRACKS",                 new EventVariableObjectVariableVector<double>("ETA", "basicTracks"));
+  //handler->addEventVariable("PHIBASICTRACKS",                 new EventVariableObjectVariableVector<double>("PHI", "basicTracks"));
+  //
   handler->addEventVariable("NBASICTRACKS",                   new EventVariableN("NBASICTRACKS",                   "basicTracks"));
+  handler->addEventVariable("NGOODINCLUSIVETRACKS",           new EventVariableN("NGOODINCLUSIVETRACKS",           "goodInclusiveTracks"));
   handler->addEventVariable("NISOTRACKS",                     new EventVariableN("NISOTRACKS",                     "isoTracks"));
   handler->addEventVariable("NISOINCLUSIVETRACKS",            new EventVariableN("NISOINCLUSIVETRACKS",            "isoInclusiveTracks"));
   handler->addEventVariable("NPROMPTTRACKS",                  new EventVariableN("NPROMPTTRACKS",                  "promptTracks"));
@@ -962,7 +968,8 @@ void setupTriggers(BaseHandler* handler,int mode){
   // ------------------------------------------------------------------------
   // HLT bundles
   // These are supposed to include all paths for data and MC.
-  // To be maintained! (Jun 3, 2016)
+  // To be maintained! (Aug 5, 2016)
+  // Note: MC HLT is still not ready
   // ------------------------------------------------------------------------
   // All available final HLT variables are listed here:
   //    -------------- All Muon
@@ -1000,279 +1007,148 @@ void setupTriggers(BaseHandler* handler,int mode){
   //    DiPhoton60HLT
   //    DiPhoton85HLT
   // ------------------------------------------------------------------------
-  std::vector< vector<pair<string, string> > > RutgersHLT;
-  // All-muon paths
-  std::vector< pair<string, string> > IsoMuHLT;
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v1"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v2"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v3"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v4"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoMu22_v5"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v1"));//these are ORed for higher eff, mentioned in the muon POG Twiki.
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v2"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v3"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v4"));
-  IsoMuHLT.push_back(std::make_pair("IsoMuHLT","HLT_IsoTkMu22_v5"));
+  std::vector< vector<pair<string, TString> > > RutgersHLT;
+  //
+  std::vector< pair<string, TString> > IsoMuHLT;
+  std::vector< pair<string, TString> > MuHLTprescaled;
+  std::vector< pair<string, TString> > Mu45eta2p1HLT;
+  std::vector< pair<string, TString> > Mu50HLT;
+  std::vector< pair<string, TString> > TkMu50HLT;
+  std::vector< pair<string, TString> > IsoDiMuHLT;//Analysis Trigger - MAIN
+  std::vector< pair<string, TString> > IsoMu17IsoMu8noDZHLT;
+  std::vector< pair<string, TString> > DiMuHLT;
+  std::vector< pair<string, TString> > DiMuSSHLT;
+  std::vector< pair<string, TString> > TripleMuHLT;
+  //
+  std::vector< pair<string, TString> > IsoEleHLT;
+  std::vector< pair<string, TString> > Ele27WPTightGsfHLT;
+  std::vector< pair<string, TString> > EleHLT;
+  std::vector< pair<string, TString> > EleHLTprescaled;
+  std::vector< pair<string, TString> > IsoDiEleHLT;//Analysis Trigger - MAIN
+  std::vector< pair<string, TString> > DiEleHLT;
+  std::vector< pair<string, TString> > TripleEleHLT;
+  //
+  std::vector< pair<string, TString> > IsoMu23Ele8HLTdata;//Analysis Trigger - Data ONLY!
+  std::vector< pair<string, TString> > IsoMu23Ele12HLT;//Analysis Trigger 
+  std::vector< pair<string, TString> > IsoMu8Ele23HLT;//Analysis Trigger
+  std::vector< pair<string, TString> > IsoMuEleHLTdata;//Analysis Trigger - Data ONLY!
+  std::vector< pair<string, TString> > IsoMuEleHLT;//Analysis Trigger - MAIN
+  std::vector< pair<string, TString> > MuEleHLT;
+  std::vector< pair<string, TString> > MuEleHLTdata;// Data ONLY!
+  std::vector< pair<string, TString> > MuMuEleHLT;
+  std::vector< pair<string, TString> > MuEleEleHLT;
+  //
+  std::vector< pair<string, TString> > DiMuHTHLT;
+  std::vector< pair<string, TString> > DiEleHTHLT;
+  std::vector< pair<string, TString> > MuEleHTHLT;
+  //
+  std::vector< pair<string, TString> > SinglePhotonHLT;
+  std::vector< pair<string, TString> > SinglePhotonMETHLT;
+  std::vector< pair<string, TString> > SinglePhotonHTHLT;
+  std::vector< pair<string, TString> > DiPhoton60HLT;
+  std::vector< pair<string, TString> > DiPhoton85HLT;
+  //
+  for(int iv=1; iv<11; iv++){
+    // ------------------------------------------------------------------------
+    // All-muon paths
+    IsoMuHLT.push_back(std::make_pair("IsoMuHLT",TString::Format("HLT_IsoMu22_v%i",iv)));
+    IsoMuHLT.push_back(std::make_pair("IsoMuHLT",TString::Format("HLT_IsoTkMu22_v%i",iv)));
+    MuHLTprescaled.push_back(std::make_pair(      "MuHLTprescaled",      TString::Format("HLT_Mu17_v%i",iv)));
+    MuHLTprescaled.push_back(std::make_pair(      "MuHLTprescaled",      TString::Format("HLT_Mu20_v%i",iv)));
+    Mu45eta2p1HLT.push_back(std::make_pair(       "Mu45eta2p1HLT",       TString::Format("HLT_Mu45_eta2p1_v%i",iv)));
+    Mu50HLT.push_back(std::make_pair(             "Mu50HLT",             TString::Format("HLT_Mu50_v%i",iv)));
+    TkMu50HLT.push_back(std::make_pair(           "TkMu50HLT",           TString::Format("HLT_TkMu50_v%i",iv)));
+    IsoDiMuHLT.push_back(std::make_pair(          "IsoDiMuHLT",          TString::Format("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v%i",iv)));//main trigger
+    IsoDiMuHLT.push_back(std::make_pair(          "IsoDiMuHLT",          TString::Format("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v%i",iv)));//main trigger
+    IsoMu17IsoMu8noDZHLT.push_back(std::make_pair("IsoMu17IsoMu8noDZHLT",TString::Format("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v%i",iv)));
+    IsoMu17IsoMu8noDZHLT.push_back(std::make_pair("IsoMu17IsoMu8noDZHLT",TString::Format("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v%i",iv)));
+    DiMuHLT.push_back(std::make_pair(             "DiMuHLT",             TString::Format("HLT_Mu30_TkMu11_v%i",iv)));
+    DiMuSSHLT.push_back(std::make_pair(           "DiMuSSHLT",           TString::Format("HLT_Mu17_Mu8_SameSign_DZ_v%i",iv)));
+    TripleMuHLT.push_back(std::make_pair(         "TripleMuHLT",         TString::Format("HLT_TripleMu_12_10_5_v%i",iv)));
+    // ------------------------------------------------------------------------
+    // All-electron paths
+    IsoEleHLT.push_back(std::make_pair(           "IsoEleHLT",           TString::Format("HLT_Ele27_eta2p1_WPLoose_Gsf_v%i",iv)));
+    Ele27WPTightGsfHLT.push_back(std::make_pair(  "Ele27WPTightGsfHLT",  TString::Format("HLT_Ele27_WPTight_Gsf_v%i",iv)));
+    EleHLT.push_back(std::make_pair(              "EleHLT",              TString::Format("HLT_Ele105_CaloIdVT_GsfTrkIdT_v%i",iv)));
+    EleHLTprescaled.push_back(std::make_pair(     "EleHLTprescaled",     TString::Format("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v%i",iv)));
+    EleHLTprescaled.push_back(std::make_pair(     "EleHLTprescaled",     TString::Format("HLT_Ele17_CaloIdL_GsfTrkIdVL_v%i",iv)));
+    IsoDiEleHLT.push_back(std::make_pair(         "IsoDiEleHLT",         TString::Format("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v%i",iv))); //main trigger
+    DiEleHLT.push_back(std::make_pair(            "DiEleHLT",            TString::Format("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v%i",iv)));
+    TripleEleHLT.push_back(std::make_pair(        "TripleEleHLT",        TString::Format("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v%i",iv)));
+    // ------------------------------------------------------------------------
+    // Mixed multi-lepton paths
+    IsoMu23Ele8HLTdata.push_back(std::make_pair( "IsoMu23Ele8HLTdata",   TString::Format("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v%i",iv)));
+    IsoMu23Ele12HLT.push_back(std::make_pair(    "IsoMu23Ele12HLT",      TString::Format("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v%i",iv)));
+    IsoMu8Ele23HLT.push_back(std::make_pair(     "IsoMu8Ele23HLT",       TString::Format("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v%i",iv)));
+    IsoMuEleHLTdata.push_back(std::make_pair(    "IsoMuEleHLTdata",      TString::Format("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v%i",iv)));
+    IsoMuEleHLTdata.push_back(std::make_pair(    "IsoMuEleHLTdata",      TString::Format("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v%i",iv)));
+    IsoMuEleHLT.push_back(std::make_pair(        "IsoMuEleHLT",          TString::Format("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v%i",iv)));//main trigger
+    IsoMuEleHLT.push_back(std::make_pair(        "IsoMuEleHLT",          TString::Format("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v%i",iv)));//main trigger
+    MuEleHLT.push_back(std::make_pair(           "MuEleHLT",             TString::Format("HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v%i",iv)));
+    MuEleHLTdata.push_back(std::make_pair(       "MuEleHLTdata",         TString::Format("HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v%i",iv)));
+    MuEleHLTdata.push_back(std::make_pair(       "MuEleHLTdata",         TString::Format("HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v%i",iv)));
+    MuEleHLTdata.push_back(std::make_pair(       "MuEleHLTdata",         TString::Format("HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v%i",iv)));
+    MuMuEleHLT.push_back(std::make_pair(         "MuMuEleHLT",           TString::Format("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v%i",iv)));
+    MuEleEleHLT.push_back(std::make_pair(        "MuEleEleHLT",          TString::Format("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v%i",iv)));
+    // ------------------------------------------------------------------------
+    // Di-lepton + PFHT paths
+    DiMuHTHLT.push_back(std::make_pair(          "DiMuHTHLT",            TString::Format("HLT_DoubleMu8_Mass8_PFHT300_v%i",iv)));
+    DiEleHTHLT.push_back(std::make_pair(         "DiEleHTHLT",           TString::Format("HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v%i",iv)));
+    MuEleHTHLT.push_back(std::make_pair(         "MuEleHTHLT",           TString::Format("HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v%i",iv)));
+    // ------------------------------------------------------------------------
+    // Single and double photon paths
+    SinglePhotonHLT.push_back(std::make_pair(    "SinglePhotonHLT",      TString::Format("HLT_Photon175_v%i",iv)));
+    SinglePhotonMETHLT.push_back(std::make_pair( "SinglePhotonMETHLT",   TString::Format("HLT_Photon135_PFMET100_v%i",iv)));
+    SinglePhotonHTHLT.push_back(std::make_pair(  "SinglePhotonHTHLT",    TString::Format("HLT_Photon90_CaloIdL_PFHT500_v%i",iv)));
+    DiPhoton60HLT.push_back(std::make_pair(      "DiPhoton60HLT",        TString::Format("HLT_DoublePhoton60_v%i",iv)));
+    DiPhoton85HLT.push_back(std::make_pair(      "DiPhoton85HLT",        TString::Format("HLT_DoublePhoton85_v%i",iv)));
+    // ------------------------------------------------------------------------
+  }
+  //
   RutgersHLT.push_back(IsoMuHLT);
-  std::vector< pair<string, string> > MuHLTprescaled;
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v1"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v2"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v3"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v4"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu17_v5"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v1"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v2"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v3"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v4"));
-  MuHLTprescaled.push_back(std::make_pair("MuHLTprescaled","HLT_Mu20_v5"));
   RutgersHLT.push_back(MuHLTprescaled);
-  std::vector< pair<string, string> > Mu45eta2p1HLT;
-  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v1"));
-  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v2"));
-  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v3"));
-  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v4"));
-  Mu45eta2p1HLT.push_back(std::make_pair("Mu45eta2p1HLT","HLT_Mu45_eta2p1_v5"));
   RutgersHLT.push_back(Mu45eta2p1HLT);
-  std::vector< pair<string, string> > Mu50HLT;
-  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v1"));
-  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v2"));
-  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v3"));
-  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v4"));
-  Mu50HLT.push_back(std::make_pair("Mu50HLT","HLT_Mu50_v5"));
   RutgersHLT.push_back(Mu50HLT);
-  std::vector< pair<string, string> > IsoDiMuHLT;//Analysis Trigger
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v3"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v4"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v5"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v3"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v4"));
-  IsoDiMuHLT.push_back(std::make_pair("IsoDiMuHLT","HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v5"));
+  RutgersHLT.push_back(TkMu50HLT);
   RutgersHLT.push_back(IsoDiMuHLT);
-  std::vector< pair<string, string> > DiMuHLT;
-  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v1"));
-  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v2"));
-  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v3"));
-  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v4"));
-  DiMuHLT.push_back(std::make_pair("DiMuHLT","HLT_Mu30_TkMu11_v5"));
+  RutgersHLT.push_back(IsoMu17IsoMu8noDZHL);
   RutgersHLT.push_back(DiMuHLT);
-  std::vector< pair<string, string> > DiMuSSHLT;
-  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v1"));
-  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v2"));
-  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v3"));
-  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v4"));
-  DiMuSSHLT.push_back(std::make_pair("DiMuSSHLT","HLT_Mu17_Mu8_SameSign_DZ_v5"));
   RutgersHLT.push_back(DiMuSSHLT);
-  std::vector< pair<string, string> > TripleMuHLT;
-  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v1"));
-  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v2"));
-  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v3"));
-  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v4"));
-  TripleMuHLT.push_back(std::make_pair("TripleMuHLT","HLT_TripleMu_12_10_5_v5"));
   RutgersHLT.push_back(TripleMuHLT);
-  // ------------------------------------------------------------------------
-  // All-electron paths
-  std::vector< pair<string, string> > IsoEleHLT;
-  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v1"));
-  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v2"));
-  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v3"));
-  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v4"));
-  IsoEleHLT.push_back(std::make_pair("IsoEleHLT","HLT_Ele27_eta2p1_WPLoose_Gsf_v5"));
+  //
   RutgersHLT.push_back(IsoEleHLT);
-  std::vector< pair<string, string> > EleHLT;
-  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v1"));
-  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v2"));
-  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v3"));
-  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v4"));
-  EleHLT.push_back(std::make_pair("EleHLT","HLT_Ele105_CaloIdVT_GsfTrkIdT_v5"));
+  RutgersHLT.push_back(Ele27WPTightGsfHLT);
   RutgersHLT.push_back(EleHLT);
-  std::vector< pair<string, string> > EleHLTprescaled;
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v4"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v5"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v1"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v2"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v3"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v4"));
-  EleHLTprescaled.push_back(std::make_pair("EleHLTprescaled","HLT_Ele17_CaloIdL_GsfTrkIdVL_v5"));
   RutgersHLT.push_back(EleHLTprescaled);
-  std::vector< pair<string, string> > IsoDiEleHLT;//Analysis Trigger
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1"));
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v2"));
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3"));
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v4"));
-  IsoDiEleHLT.push_back(std::make_pair("IsoDiEleHLT","HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v5"));
   RutgersHLT.push_back(IsoDiEleHLT);
-  std::vector< pair<string, string> > DiEleHLT;
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v1"));
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v2"));
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v3"));
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v4"));
-  DiEleHLT.push_back(std::make_pair("DiEleHLT","HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v5"));
   RutgersHLT.push_back(DiEleHLT);
-  std::vector< pair<string, string> > TripleEleHLT;
-  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1"));
-  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v2"));
-  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v3"));
-  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v4"));
-  TripleEleHLT.push_back(std::make_pair("TripleEleHLT","HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v5"));
   RutgersHLT.push_back(TripleEleHLT);
-  // ------------------------------------------------------------------------
-  // Mixed multi-lepton paths
-  std::vector< pair<string, string> > IsoMu23Ele8HLTdata;//Analysis Trigger - Data ONLY!
-  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v4"));
-  IsoMu23Ele8HLTdata.push_back(std::make_pair("IsoMu23Ele8HLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v5"));
+  //
   RutgersHLT.push_back(IsoMu23Ele8HLTdata);
-  std::vector< pair<string, string> > IsoMu23Ele12HLT;//Analysis Trigger 
-  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4"));
-  IsoMu23Ele12HLT.push_back(std::make_pair("IsoMu23Ele12HLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v5"));
   RutgersHLT.push_back(IsoMu23Ele12HLT);
-  std::vector< pair<string, string> > IsoMu8Ele23HLT;//Analysis Trigger
-  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4"));
-  IsoMu8Ele23HLT.push_back(std::make_pair("IsoMu8Ele23HLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v5"));
   RutgersHLT.push_back(IsoMu8Ele23HLT);
-  std::vector< pair<string, string> > IsoMuEleHLTdata;//Analysis Trigger - Data ONLY!
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v5"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v4"));
-  IsoMuEleHLTdata.push_back(std::make_pair("IsoMuEleHLTdata","HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v5"));
   RutgersHLT.push_back(IsoMuEleHLTdata);
-  std::vector< pair<string, string> > IsoMuEleHLT;//Analysis Trigger
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v4"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v5"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v2"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v3"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v4"));
-  IsoMuEleHLT.push_back(std::make_pair("IsoMuEleHLT","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v5"));
   RutgersHLT.push_back(IsoMuEleHLT);
-  std::vector< pair<string, string> > MuEleHLT;
-  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v1"));
-  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v2"));
-  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v3"));
-  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v4"));
-  MuEleHLT.push_back(std::make_pair("MuEleHLT","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v5"));
   RutgersHLT.push_back(MuEleHLT);
-  std::vector< pair<string, string> > MuEleHLTdata;// Data ONLY!
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v1"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v2"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v3"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v4"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v5"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v1"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v2"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v3"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v4"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu27_Ele37_CaloIdL_GsfTrkIdVL_v5"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v1"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v2"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v3"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v4"));
-  MuEleHLTdata.push_back(std::make_pair("MuEleHLTdata","HLT_Mu37_Ele27_CaloIdL_GsfTrkIdVL_v5"));
   RutgersHLT.push_back(MuEleHLTdata);
-  std::vector< pair<string, string> > MuMuEleHLT;
-  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1"));
-  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v2"));
-  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v3"));
-  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v4"));
-  MuMuEleHLT.push_back(std::make_pair("MuMuEleHLT","HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v5"));
   RutgersHLT.push_back(MuMuEleHLT);
-  std::vector< pair<string, string> > MuEleEleHLT;
-  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1"));
-  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v2"));
-  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v3"));
-  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v4"));
-  MuEleEleHLT.push_back(std::make_pair("MuEleEleHLT","HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v5"));
   RutgersHLT.push_back(MuEleEleHLT);
-  // ------------------------------------------------------------------------
-  // Di-lepton + PFHT paths
-  std::vector< pair<string, string> > DiMuHTHLT;
-  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v1"));
-  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v2"));
-  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v3"));
-  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v4"));
-  DiMuHTHLT.push_back(std::make_pair("DiMuHTHLT","HLT_DoubleMu8_Mass8_PFHT300_v5"));
+  //
   RutgersHLT.push_back(DiMuHTHLT);
-  std::vector< pair<string, string> > DiEleHTHLT;
-  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
-  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v2"));
-  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v3"));
-  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v4"));
-  DiEleHTHLT.push_back(std::make_pair("DiEleHTHLT","HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v5"));
   RutgersHLT.push_back(DiEleHTHLT);
-  std::vector< pair<string, string> > MuEleHTHLT;
-  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v1"));
-  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v2"));
-  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v3"));
-  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v4"));
-  MuEleHTHLT.push_back(std::make_pair("MuEleHTHLT","HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v5"));
   RutgersHLT.push_back(MuEleHTHLT);
-  // ------------------------------------------------------------------------
-  // Single and double photon paths
-  std::vector< pair<string, string> > SinglePhotonHLT;
-  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v1"));
-  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v2"));
-  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v3"));
-  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v4"));
-  SinglePhotonHLT.push_back(std::make_pair("SinglePhotonHLT","HLT_Photon175_v5"));
+  //
   RutgersHLT.push_back(SinglePhotonHLT);
-  std::vector< pair<string, string> > SinglePhotonMETHLT;
-  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v1"));
-  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v2"));
-  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v3"));
-  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v4"));
-  SinglePhotonMETHLT.push_back(std::make_pair("SinglePhotonMETHLT","HLT_Photon135_PFMET100_v5"));
   RutgersHLT.push_back(SinglePhotonMETHLT);
-  std::vector< pair<string, string> > SinglePhotonHTHLT;
-  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v1"));
-  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v2"));
-  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v3"));
-  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v4"));
-  SinglePhotonHTHLT.push_back(std::make_pair("SinglePhotonHTHLT","HLT_Photon90_CaloIdL_PFHT500_v5"));
   RutgersHLT.push_back(SinglePhotonHTHLT);
-  std::vector< pair<string, string> > DiPhoton60HLT;
-  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v1"));
-  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v2"));
-  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v3"));
-  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v4"));
-  DiPhoton60HLT.push_back(std::make_pair("DiPhoton60HLT","HLT_DoublePhoton60_v5"));
   RutgersHLT.push_back(DiPhoton60HLT);
-  std::vector< pair<string, string> > DiPhoton85HLT;
-  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v1"));
-  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v2"));
-  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v3"));
-  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v4"));
-  DiPhoton85HLT.push_back(std::make_pair("DiPhoton85HLT","HLT_DoublePhoton85_v5"));
   RutgersHLT.push_back(DiPhoton85HLT);
   // ------------------------------------------------------------------------
 
 
   // Store all *individual* HLTpaths and HLTpath groups as specified above:
   for(unsigned int i=0; i<RutgersHLT.size(); i++){
-    std::vector< pair<string, string> > HLTgroup = RutgersHLT.at(i);
+    std::vector< pair<string, TString> > HLTgroup = RutgersHLT.at(i);
     if( HLTgroup.size()==0 ) continue;
     //
     TString   HLTgroupName = HLTgroup.at(0).first;
@@ -1318,40 +1194,74 @@ void setupTriggers(BaseHandler* handler,int mode){
   // ------------------------------------------------------------------------  
 
   //std::vector< vector<pair<string, string> > > RutgersTrigObjects;
-  std::vector<string>  RutgersTrigObjects;
-  RutgersTrigObjects.push_back("HLT_IsoMu22_v");
-  RutgersTrigObjects.push_back("HLT_IsoTkMu22_v");
-  RutgersTrigObjects.push_back("HLT_Mu45_eta2p1_v");
-  RutgersTrigObjects.push_back("HLT_Mu50_v");
-  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
-  RutgersTrigObjects.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");
-  RutgersTrigObjects.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-  RutgersTrigObjects.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
-  RutgersTrigObjects.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-  RutgersTrigObjects.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-  RutgersTrigObjects.push_back("HLT_Mu20_v");//............prescaled control trigger & trig-obj.
-  RutgersTrigObjects.push_back("HLT_TkMu20_v");//..........prescaled control trigger & trig-obj.
-  RutgersTrigObjects.push_back("HLT_Mu17_TrkIsoVVL_v");//..prescaled control trigger & trig-obj.
-  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");//......HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v
-  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//...HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v
-  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");//.......HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v
-  RutgersTrigObjects.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//....HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v
-  RutgersTrigObjects.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8");//........HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v
-  RutgersTrigObjects.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");//....HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v
-  RutgersTrigObjects.push_back("hltDiMu9Ele9CaloIdLTrackIdLMuonlegL3Filtered9");//........................HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
-  RutgersTrigObjects.push_back("hltDiMu9Ele9CaloIdLTrackIdLElectronlegDphiFilter");//.....................HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
-  RutgersTrigObjects.push_back("hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered30Q");//........HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
-  RutgersTrigObjects.push_back("hltEle30CaloIdLGsfTrkIdVLDPhiUnseededFilter");//..........................HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
-  RutgersTrigObjects.push_back("hltMu8DiEle12CaloIdLTrackIdLMuonlegL3Filtered8");//.......................HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
-  RutgersTrigObjects.push_back("hltMu8DiEle12CaloIdLTrackIdLElectronlegDphiFilter");//....................HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
+  std::vector<string>  RutgersTrigObjectsMuon;
+  std::vector<string>  RutgersTrigObjectsElec;
+  //
+  RutgersTrigObjectsMuon.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");     //HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v     - MAIN mu
+  RutgersTrigObjectsElec.push_back("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");  //HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v     - MAIN e
+  RutgersTrigObjectsMuon.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23");      //HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v      - MAIN mu
+  RutgersTrigObjectsElec.push_back("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");   //HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v      - MAIN e
+  RutgersTrigObjectsMuon.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8");       //HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v      - MAIN mu
+  RutgersTrigObjectsElec.push_back("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter");   //HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v      - MAIN e
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu22Or25L1f0L2f10QL3Filtered50Q");                            //HLT_Mu50_v3,v4  - filter has changed for this path    - T&P mu
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu16orMu25L1f0L2f10QL3Filtered50Q");                          //HLT_Mu50_v2     - filter has changed for this path    - T&P mu
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu25f0TkFiltered50Q");                                        //HLT_TkMu50_v1,v2,v3                                   - T&P mu
+  RutgersTrigObjectsMuon.push_back("hltL3crIsoL1sMu20L1f0L2f10QL3f22QL3trkIsoFiltered0p09");               //HLT_IsoMu22_v                                         - T&P mu
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu20L1f0Tkf22QL3trkIsoFiltered0p09");                         //HLT_IsoTkMu22_v2,v3,v4                                - T&P mu
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4");                              //HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v2,v3,v4             - MAIN mu
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2");                 //HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2,v3             - MAIN mu
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4");                              //HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v2,v3              - MAIN mu
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2");                 //HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2,v3,v4        - MAIN mu
+  RutgersTrigObjectsElec.push_back("hltEle27WPTightGsfTrackIsoFilter");                                    //HLT_Ele27_WPTight_Gsf_v1,v2,v3,v4                     - T&P e
+  RutgersTrigObjectsElec.push_back("hltEle27erWPLooseGsfTrackIsoFilter");                                  //HLT_Ele27_eta2p1_WPLoose_Gsf_v3,v4,v5 - filter change - T&P e
+  RutgersTrigObjectsElec.push_back("hltEle27WPLooseGsfTrackIsoFilter");                                    //HLT_Ele27_eta2p1_WPLoose_Gsf_v2       - filter change - T&P e
+  RutgersTrigObjectsElec.push_back("hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter");                           //HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3,v4,v5,v6                                          - MAIN e
+  RutgersTrigObjectsElec.push_back("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter");                 //HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3,v4,v5,v6 (same as above, prior to the DZ filter)  - MAIN e
+  RutgersTrigObjectsElec.push_back("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter");                 //HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v3,v4,v5,v6 (same as above, prior to the DZ filter)  - MAIN e
+  //
+  RutgersTrigObjectsMuon.push_back("hltDiMu9Ele9CaloIdLTrackIdLMuonlegL3Filtered9");                       //HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
+  RutgersTrigObjectsElec.push_back("hltDiMu9Ele9CaloIdLTrackIdLElectronlegDphiFilter");                    //HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu22orMu25orMu20EG15orMu5EG20L1f0L2f10QL3Filtered30Q");       //HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
+  RutgersTrigObjectsElec.push_back("hltEle30CaloIdLGsfTrkIdVLDPhiUnseededFilter");                         //HLT_Mu30_Ele30_CaloIdL_GsfTrkIdVL_v
+  RutgersTrigObjectsMuon.push_back("hltMu8DiEle12CaloIdLTrackIdLMuonlegL3Filtered8");                      //HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
+  RutgersTrigObjectsElec.push_back("hltMu8DiEle12CaloIdLTrackIdLElectronlegDphiFilter");                   //HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu1lqL1f0L2f10L3Filtered17TkIsoFiltered0p4");                 //HLT_Mu17_TrkIsoVVL_v3
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu1lqL1f0L2f10L3Filtered17TkIsoFiltered0p4");                 //HLT_Mu17_TrkIsoVVL_v2,v3
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sMu5L1f0L2f5L3Filtered8TkIsoFiltered0p4");                     //HLT_Mu8_TrkIsoVVL_v3,v4
+  RutgersTrigObjectsMuon.push_back("hltL3pfL1sDoubleMu114L1f0L2pf0L3PreFiltered8");                        //HLT_Mu17_Mu8_SameSign_DZ_v1,v2,v3 (pre-DZ filter)
+  RutgersTrigObjectsMuon.push_back("hltL3fL1sDoubleMu114L1f0L2f10OneMuL3Filtered17");                      //HLT_Mu17_Mu8_SameSign_DZ_v1,v2,v3 (pre-DZ filter)
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlb17Glb8DzFiltered0p2");                                     //HLT_Mu17_Mu8_SameSign_DZ_v1,v2,v3 (DZ filter)
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlb17Glb8DzFiltered0p2SameSign");                             //HLT_Mu17_Mu8_SameSign_DZ_v1,v2,v3 (same-sign filter)
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlb30Trk11DzFiltered0p2");                                    //HLT_Mu30_TkMu11_v2,v3
+  RutgersTrigObjectsMuon.push_back("hltDiMuonGlbFiltered30TrkFiltered11");                                 //HLT_Mu30_TkMu11_v2,v3 (pre-DZ filter) 
+  RutgersTrigObjectsElec.push_back("hltEle12CaloIdLTrackIdLIsoVLTrackIsoFilter");                          //HLT_Ele12_CaloIdL_TrackIdL_IsoVL_v3,v4,v5,v6
+  RutgersTrigObjectsElec.push_back("hltEle17CaloIdLTrackIdLIsoVLTrackIsoFilter");                          //HLT_Ele17_CaloIdL_TrackIdL_IsoVL_v2,v3,v4,v5
+  RutgersTrigObjectsElec.push_back("hltEle23CaloIdLTrackIdLIsoVLTrackIsoFilter");                          //HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v3,v4,v5,v6
 
-  // Store all *individual* HLT trigger objects as specified above and in BaseAODReader/python/miniAOD_cfi.py
-  for(unsigned int i=0; i<RutgersTrigObjects.size(); i++){
-    TString   trigObjName = RutgersTrigObjects.at(i);
-    //TString isTrigObjName = TString::Format("is%s",trigObjName.Data());
+  // Store all HLT trigger objects as specified above and in BaseAODReader/python/miniAOD_cfi.py
+  for(unsigned int i=0; i<RutgersTrigObjectsMuon.size(); i++){
+    TString   trigObjName = RutgersTrigObjectsMuon.at(i);
     //
     handler->addProduct(trigObjName,"goodtriggerobjects");
+    handler->addObjectVariable(TString::Format("is%s",trigObjName.Data()),        new ObjectVariableValue<TString>("HLTPATH",                    trigObjName));
+    handler->addProductCut(trigObjName,TString::Format("is%s",trigObjName.Data()));
+    //
+    handler->addEventVariable(TString::Format("goodMuonsD%s",trigObjName.Data()), new EventVariableDvector("goodMuons", trigObjName));
+    //
+    handler->addEventVariable(TString::Format("N%s",trigObjName.Data()),          new EventVariableN(TString::Format("N%s",trigObjName.Data()),  trigObjName));
+    handler->addEventVariable(TString::Format("PT%s",trigObjName.Data()),         new EventVariableObjectVariableVector<double>("PT",            trigObjName));
+    handler->addEventVariable(TString::Format("ETA%s",trigObjName.Data()),        new EventVariableObjectVariableVector<double>("ETA",           trigObjName));
+    handler->addEventVariable(TString::Format("PHI%s",trigObjName.Data()),        new EventVariableObjectVariableVector<double>("PHI",           trigObjName));
+  }
+  for(unsigned int i=0; i<RutgersTrigObjectsElec.size(); i++){
+    TString   trigObjName = RutgersTrigObjectsElec.at(i);
+    //
+    handler->addProduct(trigObjName,"goodtriggerobjects");
+    handler->addObjectVariable(TString::Format("is%s",trigObjName.Data()),        new ObjectVariableValue<TString>("HLTPATH",                    trigObjName));
+    handler->addProductCut(trigObjName,TString::Format("is%s",trigObjName.Data()));
+    //
+    handler->addEventVariable(TString::Format("goodElectronsD%s",trigObjName.Data()), new EventVariableDvector("goodElectrons", trigObjName));
+    //
     handler->addEventVariable(TString::Format("N%s",trigObjName.Data()),          new EventVariableN(TString::Format("N%s",trigObjName.Data()),  trigObjName));
     handler->addEventVariable(TString::Format("PT%s",trigObjName.Data()),         new EventVariableObjectVariableVector<double>("PT",            trigObjName));
     handler->addEventVariable(TString::Format("ETA%s",trigObjName.Data()),        new EventVariableObjectVariableVector<double>("ETA",           trigObjName));
