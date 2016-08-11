@@ -31,13 +31,13 @@ void AIC() {
 	// Initialize and run //
 	////////////////////////
 	Assembler* assembler = new Assembler();
-	init(assembler);
+	init(assembler,"proxy");
 	
 	//assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
 	assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	//assembler->setMode("noRatioPlot");
 	assembler->setMode("noPhotonSystematics");
-	
+	assembler->setMode("fullPrecision");	
 	setupData(assembler);
 	setupBackgroundMC(assembler);
 	//setupBackgroundMC(assembler, false, false);
