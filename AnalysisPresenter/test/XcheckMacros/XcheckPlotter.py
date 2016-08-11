@@ -148,6 +148,9 @@ for i in xrange(len(ElTrigFilters)):
 #-------------------------------------------------
 # Produce plots..
 can=plotSettings.CreateCanvas1D("can")
+text=TLatex(0.1,0.5,inputFileName); text.SetNDC(); text.SetTextSize(0.015)
+text.Draw();
+can.Print("XcheckPlotter.pdf(")
 for i in xrange(len(varexp)):
     print varexp[i]," plot"
     #
@@ -164,9 +167,8 @@ for i in xrange(len(varexp)):
     hist.GetXaxis().SetTitle(varexp[i])
     hist.SetTitle("No. of Events: "+str((int)(hist.GetEntries())))
     #
-    if               i==0 : can.Print("XcheckPlotter.pdf(")
-    elif i==len(varexp)-1 : can.Print("XcheckPlotter.pdf)")
-    else                  : can.Print("XcheckPlotter.pdf")
+    if i==len(varexp)-1 : can.Print("XcheckPlotter.pdf)")
+    else                : can.Print("XcheckPlotter.pdf")
 
 exit(0)
 
