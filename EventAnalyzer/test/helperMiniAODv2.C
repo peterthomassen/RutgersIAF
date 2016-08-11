@@ -1111,7 +1111,7 @@ void setupTriggers(BaseHandler* handler,int mode){
   RutgersHLT.push_back(Mu50HLT);
   RutgersHLT.push_back(TkMu50HLT);
   RutgersHLT.push_back(IsoDiMuHLT);
-  RutgersHLT.push_back(IsoMu17IsoMu8noDZHL);
+  RutgersHLT.push_back(IsoMu17IsoMu8noDZHLT);
   RutgersHLT.push_back(DiMuHLT);
   RutgersHLT.push_back(DiMuSSHLT);
   RutgersHLT.push_back(TripleMuHLT);
