@@ -85,55 +85,98 @@ void prepare(Assembler* assembler) {
 }
 
 void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool applyEventVetos = false) {
-	std::string prefix = "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/";
-	std::string body = "DiLeptonData_2016B_273000-275125";
 	std::string infix = dilep ? ".2L" : ".3L";
 	std::string suffix = ".data.root";
 	
-	PhysicsContribution* data = 0;
+	PhysicsContribution* dataElEl_B = 0;
+	PhysicsContribution* dataMuEl_B = 0;
+	PhysicsContribution* dataMuMu_B = 0;
+	
+	PhysicsContribution* dataMuMu_D = 0;
+	
+	std::vector<PhysicsContribution*> data;
 	
 	if(fakeMode == 0) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 4336, "4.3/fb@13TeV");
+		
+		dataElEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV");
+		data.push_back(dataElEl_B);
+		
+		dataMuEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/MuonEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV");
+		data.push_back(dataMuEl_B);
+		
+		dataMuMu_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleMuon_2016B" + infix + suffix, 5892, "10.2/fb@13TeV");
+		data.push_back(dataMuMu_B);
+
+		dataMuMu_D = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/DoubleMuon_2016D" + infix + suffix, 4353, "10.2/fb@13TeV");
+		data.push_back(dataMuMu_D);
+		
 	} else if(fakeMode == 1) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 4336, "4.3/fb@13TeV", false, "treeRfakeTracks");
+		
+		dataElEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakeTracks");
+		data.push_back(dataElEl_B);
+		
+		dataMuEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/MuonEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakeTracks");
+		data.push_back(dataMuEl_B);
+		
+		dataMuMu_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleMuon_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakeTracks");
+		data.push_back(dataMuMu_B);
+
+		dataMuMu_D = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/DoubleMuon_2016D" + infix + suffix, 4353, "10.2/fb@13TeV", false, "treeRfakeTracks");
+		data.push_back(dataMuMu_D);
+
 	} else if(fakeMode == 2) {
-		data = new PhysicsContribution("data", prefix + body + infix + suffix, 4336, "4.3/fb@13TeV", false, "treeRfakePhotons");
+		
+		dataElEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakePhotons");
+		data.push_back(dataElEl_B);
+		
+		dataMuEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/MuonEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakePhotons");
+		data.push_back(dataMuEl_B);
+		
+		dataMuMu_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleMuon_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakePhotons");
+		data.push_back(dataMuMu_B);
+
+		dataMuMu_D = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/DoubleMuon_2016D" + infix + suffix, 4353, "10.2/fb@13TeV", false, "treeRfakePhotons");
+		data.push_back(dataMuMu_D);
+
 	} else {
 		cout << "unsure what to do";
 		exit(1);
 	}
 	
-	data->addWeight("TRIGGERACCEPT");
-	data->addWeight("NLIGHTLEPTONS[0] == Sum$(ISTIGHTMATRIXMUON) + Sum$(ISTIGHTMATRIXELECTRON) + Sum$(fakeRoleGOODMUONS > 0) + Sum$(fakeRoleGOODELECTRONS > 0)");
 	
-	std::vector<string> vetoFilenames = { };
-	if(!applyEventVetos) {
-		vetoFilenames.clear();
-	}
-	
-	for(auto vetoFilename : vetoFilenames) {
-		cout << "adding vetos from " << vetoFilename << " ..." << flush;
-		int nDuplicates = 0;
-		ifstream ifile(vetoFilename);
-		std::string line;
-		while(getline(ifile, line)) {
-			if(line.size() == 0 || line.at(0) == '#') {
-				continue;
-			}
-			
-			if(!data->addVetoEvent(line)) {
-				++nDuplicates;
-			}
+	for(auto &contribution : data) {
+		contribution->addWeight("TRIGGERACCEPT");
+		contribution->addWeight("NLIGHTLEPTONS[0] == Sum$(ISTIGHTMATRIXMUON) + Sum$(ISTIGHTMATRIXELECTRON) + Sum$(fakeRoleGOODMUONS > 0) + Sum$(fakeRoleGOODELECTRONS > 0)");
+		
+		std::vector<string> vetoFilenames = { };
+		if(!applyEventVetos) {
+			vetoFilenames.clear();
 		}
-		ifile.close();
-		cout << " (" << nDuplicates << " duplicates)" << endl;
-	}
 	
-	assembler->addContribution(data);
+		for(auto vetoFilename : vetoFilenames) {
+			cout << "adding vetos from " << vetoFilename << " ..." << flush;
+			int nDuplicates = 0;
+			ifstream ifile(vetoFilename);
+			std::string line;
+			while(getline(ifile, line)) {
+				if(line.size() == 0 || line.at(0) == '#') {
+					continue;
+				}
+			
+				if(!contribution->addVetoEvent(line)) {
+					++nDuplicates;
+				}
+			}
+			ifile.close();
+			cout << " (" << nDuplicates << " duplicates)" << endl;
+		}
+		
+		assembler->addContribution(contribution);
+	}
 	
 	// Pile-up weights
 	cout << "Notice: Applying pileup weights" << endl;
-	TFile* f = new TFile("/users/h2/schauhan/PileUpHist/4.34fb_PileupHistogram_xsec69200.root");
+	TFile* f = new TFile("/users/h2/schauhan/PileUpHist/12.9fb_PileupHistogram_xsec69200.root");
 	if(f->IsZombie()) {
 		throw std::runtime_error("couldn't open pileup file");
 	}
@@ -141,7 +184,7 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	TH1D* hPileupUnc = 0;
 	
 	if(assembler->getMode("fullPrecision")) {
-		TFile* fUnc = new TFile("/users/h2/schauhan/PileUpHist/4.34fb_Pileup+5%Histogram_xsec69200.root");
+		TFile* fUnc = new TFile("/users/h2/schauhan/PileUpHist/12.9fb_Pileup+5%Histogram_xsec69200.root");
 		if(fUnc->IsZombie()) {
 			throw std::runtime_error("couldn't open pileup uncertainty file");
 		}
