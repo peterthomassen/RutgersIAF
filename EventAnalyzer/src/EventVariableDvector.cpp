@@ -37,7 +37,7 @@ bool EventVariableDvector::calculate(BaseHandler *handler) {
 				if(dRnew < dR) {
 					dR = dRnew;
 					dRpTRatio = -1;
-					if( TLorentzVector(*compObj).pt() > 0 ) dRpTRatio = TLorentzVector(*sigObj).pt()/TLorentzVector(*compObj).pt();
+					if( TLorentzVector(*compObj).Pt() > 0 ) dRpTRatio = TLorentzVector(*sigObj).Pt()/TLorentzVector(*compObj).Pt();
 					dPhi = TLorentzVector(*sigObj).DeltaPhi(TLorentzVector(*compObj));
 				}
 			}
