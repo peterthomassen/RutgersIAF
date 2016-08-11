@@ -1,0 +1,5 @@
+#!/usr/bin/expect -f
+spawn voms-proxy-init
+expect "GRID"
+send "not_my_real_password\r"
+interact

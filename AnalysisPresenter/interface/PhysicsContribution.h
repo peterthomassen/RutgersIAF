@@ -39,7 +39,6 @@ public:
 	int findBinFromLowEdge(TAxis* axis, double x);
 	std::set<Long64_t> getBins() const; // std::unordered_set doesn't work with slc5_amd64_gcc481
 	THnBase* getContent(bool absoluteWeights = false) const;
-	std::map<PhysicsContribution*, std::map<TString, TString>> getEnsembleFakeRateParams() const;
 	double getLumi() const;
 	std::set<PhysicsContribution::metadata_t> getMeta() const;
 	TString getSelectionString() const;
@@ -52,7 +51,6 @@ public:
 	BaseBundleProjection* project(std::vector<std::string> varNames, const bool binForOverflow = false) const;
 	
 	bool setDebug(bool);
-	void setEnsembleFakeRateParam(PhysicsContribution*, TString varName, TString formula);
 	void setFakeRate(TString, TString);
 	void setNominalWeight(TString);
 
@@ -86,7 +84,6 @@ private:
 	std::map<TString, THnBase*> m_hProjectionUncertainties;
 	std::vector<std::vector<metadata_t>> m_metadata;
 	
-	std::map<PhysicsContribution*, std::map<TString, TString>> m_ensembleFakeRateParams;
 	std::map<TString, TString> m_fakerateMap;
 	std::map<TString, double> m_flatUncertaintyMap;
 	std::map<TString, TString> m_rangeStrings;

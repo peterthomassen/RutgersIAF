@@ -45,6 +45,25 @@ Assembler::~Assembler() {
 	}
 }
 
+void Assembler::Print(Option_t* option) const{
+  cout<<"Variable Expression: "<<m_varexp<<endl;
+  cout<<"Selection: "<<m_selection<<endl;
+  cout<<"Physics Contributions: "<<endl;
+  for(auto iter_contributions : m_contributions){
+    cout<<" "<<iter_contributions.first<<endl;
+    for(auto contribution : iter_contributions.second){
+      cout<<"  "<<contribution->getType(true)<<" "<<contribution->getName()<<endl;
+    }
+  }
+  cout<<"Bundles: "<<endl;
+  for(auto iter_bundles : m_bundles){
+    cout<<" "<<iter_bundles.first<<endl;
+  }
+  for(auto iter_bundles : m_defaultBundles){
+    cout<<" "<<iter_bundles.first<<endl;
+  }
+}
+
 void Assembler::addContribution(PhysicsContribution* contribution) {
 	if(contribution->isData()) {
 		if(std::find(m_contributions["data"].begin(), m_contributions["data"].end(), contribution) != m_contributions["data"].end()) {

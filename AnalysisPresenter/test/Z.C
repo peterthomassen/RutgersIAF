@@ -6,7 +6,7 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
-#include "helperAnalysisPresenter.C"
+#include "helperAnalysisPresenter_hybrid.C"
 
 void Z() {
 	///////////////////////
@@ -27,7 +27,7 @@ void Z() {
 	
 	// Global cuts, if desired
 	//TString selection = "!AIC";
-	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
+	TString selection = "PTGOODLEPTONS[0] > 25 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
 //	selection += " && fakeRoleGOODMUONS > 0";
 	//selection += " && !(MLIGHTLEPTONS > 76 && MLIGHTLEPTONS < 106)";
 	
@@ -36,13 +36,13 @@ void Z() {
 	// Initialize and run //
 	////////////////////////
 	Assembler* assembler = new Assembler();
-	init(assembler);
+	init(assembler,"prxoy");
 	
 	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
 	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	//assembler->setMode("noRatioPlot");
 	assembler->setMode("noTrackSystematics");
-	
+	assembler->setMode("fullPrecision");	
 	setupData(assembler);
 	setupBackgroundMC(assembler);
 	setupBackgroundDD(assembler);

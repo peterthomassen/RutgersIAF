@@ -21,7 +21,7 @@ void ttbar() {
 	
 	// Global cuts, if desired
 	TString selection = "(NLIGHTLEPTONS == 3 && NOSSF == 0) || (NLIGHTLEPTONS == 2 && NGOODELECTRONS == 1 && NGOODMUONS == 1 && NGOODTAUS == 0 && Sum$(QGOODELECTRONS) + Sum$(QGOODMUONS) == 0)";
-	
+	//selection+= "PTGOODLEPTONS[0] > 25 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
 	////////////////////////
 	// Initialize and run //
 	////////////////////////
@@ -32,7 +32,7 @@ void ttbar() {
 	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	//assembler->setMode("noRatioPlot");
 	assembler->setMode("noTTsystematics");
-	
+	assembler->setMode("fullPrecision");	
 	setupData(assembler, true);
 	setupBackgroundMC(assembler, true, true, true);
 	//setupBackgroundDD(assembler);

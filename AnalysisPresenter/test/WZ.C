@@ -23,7 +23,7 @@ void WZ() {
 	//varexp += ":MINJETPT{0,400,40}:MAXJETPT{0,400,40}";
 	
 	// Global cuts, if desired
-	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10"; // "!(AIC && MET < 50 && HT < 200)";
+	TString selection = "PTGOODLEPTONS[0] > 25 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10"; // "!(AIC && MET < 50 && HT < 200)";
 	//selection += " && NGOODELECTRONS == 3";
 	
 	////////////////////////
@@ -36,7 +36,7 @@ void WZ() {
 	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
 	//assembler->setMode("noRatioPlot");
 	assembler->setMode("noWZsystematics");
-	
+	assembler->setMode("fullPrecision");
 	setupData(assembler);
 	setupBackgroundMC(assembler);
 	setupBackgroundDD(assembler);

@@ -24,7 +24,7 @@ PhysicsContribution::PhysicsContribution() {
 }
 
 PhysicsContribution::PhysicsContribution(TString type, TString filename, double lumiOrXsec, TString name, bool allowNegative, TString treeRname, Int_t fillColor, double minScale, bool unordered) : BaseBundle(type, name, allowNegative, fillColor), m_filename(filename), m_treeRname(treeRname), m_minScale(minScale), m_unordered(unordered) {
-	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "signal")) {
+	if(!(m_type == "data"  || m_type == "backgroundMC" || m_type == "backgroundDD" || m_type == "backgroundMM" || m_type == "signal")) {
 		throw std::runtime_error("invalid contribution type");
 	}
 	
@@ -38,22 +38,13 @@ PhysicsContribution::PhysicsContribution(TString type, TString filename, double 
 		cout << "was processing " << m_filename << ", looking for Rutgers tree " << m_treeRname << endl;
 		throw std::runtime_error("contribution root file does not contain treeR");
 	}
-	//m_MC = treeR->GetBranch("WEIGHT");
-	m_MC = (type != "data" && type != "backgroundDD");
+	m_MC = (type == "backgroundMC" || type == "signal");
 	m_lumi = isMC()
 		? (1. / lumiOrXsec / treeR->GetWeight())
 		: lumiOrXsec;
 	delete treeR;
 	f->Close();
 	delete f;
-	
-	if(m_MC && (m_type == "data" || m_type == "backgroundDD")) {
-		cout << "Warning: " << m_filename << "#" << m_treeRname << " has WEIGHT branch, but is being used as " << m_type << endl;
-	}
-	if(!m_MC && (m_type == "signal" || m_type == "backgroundMC")) {
-		cout << "was processing " << m_filename << "#" << m_treeRname << endl;
-		throw std::runtime_error("MC tree does not have a WEIGHT branch");
-	}
 }
 
 PhysicsContribution::~PhysicsContribution() {
@@ -328,6 +319,10 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 			if(m_type == "backgroundDD") {
 				weights += TString::Format(" * (%s > 0)", sum.Data());
 			} else
+			// Don't do anything special for matrix method
+			if(m_type == "backgroundMM") {
+				// no-op
+			} else
 			//
 			{
 				cerr << "background type: " << m_type << endl;
@@ -365,9 +360,18 @@ THnBase* PhysicsContribution::fillContentVariation(TTree* treeR, THnBase* hn, st
 	}
 	
 	Double_t x[hn->GetNdimensions()];
-	std::string varexpIncarnation = treeR->GetListOfBranches()->FindObject("fakeIncarnation")
-		? "fakeIncarnation[0]"
-		: ((m_type == "backgroundDD") ? "Entry$" : "0");
+	
+	std::string varexpIncarnation;
+	if(treeR->GetListOfBranches()->FindObject("fakeIncarnation")) {
+		varexpIncarnation = "fakeIncarnation[0]";
+	} else {
+		if(m_type == "backgroundDD") {
+			cout << "Warning: backgroundDD contribution does not have fakeIncarnation branch. Using Entry$ instead." << endl;
+			varexpIncarnation = "Entry$";
+		} else {
+			varexpIncarnation = "0";
+		}
+	}
 	
 	TString varexpFull = TString::Format("%s:EVENT[0]:RUN[0]:LUMI[0]:%s:Entry$", varexp.c_str(), varexpIncarnation.c_str());
 	
@@ -528,10 +532,6 @@ THnBase* PhysicsContribution::getContent(bool absoluteWeights) const {
 	return absoluteWeights ? m_hnAbs : m_hn;
 }
 
-std::map<PhysicsContribution*, std::map<TString, TString>> PhysicsContribution::getEnsembleFakeRateParams() const {
-	return m_ensembleFakeRateParams;
-}
-
 double PhysicsContribution::getLumi() const {
 	return m_lumi;
 }
@@ -632,7 +632,7 @@ void PhysicsContribution::print(int level) const {
 }
 
 BaseBundleProjection* PhysicsContribution::project(std::vector<std::string> varNames, const bool binForOverflow) const {
-	double zerostat = (m_type == "backgroundDD") ? 0.05 : 1;
+	double zerostat = (m_type == "backgroundDD" || m_type == "backgroundMM") ? 0.05 : 1;
 	
 	PhysicsContributionProjection* projection = new PhysicsContributionProjection(this, varNames, zerostat);
 	
@@ -657,21 +657,6 @@ bool PhysicsContribution::setDebug(bool debug) {
 	bool oldDebug = m_debug;
 	m_debug = debug;
 	return oldDebug;
-}
-
-void PhysicsContribution::setEnsembleFakeRateParam(PhysicsContribution* contribution, TString varName, TString formula) {
-	if(getType(true) != "backgroundDD") {
-		throw std::runtime_error("ensemble fake rates are meant for data-driven backgrounds only");
-	}
-	
-	if(m_ensembleFakeRateParams.find(contribution) == m_ensembleFakeRateParams.end()) {
-		m_ensembleFakeRateParams.insert(make_pair(contribution, std::map<TString, TString>()));
-	}
-	
-	if(m_ensembleFakeRateParams[contribution].find(varName) != m_ensembleFakeRateParams[contribution].end()) {
-		cout << "Warning: Overwriting ensemble fake rate parametrization for variable " << varName << endl;
-	}
-	m_ensembleFakeRateParams[contribution].insert(make_pair(varName, formula));
 }
 
 void PhysicsContribution::setFakeRate(TString name, TString f) {

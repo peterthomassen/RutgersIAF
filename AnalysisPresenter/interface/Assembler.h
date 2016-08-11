@@ -57,6 +57,7 @@ public:
 	void setRange(const char*);
 	void setRange();
 	void setRanges(std::vector<std::pair<int, int>> ranges);
+	void Print(Option_t* option ="") const;
 
 protected:
 
