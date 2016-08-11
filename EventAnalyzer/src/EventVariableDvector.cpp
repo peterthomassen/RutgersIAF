@@ -22,10 +22,12 @@ bool EventVariableDvector::calculate(BaseHandler *handler) {
 	
 	std::vector<double> dRvector;
 	std::vector<double> dPhivector;
+	std::vector<double> dRpTRatiovector;
 	
-	for(auto const &sigObj : v) {
+	for(auto const &sigObj : v) {//loop over m_productName1
 		double dR = 100;
 		double dPhi = 100;
+		double dRpTRatio = -1;
 		for(auto const &productName2 : m_productNames2) {
 			for(auto const &compObj : handler->getProduct(productName2)) {
 				if(sigObj == compObj) {
@@ -34,15 +36,19 @@ bool EventVariableDvector::calculate(BaseHandler *handler) {
 				double dRnew = TLorentzVector(*sigObj).DeltaR(TLorentzVector(*compObj));
 				if(dRnew < dR) {
 					dR = dRnew;
+					dRpTRatio = -1;
+					if( TLorentzVector(*compObj).pt() > 0 ) dRpTRatio = TLorentzVector(*sigObj).pt()/TLorentzVector(*compObj).pt();
 					dPhi = TLorentzVector(*sigObj).DeltaPhi(TLorentzVector(*compObj));
 				}
 			}
 		}
 		dRvector.push_back(dR);
 		dPhivector.push_back(dPhi);
+		dRpTRatiovector.push_back(dRpTRatio);
 	}
 	
 	handler->setVector(m_productName1 + "DR" + m_suffix, dRvector);
+	handler->setVector(m_productName1 + "DRPTRATIO" + m_suffix, dRpTRatiovector);
 	handler->setVector(m_productName1 + "DPhi" + m_suffix, dPhivector);
 	
 	return true;
