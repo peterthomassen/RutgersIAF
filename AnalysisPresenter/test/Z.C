@@ -27,7 +27,7 @@ void Z() {
 	
 	// Global cuts, if desired
 	//TString selection = "!AIC";
-	TString selection = "PTGOODLEPTONS[0] > 20 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
+	TString selection = "PTGOODLEPTONS[0] > 25 && PTGOODLEPTONS[1] > 15 && PTGOODLEPTONS[2] > 10";
 //	selection += " && fakeRoleGOODMUONS > 0";
 	//selection += " && !(MLIGHTLEPTONS > 76 && MLIGHTLEPTONS < 106)";
 	

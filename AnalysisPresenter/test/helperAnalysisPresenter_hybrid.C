@@ -263,6 +263,10 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		contribution->addWeight("NLIGHTLEPTONS[0] == Sum$(ISTIGHTMATRIXMUON) + Sum$(ISTIGHTMATRIXELECTRON) + Sum$(fakeRoleGOODMUONS > 0) + Sum$(fakeRoleGOODELECTRONS > 0)");
+		//ElectronScaleFactors                                                                                                                                                                                                       
+                contribution->addWeight("elSF(Alt$(PTGOODELECTRONS[0],-1),Alt$(ETAGOODELECTRONS[0],543))*elSF(Alt$(PTGOODELECTRONS[1],-1),Alt$(ETAGOODELECTRONS[1],543))*elSF(Alt$(PTGOODELECTRONS[2],-1),Alt$(ETAGOODELECTRONS[2],543))**elSF(Alt$(PTGOODELECTRONS[3],-1),Alt$(ETAGOODELECTRONS[3],543))");
+                //MuonScaleFactors                                                                                                                                                                                                           
+                contribution->addWeight("muSF(Alt$(PTGOODMUONS[0],-1),Alt$(ETAGOODMUONS[0],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[1],-1),Alt$(ETAGOODMUONS[1],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[2],-1),Alt$(ETAGOODMUONS[2],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[3],-1),Alt$(ETAGOODMUONS[3],543),NRECOVERTICES[0])");
 		applyUncertaintiesAndScaleFactors(assembler, contribution);
 		assembler->addContribution(contribution);
 	}
@@ -271,6 +275,10 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		contribution->addWeight("NLIGHTLEPTONS[0] == Sum$(ISTIGHTMATRIXMUON) + Sum$(ISTIGHTMATRIXELECTRON) + Sum$(fakeRoleGOODMUONS > 0) + Sum$(fakeRoleGOODELECTRONS > 0)");
+		//ElectronScaleFactors                                                                                                                                                                                                       
+                contribution->addWeight("elSF(Alt$(PTGOODELECTRONS[0],-1),Alt$(ETAGOODELECTRONS[0],543))*elSF(Alt$(PTGOODELECTRONS[1],-1),Alt$(ETAGOODELECTRONS[1],543))*elSF(Alt$(PTGOODELECTRONS[2],-1),Alt$(ETAGOODELECTRONS[2],543))**elSF(Alt$(PTGOODELECTRONS[3],-1),Alt$(ETAGOODELECTRONS[3],543))");
+                //MuonScaleFactors                                                                                                                                                                                                           
+                contribution->addWeight("muSF(Alt$(PTGOODMUONS[0],-1),Alt$(ETAGOODMUONS[0],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[1],-1),Alt$(ETAGOODMUONS[1],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[2],-1),Alt$(ETAGOODMUONS[2],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[3],-1),Alt$(ETAGOODMUONS[3],543),NRECOVERTICES[0])");
 		applyUncertaintiesAndScaleFactors(assembler, contribution);
 		//contribution->addFlatUncertainty("lumi", 0.027); // as of 2016-02-22 https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/563.html
 		//contribution->addFlatUncertainty("xsecRare", 0.5);
@@ -295,6 +303,11 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 		contribution->addWeight("WEIGHT[0]");
 		contribution->addWeight("DIMUTRIGTHRESHOLD || DIELTRIGTHRESHOLD || MUEGCOMBINEDTHRESHOLD");
 		contribution->addWeight("NLIGHTLEPTONS[0] == Sum$(ISTIGHTMATRIXMUON) + Sum$(ISTIGHTMATRIXELECTRON) + Sum$(fakeRoleGOODMUONS > 0) + Sum$(fakeRoleGOODELECTRONS > 0)");
+		//ElectronScaleFactors                                                                                                                                                                                                       
+                contribution->addWeight("elSF(Alt$(PTGOODELECTRONS[0],-1),Alt$(ETAGOODELECTRONS[0],543))*elSF(Alt$(PTGOODELECTRONS[1],-1),Alt$(ETAGOODELECTRONS[1],543))*elSF(Alt$(PTGOODELECTRONS[2],-1),Alt$(ETAGOODELECTRONS[2],543))**elSF(Alt$(PTGOODELECTRONS[3],-1),Alt$(ETAGOODELECTRONS[3],543))");
+                //MuonScaleFactors                                                                                                                                                                                                           
+                contribution->addWeight("muSF(Alt$(PTGOODMUONS[0],-1),Alt$(ETAGOODMUONS[0],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[1],-1),Alt$(ETAGOODMUONS[1],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[2],-1),Alt$(ETAGOODMUONS[2],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[3],-1),Alt$(ETAGOODMUONS[3],543),NRECOVERTICES[0])");
+
 		applyUncertaintiesAndScaleFactors(assembler, contribution);
 		//contribution->addFlatUncertainty("lumi", 0.027); // as of 2016-02-22 https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/563.html
 		//contribution->addFlatUncertainty("xsecHiggs", 0.5);
@@ -642,4 +655,99 @@ void SaveHistograms(TCanvas* c, TString outfilename)
   }
   outfile->ls();
   outfile->Close();
+}
+
+//The below function returns electron scale factor. Electron Scale Fcator = Gsf_Tracking Scale factor x Medium ID scale factor
+double elSF(double Pt, double Eta)
+{ 
+  if(Pt==-1&&Eta==543)return 1;
+  double SFWeight=1;
+  static TFile *feSF1=0;
+  static TFile *feSF2=0;
+  if(!feSF1)feSF1= new TFile("./ScaleFactors/egammaEffi.txt_SF2D_Gsf_12p9ifb.root");
+  if(!feSF2)feSF2= new TFile("./ScaleFactors/egammaEffi.txt_SF2D_Med_12p9ifb.root");
+  //TH2F *heSF;  
+  //TFile *feSF;
+  for(int p=0;p<=1;p++){
+    TH2F *heSF;
+    if(p==0)
+      heSF = (TH2F*)feSF1->Get("EGamma_SF2D");
+    if(p==1)
+      heSF = (TH2F*)feSF2->Get("EGamma_SF2D");
+    //////////////////////////////////////Finding the Bin
+    Int_t binEta = heSF->GetXaxis()->FindBin(Eta);
+    Int_t binPt = heSF->GetYaxis()->FindBin(Pt);
+    if(Eta<(heSF->GetXaxis()->GetXmin()))
+      binEta = heSF->GetXaxis()->FindBin(heSF->GetXaxis()->GetXmin());//This is needed since FinBin returns zero if value is less than axis min.
+    if(Pt<(heSF->GetYaxis()->GetXmin()))
+      binPt= heSF->GetYaxis()->FindBin(heSF->GetYaxis()->GetXmin());//This is needed since FinBin returns zero if value is less than axis min.
+    if(Eta>=(heSF->GetXaxis()->GetXmax()))
+      binEta = (heSF->GetXaxis()->FindBin(heSF->GetXaxis()->GetXmax()))-1;
+    if(Pt>=(heSF->GetYaxis()->GetXmax()))
+      binPt= (heSF->GetYaxis()->FindBin(heSF->GetYaxis()->GetXmax()))-1;
+
+    /////////////////////////////////////////
+       SFWeight=SFWeight*(heSF->GetBinContent(binEta,binPt));//Multiply the scale factor with the one from previous file
+       delete heSF;
+  }
+  return SFWeight;
+}
+//The below function returns muon scale factor. Muon Scale Factor = ID factor x Vertex factor x Tracking POG
+double muSF(double Pt,double Eta, int NVertices, bool VertexWeight=true)
+{
+  if(Pt==-1&&Eta==543)return 1;
+  double SFWeight=1;
+  //PT_Eta_weights_for_medium_ID
+  static TFile *fmSF1=0;
+  static TDirectory *dmSF1=0;
+  if(!fmSF1)fmSF1= new TFile("ScaleFactors/MuonID_Z_RunBCD_prompt80X_7p65ifb.root");
+  if(!dmSF1)dmSF1= (TDirectoryFile*)fmSF1->Get("MC_NUM_MediumID_DEN_genTracks_PAR_pt_spliteta_bin1");
+  //  TH2F *hmSF;
+  for(int p=0;p<=0;p++){ //Only one file right now hence p<=0. We can add more files when needed. See how its done in elSF.
+    TH2F *hmSF;
+    hmSF = (TH2F*)dmSF1->Get("abseta_pt_ratio");
+    Int_t binEta = hmSF->GetXaxis()->FindBin(abs(Eta));
+    Int_t binPt = hmSF->GetYaxis()->FindBin(Pt);
+    if(abs(Eta)<(hmSF->GetXaxis()->GetXmin()))
+      binEta = hmSF->GetXaxis()->FindBin(hmSF->GetXaxis()->GetXmin());//This is needed since FinBin returns zero if value is less than axis min.
+    if(Pt<(hmSF->GetYaxis()->GetXmin()))
+      binPt= hmSF->GetYaxis()->FindBin(hmSF->GetYaxis()->GetXmin());//This is needed since FinBin returns zero if value is less than axis min. 
+    if(abs(Eta)>=(hmSF->GetXaxis()->GetXmax()))
+      binEta = (hmSF->GetXaxis()->FindBin(hmSF->GetXaxis()->GetXmax()))-1;
+    if(Pt>=(hmSF->GetYaxis()->GetXmax()))
+      binPt= (hmSF->GetYaxis()->FindBin(hmSF->GetYaxis()->GetXmax()))-1;
+    SFWeight=SFWeight*(hmSF->GetBinContent(binEta,binPt));//Multiply the scale factor with the one from previous file                                               
+    delete hmSF;
+  }
+  //Vertex Weights for Medium ID
+  static TDirectory *dmVSF1=0;
+  if(!dmVSF1)dmVSF1= (TDirectoryFile*)fmSF1->Get("MC_NUM_MediumID_DEN_genTracks_PAR_pt_vtx");
+  if(VertexWeight){
+    TH1F *hVSF=(TH1F*)dmVSF1->Get("tag_nVertices_ratio");
+    Int_t Vbin=hVSF->GetXaxis()->FindBin(NVertices);
+    if(NVertices<(hVSF->GetXaxis()->GetXmin()))
+      Vbin= hVSF->GetXaxis()->FindBin(hVSF->GetXaxis()->GetXmin());
+    if(NVertices>=(hVSF->GetXaxis()->GetXmax()))
+      Vbin= (hVSF->GetXaxis()->FindBin(hVSF->GetXaxis()->GetXmax()))-1;
+    SFWeight=SFWeight*(hVSF->GetBinContent(Vbin)/hVSF->GetBinContent(hVSF->GetXaxis()->FindBin(15)));
+    delete hVSF;
+  }
+  //TrackingPOG_Eta_Based_Weights
+  static TFile *TrPOG_SF1=0;
+  if(!TrPOG_SF1)TrPOG_SF1=new TFile("./ScaleFactors/ratios_Tracking_efficiency_12p9ifb.root");
+  TGraphAsymmErrors *etaRatio=(TGraphAsymmErrors*) TrPOG_SF1->Get("ratio_eta");
+  Double_t xp,yp;
+  //  etaRatio->GetPoint(i,xp,yp);
+  for(int i=0;i<etaRatio->GetN();i++){
+    etaRatio->GetPoint(i,xp,yp); 
+    //    cout<<xp-etaRatio->GetErrorXlow(i)<<" "<<xp+etaRatio->GetErrorXhigh(i)<<" "<<yp<<endl;}
+    if(Eta<=xp+etaRatio->GetErrorXhigh(i)&&Eta>xp-etaRatio->GetErrorXlow(i)){
+      SFWeight=SFWeight*yp;break;}
+    if(Eta>xp+etaRatio->GetErrorXhigh(i)&&i==(etaRatio->GetN()-1)){
+      SFWeight=SFWeight*yp;break;}
+    if(Eta<=xp-etaRatio->GetErrorXlow(i)&&i==0){
+      SFWeight=SFWeight*yp;break;}
+  }
+  delete etaRatio;
+  return SFWeight;
 }
