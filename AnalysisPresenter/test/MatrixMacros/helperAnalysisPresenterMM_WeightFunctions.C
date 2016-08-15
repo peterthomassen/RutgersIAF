@@ -19,57 +19,74 @@ float muPR( float pt, float eta, float aux ){
 }
 
 // muon fake rate
-float muFR( float pt, float eta, float aux, int pu, double ttfrac = 0.5 ){
+float muFR( float pt, float eta, float aux, int pu, double ttfrac = 0.5 ){// aux is JETNOODCONST
   //
-  float etaFudgeFactor = 1;
-  ////if( fabs(eta)<2.5 ) etaFudgeFactor=1.3;
-  ////if( fabs(eta)<1.8 ) etaFudgeFactor=1;
-  ////if( fabs(eta)<1.2 ) etaFudgeFactor=0.7;
-  ////etaFudgeFactor = 1;
-  if( fabs(eta)<2.5 ) etaFudgeFactor=1.5;//fixed on exact 3mu selection in TTtoLLNuNu MC
-  if( fabs(eta)<1.2 ) etaFudgeFactor=1;//fixed on exact 3mu selection in TTtoLLNuNu MC
-  if( fabs(eta)<0.9 ) etaFudgeFactor=0.9;//fixed on exact 3mu selection in TTtoLLNuNu MC
-  //if( fabs(eta)<0.9 ) etaFudgeFactor=0.7;
+  float puFudgeFactorDY = 0.6537+0.01887*pu;
+  float puFudgeFactorTT = 0.5807+0.02425*pu;
+  float puFudgeFactor   = puFudgeFactorDY*(1-ttfrac)+puFudgeFactorTT*ttfrac;
   //
-  float puFudgeFactor = 1;
-  ////puFudgeFactor=0.045*(pu-16)+1;
-  ////if( pu < 13 )   puFudgeFactor=0.06*(pu-12)+1;
-  ////puFudgeFactor = 1;
-  //puFudgeFactor=0.032*(pu-20)+1;
-  //if( pu>20 )  puFudgeFactor=0.044*(pu-20)+1;
-  if( pu<17 )  puFudgeFactor=0.039*(pu-17)+1;//fixed on exact 3mu selection in TTtoLLNuNu MC
-  if( pu>17 )  puFudgeFactor=0.04*(pu-17)+1;//fixed on exact 3mu selection in TTtoLLNuNu MC
+  double dy_pt1aux1[4] = {0.278928,  0.293323,  0.351441,  0.373284};
+  double tt_pt1aux1[4] = {0.196746,  0.232648,  0.301672,  0.328507};
+  double dy_pt1aux2[4] = {0.0947098, 0.107661,  0.15737,   0.203869};
+  double tt_pt1aux2[4] = {0.0686246, 0.0909286, 0.118021,  0.116879};
+  double dy_pt2aux1[4] = {0.27297,   0.339212,  0.381945,  0.381719};
+  double tt_pt2aux1[4] = {0.220477,  0.29339,   0.383246,  0.369223};
+  double dy_pt2aux2[4] = {0.0819678, 0.115186,  0.17209,   0.126654};
+  double tt_pt2aux2[4] = {0.0550719, 0.0827279, 0.115189,  0.124113};
+  double dy_pt3aux1[4] = {0.181835,  0.29535,   0.417729,  0.227695};
+  double tt_pt3aux1[4] = {0.343549,  0.433043,  0.493151,  0.482818};
+  double dy_pt3aux2[4] = {0.0910248, 0.0915931, 0.0870385, 0.214689};
+  double tt_pt3aux2[4] = {0.0821324, 0.114872,  0.15649,   0.194138};
   //
-  // -------------------- Low Aux
-  double lowAuxDY[5] = { 0.3058, 0.3092, 0.2,    0.2,     0.2    };
-  double lowAuxTT[5] = { 0.2265, 0.2603, 0.3244, 0.4244,  0.4324 };
-  if( aux<12.5 ){
-    if( pt < 20  )  return (lowAuxDY[0]*(1-ttfrac)+lowAuxTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-    if( pt < 40  )  return (lowAuxDY[1]*(1-ttfrac)+lowAuxTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-    if( pt < 80  )  return (lowAuxDY[2]*(1-ttfrac)+lowAuxTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-    if( pt < 120 )  return (lowAuxDY[3]*(1-ttfrac)+lowAuxTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-    if( pt >=120 )  return (lowAuxDY[4]*(1-ttfrac)+lowAuxTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  // ------
+  if( pt<15 ){
+    if( aux<11.5 ){
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt1aux1[3]*(1-ttfrac)+tt_pt1aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt1aux1[2]*(1-ttfrac)+tt_pt1aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt1aux1[1]*(1-ttfrac)+tt_pt1aux1[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt1aux1[0]*(1-ttfrac)+tt_pt1aux1[0]*ttfrac)*puFudgeFactor;
+    }
+    //
+    else{
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt1aux2[3]*(1-ttfrac)+tt_pt1aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt1aux2[2]*(1-ttfrac)+tt_pt1aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt1aux2[1]*(1-ttfrac)+tt_pt1aux2[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt1aux2[0]*(1-ttfrac)+tt_pt1aux2[0]*ttfrac)*puFudgeFactor;
+    }
   }
-  // -------------------- High Aux
-  double highAuxDY[5] = { 0.1069, 0.1294, 0.0689, 0.0689, 0.0689 };
-  double highAuxTT[5] = { 0.0724, 0.0775, 0.1001, 0.1405, 0.1556 };
-  if( pt < 20  )  return (highAuxDY[0]*(1-ttfrac)+highAuxTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 40  )  return (highAuxDY[1]*(1-ttfrac)+highAuxTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 80  )  return (highAuxDY[2]*(1-ttfrac)+highAuxTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 120 )  return (highAuxDY[3]*(1-ttfrac)+highAuxTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt >=120 )  return (highAuxDY[4]*(1-ttfrac)+highAuxTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  // -------------------- Inclusive
-  /*
-  double inclDY[5] = { 0.2515, 0.2172, 0.1224, 0.1224, 0.1224 };
-  double inclTT[5] = { 0.1599, 0.1465, 0.1493, 0.1826, 0.1699 };
-  if( pt < 20  )  return (inclDY[0]*(1-ttfrac)+inclTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 40  )  return (inclDY[1]*(1-ttfrac)+inclTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 80  )  return (inclDY[2]*(1-ttfrac)+inclTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 120 )  return (inclDY[3]*(1-ttfrac)+inclTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt >=120 )  return (inclDY[4]*(1-ttfrac)+inclTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  */
-  //
-  return 0;
+  // ------
+  else if( pt<40 ){
+    if( aux<11.5 ){
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt2aux1[3]*(1-ttfrac)+tt_pt2aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt2aux1[2]*(1-ttfrac)+tt_pt2aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt2aux1[1]*(1-ttfrac)+tt_pt2aux1[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt2aux1[0]*(1-ttfrac)+tt_pt2aux1[0]*ttfrac)*puFudgeFactor;
+    }
+    //
+    else{
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt2aux2[3]*(1-ttfrac)+tt_pt2aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt2aux2[2]*(1-ttfrac)+tt_pt2aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt2aux2[1]*(1-ttfrac)+tt_pt2aux2[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt2aux2[0]*(1-ttfrac)+tt_pt2aux2[0]*ttfrac)*puFudgeFactor;
+    }
+  }
+  // ------
+  else{
+    if( aux<11.5 ){
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt3aux1[3]*(1-ttfrac)+tt_pt3aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt3aux1[2]*(1-ttfrac)+tt_pt3aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt3aux1[1]*(1-ttfrac)+tt_pt3aux1[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt3aux1[0]*(1-ttfrac)+tt_pt3aux1[0]*ttfrac)*puFudgeFactor;
+    }
+    //
+    else{
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt3aux2[3]*(1-ttfrac)+tt_pt3aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt3aux2[2]*(1-ttfrac)+tt_pt3aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt3aux2[1]*(1-ttfrac)+tt_pt3aux2[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt3aux2[0]*(1-ttfrac)+tt_pt3aux2[0]*ttfrac)*puFudgeFactor;
+    }
+  }
+  // ------
 }
 
 // electron prompt rate
@@ -84,38 +101,74 @@ float elPR( float pt, float eta, float aux ){
 }
 
 // electron fake rate
-float elFR( float pt, float eta, float aux, int pu, double ttfrac=0 ){ 
+float elFR( float pt, float eta, float aux, int pu, double ttfrac=0.5 ){// aux is CONENDR03TO07
   //
-  float etaFudgeFactor = 1;
-  //if( fabs(eta)<2.5 ) etaFudgeFactor=1.1;
-  if( fabs(eta)<1.2 ) etaFudgeFactor=0.7;
-  //if( fabs(eta)<0.9 ) etaFudgeFactor=0.9;
+  float puFudgeFactorDY = 0.783+0.0121*pu;
+  float puFudgeFactorTT = 0.622+0.0219*pu;
+  float puFudgeFactor   = puFudgeFactorDY*(1-ttfrac)+puFudgeFactorTT*ttfrac;
   //
-  float puFudgeFactor = 1;
-  if( pu < 12 ) puFudgeFactor=0.06*(pu-12)+1;
-  if( pu > 12 ) puFudgeFactor=0.035*(pu-12)+1;
+  double dy_pt1aux1[4] = {0.0846258, 0.067997,  0.0964844, 0.0935314};
+  double tt_pt1aux1[4] = {0.102297,  0.109783,  0.118133,  0.110278 };
+  double dy_pt1aux2[4] = {0.0858718, 0.0957084, 0.0960298, 0.0680214};
+  double tt_pt1aux2[4] = {0.0984432, 0.0957944, 0.110951,  0.0822723};
+  double dy_pt2aux1[4] = {0.0488455, 0.0533243, 0.058976,  0.0912755};
+  double tt_pt2aux1[4] = {0.0580961, 0.0574215, 0.0813953, 0.0985414};
+  double dy_pt2aux2[4] = {0.0549532, 0.0553764, 0.062472,  0.0587218};
+  double tt_pt2aux2[4] = {0.0586517, 0.0647359, 0.0718603, 0.0904184};
+  double dy_pt3aux1[4] = {0.024817,  0.0265909, 0.0348484, 0.0750026};
+  double tt_pt3aux1[4] = {0.0270479, 0.0361861, 0.0480769, 0.0803736};
+  double dy_pt3aux2[4] = {0.0199044, 0.0263238, 0.0267278, 0.0635343};
+  double tt_pt3aux2[4] = {0.0291502, 0.0321577, 0.0444685, 0.0567752};
   //
-  double lowAuxDY[5] = { 0.1044, 0.1214, 0.1096, 0.1372, 0.1111 };
-  double lowAuxTT[5] = { 0.1154, 0.1033, 0.1047, 0.1190, 0.1327 };
-  //
-  double highAuxDY[5] = { 0.0459, 0.0150, 0.0085, 0.0215, 0.0111 };
-  double highAuxTT[5] = { 0.0569, 0.0239, 0.0162, 0.0177, 0.0117 };
-  //
-  if( aux<12.5 ){
-    if( pt < 20 ) return (lowAuxDY[0]*(1-ttfrac)+lowAuxTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;  
-    if( pt < 40 ) return (lowAuxDY[1]*(1-ttfrac)+lowAuxTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-    if( pt < 60 ) return (lowAuxDY[2]*(1-ttfrac)+lowAuxTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-    if( pt <120 ) return (lowAuxDY[3]*(1-ttfrac)+lowAuxTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-    if( pt>=120 ) return (lowAuxDY[4]*(1-ttfrac)+lowAuxTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
+  // ------
+  if( pt<15 ){
+    if( aux<5.5 ){
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt1aux1[3]*(1-ttfrac)+tt_pt1aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt1aux1[2]*(1-ttfrac)+tt_pt1aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt1aux1[1]*(1-ttfrac)+tt_pt1aux1[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt1aux1[0]*(1-ttfrac)+tt_pt1aux1[0]*ttfrac)*puFudgeFactor;
+    }
+    //
+    else{
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt1aux2[3]*(1-ttfrac)+tt_pt1aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt1aux2[2]*(1-ttfrac)+tt_pt1aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt1aux2[1]*(1-ttfrac)+tt_pt1aux2[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt1aux2[0]*(1-ttfrac)+tt_pt1aux2[0]*ttfrac)*puFudgeFactor;
+    }
   }
-  //
-  if( pt < 20 ) return (highAuxDY[0]*(1-ttfrac)+highAuxTT[0]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 40 ) return (highAuxDY[1]*(1-ttfrac)+highAuxTT[1]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt < 60 ) return (highAuxDY[2]*(1-ttfrac)+highAuxTT[2]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt <120 ) return (highAuxDY[3]*(1-ttfrac)+highAuxTT[3]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  if( pt>=120 ) return (highAuxDY[4]*(1-ttfrac)+highAuxTT[4]*ttfrac)*etaFudgeFactor*puFudgeFactor;
-  //
-  return 0;
+  // ------
+  else if( pt<40 ){
+    if( aux<5.5 ){
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt2aux1[3]*(1-ttfrac)+tt_pt2aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt2aux1[2]*(1-ttfrac)+tt_pt2aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt2aux1[1]*(1-ttfrac)+tt_pt2aux1[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt2aux1[0]*(1-ttfrac)+tt_pt2aux1[0]*ttfrac)*puFudgeFactor;
+    }
+    //
+    else{
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt2aux2[3]*(1-ttfrac)+tt_pt2aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt2aux2[2]*(1-ttfrac)+tt_pt2aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt2aux2[1]*(1-ttfrac)+tt_pt2aux2[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt2aux2[0]*(1-ttfrac)+tt_pt2aux2[0]*ttfrac)*puFudgeFactor;
+    }
+  }
+  // ------
+  else{
+    if( aux<5.5 ){
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt3aux1[3]*(1-ttfrac)+tt_pt3aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt3aux1[2]*(1-ttfrac)+tt_pt3aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt3aux1[1]*(1-ttfrac)+tt_pt3aux1[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt3aux1[0]*(1-ttfrac)+tt_pt3aux1[0]*ttfrac)*puFudgeFactor;
+    }
+    //
+    else{
+      if(      TMath::abs(eta)>1.6 ) return (dy_pt3aux2[3]*(1-ttfrac)+tt_pt3aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>1.2 ) return (dy_pt3aux2[2]*(1-ttfrac)+tt_pt3aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::abs(eta)>0.8 ) return (dy_pt3aux2[1]*(1-ttfrac)+tt_pt3aux2[1]*ttfrac)*puFudgeFactor;
+      else                           return (dy_pt3aux2[0]*(1-ttfrac)+tt_pt3aux2[0]*ttfrac)*puFudgeFactor;
+    }
+  }
+  // ------
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
