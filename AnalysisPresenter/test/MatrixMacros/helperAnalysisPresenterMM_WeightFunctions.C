@@ -41,48 +41,48 @@ float muFR( float pt, float eta, float aux, int pu, double ttfrac = 0.5 ){// aux
   // ------
   if( pt<15 ){
     if( aux<11.5 ){
-      if(      TMath::abs(eta)>1.6 ) return (dy_pt1aux1[3]*(1-ttfrac)+tt_pt1aux1[3]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>1.2 ) return (dy_pt1aux1[2]*(1-ttfrac)+tt_pt1aux1[2]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>0.8 ) return (dy_pt1aux1[1]*(1-ttfrac)+tt_pt1aux1[1]*ttfrac)*puFudgeFactor;
+      if(      TMath::Abs(eta)>1.6 ) return (dy_pt1aux1[3]*(1-ttfrac)+tt_pt1aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>1.2 ) return (dy_pt1aux1[2]*(1-ttfrac)+tt_pt1aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>0.8 ) return (dy_pt1aux1[1]*(1-ttfrac)+tt_pt1aux1[1]*ttfrac)*puFudgeFactor;
       else                           return (dy_pt1aux1[0]*(1-ttfrac)+tt_pt1aux1[0]*ttfrac)*puFudgeFactor;
     }
     //
     else{
-      if(      TMath::abs(eta)>1.6 ) return (dy_pt1aux2[3]*(1-ttfrac)+tt_pt1aux2[3]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>1.2 ) return (dy_pt1aux2[2]*(1-ttfrac)+tt_pt1aux2[2]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>0.8 ) return (dy_pt1aux2[1]*(1-ttfrac)+tt_pt1aux2[1]*ttfrac)*puFudgeFactor;
+      if(      TMath::Abs(eta)>1.6 ) return (dy_pt1aux2[3]*(1-ttfrac)+tt_pt1aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>1.2 ) return (dy_pt1aux2[2]*(1-ttfrac)+tt_pt1aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>0.8 ) return (dy_pt1aux2[1]*(1-ttfrac)+tt_pt1aux2[1]*ttfrac)*puFudgeFactor;
       else                           return (dy_pt1aux2[0]*(1-ttfrac)+tt_pt1aux2[0]*ttfrac)*puFudgeFactor;
     }
   }
   // ------
   else if( pt<40 ){
     if( aux<11.5 ){
-      if(      TMath::abs(eta)>1.6 ) return (dy_pt2aux1[3]*(1-ttfrac)+tt_pt2aux1[3]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>1.2 ) return (dy_pt2aux1[2]*(1-ttfrac)+tt_pt2aux1[2]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>0.8 ) return (dy_pt2aux1[1]*(1-ttfrac)+tt_pt2aux1[1]*ttfrac)*puFudgeFactor;
+      if(      TMath::Abs(eta)>1.6 ) return (dy_pt2aux1[3]*(1-ttfrac)+tt_pt2aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>1.2 ) return (dy_pt2aux1[2]*(1-ttfrac)+tt_pt2aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>0.8 ) return (dy_pt2aux1[1]*(1-ttfrac)+tt_pt2aux1[1]*ttfrac)*puFudgeFactor;
       else                           return (dy_pt2aux1[0]*(1-ttfrac)+tt_pt2aux1[0]*ttfrac)*puFudgeFactor;
     }
     //
     else{
-      if(      TMath::abs(eta)>1.6 ) return (dy_pt2aux2[3]*(1-ttfrac)+tt_pt2aux2[3]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>1.2 ) return (dy_pt2aux2[2]*(1-ttfrac)+tt_pt2aux2[2]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>0.8 ) return (dy_pt2aux2[1]*(1-ttfrac)+tt_pt2aux2[1]*ttfrac)*puFudgeFactor;
+      if(      TMath::Abs(eta)>1.6 ) return (dy_pt2aux2[3]*(1-ttfrac)+tt_pt2aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>1.2 ) return (dy_pt2aux2[2]*(1-ttfrac)+tt_pt2aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>0.8 ) return (dy_pt2aux2[1]*(1-ttfrac)+tt_pt2aux2[1]*ttfrac)*puFudgeFactor;
       else                           return (dy_pt2aux2[0]*(1-ttfrac)+tt_pt2aux2[0]*ttfrac)*puFudgeFactor;
     }
   }
   // ------
   else{
     if( aux<11.5 ){
-      if(      TMath::abs(eta)>1.6 ) return (dy_pt3aux1[3]*(1-ttfrac)+tt_pt3aux1[3]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>1.2 ) return (dy_pt3aux1[2]*(1-ttfrac)+tt_pt3aux1[2]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>0.8 ) return (dy_pt3aux1[1]*(1-ttfrac)+tt_pt3aux1[1]*ttfrac)*puFudgeFactor;
+      if(      TMath::Abs(eta)>1.6 ) return (dy_pt3aux1[3]*(1-ttfrac)+tt_pt3aux1[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>1.2 ) return (dy_pt3aux1[2]*(1-ttfrac)+tt_pt3aux1[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>0.8 ) return (dy_pt3aux1[1]*(1-ttfrac)+tt_pt3aux1[1]*ttfrac)*puFudgeFactor;
       else                           return (dy_pt3aux1[0]*(1-ttfrac)+tt_pt3aux1[0]*ttfrac)*puFudgeFactor;
     }
     //
     else{
-      if(      TMath::abs(eta)>1.6 ) return (dy_pt3aux2[3]*(1-ttfrac)+tt_pt3aux2[3]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>1.2 ) return (dy_pt3aux2[2]*(1-ttfrac)+tt_pt3aux2[2]*ttfrac)*puFudgeFactor;
-      else if( TMath::abs(eta)>0.8 ) return (dy_pt3aux2[1]*(1-ttfrac)+tt_pt3aux2[1]*ttfrac)*puFudgeFactor;
+      if(      TMath::Abs(eta)>1.6 ) return (dy_pt3aux2[3]*(1-ttfrac)+tt_pt3aux2[3]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>1.2 ) return (dy_pt3aux2[2]*(1-ttfrac)+tt_pt3aux2[2]*ttfrac)*puFudgeFactor;
+      else if( TMath::Abs(eta)>0.8 ) return (dy_pt3aux2[1]*(1-ttfrac)+tt_pt3aux2[1]*ttfrac)*puFudgeFactor;
       else                           return (dy_pt3aux2[0]*(1-ttfrac)+tt_pt3aux2[0]*ttfrac)*puFudgeFactor;
     }
   }
