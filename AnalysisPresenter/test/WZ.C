@@ -7,7 +7,7 @@
 #include "RutgersIAF/AnalysisPresenter/interface/ChannelCollection.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
 
-#include "helperAnalysisPresenter.C"
+#include "helperAnalysisPresenter_hybrid.C"
 
 void WZ() {
 	///////////////////////

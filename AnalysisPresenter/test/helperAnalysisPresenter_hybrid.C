@@ -91,59 +91,31 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	PhysicsContribution* dataElEl_B = 0;
 	PhysicsContribution* dataMuEl_B = 0;
 	PhysicsContribution* dataMuMu_B = 0;
-	
 	PhysicsContribution* dataMuMu_D = 0;
-	
-	std::vector<PhysicsContribution*> data;
-	
-	if(fakeMode == 0) {
+	std::string TREE="treeR";
+	  if(fakeMode == 0) {
+	      TREE = "treeR";
+	  }
+	  if(fakeMode == 1) {
+	    TREE = "treeRfakeTracks";
+	  }
+	  if(fakeMode == 2) {
+            TREE = "treeRfakePhotons";
+          }
+	  if(!(fakeMode == 0||fakeMode == 1||fakeMode == 3)){
+	    cout << "unsure what to do";                                                                                                                            
+	    exit(1); 
+	  }
+	  std::vector<PhysicsContribution*> data;
 		
-		dataElEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV");
-		data.push_back(dataElEl_B);
 		
-		dataMuEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/MuonEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV");
-		data.push_back(dataMuEl_B);
-		
-		dataMuMu_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleMuon_2016B" + infix + suffix, 5892, "10.2/fb@13TeV");
-		data.push_back(dataMuMu_B);
+	  dataMuMu_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleMuon_2016B" + infix + suffix, 5892, "10.2/fb@13TeV",false,TREE);
+	  data.push_back(dataMuMu_B);
+	  
+	  dataMuMu_D = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/DoubleMuon_2016D" + infix + suffix, 4353, "10.2/fb@13TeV",false,TREE);
+	  data.push_back(dataMuMu_D);
+	  
 
-		dataMuMu_D = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/DoubleMuon_2016D" + infix + suffix, 4353, "10.2/fb@13TeV");
-		data.push_back(dataMuMu_D);
-		
-	} else if(fakeMode == 1) {
-		
-		dataElEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakeTracks");
-		data.push_back(dataElEl_B);
-		
-		dataMuEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/MuonEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakeTracks");
-		data.push_back(dataMuEl_B);
-		
-		dataMuMu_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleMuon_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakeTracks");
-		data.push_back(dataMuMu_B);
-
-		dataMuMu_D = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/DoubleMuon_2016D" + infix + suffix, 4353, "10.2/fb@13TeV", false, "treeRfakeTracks");
-		data.push_back(dataMuMu_D);
-
-	} else if(fakeMode == 2) {
-		
-		dataElEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakePhotons");
-		data.push_back(dataElEl_B);
-		
-		dataMuEl_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/MuonEG_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakePhotons");
-		data.push_back(dataMuEl_B);
-		
-		dataMuMu_B = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/AnalysisTrees/Data/output/DoubleMuon_2016B" + infix + suffix, 5892, "10.2/fb@13TeV", false, "treeRfakePhotons");
-		data.push_back(dataMuMu_B);
-
-		dataMuMu_D = new PhysicsContribution("data", "/cms/multilepton/mheindl/2016/Data/DoubleMuon/Run2016D-PromptReco-v2_MINIAOD/160730_063738/0000/DoubleMuon_2016D" + infix + suffix, 4353, "10.2/fb@13TeV", false, "treeRfakePhotons");
-		data.push_back(dataMuMu_D);
-
-	} else {
-		cout << "unsure what to do";
-		exit(1);
-	}
-	
-	
 	for(auto &contribution : data) {
 		contribution->addWeight("TRIGGERACCEPT");
 		contribution->addWeight("NLIGHTLEPTONS[0] == Sum$(ISTIGHTMATRIXMUON) + Sum$(ISTIGHTMATRIXELECTRON) + Sum$(fakeRoleGOODMUONS > 0) + Sum$(fakeRoleGOODELECTRONS > 0)");
