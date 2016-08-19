@@ -52,9 +52,8 @@ void AdvancedHandler::eventLoop(int onlyRun, long int onlyEvent)
 	if(nEntryHigh == 0 || nEntryHigh > nevents) {
 		nEntryHigh = nevents;
 	}
-	if(m_writers.size() > 0) {
-		m_n = nEntryHigh - nEntryLow;
-	}
+	m_n = nEntryHigh - nEntryLow;
+	m_m = 0;
 	for(m_currentEntry = nEntryLow; m_currentEntry < nEntryHigh; m_currentEntry++){
 		if(done) break;
 		if (m_currentEntry % 100000 == 0) {
@@ -72,13 +71,23 @@ void AdvancedHandler::eventLoop(int onlyRun, long int onlyEvent)
 						throw std::runtime_error("I/O error in m_reader->GetEntry()");
 					}
 					
+					if(m_trackFakeCombinationIndex + m_photonFakeCombinationIndex + m_tauFakeCombinationIndex == 0) {
+						double genEventInfo_weight;
+						bool hasWeight = m_reader->getVariable("genEventInfo_weight", genEventInfo_weight);
+						if(hasWeight && genEventInfo_weight < 0) {
+							m_m++;
+						}
+					}
+					
 					int run = 0, lumiBlock = 0;
 					long event = 0;
-					bool hasRun = m_reader->getVariable("RUN",run);
-					bool hasLumi = m_reader->getVariable("LUMI",lumiBlock);
-					bool hasEvent = m_reader->getVariable("EVENT",event);
+					bool hasRun = m_reader->getVariable("RUN", run);
+					bool hasLumi = m_reader->getVariable("LUMI", lumiBlock);
+					bool hasEvent = m_reader->getVariable("EVENT", event);
 					
-					if(!hasRun || !hasLumi || !hasEvent)continue;
+					if(!hasRun || !hasLumi || !hasEvent) {
+						continue;
+					}
 					
 					if(onlyRun >= 0) {
 						if(run != onlyRun || event != onlyEvent) {

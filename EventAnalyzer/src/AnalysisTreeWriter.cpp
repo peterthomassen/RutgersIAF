@@ -19,8 +19,13 @@ AnalysisTreeWriter::AnalysisTreeWriter(BaseHandler* handler,TString treename)
 AnalysisTreeWriter::~AnalysisTreeWriter() { }
 
 void AnalysisTreeWriter::finish() {
-	if(m_handler->getN() > 0 && m_tree->GetBranch("WEIGHT")) {
-		m_tree->SetWeight(1./m_handler->getN());
+	if(m_tree->GetBranch("WEIGHT")) {
+		int Neffective = m_handler->getN() - 2*m_handler->getM();
+		if(Neffective == 0) {
+			cerr << "Warning: N - 2*M == 0! Not setting tree weight. (N was " << m_handler->getN() << ")" << endl;
+		} else {
+			m_tree->SetWeight(1./Neffective);
+		}
 	}
 	m_handler->getOutFile()->cd();
 	m_tree->Write(0, TObject::kOverwrite);

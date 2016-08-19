@@ -122,6 +122,7 @@ class BaseHandler : virtual public TObject {
   void setMode(std::string name, int mode = 1){m_mode[name] = mode;}
   int getMode(std::string name) const;
   int getN() const { return m_n; }
+  int getM() const { return m_m; }
 
   void readGoodRunLumi(TString c);
   void readGoodRunLumiFromJSON(TString JSONFile, bool debug = false);
@@ -175,6 +176,7 @@ class BaseHandler : virtual public TObject {
   int m_checkedRun;
   int m_checkedLumi;
   int m_n = -1;
+  int m_m = -1;
   unsigned m_trackFakeCombination;
   unsigned m_trackFakeCombinationIndex;
   unsigned m_photonFakeCombination;
