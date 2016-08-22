@@ -6,7 +6,8 @@
 #include "RutgersIAF/AnalysisPresenter/interface/Bundle.h"
 #include "RutgersIAF/AnalysisPresenter/interface/Channel.h"
 #include "RutgersIAF/AnalysisPresenter/interface/PhysicsContribution.h"
-
+#include "RutgersIAF/AnalysisPresenter/test/ScaleFactors/elSF.C"
+#include "RutgersIAF/AnalysisPresenter/test/ScaleFactors/muSF.C"
 #include "MatrixMacros/helperAnalysisPresenterMM_WeightFunctions.C"
 
 // Load library, see https://root.cern.ch/phpBB2/viewtopic.php?f=3&t=19471
@@ -671,7 +672,7 @@ void SaveHistograms(TCanvas* c, TString outfilename)
   outfile->ls();
   outfile->Close();
 }
-
+/*
 //The below function returns electron scale factor. Electron Scale Fcator = Gsf_Tracking Scale factor x Medium ID scale factor
 double elSF(double Pt, double Eta)
 { 
@@ -766,3 +767,4 @@ double muSF(double Pt,double Eta, int NVertices, bool VertexWeight=true)
   delete etaRatio;
   return SFWeight;
 }
+*/

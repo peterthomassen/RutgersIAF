@@ -30,7 +30,7 @@ void WZ() {
 	// Initialize and run //
 	////////////////////////
 	Assembler* assembler = new Assembler();
-	init(assembler);
+	init(assembler,"MC");
 	
 	assembler->setDefaultBundle(assembler->getBundle("presentationBundle"));
 	//assembler->setDefaultBundle(assembler->getBundle("fakePresentationBundle"));
