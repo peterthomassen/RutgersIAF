@@ -21,9 +21,13 @@ class ObjectVariableAssociateDeltaR : public ObjectVariable {
   bool calculate(SignatureObject* sigObj)
   {
     SignatureObject* assoc = sigObj->getAssociate(m_associate);
-    if(!assoc)return false;
-    sigObj->setVariable(getName(),sigObj->DeltaR((*(TLorentzVector*)assoc)));
-    return true;
+    if(!assoc){
+      sigObj->setVariable(getName(),(double)-1);
+      return false;
+    }else{
+      sigObj->setVariable(getName(),sigObj->DeltaR((*(TLorentzVector*)assoc)));
+      return true;
+    }
   }
 
  private:
