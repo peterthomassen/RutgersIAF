@@ -149,7 +149,7 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	
 	// Pile-up weights
 	cout << "Notice: Applying pileup weights" << endl;
-	TFile* f = new TFile("/users/h2/schauhan/PileUpHist/12.9fb_PileupHistogram_xsec69200.root");
+	TFile* f = new TFile("/users/h2/schauhan/PileUpHist/12.9fb_PileupHistogram_xsec62000.root");
 	if(f->IsZombie()) {
 		throw std::runtime_error("couldn't open pileup file");
 	}
@@ -157,7 +157,7 @@ void setupData(Assembler* assembler, bool dilep = false, int fakeMode = 0, bool 
 	TH1D* hPileupUnc = 0;
 	
 	if(assembler->getMode("fullPrecision")) {
-		TFile* fUnc = new TFile("/users/h2/schauhan/PileUpHist/12.9fb_Pileup+5%Histogram_xsec69200.root");
+		TFile* fUnc = new TFile("/users/h2/schauhan/PileUpHist/12.9fb_Pileup+5%Histogram_xsec62000.root");
 		if(fUnc->IsZombie()) {
 			throw std::runtime_error("couldn't open pileup uncertainty file");
 		}
@@ -179,7 +179,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	double xsec_ttF = 87.31; // MCM * BR: 670.3 * 0.105;
 		double dxsec_ttF = sqrt(pow(3.07, 2) + pow(3.68, 2));
 	double xsec_WZTo3LNu = 4.42965;
-	double xsec_zz = 1.212; // from MCM; // PHYS14: 1.218;
+	double xsec_zz = 1.212;//For the sample we are using x; // from MCM; // PHYS14: 1.218;
 	
 	/*double xsec_ttw = 0.2043;
 	double xsec_ttz = 0.2529;
@@ -197,7 +197,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	//wz->setNominalWeight("genEventInfo_weight[0]");
 	//wz->addWeight("0.815"); // normalization
 	if(!assembler->getMode("noWZsystematics")) {
-		wz->addFlatUncertainty("normalizationWZ", 1./sqrt(219)); // size of scale factor (< statistical)
+	  //	wz->addFlatUncertainty("normalizationWZ", 1./sqrt(219)); // size of scale factor (< statistical)
 	//	wz->addFlatUncertainty("trackFakes", -0.0174); // based on 14% variation of fakeTracks in WZ normalization region
 	//	wz->addFlatUncertainty("photonFakes", -0.0082); // based on 52% variation of fakePhotons in WZ normalization region
 	}
@@ -208,7 +208,7 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 	//zz->setNominalWeight("genEventInfo_weight[0]");
 	//zz->addWeight("1.64");  // normalization
 	if(!assembler->getMode("noZZsystematics")) {
-		zz->addFlatUncertainty("normalizationZZ", 1./sqrt(65)); // statistical
+	  //		zz->addFlatUncertainty("normalizationZZ", 1./sqrt(65)); // statistical
 	}
 	mc.push_back(zz);
 	
@@ -241,9 +241,9 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
 			std::vector<PhysicsContribution*> ttbarFfake;
 			
 			PhysicsContribution* ttbarFfakeTracks = new PhysicsContribution("backgroundMC", prefix + "TTTo2L2Nu_2__061616_090554/TTTo2L2Nu" + infix + suffix, xsec_ttF, "TT_FullLfakeTracks", true, "treeRfakeTracks", -1, assembler->getMode("fullPrecision") ? 0 : 0.01);
-			ttbarFfakeTracks->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
+			//ttbarFfakeTracks->addWeight("1 + (NLIGHTLEPTONS[0] >= 3) * 0.5");
 			if(!assembler->getMode("noTTsystematics")) {
-				ttbarFfakeTracks->addFlatUncertainty("ttbarFudge", 0.5);
+			  //	ttbarFfakeTracks->addFlatUncertainty("ttbarFudge", 0.5);
 			}
 			ttbarFfake.push_back(ttbarFfakeTracks);
 			assembler->getBundle("TrackFakes")->addComponent(ttbarFfakeTracks);
@@ -323,7 +323,6 @@ void setupBackgroundMC(Assembler* assembler, bool dilep = false, bool ttbar = tr
                 contribution->addWeight("elSF(Alt$(PTGOODELECTRONS[0],-1),Alt$(ETAGOODELECTRONS[0],543))*elSF(Alt$(PTGOODELECTRONS[1],-1),Alt$(ETAGOODELECTRONS[1],543))*elSF(Alt$(PTGOODELECTRONS[2],-1),Alt$(ETAGOODELECTRONS[2],543))**elSF(Alt$(PTGOODELECTRONS[3],-1),Alt$(ETAGOODELECTRONS[3],543))");
                 //MuonScaleFactors                                                                                                                                                                                                           
                 contribution->addWeight("muSF(Alt$(PTGOODMUONS[0],-1),Alt$(ETAGOODMUONS[0],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[1],-1),Alt$(ETAGOODMUONS[1],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[2],-1),Alt$(ETAGOODMUONS[2],543),NRECOVERTICES[0])*muSF(Alt$(PTGOODMUONS[3],-1),Alt$(ETAGOODMUONS[3],543),NRECOVERTICES[0])");
-
 		applyUncertaintiesAndScaleFactors(assembler, contribution);
 		//contribution->addFlatUncertainty("lumi", 0.027); // as of 2016-02-22 https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/563.html
 		//contribution->addFlatUncertainty("xsecHiggs", 0.5);
@@ -344,6 +343,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 		PhysicsContribution* fakeTracks = new PhysicsContribution("backgroundDD", prefix + body + suffix, assembler->getLumi(), "fakeTracks", false, "treeRfakeTracks", (option == "justTracks") ? kWhite : -1);
 		fakeTracks->addWeight("TRIGGERACCEPT");
 		fakeTracks->addWeight("NLIGHTLEPTONS[0] == Sum$(ISTIGHTMATRIXMUON) + Sum$(ISTIGHTMATRIXELECTRON) + Sum$(fakeRoleGOODMUONS > 0) + Sum$(fakeRoleGOODELECTRONS > 0)");
+		/*
 		fakeTracks->addWeight(
 			"(Sum$(fakeRoleGOODELECTRONS) > 0)"
 				" * ("
@@ -358,6 +358,7 @@ void setupBackgroundDD(Assembler* assembler, TString option = "", bool syst = tr
 					" + (NGOODMUONS[0] != 1 && NGOODMUONS[0] != 3)"
 				")"
 		);
+		*/
 		fakeTracks->addWeight(nVertexWeight);
 		fakeTracks->addRelativeUncertainty("fakePileupWeight", TString::Format("1 - 1/(%s)", nVertexWeight.Data()));
 		applyUncertaintiesAndScaleFactors(assembler, fakeTracks);
