@@ -138,6 +138,23 @@ class BaseHandler : virtual public TObject {
 
   virtual void addProductComparison(TString,TString,ObjectComparison*,bool doAnd=true);
   virtual void addProductSelfComparison(TString,ObjectComparison*,bool doAnd=true);
+  
+  // set default for single product
+  virtual void setDefaultObjectVariable(TString,TString,double,bool);
+  virtual void setDefaultObjectVariable(TString,TString,int,bool);
+  virtual void setDefaultObjectVariable(TString,TString,TString,bool);
+  virtual void setDefaultObjectVariable(TString,TString,bool,bool);
+  
+  // set default for all products
+  virtual void setDefaultObjectVariable(TString,double,bool);
+  virtual void setDefaultObjectVariable(TString,int,bool);
+  virtual void setDefaultObjectVariable(TString,TString,bool);
+  virtual void setDefaultObjectVariable(TString,bool,bool);
+  
+  virtual bool getDefaultObjectVariable(TString,TString,double&) const;
+  virtual bool getDefaultObjectVariable(TString,TString,int&) const;
+  virtual bool getDefaultObjectVariable(TString,TString,TString&) const;
+  virtual bool getDefaultObjectVariable(TString,TString,bool&) const;
 
  protected:
   virtual bool createProducts();
@@ -220,6 +237,11 @@ class BaseHandler : virtual public TObject {
   std::map<TString,std::vector<TString>> m_variable_map_TString;
   std::map<TString,bool> m_variable_map_bool;
   std::vector<PrintModule*> m_print_modules;
+
+  std::map<std::pair<TString,TString>,double> m_defaultMapDouble;
+  std::map<std::pair<TString,TString>,int> m_defaultMapInt;
+  std::map<std::pair<TString,TString>,TString> m_defaultMapTString;
+  std::map<std::pair<TString,TString>,bool> m_defaultMapBool;
 
   double m_btagWeights[3];
   int m_bTagged;

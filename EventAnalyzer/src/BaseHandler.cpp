@@ -17,7 +17,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_CountWeight.h"
 #include "RutgersIAF/EventAnalyzer/interface/PrintModule.h"
-
+#include <iostream>
 #include <assert.h>
 
 using namespace std;
@@ -1742,6 +1742,93 @@ bool BaseHandler::isProductListed(TString pname)
 }
 //-----------------------------------------
 //-----------------------------------------
+void BaseHandler::setDefaultObjectVariable(TString varName, double val, bool overwrite = true){
+  for(auto &prodName : m_product_names)
+    setDefaultObjectVariable(prodName,varName,val,overwrite);
+}
+void BaseHandler::setDefaultObjectVariable(TString varName, int val, bool overwrite = true){
+  for(auto &prodName : m_product_names)
+    setDefaultObjectVariable(prodName,varName,val,overwrite);
+}
+void BaseHandler::setDefaultObjectVariable(TString varName, TString val, bool overwrite = true){
+  for(auto &prodName : m_product_names)
+    setDefaultObjectVariable(prodName,varName,val,overwrite);
+}
+void BaseHandler::setDefaultObjectVariable(TString varName, bool val, bool overwrite = true){
+  for(auto &prodName : m_product_names)
+    setDefaultObjectVariable(prodName,varName,val,overwrite);
+}
+//-----------------------------------------
+void BaseHandler::setDefaultObjectVariable(TString prodName, TString varName, double val, bool overwrite = true){
+  std::pair<TString,TString> name(prodName,varName);
+  if(!overwrite && m_defaultMapDouble.find(name) != m_defaultMapDouble.end()) {
+    return;
+  }
+  m_defaultMapDouble[name] = val;
+}
+void BaseHandler::setDefaultObjectVariable(TString prodName, TString varName, int val, bool overwrite = true){
+  std::pair<TString,TString> name(prodName,varName);
+  if(!overwrite && m_defaultMapInt.find(name) != m_defaultMapInt.end()) {
+    return;
+  }
+  m_defaultMapInt[name] = val;
+}
+void BaseHandler::setDefaultObjectVariable(TString prodName, TString varName, TString val, bool overwrite = true){
+  std::pair<TString,TString> name(prodName,varName);
+  if(!overwrite && m_defaultMapTString.find(name) != m_defaultMapTString.end()) {
+    return;
+  }
+  m_defaultMapTString[name] = val;
+}
+void BaseHandler::setDefaultObjectVariable(TString prodName, TString varName, bool val, bool overwrite = true){
+  std::pair<TString,TString> name(prodName,varName);
+  if(!overwrite && m_defaultMapBool.find(name) != m_defaultMapBool.end()) {
+    return;
+  }
+  m_defaultMapBool[name] = val;
+}
+//-----------------------------------------
+//-----------------------------------------
+bool BaseHandler::getDefaultObjectVariable(TString prodName,TString varName, double& val) const
+{
+  std::pair<TString,TString> name(prodName,varName);
+  std::map<std::pair<TString,TString>,double>::const_iterator iter = m_defaultMapDouble.find(name);
+  if(iter != m_defaultMapDouble.end()){
+    val = (*iter).second;
+    return true;
+  }
+  return false;
+}
+bool BaseHandler::getDefaultObjectVariable(TString prodName,TString varName, int& val) const
+{
+  std::pair<TString,TString> name(prodName,varName);
+  std::map<std::pair<TString,TString>,int>::const_iterator iter = m_defaultMapInt.find(name);
+  if(iter != m_defaultMapInt.end()){
+    val = (*iter).second;
+    return true;
+  }
+  return false;
+}
+bool BaseHandler::getDefaultObjectVariable(TString prodName,TString varName, TString& val) const
+{
+  std::pair<TString,TString> name(prodName,varName);
+  std::map<std::pair<TString,TString>,TString>::const_iterator iter = m_defaultMapTString.find(name);
+  if(iter != m_defaultMapTString.end()){
+    val = (*iter).second;
+    return true;
+  }
+  return false;
+}
+bool BaseHandler::getDefaultObjectVariable(TString prodName,TString varName, bool& val) const
+{
+  std::pair<TString,TString> name(prodName,varName);
+  std::map<std::pair<TString,TString>,bool>::const_iterator iter = m_defaultMapBool.find(name);
+  if(iter != m_defaultMapBool.end()){
+    val = (*iter).second;
+    return true;
+  }
+  return false;
+}
 //-----------------------------------------
 //-----------------------------------------
 //-----------------------------------------
