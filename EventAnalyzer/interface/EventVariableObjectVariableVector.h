@@ -1,6 +1,7 @@
 #ifndef EventVariableObjectVariableVector_h
 #define EventVariableObjectVariableVector_h
 
+#include <iostream>
 #include <vector>
 #include "RutgersIAF/EventAnalyzer/interface/EventVariable.h"
 #include "RutgersIAF/EventAnalyzer/interface/BaseHandler.h"
@@ -21,6 +22,8 @@ class EventVariableObjectVariableVector : public EventVariable{
     for( TString m_productname : m_productnames){
       for(SignatureObject* object : handler->getProduct(m_productname)) {
 	if(object->getVariable(m_varname, value)) {
+	  vector.push_back(value);
+	}else if (handler->getDefaultObjectVariable(m_productname,m_varname,value)){
 	  vector.push_back(value);
 	}
       }
