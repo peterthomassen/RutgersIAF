@@ -6,6 +6,7 @@
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableCombined.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableInRange.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMass.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableMassDisplaced.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableN.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableMT.h"
 #include "RutgersIAF/EventAnalyzer/interface/EventVariableObjectWeightPtTF1.h"
@@ -67,145 +68,146 @@
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateDeltaR.h"
 #include "RutgersIAF/EventAnalyzer/interface/ObjectVariableAssociateRecoil.h"
 #include "RutgersIAF/EventAnalyzer/interface/SignatureTH1F_AssociateVariableRecoil.h"
-
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableSphericity2D.h"
+#include "RutgersIAF/EventAnalyzer/interface/EventVariableLinearRadialMoment.h"
 
 bool makeABCDProducts(AdvancedHandler* handler, TString pname, TString cut1,TString cut2,TString cut3="")
 {
-	TString suffix;
-	if(cut3 == ""){
-		if(handler->getObjectVariable(cut1) == 0 || handler->getObjectVariable(cut2) == 0){
-			cerr<<"Object Variable "<<cut1<<" or "<<cut2<<" not found"<<endl;
-			return false;
-		}
-		if(handler->getObjectVariable(cut1+"_REVERSED") == 0)
-		  handler->addObjectVariable(cut1 + "_REVERSED", new ObjectVariableReversed(cut1,cut1+"_REVERSED"));
-		if(handler->getObjectVariable(cut2+"_REVERSED") == 0)
-		  handler->addObjectVariable(cut2 + "_REVERSED", new ObjectVariableReversed(cut2,cut2+"_REVERSED"));
-		
-		suffix = cut1 + "_" + cut2;
-		
-		handler->addProduct(pname+"_ABCD_A_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_B_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_C_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_D_"+suffix,pname);
-		
-		handler->addProductCut(pname+"_ABCD_A_"+suffix,cut1+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_A_"+suffix,cut2+"_REVERSED");
+  TString suffix;
+  if(cut3 == ""){
+    if(handler->getObjectVariable(cut1) == 0 || handler->getObjectVariable(cut2) == 0){
+      cerr<<"Object Variable "<<cut1<<" or "<<cut2<<" not found"<<endl;
+      return false;
+    }
+    if(handler->getObjectVariable(cut1+"_REVERSED") == 0)
+      handler->addObjectVariable(cut1 + "_REVERSED", new ObjectVariableReversed(cut1,cut1+"_REVERSED"));
+    if(handler->getObjectVariable(cut2+"_REVERSED") == 0)
+      handler->addObjectVariable(cut2 + "_REVERSED", new ObjectVariableReversed(cut2,cut2+"_REVERSED"));
+    
+    suffix = cut1 + "_" + cut2;
+    
+    handler->addProduct(pname+"_ABCD_A_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_B_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_C_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_D_"+suffix,pname);
+    
+    handler->addProductCut(pname+"_ABCD_A_"+suffix,cut1+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_A_"+suffix,cut2+"_REVERSED");
 
-		handler->addProductCut(pname+"_ABCD_B_"+suffix,cut1);
-		handler->addProductCut(pname+"_ABCD_B_"+suffix,cut2+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_B_"+suffix,cut1);
+    handler->addProductCut(pname+"_ABCD_B_"+suffix,cut2+"_REVERSED");
 
-		handler->addProductCut(pname+"_ABCD_C_"+suffix,cut1+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_C_"+suffix,cut2);
+    handler->addProductCut(pname+"_ABCD_C_"+suffix,cut1+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_C_"+suffix,cut2);
 
-		handler->addProductCut(pname+"_ABCD_D_"+suffix,cut1);
-		handler->addProductCut(pname+"_ABCD_D_"+suffix,cut2);
-	}else{
-		if(handler->getObjectVariable(cut1) == 0 || handler->getObjectVariable(cut2) == 0 || handler->getObjectVariable(cut3) == 0){
-			cerr<<"Object Variable "<<cut1<<" or "<<cut2<<" or "<<cut3<<" not found"<<endl;
-			return false;
-		}
-		
-		if(handler->getObjectVariable(cut1+"_REVERSED") == 0)
-		  handler->addObjectVariable(cut1 + "_REVERSED", new ObjectVariableReversed(cut1,cut1+"_REVERSED"));
-		if(handler->getObjectVariable(cut2+"_REVERSED") == 0)
-		  handler->addObjectVariable(cut2 + "_REVERSED", new ObjectVariableReversed(cut2,cut2+"_REVERSED"));
-		if(handler->getObjectVariable(cut3+"_REVERSED") == 0)
-		  handler->addObjectVariable(cut3 + "_REVERSED", new ObjectVariableReversed(cut3,cut3+"_REVERSED"));
-		
-		suffix = cut1 + "_" + cut2 + "_" + cut3;
-		
-		handler->addProduct(pname+"_ABCD_A_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_B_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_C_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_D_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_E_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_F_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_G_"+suffix,pname);
-		handler->addProduct(pname+"_ABCD_H_"+suffix,pname);
-		
-		handler->addProductCut(pname+"_ABCD_A_"+suffix,cut1+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_A_"+suffix,cut2+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_A_"+suffix,cut3+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_D_"+suffix,cut1);
+    handler->addProductCut(pname+"_ABCD_D_"+suffix,cut2);
+  }else{
+    if(handler->getObjectVariable(cut1) == 0 || handler->getObjectVariable(cut2) == 0 || handler->getObjectVariable(cut3) == 0){
+      cerr<<"Object Variable "<<cut1<<" or "<<cut2<<" or "<<cut3<<" not found"<<endl;
+      return false;
+    }
+    
+    if(handler->getObjectVariable(cut1+"_REVERSED") == 0)
+      handler->addObjectVariable(cut1 + "_REVERSED", new ObjectVariableReversed(cut1,cut1+"_REVERSED"));
+    if(handler->getObjectVariable(cut2+"_REVERSED") == 0)
+      handler->addObjectVariable(cut2 + "_REVERSED", new ObjectVariableReversed(cut2,cut2+"_REVERSED"));
+    if(handler->getObjectVariable(cut3+"_REVERSED") == 0)
+      handler->addObjectVariable(cut3 + "_REVERSED", new ObjectVariableReversed(cut3,cut3+"_REVERSED"));
+    
+    suffix = cut1 + "_" + cut2 + "_" + cut3;
+    
+    handler->addProduct(pname+"_ABCD_A_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_B_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_C_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_D_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_E_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_F_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_G_"+suffix,pname);
+    handler->addProduct(pname+"_ABCD_H_"+suffix,pname);
+    
+    handler->addProductCut(pname+"_ABCD_A_"+suffix,cut1+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_A_"+suffix,cut2+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_A_"+suffix,cut3+"_REVERSED");
 
-		handler->addProductCut(pname+"_ABCD_B_"+suffix,cut1);
-		handler->addProductCut(pname+"_ABCD_B_"+suffix,cut2+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_B_"+suffix,cut3+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_B_"+suffix,cut1);
+    handler->addProductCut(pname+"_ABCD_B_"+suffix,cut2+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_B_"+suffix,cut3+"_REVERSED");
 
-		handler->addProductCut(pname+"_ABCD_C_"+suffix,cut1+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_C_"+suffix,cut2);
-		handler->addProductCut(pname+"_ABCD_C_"+suffix,cut3+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_C_"+suffix,cut1+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_C_"+suffix,cut2);
+    handler->addProductCut(pname+"_ABCD_C_"+suffix,cut3+"_REVERSED");
 
-		handler->addProductCut(pname+"_ABCD_D_"+suffix,cut1+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_D_"+suffix,cut2+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_D_"+suffix,cut3);
+    handler->addProductCut(pname+"_ABCD_D_"+suffix,cut1+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_D_"+suffix,cut2+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_D_"+suffix,cut3);
 
-		handler->addProductCut(pname+"_ABCD_E_"+suffix,cut1+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_E_"+suffix,cut2);
-		handler->addProductCut(pname+"_ABCD_E_"+suffix,cut3);
+    handler->addProductCut(pname+"_ABCD_E_"+suffix,cut1+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_E_"+suffix,cut2);
+    handler->addProductCut(pname+"_ABCD_E_"+suffix,cut3);
 
-		handler->addProductCut(pname+"_ABCD_F_"+suffix,cut1);
-		handler->addProductCut(pname+"_ABCD_F_"+suffix,cut2+"_REVERSED");
-		handler->addProductCut(pname+"_ABCD_F_"+suffix,cut3);
+    handler->addProductCut(pname+"_ABCD_F_"+suffix,cut1);
+    handler->addProductCut(pname+"_ABCD_F_"+suffix,cut2+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_F_"+suffix,cut3);
 
-		handler->addProductCut(pname+"_ABCD_G_"+suffix,cut1);
-		handler->addProductCut(pname+"_ABCD_G_"+suffix,cut2);
-		handler->addProductCut(pname+"_ABCD_G_"+suffix,cut3+"_REVERSED");
+    handler->addProductCut(pname+"_ABCD_G_"+suffix,cut1);
+    handler->addProductCut(pname+"_ABCD_G_"+suffix,cut2);
+    handler->addProductCut(pname+"_ABCD_G_"+suffix,cut3+"_REVERSED");
 
-		handler->addProductCut(pname+"_ABCD_H_"+suffix,cut1);
-		handler->addProductCut(pname+"_ABCD_H_"+suffix,cut2);
-		handler->addProductCut(pname+"_ABCD_H_"+suffix,cut3);
-	}
-	return true;
+    handler->addProductCut(pname+"_ABCD_H_"+suffix,cut1);
+    handler->addProductCut(pname+"_ABCD_H_"+suffix,cut2);
+    handler->addProductCut(pname+"_ABCD_H_"+suffix,cut3);
+  }
+  return true;
 }
 //-----------------------------------------
 //-----------------------------------------
 void makeABCDHistograms(AdvancedHandler* handler,TString pname,TString varname, int nbins, double xmin, double xmax, TString cut1, TString cut2, TString cut3="")
 {
-	TString suffix;
-	if(cut3 == ""){
-		suffix = cut1 + "_" + cut2;
-		//cout<<pname+"_ABCD_A_"+suffix<<" "<<handler->isProductListed(pname+"_ABCD_A_"+suffix)<<endl;
-		if(!handler->isProductListed(pname+"_ABCD_A_"+suffix)){
-			if(!makeABCDProducts(handler,pname,cut1,cut2)){
-				cerr << ("one of your cuts " + cut1 + ", " + cut2 + " not found").Data() << endl;
-				return;
-			}
-		}
-	}else{
-		suffix = cut1 + "_" + cut2 + "_" + cut3;
-		if(!handler->isProductListed(pname+"_ABCD_A_"+suffix)){
-			if(!makeABCDProducts(handler,pname,cut1,cut2,cut3)){				
-				cerr << ("one of your cuts " + cut1 + ", " + cut2 + ", " + cut3 + " not found").Data() << endl;	
-				return;
-			}
-		}
-	}
-	
-	
-	/*
-	handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_A_"+suffix+"_"+varname,varname,pname+"_ABCD_A_"+suffix,"",nbins,xmin,xmax));
-	handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_B_"+suffix+"_"+varname,varname,pname+"_ABCD_B_"+suffix,"",nbins,xmin,xmax));
-	handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_C_"+suffix+"_"+varname,varname,pname+"_ABCD_C_"+suffix,"",nbins,xmin,xmax));
-	handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_D_"+suffix+"_"+varname,varname,pname+"_ABCD_D_"+suffix,"",nbins,xmin,xmax));
-	*/
-	handler->addEventVariable(pname+"_ABCD_A_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_A_"+suffix,false));
-	handler->addEventVariable(pname+"_ABCD_B_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_B_"+suffix,false));
-	handler->addEventVariable(pname+"_ABCD_C_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_C_"+suffix,false));
-	handler->addEventVariable(pname+"_ABCD_D_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_D_"+suffix,false));
+  TString suffix;
+  if(cut3 == ""){
+    suffix = cut1 + "_" + cut2;
+    //cout<<pname+"_ABCD_A_"+suffix<<" "<<handler->isProductListed(pname+"_ABCD_A_"+suffix)<<endl;
+    if(!handler->isProductListed(pname+"_ABCD_A_"+suffix)){
+      if(!makeABCDProducts(handler,pname,cut1,cut2)){
+        cerr << ("one of your cuts " + cut1 + ", " + cut2 + " not found").Data() << endl;
+        return;
+      }
+    }
+  }else{
+    suffix = cut1 + "_" + cut2 + "_" + cut3;
+    if(!handler->isProductListed(pname+"_ABCD_A_"+suffix)){
+      if(!makeABCDProducts(handler,pname,cut1,cut2,cut3)){        
+        cerr << ("one of your cuts " + cut1 + ", " + cut2 + ", " + cut3 + " not found").Data() << endl; 
+        return;
+      }
+    }
+  }
+  
+  
+  /*
+  handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_A_"+suffix+"_"+varname,varname,pname+"_ABCD_A_"+suffix,"",nbins,xmin,xmax));
+  handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_B_"+suffix+"_"+varname,varname,pname+"_ABCD_B_"+suffix,"",nbins,xmin,xmax));
+  handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_C_"+suffix+"_"+varname,varname,pname+"_ABCD_C_"+suffix,"",nbins,xmin,xmax));
+  handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_D_"+suffix+"_"+varname,varname,pname+"_ABCD_D_"+suffix,"",nbins,xmin,xmax));
+  */
+  handler->addEventVariable(pname+"_ABCD_A_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_A_"+suffix,false));
+  handler->addEventVariable(pname+"_ABCD_B_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_B_"+suffix,false));
+  handler->addEventVariable(pname+"_ABCD_C_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_C_"+suffix,false));
+  handler->addEventVariable(pname+"_ABCD_D_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_D_"+suffix,false));
 
-	if(cut3 != ""){
-	  /*
-		handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_E_"+suffix+"_"+varname,varname,pname+"_ABCD_E_"+suffix,"",nbins,xmin,xmax));
-		handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_F_"+suffix+"_"+varname,varname,pname+"_ABCD_F_"+suffix,"",nbins,xmin,xmax));
-		handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_G_"+suffix+"_"+varname,varname,pname+"_ABCD_G_"+suffix,"",nbins,xmin,xmax));
-		handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_H_"+suffix+"_"+varname,varname,pname+"_ABCD_H_"+suffix,"",nbins,xmin,xmax));
-	  */
-		handler->addEventVariable(pname+"_ABCD_E_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_E_"+suffix,false));
-		handler->addEventVariable(pname+"_ABCD_F_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_F_"+suffix,false));
-		handler->addEventVariable(pname+"_ABCD_G_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_G_"+suffix,false));
-		handler->addEventVariable(pname+"_ABCD_H_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_H_"+suffix,false));
-	}
+  if(cut3 != ""){
+    /*
+    handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_E_"+suffix+"_"+varname,varname,pname+"_ABCD_E_"+suffix,"",nbins,xmin,xmax));
+    handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_F_"+suffix+"_"+varname,varname,pname+"_ABCD_F_"+suffix,"",nbins,xmin,xmax));
+    handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_G_"+suffix+"_"+varname,varname,pname+"_ABCD_G_"+suffix,"",nbins,xmin,xmax));
+    handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(pname+"_ABCD_H_"+suffix+"_"+varname,varname,pname+"_ABCD_H_"+suffix,"",nbins,xmin,xmax));
+    */
+    handler->addEventVariable(pname+"_ABCD_E_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_E_"+suffix,false));
+    handler->addEventVariable(pname+"_ABCD_F_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_F_"+suffix,false));
+    handler->addEventVariable(pname+"_ABCD_G_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_G_"+suffix,false));
+    handler->addEventVariable(pname+"_ABCD_H_"+suffix+"_"+varname, new EventVariableObjectVariableVector<double>(varname,pname+"_ABCD_H_"+suffix,false));
+  }
 }
 
 namespace {
@@ -220,7 +222,7 @@ void setupMC(AdvancedHandler* handler)
 {
   TF1* flatWeight = new TF1("flat","1",0,10000000);
   handler->addEventVariable("FLATWEIGHT",new EventVariableTF1<int>("FLATWEIGHT","RUN",flatWeight));
-	handler->addWeightVariable("FLATWEIGHT");
+  handler->addWeightVariable("FLATWEIGHT");
   handler->addHistogram(new SignatureTH1F_EventVariable<double>("TrueNumInteractions","TrueNumInteractions","",50,0,50));
 
   handler->addEventVariable("NELECTRONSFROMBOSON",new EventVariableN("NELECTRONSFROMBOSON","MCELECTRONSFROMBOSON"));
@@ -238,6 +240,12 @@ void setupClasses(AdvancedHandler* handler)
   handler->addObjectVariable("isFilter",new ObjectVariableValue<TString>("INPUTTYPE","filter"));
   handler->addObjectVariable("isKshort", new ObjectVariableValue<TString>("INPUTTYPE","kshort"));
   handler->addObjectVariable("isDijet", new ObjectVariableValue<TString>("INPUTTYPE","dijet"));
+
+  handler->addProduct("ALLMET","ALL");
+  handler->addProductCut("ALLMET","isMET");
+
+  handler->addProduct("MET","ALLMET");
+  handler->addProductSelfComparison("MET",new ObjectComparisonDeltaR(100));
 
   handler->addProduct("ALLFILTERS","ALL");
   handler->addProductCut("ALLFILTERS","isFilter");
@@ -266,12 +274,6 @@ void setupClasses(AdvancedHandler* handler)
   handler->addProduct("ALLVERTICES","ALL");
   handler->addProductCut("ALLVERTICES","isVertex");
 
-  handler->addProduct("ALLMET","ALL");
-  handler->addProductCut("ALLMET","isMET");
-
-  handler->addProduct("MET","ALLMET");
-  handler->addProductSelfComparison("MET",new ObjectComparisonDeltaR(100));
-
   handler->addProduct("TRIGGERS","ALL");
   handler->addProductCut("TRIGGERS","isTrigger");
 
@@ -285,7 +287,7 @@ void setupClasses(AdvancedHandler* handler)
 
 void setupGenericObjectVariables(AdvancedHandler* handler)
 {
- handler->addObjectVariable("ETA",new ObjectVariableMethod("ETA", &SignatureObject::Eta));
+  handler->addObjectVariable("ETA",new ObjectVariableMethod("ETA", &SignatureObject::Eta));
   handler->addObjectVariable("PHI",new ObjectVariableMethod("PHI", &SignatureObject::Phi));
   handler->addObjectVariable("Px",new ObjectVariableMethod("Px", &SignatureObject::Px));
   handler->addObjectVariable("Py",new ObjectVariableMethod("Py", &SignatureObject::Py));
@@ -399,7 +401,7 @@ void setupMuons(AdvancedHandler* handler)
 
   handler->addProduct("looseMuons","basicMuons");
   handler->addProductCut("looseMuons","MUON_dxy");
-  //handler->addProductCut("looseMuons","IREL0p5");
+  handler->addProductCut("looseMuons","IREL0p5");
   handler->addProductCut("looseMuons","IREL0p5");
 
   handler->addProduct("goodMuonsLowPt","looseMuons");
@@ -408,6 +410,12 @@ void setupMuons(AdvancedHandler* handler)
 
   handler->addProduct("goodMuons","goodMuonsLowPt");
   handler->addProductCut("goodMuons","PT10");
+
+  ObjectAssociationDeltaR* metMatch = new ObjectAssociationDeltaR(100,"metMatch");
+  ObjectVariableAssociateAngles* metDeltaAngles = new ObjectVariableAssociateAngles("metMatch","MET");
+
+  handler->addProductAssociation("ALLMUONS","MET",metMatch,true);
+  handler->addAssociateVariable("ALLMUONS","METANGLE",metDeltaAngles);
 
 }
 
@@ -540,16 +548,22 @@ void setupElectrons(AdvancedHandler* handler)
   // loose electrons according to RA7Coordination2015 TWiki
   handler->addProduct("looseElectrons","basicElectrons");
   //handler->addProductCut("looseElectrons", "ELECTRON_PROMPT");
-  //handler->addProductCut("looseElectrons", "IREL0p5");
+  handler->addProductCut("looseElectrons", "IREL0p5");
 
   // tight electrons according to RA7Coordination2015 TWiki
   handler->addProduct("goodElectronsLowPt","looseElectrons");
   handler->addProductCut("goodElectronsLowPt", "ELECTRON_TIGHT");
   //handler->addProductCut("goodElectronsLowPt", "SIP3D_4sigma");
-  //handler->addProductCut("goodElectronsLowPt", "IREL0p23");
+  handler->addProductCut("goodElectronsLowPt", "IREL0p23");
 
   handler->addProduct("goodElectrons","goodElectronsLowPt");
   handler->addProductCut("goodElectrons", "PT10");
+
+  ObjectAssociationDeltaR* metMatch = new ObjectAssociationDeltaR(100,"metMatch");
+  ObjectVariableAssociateAngles* metDeltaAngles = new ObjectVariableAssociateAngles("metMatch","MET");
+
+  handler->addProductAssociation("ALLELECTRONS","MET",metMatch,true);
+  handler->addAssociateVariable("ALLELECTRONS","METANGLE",metDeltaAngles);
 
 }
 
@@ -722,7 +736,14 @@ void setupJets(AdvancedHandler* handler)
   handler->addObjectVariable("CALOJET_NMATCHED1",new ObjectVariableInRange<int>("nMatchedTracks",1,10000,"nMatchedTracks1"));
   handler->addObjectVariable("CALOJET_MEDIANIPLOG10", new ObjectVariableInRange<double>("medianIPLog10Sig",0.868,100000));
   handler->addObjectVariable("CALOJET_ALPHAMAX0p1", new ObjectVariableInRange<double>("alphaMax",0,0.1));
-handler->addObjectVariable("CALOJET_GOODMEDIANLOGTRACKANGLE", new ObjectVariableInRange<double>("medianLog10TrackAngle",-1.3,10000));
+  handler->addObjectVariable("CALOJET_GOODMEDIANLOGTRACKANGLE", new ObjectVariableInRange<double>("medianLog10TrackAngle",-1.8,10000));
+  handler->addObjectVariable("CALOJET_BETA0p9", new ObjectVariableInRange<double>("beta",0.9,10000));
+  handler->addObjectVariable("CALOJET_ALPHAMAXPRIME0p1", new ObjectVariableInRange<double>("alphaMaxPrime",0,0.1));
+  handler->addObjectVariable("CALOJET_AVFVERTEXDISTANCETOBEAM0p1", new ObjectVariableInRange<double>("avfVertexDistanceToBeam",0.1,100000));
+  handler->addObjectVariable("CALOJET_NTRACKSIPSIGGT10GT0", new ObjectVariableInRange<double>("nTracksIPSiggt10",1,1000000));
+  handler->addObjectVariable("CALOJET_TOTALTRACKANGLE", new ObjectVariableInRange<double>("totalTrackAngle",0.1,100000));
+  handler->addObjectVariable("CALOJET_SUMIPSIG", new ObjectVariableInRange<double>("sumIPSig",50,1000000));
+  handler->addObjectVariable("CALOJET_TOTALTRACKPT5", new ObjectVariableInRange<double>("totalTrackPt",5,100000));
 
   handler->addProduct("HLTJETS","ALLJETS");
   handler->addProductCut("HLTJETS","ETA3");
@@ -751,17 +772,69 @@ handler->addObjectVariable("CALOJET_GOODMEDIANLOGTRACKANGLE", new ObjectVariable
   handler->addProduct("BASICCALOJETS","ALLCALOJETS");
   handler->addProductCut("BASICCALOJETS","CALOJET_EMFRACTION");
   handler->addProductCut("BASICCALOJETS","CALOJET_HFRACTION");
-  handler->addProductCut("BASICCALOJETS","PT40");
+  //handler->addProductCut("BASICCALOJETS","PT40");
   handler->addProductCut("BASICCALOJETS","ETA2p4");
+  handler->addProductComparison("BASICCALOJETS","goodLeptons", new ObjectComparisonDeltaR(0.4));
 
-  handler->addProduct("INCLUSIVETAGGEDCALOJETS","BASICCALOJETS");
-  handler->addProductCut("INCLUSIVETAGGEDCALOJETS","CALOJET_NMATCHED1");
+
+  handler->addProduct("BASICCALOJETS1","BASICCALOJETS");
+  handler->addProductCut("BASICCALOJETS1","CALOJET_NMATCHED1");
+
+  //handler->addProduct("BASICCALOJETS1A","BASICCALOJETS1");
+  //handler->addProductCut("BASICCALOJETS1A","CALOJET_ALPHAMAX0p1");
+
+  //handler->addProduct("BASICCALOJETS1B","BASICCALOJETS1");
+  //handler->addProductCut("BASICCALOJETS1B","CALOJET_BETA0p9");
+
+  //handler->addProduct("BASICCALOJETS1C","BASICCALOJETS1");
+  //handler->addProductCut("BASICCALOJETS1C","CALOJET_ALPHAMAXPRIME0p1");
+
+  //handler->addProduct("BASICCALOJETS1D","BASICCALOJETS1");
+  //handler->addProductCut("BASICCALOJETS1D","CALOJET_AVFVERTEXDISTANCETOBEAM0p1");
+
+  //handler->addProduct("BASICCALOJETS1E","BASICCALOJETS1");
+  //handler->addProductCut("BASICCALOJETS1E","CALOJET_MEDIANIPLOG10");
+
+  //handler->addProduct("BASICCALOJETS1F","BASICCALOJETS1");
+  //handler->addProductCut("BASICCALOJETS1F","CALOJET_GOODMEDIANLOGTRACKANGLE");
+
+  handler->addProduct("INCLUSIVETAGGEDCALOJETSA","BASICCALOJETS1");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETSA","CALOJET_BETA0p9");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETSA","CALOJET_MEDIANIPLOG10");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETSA","CALOJET_GOODMEDIANLOGTRACKANGLE");
+
+  handler->addProduct("INCLUSIVETAGGEDCALOJETSB","INCLUSIVETAGGEDCALOJETSA");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETSB","CALOJET_TOTALTRACKANGLE");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETSB","CALOJET_SUMIPSIG");
+
+  handler->addProduct("INCLUSIVETAGGEDCALOJETSC","INCLUSIVETAGGEDCALOJETSB");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETSC","CALOJET_TOTALTRACKPT5");
+
+  handler->addProduct("INCLUSIVETAGGEDCALOJETSD","INCLUSIVETAGGEDCALOJETSC");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETSD","CALOJET_AVFVERTEXDISTANCETOBEAM0p1");
+
+  handler->addProduct("INCLUSIVETAGGEDCALOJETS","BASICCALOJETS1");
   handler->addProductCut("INCLUSIVETAGGEDCALOJETS","CALOJET_MEDIANIPLOG10");
   handler->addProductCut("INCLUSIVETAGGEDCALOJETS","CALOJET_ALPHAMAX0p1");
   handler->addProductCut("INCLUSIVETAGGEDCALOJETS","CALOJET_GOODMEDIANLOGTRACKANGLE");
 
-  handler->addProduct("INCLUSIVETAGGEDCALOJETS60","INCLUSIVETAGGEDCALOJETS");
-  handler->addProductCut("INCLUSIVETAGGEDCALOJETS60","PT60");
+  //handler->addProduct("INCLUSIVETAGGEDCALOJETS1","INCLUSIVETAGGEDCALOJETS");
+  //handler->addProductCut("INCLUSIVETAGGEDCALOJETS1","CALOJET_TOTALTRACKANGLE");
+  //handler->addProductCut("INCLUSIVETAGGEDCALOJETS1","CALOJET_SUMIPSIG");
+
+  handler->addProduct("INCLUSIVETAGGEDCALOJETS2","BASICCALOJETS1");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETS2","CALOJET_GOODMEDIANLOGTRACKANGLE");
+  handler->addProductCut("INCLUSIVETAGGEDCALOJETS2","CALOJET_BETA0p9");
+
+
+  //handler->addProduct("INCLUSIVETAGGEDCALOJETS20","INCLUSIVETAGGEDCALOJETS");
+  //handler->addProductCut("INCLUSIVETAGGEDCALOJETS20","PT20");
+
+  //handler->addProduct("INCLUSIVETAGGEDCALOJETS40","INCLUSIVETAGGEDCALOJETS");
+  //handler->addProductCut("INCLUSIVETAGGEDCALOJETS40","PT40");
+
+  //handler->addProduct("INCLUSIVETAGGEDCALOJETS60","INCLUSIVETAGGEDCALOJETS");
+  //handler->addProductCut("INCLUSIVETAGGEDCALOJETS60","PT60");
 
 }
 
@@ -772,20 +845,64 @@ void setupCaloJetMatching(AdvancedHandler* handler, bool isSignal)
   std::vector<TString> productsToMatch;
   productsToMatch.push_back("ALLCALOJETS");
   productsToMatch.push_back("BASICCALOJETS");
+  productsToMatch.push_back("BASICCALOJETS1");
+  //productsToMatch.push_back("BASICCALOJETS1A");
+  //productsToMatch.push_back("BASICCALOJETS1B");
+  //productsToMatch.push_back("BASICCALOJETS1C");
+  //productsToMatch.push_back("BASICCALOJETS1D");
+  //productsToMatch.push_back("BASICCALOJETS1E");
+  //productsToMatch.push_back("BASICCALOJETS1F");
   productsToMatch.push_back("INCLUSIVETAGGEDCALOJETS");
-  productsToMatch.push_back("INCLUSIVETAGGEDCALOJETS60");
+  //productsToMatch.push_back("INCLUSIVETAGGEDCALOJETS1");
+  productsToMatch.push_back("INCLUSIVETAGGEDCALOJETS2");
+  productsToMatch.push_back("INCLUSIVETAGGEDCALOJETSA");
+  productsToMatch.push_back("INCLUSIVETAGGEDCALOJETSB");
+  productsToMatch.push_back("INCLUSIVETAGGEDCALOJETSC");
+  productsToMatch.push_back("INCLUSIVETAGGEDCALOJETSD");
+  //productsToMatch.push_back("INCLUSIVETAGGEDCALOJETS20");
+  //productsToMatch.push_back("INCLUSIVETAGGEDCALOJETS40");
+  //productsToMatch.push_back("INCLUSIVETAGGEDCALOJETS60");
 
   ObjectAssociationDeltaR* metMatch = new ObjectAssociationDeltaR(100,"metMatch");
   ObjectVariableAssociateDeltaR* metDeltaR = new ObjectVariableAssociateDeltaR("metMatch","METDELTAR");
   ObjectVariableAssociateAngles* metDeltaAngles = new ObjectVariableAssociateAngles("metMatch","MET");
   //ObjectAssociationVertex* matchVertex = new ObjectAssociationVertex(2.0,"VtxX","VtxY","VtxZ");
 
+  ObjectAssociationDeltaR* lepMatch = new ObjectAssociationDeltaR(100,"lepMatch");
+  ObjectVariableAssociateDeltaR* lepDeltaR = new ObjectVariableAssociateDeltaR("lepMatch","LEPDELTAR");
+  ObjectVariableAssociateAngles* lepDeltaAngles = new ObjectVariableAssociateAngles("lepMatch","LEP");
+
+  ObjectAssociationDeltaR* basiccalojets1Match = new ObjectAssociationDeltaR(100,"BASICCALOJETS1Match");
+  ObjectVariableAssociateDeltaR* basiccalojets1DeltaR = new ObjectVariableAssociateDeltaR("BASICCALOJETS1Match","BASICCALOJETS1DELTAR");
+
+
+
   for(auto &product : productsToMatch) {
     TString sigstarter = product+"MATCHED";
     handler->addProduct(sigstarter,product);
+
     handler->addProductAssociation(product,"MET",metMatch,true);
     handler->addAssociateVariable(product,"METDELTAR",metDeltaR);
     handler->addAssociateVariable(product,"METANGLE",metDeltaAngles);
+
+    handler->addProductAssociation(product,"goodLeptons",lepMatch,true);
+    handler->addAssociateVariable(product,"LEPDELTAR",lepDeltaR);
+    handler->addAssociateVariable(product,"LEPANGLE",lepDeltaAngles);
+
+    if(product != "ALLCALOJETS" && product != "BASICCALOJETS"){
+      handler->addProductAssociation(product,"BASICCALOJETS1",basiccalojets1Match,true);
+      handler->addAssociateVariable(product,"BASICCALOJETS1DELTAR",basiccalojets1DeltaR);
+    }
+
+    TString selfMatch_str = "SELFMATCH"; selfMatch_str+=product;
+    TString selfDeltaR_str = "SELFDELTAR"; selfDeltaR_str+=product;
+    ObjectAssociationDeltaR* selfMatch = new ObjectAssociationDeltaR(100,selfMatch_str.Data());
+    ObjectVariableAssociateDeltaR* selfDeltaR = new ObjectVariableAssociateDeltaR(selfMatch_str.Data(),selfDeltaR_str.Data());
+
+    handler->addProductAssociation(product,product,selfMatch,true);
+    handler->addAssociateVariable(product,selfDeltaR_str.Data(),selfDeltaR);
+
+
     if(isSignal)handler->addProductAssociation(sigstarter,"SIGNALQUARKS",matchDisplaced);
   }
 
@@ -866,6 +983,10 @@ void setupProducts(AdvancedHandler* handler, bool isSignal)
    
   setupMuons(handler);
   setupElectrons(handler);
+
+  ProductMakerUnion* goodLeptons = new ProductMakerUnion("goodMuons","goodLeptons");
+  goodLeptons->addSource("goodElectrons");
+  handler->addProduct("goodLeptons",goodLeptons);
 
   ////////
   ///MC///
@@ -982,7 +1103,8 @@ void setupListVariablesAndHistograms(AdvancedHandler* handler)
   variablesInt.push_back("bestclusterN");  
   variablesInt.push_back("bestclusterN1");  
   variablesInt.push_back("bestclusterN2");  
-  
+
+  /*  
   for(auto product : productlist){
     TString nname = TString::Format("N%s",product.Data());
     nname.ToUpper();
@@ -997,7 +1119,9 @@ void setupListVariablesAndHistograms(AdvancedHandler* handler)
       hname.ToUpper();
       handler->addEventVariable(hname, new EventVariableObjectVariableVector<int>(variable,product));
     }
+    
   }
+  */
 
 
 
@@ -1008,8 +1132,23 @@ void setupListVariablesAndHistograms(AdvancedHandler* handler)
 
   starterProducts.push_back("ALLCALOJETS");
   starterProducts.push_back("BASICCALOJETS");
+  starterProducts.push_back("BASICCALOJETS1");
+  //starterProducts.push_back("BASICCALOJETS1A");
+  //starterProducts.push_back("BASICCALOJETS1B");
+  //starterProducts.push_back("BASICCALOJETS1C");
+  //starterProducts.push_back("BASICCALOJETS1D");
+  //starterProducts.push_back("BASICCALOJETS1E");
+  //starterProducts.push_back("BASICCALOJETS1F");
   starterProducts.push_back("INCLUSIVETAGGEDCALOJETS");
-  starterProducts.push_back("INCLUSIVETAGGEDCALOJETS60");
+  //starterProducts.push_back("INCLUSIVETAGGEDCALOJETS1");
+  starterProducts.push_back("INCLUSIVETAGGEDCALOJETS2");
+  starterProducts.push_back("INCLUSIVETAGGEDCALOJETSA");
+  starterProducts.push_back("INCLUSIVETAGGEDCALOJETSB");
+  starterProducts.push_back("INCLUSIVETAGGEDCALOJETSC");
+  starterProducts.push_back("INCLUSIVETAGGEDCALOJETSD");
+  //starterProducts.push_back("INCLUSIVETAGGEDCALOJETS20");
+  //starterProducts.push_back("INCLUSIVETAGGEDCALOJETS40");
+  //starterProducts.push_back("INCLUSIVETAGGEDCALOJETS60");
 
   for(auto &product : starterProducts) {
     productlist.push_back(product);
@@ -1037,27 +1176,76 @@ void setupListVariablesAndHistograms(AdvancedHandler* handler)
   variables.push_back("avfBeamSpotDeltaPhi");
   variables.push_back("avfBeamSpotRecoilPt");
   variables.push_back("alphaMax");
+  variables.push_back("alphaMax2");
+  variables.push_back("beta");
+  variables.push_back("beta2");
+  variables.push_back("alphaMaxPrime");
+  variables.push_back("alphaMaxPrime2");
   variables.push_back("avfVertexTrackMass");
   variables.push_back("avfVertexTrackEnergy");
   variables.push_back("jetArea");
   variables.push_back("METDELTAR");
   variables.push_back("METANGLE_dPHI");
   variables.push_back("METANGLE_dANGLE");
+  variables.push_back("LEPDELTAR");
+  variables.push_back("LEPANGLE_dPHI");
+  variables.push_back("LEPANGLE_dANGLE");
+  variables.push_back("BASICCALOJETS1DELTAR");
   variables.push_back("trackEnergy");
   variables.push_back("trackMass");
+  variables.push_back("stupakPt");
+  variables.push_back("stupakR");
+  variables.push_back("totalTrackAngle");
+  variables.push_back("totalTrackPt");
+  variables.push_back("totalTrackAnglePt");
+  variables.push_back("linearRadialMoment");
+  variables.push_back("associatedTrackPt");
+  variables.push_back("assocAplanarity");
+  variables.push_back("assocSphericity");
+  variables.push_back("assocThrustMajor");
+  variables.push_back("assocThrustMinor");
+  variables.push_back("avfAssocAplanarity");
+  variables.push_back("avfAssocSphericity");
+  variables.push_back("avfAssocThrustMajor");
+  variables.push_back("avfAssocThrustMinor");
+  variables.push_back("AVGMISSINGINNER");
+  variables.push_back("AVGMISSINGOUTER");
 
   variablesInt.push_back("nMatchedTracks");
   variablesInt.push_back("nCleanMatchedTracks");  
   variablesInt.push_back("nTracksIPlt0p05");
   variablesInt.push_back("nTracksIPSiggt10");
   variablesInt.push_back("nTracksIPSiglt5");
+  variablesInt.push_back("MISSINGINNER");
+  variablesInt.push_back("MISSINGOUTER");
 
 
   for(auto product : productlist){
     TString nname = TString::Format("N%s",product.Data());
     nname.ToUpper();
     handler->addEventVariable(nname, new EventVariableN(nname,product));
+
+    EventVariableSphericity2D* h_sph = new EventVariableSphericity2D("HSPH",product);
+    EventVariableSphericity2D* l_sph = new EventVariableSphericity2D("LSPH",product);
+    l_sph->addProduct("goodLeptons");
+    EventVariableSphericity2D* s_sph = new EventVariableSphericity2D("SSPH",product);
+    s_sph->addProduct("goodLeptons");
+    s_sph->addProduct("MET");
+    EventVariableMass* mass = new EventVariableMass("mmm",product);
+
+    handler->addEventVariable(TString::Format("HSPH_%s",product.Data()),h_sph);
+    handler->addEventVariable(TString::Format("LSPH_%s",product.Data()),l_sph);
+    handler->addEventVariable(TString::Format("SSPH_%s",product.Data()),s_sph);
+
+    handler->addEventVariable(TString::Format("LRM_%s",product.Data()),new EventVariableLinearRadialMoment("LRM",product));
+    handler->addEventVariable(TString::Format("M_%s",product.Data()),mass);
+    handler->addEventVariable(TString::Format("MASSDISPLACED_%s",product.Data()),new EventVariableMassDisplaced(product,"totalTrackPx","totalTrackPy","totalTrackPz","totalTrackE"));
+
     for(auto variable : variables){
+      if(variable.Contains("avf")){
+	handler->setDefaultObjectVariable(product,variable,-1.00,true);
+	//cout << "setting " << product << " " << variable << " to " << -1 << endl;
+      }
       TString hname = TString::Format("%s_%s",variable.Data(),product.Data());
       hname.ToUpper();
       handler->addEventVariable(hname, new EventVariableObjectVariableVector<double>(variable,product));
@@ -1067,6 +1255,11 @@ void setupListVariablesAndHistograms(AdvancedHandler* handler)
       hname.ToUpper();
       handler->addEventVariable(hname, new EventVariableObjectVariableVector<int>(variable,product));
     }
+
+    TString selfDeltaR_str = "SELFDELTAR"; selfDeltaR_str+=product;
+    TString hname = TString::Format("SELFDELTAR_%s",product.Data()); hname.ToUpper();
+    handler->addEventVariable(hname, new EventVariableObjectVariableVector<double>(selfDeltaR_str,product));
+    
   }
 
   
@@ -1086,6 +1279,7 @@ void setupVariables(AdvancedHandler* handler)
   handler->addEventVariable("NBASICELECTRONS", new EventVariableN("NBASICELECTRONS","basicElectrons"));
   handler->addEventVariable("NGOODMUONS", new EventVariableN("NGOODMUONS","goodMuons"));
   handler->addEventVariable("NGOODELECTRONS", new EventVariableN("NGOODELECTRONS","goodElectrons"));
+  handler->addEventVariable("NGOODLEPTONS", new EventVariableN("NGOODELECTRONS","goodLeptons"));
 
   handler->addEventVariable("NGOODVERTICES", new EventVariableN("NGOODVERTICES","GOODVERTICES"));
   handler->addEventVariable("hasGoodVertex", new EventVariableInRange<int>("NGOODVERTICES",1,1000000));
@@ -1110,6 +1304,10 @@ void setupVariables(AdvancedHandler* handler)
   handler->addEventVariable("HTHLTID", new EventVariableSumPT("HLTHTID","goodJetsNoCleaning"));
   handler->addEventVariable("HLTHT", new EventVariableSumPT("HLTHT","HLTJETS"));
   handler->addEventVariable("HLTHT350", new EventVariableInRange<double>("HLTHT",350,1e6));
+
+  handler->addEventVariable("LEPTON_DPHI", new EventVariableObjectVariableVector<double>("METANGLE_dPHI","goodLeptons"));
+  handler->addEventVariable("LEPTON_DANGLE", new EventVariableObjectVariableVector<double>("METANGLE_dANGLE","goodLeptons"));
+
   handler->addEventVariable("KSHORT_MASS", new EventVariableObjectVariableVector<double>("MASS","goodKSHORTS"));
   handler->addEventVariable("KSHORT_PT", new EventVariableObjectVariableVector<double>("PT","goodKSHORTS"));
   handler->addEventVariable("KSHORT_P", new EventVariableObjectVariableVector<double>("P","goodKSHORTS"));
@@ -1163,7 +1361,18 @@ void setupVariables(AdvancedHandler* handler)
   
   handler->addEventVariable("MT", new EventVariableMT("MT", 91.0,"","goodElectrons","goodMuons",""));
 
+  EventVariableSphericity2D* h_sph = new EventVariableSphericity2D("HSPH","BASICCALOJETS");
+  EventVariableSphericity2D* l_sph = new EventVariableSphericity2D("LSPH","BASICCALOJETS");
+  l_sph->addProduct("goodLeptons");
+  EventVariableSphericity2D* s_sph = new EventVariableSphericity2D("SSPH","BASICCALOJETS");
+  s_sph->addProduct("goodLeptons");
+  s_sph->addProduct("MET");
 
+  handler->addEventVariable("HSPH",h_sph);
+  handler->addEventVariable("LSPH",l_sph);
+  handler->addEventVariable("SSPH",s_sph);
+
+  handler->addEventVariable("LRM",new EventVariableLinearRadialMoment("LRM","BASICCALOJETS"));
 }
 
 void addHistograms(AdvancedHandler* handler)
@@ -1412,22 +1621,22 @@ void addHistograms(AdvancedHandler* handler)
   JetVariablesIntBinNum.push_back(40);
   
   for(int i = 0; i < JetVariables.size(); i++){
-	TString* variable = &JetVariables.at(i);
-	for(int j = 0; j < JetProducts.size(); j++){
-		TString* product = &JetProducts.at(j);
-		TString hname = TString::Format("%s_%s",product->Data(),variable->Data());
-		hname.ReplaceAll("goodSignalJets","CALOJETSMATCHED");
-		handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(hname,variable->Data(),product->Data(),"",JetVariablesBinNum.at(i),JetVariablesLowBound.at(i),JetVariablesUpBound.at(i)));
-	}
+  TString* variable = &JetVariables.at(i);
+  for(int j = 0; j < JetProducts.size(); j++){
+    TString* product = &JetProducts.at(j);
+    TString hname = TString::Format("%s_%s",product->Data(),variable->Data());
+    hname.ReplaceAll("goodSignalJets","CALOJETSMATCHED");
+    handler->addHistogram(new SignatureTH1F_ObjectVariable<double>(hname,variable->Data(),product->Data(),"",JetVariablesBinNum.at(i),JetVariablesLowBound.at(i),JetVariablesUpBound.at(i)));
+  }
   }
   for(int i = 0; i < JetVariablesInt.size(); i++){
-	TString* variable = &JetVariablesInt.at(i);
-	for(int j = 0; j < JetProducts.size(); j++){
-		TString* product = &JetProducts.at(j);
-		TString hname = TString::Format("%s_%s",product->Data(),variable->Data());
-		hname.ReplaceAll("goodSignalJets","CALOJETSMATCHED");
-		handler->addHistogram(new SignatureTH1F_ObjectVariable<int>(hname,variable->Data(),product->Data(),"",JetVariablesIntBinNum.at(i),JetVariablesIntLowBound.at(i),JetVariablesIntUpBound.at(i)));
-	}
+  TString* variable = &JetVariablesInt.at(i);
+  for(int j = 0; j < JetProducts.size(); j++){
+    TString* product = &JetProducts.at(j);
+    TString hname = TString::Format("%s_%s",product->Data(),variable->Data());
+    hname.ReplaceAll("goodSignalJets","CALOJETSMATCHED");
+    handler->addHistogram(new SignatureTH1F_ObjectVariable<int>(hname,variable->Data(),product->Data(),"",JetVariablesIntBinNum.at(i),JetVariablesIntLowBound.at(i),JetVariablesIntUpBound.at(i)));
+  }
   }
 */  
 
