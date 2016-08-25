@@ -43,23 +43,6 @@ PhysicsContributionProjection::PhysicsContributionProjection(const PhysicsContri
 		m_histogram = (TH1*)contribution->getContent()->Projection(dim2, dim1, "E O");
 	}
 	
-	if(contribution->getContent(true)) {
-		TH1* histogramAbs = 0;
-		if(m_varNames.size() <= 1) {
-			histogramAbs = contribution->getContent(true)->Projection(dim1, "E O");
-		} else if(m_varNames.size() == 2) {
-			// Note that the order here is y, x
-			histogramAbs = (TH1*)contribution->getContent(true)->Projection(dim2, dim1, "E O");
-		}
-		for(int i = 0; i < m_histogram->GetNcells(); ++i) {
-			if(histogramAbs->GetBinContent(i) == 0) {
-				continue;
-			}
-			double nominalWeightScale = abs(m_histogram->GetBinContent(i) / histogramAbs->GetBinContent(i));
-			m_histogram->SetBinError(i, nominalWeightScale * m_histogram->GetBinError(i));
-		}
-	}
-	
 	for(auto &uncertainty : contribution->getUncertaintyMap()) {
 		TH1* hProjection = 0;
 		if(m_varNames.size() <= 1) {
