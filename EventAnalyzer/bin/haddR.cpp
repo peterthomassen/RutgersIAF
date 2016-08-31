@@ -37,7 +37,7 @@ using namespace std;
 
 Bool_t mergeTreeR(TString targetname, std::vector<TString> inputFiles, const char* treeName, const char* treeCut, std::string branchesToDrop) {
 	cout << "Now adding Rutgers tree " << treeName << " ";
-	TFile* outfile = new TFile(targetname, "UPDATE");
+	TFile* outfile = TFile::Open(targetname, "UPDATE");
 	
 	outfile->cd();
 	TTree::SetMaxTreeSize(1LL*1024*1024*1024*1024);

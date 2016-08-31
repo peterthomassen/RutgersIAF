@@ -46,7 +46,7 @@ BaseHandler::BaseHandler(TString ofname, BaseTreeReader* reader)
   m_lastEntryPrepared = -1;
   m_currentEntry = -1;
   m_outFileName = ofname;
-  m_outFile = new TFile(m_outFileName.Data(),"RECREATE");
+  m_outFile = TFile::Open(m_outFileName.Data(),"RECREATE");
   m_noCutSignature = new Signature("noCutSignature","");
 
   m_reader = reader;  
